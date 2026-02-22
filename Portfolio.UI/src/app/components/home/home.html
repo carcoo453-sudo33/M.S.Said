@@ -1,0 +1,283 @@
+<app-navbar></app-navbar>
+
+<main class="min-h-screen bg-[#F8F9FA] text-[#333] pt-24 pb-12 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left Sidebar: Profile Card -->
+        <aside class="lg:col-span-4 lg:sticky lg:top-24 h-fit">
+            <div
+                class="bg-white rounded-[32px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 text-center">
+                <div class="relative w-48 h-48 mx-auto mb-6">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-tr from-[#FF3B7E] to-[#7000FF] rounded-[40px] rotate-6 opacity-10">
+                    </div>
+                    <img [src]="bio?.avatarUrl || 'assets/default-avatar.png'" [alt]="bio?.name"
+                        class="relative w-full h-full object-cover rounded-[40px] shadow-xl border-4 border-white">
+                    <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-white rounded-full">
+                    </div>
+                </div>
+
+                <h1 class="text-3xl font-extrabold mb-1 tracking-tight text-[#1A1A1A]">{{ bio?.name }}</h1>
+                <p
+                    class="text-[#FF3B7E] font-semibold text-sm mb-8 uppercase tracking-wider bg-pink-50 inline-block px-4 py-1 rounded-full">
+                    {{ bio?.title }}</p>
+
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-4 text-left p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-[#FF3B7E]">
+                            <lucide-icon [img]="MailIcon" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">
+                                Email</p>
+                            <p class="text-sm font-medium truncate">{{ bio?.email }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-left p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-[#FF3B7E]">
+                            <lucide-icon [img]="PhoneIcon" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">
+                                Phone</p>
+                            <p class="text-sm font-medium">{{ bio?.phone }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-left p-3 rounded-2xl hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-[#FF3B7E]">
+                            <lucide-icon [img]="MapPinIcon" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-1">
+                                Location</p>
+                            <p class="text-sm font-medium">{{ bio?.location }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-3 mb-8">
+                    <a [href]="bio?.linkedInUrl" target="_blank"
+                        class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#FF3B7E] hover:text-white transition-all">
+                        <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
+                    </a>
+                    <a [href]="bio?.gitHubUrl" target="_blank"
+                        class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#FF3B7E] hover:text-white transition-all">
+                        <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
+                    </a>
+                    <a [href]="bio?.twitterUrl" target="_blank"
+                        class="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#FF3B7E] hover:text-white transition-all">
+                        <lucide-icon [img]="TwitterIcon" class="w-5 h-5"></lucide-icon>
+                    </a>
+                </div>
+
+                <div class="space-y-3">
+                    <a [href]="'https://wa.me/' + bio?.whatsAppUrl" target="_blank"
+                        class="flex items-center justify-center gap-2 w-full py-4 bg-[#25D366] text-white font-bold rounded-2xl hover:brightness-105 transition-all shadow-lg shadow-green-200">
+                        <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
+                        Hire me on WhatsApp
+                    </a>
+                    <a [href]="bio?.cvUrl" target="_blank"
+                        class="flex items-center justify-center gap-2 w-full py-4 bg-gray-100 text-gray-700 font-bold rounded-2xl hover:bg-gray-200 transition-all border border-gray-200">
+                        <lucide-icon [img]="DownloadIcon" class="w-5 h-5"></lucide-icon>
+                        Download CV
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <div class="lg:col-span-8 space-y-12">
+
+            <!-- Brief & Bio Section -->
+            <section
+                class="bg-white rounded-[40px] p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div class="space-y-1">
+                        <p class="text-[#FF3B7E] font-bold text-xs uppercase tracking-[0.2em]">Brief & Bio</p>
+                        <h2 class="text-4xl md:text-5xl font-black text-[#1A1A1A]">Innovative <span
+                                class="text-[#FF3B7E]">Solutions</span> Builder</h2>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 rounded-3xl border border-gray-100">
+                        <p class="text-3xl font-black text-[#1A1A1A] leading-none">{{ bio?.yearsOfExperience }}</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Years Exp.</p>
+                    </div>
+                </div>
+
+                <p class="text-gray-500 text-lg leading-relaxed mb-10 max-w-3xl">
+                    {{ bio?.description }}
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-5 p-6 rounded-[32px] bg-gray-50 border border-gray-100">
+                        <div
+                            class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#FF3B7E]">
+                            <lucide-icon [img]="Code2Icon" class="w-7 h-7"></lucide-icon>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Clean Code</h4>
+                            <p class="text-sm text-gray-500 leading-relaxed">Writing scalable, maintainable software
+                                architectures.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-5 p-6 rounded-[32px] bg-gray-50 border border-gray-100">
+                        <div
+                            class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-[#FF3B7E]">
+                            <lucide-icon [img]="ZapIcon" class="w-7 h-7"></lucide-icon>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-1">Performance</h4>
+                            <p class="text-sm text-gray-500 leading-relaxed">Optimizing for speed and seamless user
+                                interactions.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What I Do Section -->
+            <section>
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-2 h-10 bg-[#FF3B7E] rounded-full"></div>
+                    <h2 class="text-3xl font-black text-[#1A1A1A]">What I Do</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div *ngFor="let service of services"
+                        class="group bg-white p-8 rounded-[36px] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
+                        <div
+                            class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#FF3B7E] transition-all">
+                            <lucide-icon [img]="getServiceIcon(service.icon)"
+                                class="w-8 h-8 text-[#FF3B7E] group-hover:text-white"></lucide-icon>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">{{ service.title }}</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ service.description }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Latest Experience Section -->
+            <section>
+                <div class="flex items-center justify-between gap-4 mb-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-2 h-10 bg-[#FF3B7E] rounded-full"></div>
+                        <h2 class="text-3xl font-black text-[#1A1A1A]">Latest Experience</h2>
+                    </div>
+                    <a routerLink="/timeline"
+                        class="text-[10px] font-bold uppercase tracking-widest text-[#FF3B7E] bg-pink-50 px-4 py-2 rounded-full hover:bg-pink-100 transition-colors">View
+                        All</a>
+                </div>
+                <div class="space-y-8 pl-4 border-l-2 border-gray-100 ml-4">
+                    <div *ngFor="let exp of experiences" class="relative group">
+                        <div
+                            class="absolute -left-[22px] top-1 w-4 h-4 rounded-full border-4 border-white bg-[#FF3B7E] group-hover:scale-125 transition-transform shadow-lg shadow-pink-200">
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
+                            <h3 class="text-xl font-bold text-[#1A1A1A]">{{ exp.role }}</h3>
+                            <span
+                                class="text-[10px] font-bold uppercase tracking-widest text-[#FF3B7E] bg-pink-50 px-4 py-1.5 rounded-full">{{
+                                exp.duration }}</span>
+                        </div>
+                        <p
+                            class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span>{{ exp.company }}</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            <span>{{ exp.location }}</span>
+                        </p>
+                        <p class="text-gray-500 text-sm leading-relaxed max-w-2xl">{{ exp.description }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack Section -->
+            <section class="text-center py-12">
+                <h3 class="text-xs font-bold uppercase tracking-[0.4em] text-gray-400 mb-10">Tech Stack & Tools</h3>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <div
+                        class="w-20 h-20 bg-white rounded-3xl shadow-sm border border-gray-50 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-pink-200 transition-all cursor-pointer">
+                        <lucide-icon [img]="FileCodeIcon" class="w-10 h-10 text-orange-500"></lucide-icon>
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-white rounded-3xl shadow-sm border border-gray-50 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-pink-200 transition-all cursor-pointer">
+                        <lucide-icon [img]="DatabaseIcon" class="w-10 h-10 text-blue-500"></lucide-icon>
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-white rounded-3xl shadow-sm border border-gray-50 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-pink-200 transition-all cursor-pointer">
+                        <lucide-icon [img]="GithubIcon" class="w-10 h-10 text-gray-800"></lucide-icon>
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-white rounded-3xl shadow-sm border border-gray-50 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-pink-200 transition-all cursor-pointer">
+                        <lucide-icon [img]="MonitorIcon" class="w-10 h-10 text-green-500"></lucide-icon>
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-white rounded-3xl shadow-sm border border-gray-50 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:border-pink-200 transition-all cursor-pointer">
+                        <lucide-icon [img]="TerminalIcon" class="w-10 h-10 text-zinc-700"></lucide-icon>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Projects Section -->
+            <section>
+                <div class="flex items-center justify-between gap-4 mb-10">
+                    <h2 class="text-3xl font-black text-[#1A1A1A]">Featured Projects</h2>
+                    <a routerLink="/projects"
+                        class="text-[10px] font-bold uppercase tracking-widest text-[#FF3B7E] flex items-center gap-2 group">
+                        View Github <lucide-icon [img]="ArrowRightIcon"
+                            class="w-4 h-4 group-hover:translate-x-1 transition-transform"></lucide-icon>
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div *ngFor="let project of featuredProjects"
+                        class="group bg-white rounded-[40px] overflow-hidden border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-2xl transition-all duration-700">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div
+                                class="absolute inset-0 bg-[#0F172A] opacity-0 group-hover:opacity-40 transition-opacity z-10">
+                            </div>
+                            <img [src]="project.imageUrl || 'assets/project-placeholder.png'"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                            <div class="absolute bottom-6 left-6 z-20 overflow-hidden h-6">
+                                <div
+                                    class="flex flex-wrap gap-2 group-hover:-translate-y-8 transition-transform duration-500">
+                                    <span *ngFor="let tech of project.techStack?.split(',')"
+                                        class="bg-white/90 backdrop-blur-sm text-[10px] font-bold px-3 py-1 rounded-full text-[#1A1A1A] uppercase tracking-wider">
+                                        {{ tech.trim() }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-2xl font-black text-[#1A1A1A]">{{ project.title }}</h3>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">2024</span>
+                            </div>
+                            <p class="text-gray-500 text-sm leading-relaxed mb-6">{{ project.description }}</p>
+                            <div class="flex gap-4">
+                                <span *ngFor="let tech of project.techStack?.split(',')"
+                                    class="bg-[#F8F9FA] text-[10px] font-bold px-4 py-2 rounded-xl text-[#FF3B7E] uppercase tracking-wider">
+                                    {{ tech.trim() }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 pt-12 border-t border-gray-100 text-center">
+        <div class="flex items-center justify-center gap-2 mb-6">
+            <div
+                class="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center text-white font-black text-xl italic uppercase font-mono">
+                MS
+            </div>
+        </div>
+        <p class="text-gray-400 text-xs font-medium">&copy; 2026 {{ bio?.name }}. All rights reserved.</p>
+        <div class="flex justify-center gap-4 mt-6">
+            <a [href]="bio?.linkedInUrl" class="text-gray-400 hover:text-[#FF3B7E] transition-colors"><lucide-icon
+                    [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon></a>
+            <a [href]="bio?.gitHubUrl" class="text-gray-400 hover:text-[#FF3B7E] transition-colors"><lucide-icon
+                    [img]="GithubIcon" class="w-5 h-5"></lucide-icon></a>
+            <a [href]="'mailto:' + bio?.email" class="text-gray-400 hover:text-[#FF3B7E] transition-colors"><lucide-icon
+                    [img]="MailIcon" class="w-5 h-5"></lucide-icon></a>
+        </div>
+    </footer>
+</main>

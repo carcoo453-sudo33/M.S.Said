@@ -3,64 +3,20 @@ import { CommonModule } from '@angular/common';
 import { PortfolioService } from '../../services/portfolio.service';
 import { EducationEntry } from '../../models/portfolio.models';
 import { NavbarComponent } from '../navbar/navbar';
+import { LucideAngularModule, GraduationCap, MapPin } from 'lucide-angular';
 
 @Component({
     selector: 'app-education',
     standalone: true,
-    imports: [CommonModule, NavbarComponent],
-    template: `
-    <app-navbar></app-navbar>
-    <main class="min-h-screen bg-zinc-950 text-white pt-32 pb-20 px-6">
-      <div class="max-w-4xl mx-auto">
-        <header class="mb-20">
-          <h2 class="text-red-500 font-bold tracking-[0.2em] uppercase mb-4">Academic Journey</h2>
-          <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter">EDUCATION & <span class="bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-transparent">LEARNING</span></h1>
-          <p class="text-zinc-500 text-lg max-w-2xl leading-relaxed">
-            My educational background and professional certifications that have shaped my technical expertise.
-          </p>
-        </header>
-
-        <div class="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-800 before:to-transparent">
-          
-          <div *ngFor="let item of education; let last = last" class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-            <!-- Dot -->
-            <div class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-800 bg-zinc-950 text-zinc-500 absolute left-0 md:left-1/2 md:-translate-x-1/2 z-10 group-hover:bg-red-600 group-hover:border-red-600 group-hover:text-white transition-all duration-500 shadow-xl">
-              <i class="lucide-graduation-cap text-sm"></i>
-            </div>
-
-            <!-- Content -->
-            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-zinc-900/50 p-8 rounded-3xl border border-zinc-900 group-hover:border-red-600/30 transition-all duration-500 backdrop-blur-sm self-start">
-              <span class="text-red-500 font-bold text-xs tracking-widest uppercase mb-2 block">{{ item.duration }}</span>
-              <h3 class="text-xl font-bold mb-1">{{ item.degree }}</h3>
-              <p class="text-zinc-300 font-medium mb-4">{{ item.institution }}</p>
-              <p class="text-zinc-500 text-sm leading-relaxed">{{ item.description }}</p>
-              <div class="mt-4 flex items-center gap-2 text-zinc-600">
-                <i class="lucide-map-pin text-xs"></i>
-                <span class="text-xs uppercase tracking-widest font-bold">{{ item.location }}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Call to Action -->
-        <div class="mt-32 p-12 bg-zinc-900/30 rounded-[3rem] border border-zinc-900 text-center">
-            <h2 class="text-3xl font-black mb-4">Lifelong Learner</h2>
-            <p class="text-zinc-500 mb-8 max-w-md mx-auto text-sm">Beyond formal education, I'm constantly exploring new technologies and patterns to stay at the forefront of the industry.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <span class="px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-widest">ASP.NET Core</span>
-                <span class="px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-widest">Angular</span>
-                <span class="px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-widest">Azure</span>
-                <span class="px-4 py-2 bg-zinc-950 border border-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-widest">System Design</span>
-            </div>
-        </div>
-      </div>
-    </main>
-  `
+    imports: [CommonModule, NavbarComponent, LucideAngularModule],
+    templateUrl: './education.html'
 })
 export class EducationComponent implements OnInit {
     private portfolio = inject(PortfolioService);
     education: EducationEntry[] = [];
+
+    GraduationCapIcon = GraduationCap;
+    MapPinIcon = MapPin;
 
     ngOnInit() {
         this.portfolio.getEducation().subscribe(data => {

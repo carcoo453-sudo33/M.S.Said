@@ -11,6 +11,11 @@ public class BioEntry : BaseEntity
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
+    public string? LinkedInUrl { get; set; }
+    public string? GitHubUrl { get; set; }
+    public string? WhatsAppUrl { get; set; }
+    public string? CVUrl { get; set; }
+    public string? TwitterUrl { get; set; }
 
     // Professional Statistics
     public string YearsOfExperience { get; set; } = "5+";

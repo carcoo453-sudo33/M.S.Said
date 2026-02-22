@@ -30,6 +30,11 @@ export interface BioEntry {
     yearsOfExperience: string;
     projectsCompleted: string;
     codeCommits: string;
+    linkedInUrl?: string;
+    gitHubUrl?: string;
+    whatsAppUrl?: string;
+    cvUrl?: string;
+    twitterUrl?: string;
 }
 
 export interface ServiceEntry {

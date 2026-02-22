@@ -30,14 +30,14 @@ public static class DbInitializer
         {
             context.BioEntries.Add(new BioEntry
             {
-                Name = "مصطفى سمير سعيد",
-                Title = "مبتكر حلول برمجية",
-                Description = "بناء المستقبل بالكود. متخصص في تقنيات الويب الحديثة وإنشاء تجارب رقمية استثنائية.",
-                Location = "الغربية، مصر",
+                Name = "Mostafa Samir Said",
+                Title = "Full Stack Developer (.NET & Angular)",
+                Description = "Innovative Fullstack Developer specializing in API integration, responsive design, and JavaScript frameworks. I deliver high-performance websites and applications, enhancing web accessibility and user experience. Experienced in project management and team leadership, with strong organizational and problem-solving skills.",
+                Location = "Gharbia, Egypt",
                 Email = "m.ssaid356@gmail.com",
-                Phone = "+20 106 735 8073",
+                Phone = "01067358073",
                 AvatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-                YearsOfExperience = "5+",
+                YearsOfExperience = "3+",
                 ProjectsCompleted = "40+",
                 CodeCommits = "12k"
             });
@@ -49,26 +49,26 @@ public static class DbInitializer
             context.ServiceEntries.AddRange(
                 new ServiceEntry
                 {
-                    Title = "تطوير الواجهات الأمامية",
-                    Description = "تعاونت مع فرق متعددة التخصصات لتسليم المشاريع قبل الموعد المحدد. قمت بتطوير مكونات واجهة مستخدم بديهية باستخدام Angular وأطر عمل JS الحديثة.",
+                    Title = "Frontend Development",
+                    Description = "Collaborated with cross-functional teams to deliver projects ahead of schedule. Developed intuitive UI components using Angular and modern JS frameworks.",
                     Icon = "lucide-layout"
                 },
                 new ServiceEntry
                 {
-                    Title = "حلول إدارة المحتوى (CMS)",
-                    Description = "خبير في صياغة حلول CMS سهلة الاستخدام تزيد من التفاعل. طبقت أفضل ممارسات تحسين محركات البحث (SEO) وقمت بتطوير إضافات مخصصة.",
+                    Title = "CMS Solutions",
+                    Description = "Expert in crafting user-friendly CMS solutions that drive engagement. Implemented SEO best practices and developed custom plugins.",
                     Icon = "lucide-database"
                 },
                 new ServiceEntry
                 {
-                    Title = "منصات التجارة الإلكترونية",
-                    Description = "بناء أسواق متكاملة قابلة للتوسع مثل Vengo Roll، تدعم قوائم البائعين المتعددين والمعاملات الآمنة.",
+                    Title = "E-Commerce Platforms",
+                    Description = "Building scalable full-stack marketplaces like Vengo Roll, supporting multi-vendor listings and secure transactions.",
                     Icon = "lucide-shopping-cart"
                 },
                 new ServiceEntry
                 {
-                    Title = "الأنظمة الصحية",
-                    Description = "تطوير أنظمة إدارة سريرية على مستوى المؤسسات لتبسيط سير العمل لرعاية المرضى وإدارة السجلات.",
+                    Title = "Healthcare Systems",
+                    Description = "Developing enterprise-grade clinical management systems to streamline patient care workflows and record management.",
                     Icon = "lucide-activity"
                 }
             );
@@ -80,20 +80,20 @@ public static class DbInitializer
             context.Experiences.AddRange(
                 new ExperienceEntry
                 {
-                    Company = "Google Stitch Labs",
-                    Role = "Full Stack Developer",
-                    Duration = "2023 - Present",
-                    Description = "Leading the development of experimental UI generation tools.",
-                    Location = "Tech City, CA",
+                    Company = "WE3DS",
+                    Role = "Frontend Developer",
+                    Duration = "05/2024 - Present",
+                    Description = "Drafted responsive web designs that boosted user engagement by 30%. Developed intuitive UI components increasing satisfaction.",
+                    Location = "Tanta",
                     IsCurrent = true
                 },
                 new ExperienceEntry
                 {
-                    Company = "Creative Solutions",
-                    Role = "Frontend Engineer",
-                    Duration = "2021 - 2023",
-                    Description = "Developed highly interactive web applications using Angular.",
-                    Location = "Remote",
+                    Company = "Remote",
+                    Role = "CMS Web Developer",
+                    Duration = "2023",
+                    Description = "Implemented SEO best practices, enhancing search visibility significantly. Developed custom plugins increasing functionality.",
+                    Location = "Saudi Arabia",
                     IsCurrent = false
                 }
             );
@@ -105,10 +105,19 @@ public static class DbInitializer
             context.Projects.AddRange(
                 new ProjectEntry
                 {
-                    Title = "Work Experience Timeline",
-                    Description = "A modern interactive timeline for portfolio sites.",
-                    TechStack = "Angular, .NET 9, SQL Server",
-                    ImageUrl = "https://images.unsplash.com/photo-1512295767273-ac109ac3acdf"
+                    Title = "Vengo Roll",
+                    Description = "A scalable full-stack marketplace platform engineered to support multi-vendor product listings, customer ordering workflows, and secure transaction...",
+                    TechStack = "Marketplace, Full Stack",
+                    ImageUrl = "https://images.unsplash.com/photo-1557821552-17105176677c",
+                    Duration = "2024-2025"
+                },
+                new ProjectEntry
+                {
+                    Title = "Clinic Management System",
+                    Description = "A full-stack, enterprise-grade clinical management system built to streamline patient care workflows. Enables healthcare professionals to manage patients...",
+                    TechStack = "Healthcare, Enterprise",
+                    ImageUrl = "https://images.unsplash.com/photo-1576091160550-217359f4b88c",
+                    Duration = "2024"
                 }
             );
         }
@@ -158,6 +167,19 @@ public static class DbInitializer
                     Tags = "Angular, Frontend, Architecture",
                     ImageUrl = "https://images.unsplash.com/photo-1593720213428-28a5b9e94613"
                 }
+            );
+        }
+
+        // Seed Skills
+        if (!context.Skills.Any())
+        {
+            context.Skills.AddRange(
+                new SkillEntry { Name = "Angular", Icon = "lucide-angular", Order = 1 },
+                new SkillEntry { Name = ".NET", Icon = "lucide-dot-net", Order = 2 },
+                new SkillEntry { Name = "JS", Icon = "lucide-javascript", Order = 3 },
+                new SkillEntry { Name = "SQL", Icon = "lucide-database", Order = 4 },
+                new SkillEntry { Name = "HTML5", Icon = "lucide-html5", Order = 5 },
+                new SkillEntry { Name = "CSS3", Icon = "lucide-css3", Order = 6 }
             );
         }
 

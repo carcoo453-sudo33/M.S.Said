@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Data;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +31,7 @@ builder.Services.AddScoped<Portfolio.API.Repositories.IUnitOfWork, Portfolio.API
 
 // Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -39,11 +39,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(); // Nice Scalar UI at /scalar-api-reference
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
-// Redirect root to Scalar API Reference
-app.MapGet("/", () => Results.Redirect("/scalar-api-reference"));
+// Redirect root to Swagger UI
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.UseHttpsRedirection();
 

@@ -8,39 +8,7 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div class="min-h-screen flex items-center justify-center bg-zinc-950 p-4">
-      <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl p-8 shadow-2xl">
-        <div class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-white mb-2">Portfolio Admin</h1>
-          <p class="text-zinc-400">Sign in with your credentials</p>
-        </div>
-        
-        <form (ngSubmit)="onLogin()" #loginForm="ngForm" class="space-y-6">
-          <div>
-            <label class="block text-sm font-medium text-zinc-300 mb-2">Email</label>
-            <input type="email" name="email" [(ngModel)]="email" required 
-                   class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-600 transition-all">
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-zinc-300 mb-2">Password</label>
-            <input type="password" name="password" [(ngModel)]="password" required
-                   class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-red-600 transition-all">
-          </div>
-          
-          <button type="submit" [disabled]="!loginForm.valid"
-                  class="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-all shadow-lg shadow-red-900/20">
-            Login
-          </button>
-          
-          <div *ngIf="errorMessage" class="text-red-500 text-sm text-center mt-4">
-            {{ errorMessage }}
-          </div>
-        </form>
-      </div>
-    </div>
-  `
+  templateUrl: './login.html'
 })
 export class LoginComponent {
   private auth = inject(AuthService);

@@ -16,4 +16,6 @@ public class ProjectEntry : BaseEntity
     public string? DemoUrl { get; set; }
     
     public string? RepoUrl { get; set; }
+    
+    public string? Duration { get; set; } // e.g. "2024-2025"
 }

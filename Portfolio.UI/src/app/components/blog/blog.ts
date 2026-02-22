@@ -4,72 +4,23 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { BlogPost } from '../../models/portfolio.models';
 import { NavbarComponent } from '../navbar/navbar';
 import { RouterLink } from '@angular/router';
+import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 
 @Component({
-    selector: 'app-blog',
-    standalone: true,
-    imports: [CommonModule, NavbarComponent, RouterLink],
-    template: `
-    <app-navbar></app-navbar>
-    <main class="min-h-screen bg-zinc-950 text-white pt-32 pb-20 px-6">
-      <div class="max-w-6xl mx-auto">
-        <header class="mb-20 text-center">
-          <h2 class="text-red-500 font-bold tracking-[0.2em] uppercase mb-4">Insights & Thoughts</h2>
-          <h1 class="text-6xl md:text-8xl font-black mb-8 tracking-tighter">THE <span class="text-zinc-800">BLOG</span></h1>
-          <div class="w-20 h-1 bg-red-600 mx-auto mb-8"></div>
-          <p class="text-zinc-500 text-lg max-w-2xl mx-auto leading-relaxed italic">
-            "Sharing knowledge is the most fundamental act of friendship."
-          </p>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-          <article *ngFor="let post of posts" class="group cursor-pointer" [routerLink]="['/blog', post.id]">
-            <div class="aspect-[16/10] bg-zinc-900 rounded-[2.5rem] overflow-hidden border border-zinc-900 mb-8 relative">
-              <img [src]="post.imageUrl" [alt]="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-100">
-              <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60"></div>
-              <div class="absolute bottom-6 left-6 flex gap-2">
-                <span *ngFor="let tag of post.tags?.split(',')" class="bg-zinc-950/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-zinc-800">
-                  {{ tag.trim() }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="px-2">
-                <div class="flex items-center gap-4 mb-4 text-xs font-bold text-zinc-500 uppercase tracking-[0.2em]">
-                    <span>{{ post.publishedAt | date:'MMM d, y' }}</span>
-                    <span class="w-1 h-1 bg-red-600 rounded-full"></span>
-                    <span>5 Min Read</span>
-                </div>
-                <h3 class="text-2xl font-black mb-4 leading-tight group-hover:text-red-500 transition-colors">{{ post.title }}</h3>
-                <p class="text-zinc-500 mb-6 line-clamp-2 leading-relaxed text-sm italic italic">{{ post.summary }}</p>
-                <span class="text-red-500 font-bold flex items-center gap-2 text-sm group-hover:translate-x-2 transition-transform">
-                    Read Article <i class="lucide-arrow-right"></i>
-                </span>
-            </div>
-          </article>
-        </div>
-
-        <!-- Newsletter / CTA -->
-        <div class="mt-32 p-16 bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-[4rem] border border-zinc-900 text-center relative overflow-hidden">
-             <div class="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full blur-[100px]"></div>
-             <h2 class="text-4xl font-black mb-6 tracking-tighter uppercase relative z-10">Stay in the <span class="text-red-600">Loop</span></h2>
-             <p class="text-zinc-500 mb-10 max-w-md mx-auto relative z-10">Subscribe to get the latest tech insights and project updates delivered straight to your inbox.</p>
-             <div class="flex flex-col md:flex-row gap-4 max-w-lg mx-auto relative z-10">
-                <input type="email" placeholder="Enter your email" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-full px-8 py-4 text-sm focus:outline-none focus:border-red-600 transition-colors">
-                <button class="bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full uppercase tracking-widest text-xs transition-all hover:scale-105 active:scale-95 shadow-xl shadow-red-600/20">Subscribe</button>
-             </div>
-        </div>
-      </div>
-    </main>
-  `
+  selector: 'app-blog',
+  standalone: true,
+  imports: [CommonModule, NavbarComponent, RouterLink, LucideAngularModule],
+  templateUrl: './blog.html'
 })
 export class BlogComponent implements OnInit {
-    private portfolio = inject(PortfolioService);
-    posts: BlogPost[] = [];
+  private portfolio = inject(PortfolioService);
+  posts: BlogPost[] = [];
 
-    ngOnInit() {
-        this.portfolio.getBlogPosts().subscribe(data => {
-            this.posts = data;
-        });
-    }
+  ArrowRightIcon = ArrowRight;
+
+  ngOnInit() {
+    this.portfolio.getBlogPosts().subscribe(data => {
+      this.posts = data;
+    });
+  }
 }

@@ -1,9 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
-
-using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 

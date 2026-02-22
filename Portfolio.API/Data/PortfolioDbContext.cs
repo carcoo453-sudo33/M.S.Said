@@ -17,6 +17,7 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<BlogPost> BlogPosts { get; set; }
     public DbSet<EducationEntry> EducationEntries { get; set; }
     public DbSet<ContactMessage> ContactMessages { get; set; }
+    public DbSet<SkillEntry> Skills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -30,6 +31,7 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<BlogPost>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<EducationEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ContactMessage>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<SkillEntry>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override int SaveChanges()
