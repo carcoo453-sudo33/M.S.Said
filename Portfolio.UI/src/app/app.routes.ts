@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { TimelineComponent } from './components/timeline/timeline';
 import { ProjectsComponent } from './components/projects/projects';
+import { ProjectDetailsComponent } from './components/projects/project-details';
 import { HomeComponent } from './components/home/home';
 import { EducationComponent } from './components/education/education';
 import { BlogComponent } from './components/blog/blog';
@@ -13,6 +14,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'timeline', component: TimelineComponent },
     { path: 'projects', component: ProjectsComponent },
+    { path: 'projects/:id', component: ProjectDetailsComponent },
     { path: 'education', component: EducationComponent },
     { path: 'blog', component: BlogComponent },
     { path: 'blog/:id', component: BlogPostComponent },

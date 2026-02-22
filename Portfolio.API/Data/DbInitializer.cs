@@ -36,7 +36,10 @@ public static class DbInitializer
                 Location = "الغربية، مصر",
                 Email = "m.ssaid356@gmail.com",
                 Phone = "+20 106 735 8073",
-                AvatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
+                AvatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+                YearsOfExperience = "5+",
+                ProjectsCompleted = "40+",
+                CodeCommits = "12k"
             });
         }
 

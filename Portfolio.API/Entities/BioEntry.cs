@@ -11,4 +11,9 @@ public class BioEntry : BaseEntity
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
+
+    // Professional Statistics
+    public string YearsOfExperience { get; set; } = "5+";
+    public string ProjectsCompleted { get; set; } = "40+";
+    public string CodeCommits { get; set; } = "12k";
 }

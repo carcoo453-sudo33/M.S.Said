@@ -23,6 +23,14 @@ public class ProjectsController : ControllerBase
         return await _context.Projects.ToListAsync();
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProjectEntry>> GetProject(Guid id)
+    {
+        var project = await _context.Projects.FindAsync(id);
+        if (project == null) return NotFound();
+        return project;
+    }
+
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<ProjectEntry>> CreateProject(ProjectEntry entry)

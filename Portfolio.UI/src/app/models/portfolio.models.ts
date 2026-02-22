@@ -27,6 +27,9 @@ export interface BioEntry {
     email: string;
     phone: string;
     avatarUrl?: string;
+    yearsOfExperience: string;
+    projectsCompleted: string;
+    codeCommits: string;
 }
 
 export interface ServiceEntry {

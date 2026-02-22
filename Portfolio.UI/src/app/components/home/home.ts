@@ -31,13 +31,29 @@ import { RouterLink } from '@angular/router';
             {{ bio?.description }}
           </p>
           
-          <div class="flex flex-col md:flex-row items-center justify-center gap-6 animate-fade-in" style="animation-delay: 0.8s">
+          <div class="flex flex-col md:flex-row items-center justify-center gap-6 animate-fade-in mb-16" style="animation-delay: 0.8s">
             <a routerLink="/projects" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/25">
               View My Work
             </a>
             <a routerLink="/timeline" class="border border-zinc-700 hover:border-zinc-500 text-white font-bold py-4 px-10 rounded-full transition-all">
               My Journey
             </a>
+          </div>
+
+          <!-- Quick Stats -->
+          <div *ngIf="bio" class="grid grid-cols-3 gap-8 md:gap-12 animate-fade-in" style="animation-delay: 1s">
+            <div class="text-center group">
+              <div class="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-red-500 transition-colors">{{ bio.yearsOfExperience }}</div>
+              <div class="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-widest">Experience</div>
+            </div>
+            <div class="text-center group">
+              <div class="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-red-500 transition-colors">{{ bio.projectsCompleted }}</div>
+              <div class="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-widest">Projects</div>
+            </div>
+            <div class="text-center group">
+              <div class="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-red-500 transition-colors">{{ bio.codeCommits }}</div>
+              <div class="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-widest">Commits</div>
+            </div>
           </div>
         </div>
 

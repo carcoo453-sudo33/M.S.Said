@@ -1,0 +1,105 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { PortfolioService } from '../../services/portfolio.service';
+import { ProjectEntry } from '../../models/portfolio.models';
+import { NavbarComponent } from '../navbar/navbar';
+
+@Component({
+    selector: 'app-project-details',
+    standalone: true,
+    imports: [CommonModule, NavbarComponent, RouterLink],
+    template: `
+    <app-navbar></app-navbar>
+    <main *ngIf="project" class="min-h-screen bg-zinc-950 text-white pt-32 pb-20">
+      <div class="max-w-6xl mx-auto px-6">
+        <!-- Back Button -->
+        <a routerLink="/projects" class="text-zinc-500 hover:text-red-500 font-bold mb-12 inline-flex items-center gap-2 text-xs uppercase tracking-widest transition-colors">
+          <i class="lucide-arrow-left"></i> Back to Projects
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+          <!-- Text Content -->
+          <div>
+            <div class="flex gap-2 mb-8">
+              <span *ngFor="let tech of project.techStack?.split(',')" 
+                    class="bg-red-600/10 text-red-500 font-bold px-3 py-1 rounded-full text-[10px] tracking-widest uppercase border border-red-600/20">
+                {{tech.trim()}}
+              </span>
+            </div>
+            
+            <h1 class="text-5xl md:text-8xl font-black mb-8 tracking-tighter leading-[0.9] uppercase">
+                {{ project.title }}
+            </h1>
+            
+            <p class="text-zinc-400 text-xl leading-relaxed mb-12 italic border-l-4 border-red-600 pl-8">
+              {{ project.description }}
+            </p>
+
+            <div class="flex flex-wrap gap-6 mb-16">
+              <a *ngIf="project.demoUrl" [href]="project.demoUrl" target="_blank" 
+                 class="bg-red-600 hover:bg-red-700 text-white font-black py-4 px-10 rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl shadow-red-600/20 uppercase tracking-widest text-xs">
+                Live Preview
+              </a>
+              <a *ngIf="project.repoUrl" [href]="project.repoUrl" target="_blank" 
+                 class="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-white font-black py-4 px-10 rounded-full transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-xs flex items-center gap-2">
+                <i class="lucide-github"></i> Source Code
+              </a>
+            </div>
+
+            <!-- Key Features / Stats (Placeholder for future expansion) -->
+            <div class="grid grid-cols-2 gap-8 border-t border-zinc-900 pt-12">
+               <div>
+                  <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2">Category</h4>
+                  <p class="text-lg font-bold">Full-Stack Solution</p>
+               </div>
+               <div>
+                  <h4 class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2">Build Duration</h4>
+                  <p class="text-lg font-bold">4 Weeks</p>
+               </div>
+            </div>
+          </div>
+
+          <!-- Featured Image -->
+          <div class="relative group">
+              <div class="absolute -inset-1 bg-gradient-to-r from-red-600 to-purple-600 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <div class="relative aspect-square md:aspect-[4/5] rounded-[3rem] overflow-hidden border border-zinc-900 shadow-2xl bg-zinc-900">
+                  <img [src]="project.imageUrl" [alt]="project.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                  <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60"></div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Placeholder for Project Gallery / Walkthrough -->
+        <div class="mt-32">
+            <h2 class="text-3xl font-black mb-12 tracking-tighter uppercase text-zinc-800">Visual Insights</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="aspect-video bg-zinc-900/50 rounded-3xl border border-zinc-900 p-1 flex items-center justify-center text-zinc-700 font-bold uppercase tracking-widest text-xs italic">
+                    Feature Showcase 01
+                </div>
+                <div class="aspect-video bg-zinc-900/50 rounded-3xl border border-zinc-900 p-1 flex items-center justify-center text-zinc-700 font-bold uppercase tracking-widest text-xs italic">
+                    User Interface Design
+                </div>
+                <div class="aspect-video bg-zinc-900/50 rounded-3xl border border-zinc-900 p-1 flex items-center justify-center text-zinc-700 font-bold uppercase tracking-widest text-xs italic">
+                    Performance Optimized
+                </div>
+            </div>
+        </div>
+      </div>
+    </main>
+  `
+})
+export class ProjectDetailsComponent implements OnInit {
+    private route = inject(ActivatedRoute);
+    private portfolio = inject(PortfolioService);
+    project?: ProjectEntry;
+
+    ngOnInit() {
+        const id = this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.portfolio.getProject(id).subscribe(data => {
+                this.project = data;
+            });
+        }
+    }
+}
