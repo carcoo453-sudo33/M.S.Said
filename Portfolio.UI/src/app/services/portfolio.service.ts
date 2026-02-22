@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ExperienceEntry, ProjectEntry } from '../models/portfolio.models';
+import { ExperienceEntry, ProjectEntry, BioEntry, ServiceEntry } from '../models/portfolio.models';
 
 @Injectable({
     providedIn: 'root'
@@ -15,5 +15,13 @@ export class PortfolioService {
 
     getProjects() {
         return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects`);
+    }
+
+    getBio() {
+        return this.http.get<BioEntry>(`${this.apiUrl}/bio`);
+    }
+
+    getServices() {
+        return this.http.get<ServiceEntry[]>(`${this.apiUrl}/services`);
     }
 }

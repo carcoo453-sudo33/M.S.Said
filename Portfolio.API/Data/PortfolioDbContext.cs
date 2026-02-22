@@ -12,6 +12,8 @@ public class PortfolioDbContext : IdentityDbContext
 
     public DbSet<ExperienceEntry> Experiences { get; set; }
     public DbSet<ProjectEntry> Projects { get; set; }
+    public DbSet<BioEntry> BioEntries { get; set; }
+    public DbSet<ServiceEntry> ServiceEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -20,6 +22,8 @@ public class PortfolioDbContext : IdentityDbContext
         // Soft delete global query filter
         builder.Entity<ExperienceEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<BioEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ServiceEntry>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override int SaveChanges()

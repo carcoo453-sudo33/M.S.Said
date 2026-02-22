@@ -25,6 +25,52 @@ public static class DbInitializer
             await userManager.CreateAsync(user, "Memo@3560");
         }
 
+        // Seed Bio
+        if (!context.BioEntries.Any())
+        {
+            context.BioEntries.Add(new BioEntry
+            {
+                Name = "مصطفى سمير سعيد",
+                Title = "مبتكر حلول برمجية",
+                Description = "بناء المستقبل بالكود. متخصص في تقنيات الويب الحديثة وإنشاء تجارب رقمية استثنائية.",
+                Location = "الغربية، مصر",
+                Email = "m.ssaid356@gmail.com",
+                Phone = "+20 106 735 8073",
+                AvatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d"
+            });
+        }
+
+        // Seed Services
+        if (!context.ServiceEntries.Any())
+        {
+            context.ServiceEntries.AddRange(
+                new ServiceEntry
+                {
+                    Title = "تطوير الواجهات الأمامية",
+                    Description = "تعاونت مع فرق متعددة التخصصات لتسليم المشاريع قبل الموعد المحدد. قمت بتطوير مكونات واجهة مستخدم بديهية باستخدام Angular وأطر عمل JS الحديثة.",
+                    Icon = "lucide-layout"
+                },
+                new ServiceEntry
+                {
+                    Title = "حلول إدارة المحتوى (CMS)",
+                    Description = "خبير في صياغة حلول CMS سهلة الاستخدام تزيد من التفاعل. طبقت أفضل ممارسات تحسين محركات البحث (SEO) وقمت بتطوير إضافات مخصصة.",
+                    Icon = "lucide-database"
+                },
+                new ServiceEntry
+                {
+                    Title = "منصات التجارة الإلكترونية",
+                    Description = "بناء أسواق متكاملة قابلة للتوسع مثل Vengo Roll، تدعم قوائم البائعين المتعددين والمعاملات الآمنة.",
+                    Icon = "lucide-shopping-cart"
+                },
+                new ServiceEntry
+                {
+                    Title = "الأنظمة الصحية",
+                    Description = "تطوير أنظمة إدارة سريرية على مستوى المؤسسات لتبسيط سير العمل لرعاية المرضى وإدارة السجلات.",
+                    Icon = "lucide-activity"
+                }
+            );
+        }
+
         // Seed Experience
         if (!context.Experiences.Any())
         {
