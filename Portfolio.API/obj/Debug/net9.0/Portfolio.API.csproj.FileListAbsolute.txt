@@ -152,3 +152,4 @@ C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API\obj\Debug\net9.0\refint\P
 C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API\obj\Debug\net9.0\Portfolio.API.pdb
 C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API\obj\Debug\net9.0\Portfolio.API.genruntimeconfig.cache
 C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API\obj\Debug\net9.0\ref\Portfolio.API.dll
+C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API\obj\Debug\net9.0\Portfolio.API.sourcelink.json
