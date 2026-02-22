@@ -27,6 +27,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+// Register Unit of Work
+builder.Services.AddScoped<Portfolio.API.Repositories.IUnitOfWork, Portfolio.API.Repositories.UnitOfWork>();
+
 // Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
 
@@ -38,6 +41,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(); // Nice Scalar UI at /scalar-api-reference
 }
+
+// Redirect root to Scalar API Reference
+app.MapGet("/", () => Results.Redirect("/scalar-api-reference"));
 
 app.UseHttpsRedirection();
 

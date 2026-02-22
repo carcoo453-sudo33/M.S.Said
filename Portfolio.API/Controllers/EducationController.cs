@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
+using Portfolio.API.Repositories;
 
 namespace Portfolio.API.Controllers;
 
@@ -9,18 +6,17 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class EducationController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public EducationController(PortfolioDbContext context)
+    public EducationController(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EducationEntry>>> GetEducation()
     {
-        return await _context.EducationEntries
-            .OrderByDescending(e => e.Duration)
-            .ToListAsync();
+        var education = await _unitOfWork.Repository<EducationEntry>().GetAllAsync();
+        return Ok(education.OrderByDescending(e => e.Duration));
     }
 }

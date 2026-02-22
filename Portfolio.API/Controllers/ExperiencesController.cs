@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
+using Portfolio.API.Repositories;
 
 namespace Portfolio.API.Controllers;
 
@@ -10,25 +7,26 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ExperiencesController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ExperiencesController(PortfolioDbContext context)
+    public ExperiencesController(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ExperienceEntry>>> GetExperiences()
     {
-        return await _context.Experiences.OrderByDescending(e => e.Duration).ToListAsync();
+        var experiences = await _unitOfWork.Repository<ExperienceEntry>().GetAllAsync();
+        return Ok(experiences.OrderByDescending(e => e.Duration));
     }
 
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<ExperienceEntry>> CreateExperience(ExperienceEntry entry)
     {
-        _context.Experiences.Add(entry);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.Repository<ExperienceEntry>().AddAsync(entry);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetExperiences), new { id = entry.Id }, entry);
     }
 }

@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
+using Portfolio.API.Repositories;
 
 namespace Portfolio.API.Controllers;
 
@@ -9,16 +6,17 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ServicesController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ServicesController(PortfolioDbContext context)
+    public ServicesController(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ServiceEntry>>> GetServices()
     {
-        return await _context.ServiceEntries.ToListAsync();
+        var services = await _unitOfWork.Repository<ServiceEntry>().GetAllAsync();
+        return Ok(services);
     }
 }

@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
+using Portfolio.API.Repositories;
 
 namespace Portfolio.API.Controllers;
 
@@ -10,23 +7,24 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ProjectsController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProjectsController(PortfolioDbContext context)
+    public ProjectsController(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProjectEntry>>> GetProjects()
     {
-        return await _context.Projects.ToListAsync();
+        var projects = await _unitOfWork.Repository<ProjectEntry>().GetAllAsync();
+        return Ok(projects);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ProjectEntry>> GetProject(Guid id)
     {
-        var project = await _context.Projects.FindAsync(id);
+        var project = await _unitOfWork.Repository<ProjectEntry>().GetByIdAsync(id);
         if (project == null) return NotFound();
         return project;
     }
@@ -35,8 +33,8 @@ public class ProjectsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProjectEntry>> CreateProject(ProjectEntry entry)
     {
-        _context.Projects.Add(entry);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.Repository<ProjectEntry>().AddAsync(entry);
+        await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetProjects), new { id = entry.Id }, entry);
     }
 }

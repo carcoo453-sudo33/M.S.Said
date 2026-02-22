@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Data;
-using Portfolio.API.Entities;
+using Portfolio.API.Repositories;
 
 namespace Portfolio.API.Controllers;
 
@@ -8,11 +6,11 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ContactController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ContactController(PortfolioDbContext context)
+    public ContactController(IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpPost]
@@ -24,8 +22,8 @@ public class ContactController : ControllerBase
         message.SentAt = DateTime.UtcNow;
         message.IsRead = false;
 
-        _context.ContactMessages.Add(message);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.Repository<ContactMessage>().AddAsync(message);
+        await _unitOfWork.CompleteAsync();
 
         return Ok(new { message = "Message received successfully." });
     }
