@@ -110,6 +110,54 @@ public static class DbInitializer
             );
         }
 
+        // Seed Education
+        if (!context.EducationEntries.Any())
+        {
+            context.EducationEntries.AddRange(
+                new EducationEntry
+                {
+                    Institution = "جامعة طنطا",
+                    Degree = "بكالوريوس هندسة الحاسبات والتحكم الآلي",
+                    Duration = "2018 - 2023",
+                    Description = "تخصصت في تطوير البرمجيات والأنظمة الذكية.",
+                    Location = "طنطا، مصر"
+                },
+                new EducationEntry
+                {
+                    Institution = "وزارة الاتصالات وتكنولوجيا المعلومات",
+                    Degree = "دبلوم مطور ويب متكامل",
+                    Duration = "2023",
+                    Description = "تدريب مكثف على تقنيات MERN stack و ASP.NET Core.",
+                    Location = "القاهرة، مصر"
+                }
+            );
+        }
+
+        // Seed Blog
+        if (!context.BlogPosts.Any())
+        {
+            context.BlogPosts.AddRange(
+                new BlogPost
+                {
+                    Title = "مستقبل تطوير الويب باستخدام AI",
+                    Summary = "كيف يغير الذكاء الاصطناعي طريقة كتابة الكود وبناء المواقع في 2024.",
+                    Content = "الذكاء الاصطناعي لم يعد مجرد رفاهية، بل أصبح أداة أساسية في ترسانة المطور الحديث...",
+                    PublishedAt = DateTime.UtcNow.AddDays(-10),
+                    Tags = "AI, WebDev, Future",
+                    ImageUrl = "https://images.unsplash.com/photo-1677442136019-21780ecad995"
+                },
+                new BlogPost
+                {
+                    Title = "لماذا Angular هي الخيار الأفضل للمشاريع الكبيرة؟",
+                    Summary = "نظرة متعمقة على هندسة Angular وقوتها في بناء واجهات معقدة.",
+                    Content = "تتميز Angular ببنية صارمة ومنظمة تساعد الفرق الكبيرة على التعاون...",
+                    PublishedAt = DateTime.UtcNow.AddDays(-5),
+                    Tags = "Angular, Frontend, Architecture",
+                    ImageUrl = "https://images.unsplash.com/photo-1593720213428-28a5b9e94613"
+                }
+            );
+        }
+
         await context.SaveChangesAsync();
     }
 }

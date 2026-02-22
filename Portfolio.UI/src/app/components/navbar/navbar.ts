@@ -15,9 +15,12 @@ import { AuthService } from '../../services/auth.service';
         </a>
         
         <div class="hidden md:flex items-center gap-8">
-          <a routerLink="/" routerLinkActive="text-red-500" [routerLinkActiveOptions]="{exact: true}" class="text-xs font-bold uppercase tracking-widest hover:text-red-500 transition-colors">Home</a>
-          <a routerLink="/projects" routerLinkActive="text-red-500" class="text-xs font-bold uppercase tracking-widest hover:text-red-500 transition-colors">Projects</a>
-          <a routerLink="/timeline" routerLinkActive="text-red-500" class="text-xs font-bold uppercase tracking-widest hover:text-red-500 transition-colors">Experience</a>
+          <a routerLink="/" routerLinkActive="text-red-500" [routerLinkActiveOptions]="{exact: true}" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Home</a>
+          <a routerLink="/projects" routerLinkActive="text-red-500" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Projects</a>
+          <a routerLink="/timeline" routerLinkActive="text-red-500" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Experience</a>
+          <a routerLink="/education" routerLinkActive="text-red-500" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Education</a>
+          <a routerLink="/blog" routerLinkActive="text-red-500" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Blog</a>
+          <a routerLink="/contact" routerLinkActive="text-red-500" class="text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-500 transition-colors">Contact</a>
         </div>
 
         <div class="flex items-center gap-4">

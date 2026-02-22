@@ -1,0 +1,128 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { PortfolioService } from '../../services/portfolio.service';
+import { ContactMessage } from '../../models/portfolio.models';
+import { NavbarComponent } from '../navbar/navbar';
+
+@Component({
+    selector: 'app-contact',
+    standalone: true,
+    imports: [CommonModule, FormsModule, NavbarComponent],
+    template: `
+    <app-navbar></app-navbar>
+    <main class="min-h-screen bg-zinc-950 text-white pt-32 pb-20 px-6 overflow-hidden">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+          
+          <!-- Contact Info -->
+          <div class="relative">
+            <div class="absolute -top-20 -left-20 w-96 h-96 bg-red-600/10 rounded-full blur-[120px]"></div>
+            
+            <header class="mb-16">
+              <h2 class="text-red-500 font-bold tracking-[0.2em] uppercase mb-4">Let's Connect</h2>
+              <h1 class="text-6xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-[0.9]">GET IN <span class="bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-transparent">TOUCH</span></h1>
+              <p class="text-zinc-500 text-lg max-w-md leading-relaxed">
+                Have a project in mind or just want to chat about tech? I'm always open to new opportunities and collaborations.
+              </p>
+            </header>
+
+            <div class="space-y-10">
+              <div class="flex items-center gap-6 group">
+                <div class="w-16 h-16 bg-zinc-900 rounded-3xl flex items-center justify-center text-red-500 group-hover:bg-red-600 group-hover:text-white transition-all duration-500 shadow-xl border border-zinc-800">
+                  <i class="lucide-mail text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Email Me</p>
+                  <a href="mailto:m.ssaid356@gmail.com" class="text-xl font-bold hover:text-red-500 transition-colors">m.ssaid356@gmail.com</a>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-6 group">
+                <div class="w-16 h-16 bg-zinc-900 rounded-3xl flex items-center justify-center text-red-500 group-hover:bg-red-600 group-hover:text-white transition-all duration-500 shadow-xl border border-zinc-800">
+                  <i class="lucide-phone text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Call Me</p>
+                  <a href="tel:+201067358073" class="text-xl font-bold hover:text-red-500 transition-colors">+20 106 735 8073</a>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-6 group">
+                <div class="w-16 h-16 bg-zinc-900 rounded-3xl flex items-center justify-center text-red-500 group-hover:bg-red-600 group-hover:text-white transition-all duration-500 shadow-xl border border-zinc-800">
+                  <i class="lucide-map-pin text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-1">My Location</p>
+                  <p class="text-xl font-bold">Gharbia, Egypt</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-20 flex gap-4">
+               <a href="#" class="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all border border-zinc-800"><i class="lucide-github"></i></a>
+               <a href="#" class="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all border border-zinc-800"><i class="lucide-linkedin"></i></a>
+               <a href="#" class="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all border border-zinc-800"><i class="lucide-twitter"></i></a>
+            </div>
+          </div>
+
+          <!-- Contact Form -->
+          <div class="bg-zinc-900/40 p-10 md:p-16 rounded-[4rem] border border-zinc-900 backdrop-blur-md relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600/5 rounded-full blur-[100px] group-hover:bg-red-600/10 transition-colors duration-1000"></div>
+            
+            <form (ngSubmit)="submitMessage()" #contactForm="ngForm" class="space-y-8 relative z-10">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-4">Full Name</label>
+                  <input type="text" name="name" [(ngModel)]="model.name" required placeholder="John Doe" class="w-full bg-zinc-950/50 border border-zinc-800 rounded-3xl px-8 py-4 text-sm focus:outline-none focus:border-red-600 transition-colors">
+                </div>
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-4">Email Address</label>
+                  <input type="email" name="email" [(ngModel)]="model.email" required placeholder="john@example.com" class="w-full bg-zinc-950/50 border border-zinc-800 rounded-3xl px-8 py-4 text-sm focus:outline-none focus:border-red-600 transition-colors">
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-4">Subject</label>
+                <input type="text" name="subject" [(ngModel)]="model.subject" required placeholder="Project Inquiry" class="w-full bg-zinc-950/50 border border-zinc-800 rounded-3xl px-8 py-4 text-sm focus:outline-none focus:border-red-600 transition-colors">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest ml-4">Your Message</label>
+                <textarea name="body" [(ngModel)]="model.message" required rows="6" placeholder="Tell me about your project..." class="w-full bg-zinc-950/50 border border-zinc-800 rounded-[2rem] px-8 py-6 text-sm focus:outline-none focus:border-red-600 transition-colors resize-none"></textarea>
+              </div>
+
+              <button type="submit" [disabled]="!contactForm.form.valid || loading" class="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:hover:scale-100 text-white font-black py-5 rounded-full uppercase tracking-widest text-xs transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-red-600/20">
+                {{ loading ? 'Sending Message...' : 'Send Message' }}
+              </button>
+
+              <p *ngIf="success" class="text-green-500 text-center font-bold text-sm bg-green-500/10 py-4 rounded-2xl animate-fade-in">Message sent successfully! I'll get back to you soon.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  `
+})
+export class ContactComponent {
+    private portfolio = inject(PortfolioService);
+    model: ContactMessage = { name: '', email: '', subject: '', message: '' };
+    loading = false;
+    success = false;
+
+    submitMessage() {
+        this.loading = true;
+        this.portfolio.sendContactMessage(this.model).subscribe({
+            next: () => {
+                this.loading = false;
+                this.success = true;
+                this.model = { name: '', email: '', subject: '', message: '' };
+                setTimeout(() => this.success = false, 5000);
+            },
+            error: () => {
+                this.loading = false;
+                alert('Failed to send message. Please try again later.');
+            }
+        });
+    }
+}

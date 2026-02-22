@@ -14,6 +14,9 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<ProjectEntry> Projects { get; set; }
     public DbSet<BioEntry> BioEntries { get; set; }
     public DbSet<ServiceEntry> ServiceEntries { get; set; }
+    public DbSet<BlogPost> BlogPosts { get; set; }
+    public DbSet<EducationEntry> EducationEntries { get; set; }
+    public DbSet<ContactMessage> ContactMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -24,6 +27,9 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<ProjectEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<BioEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ServiceEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<BlogPost>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<EducationEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ContactMessage>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override int SaveChanges()
