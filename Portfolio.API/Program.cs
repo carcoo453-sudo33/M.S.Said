@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Data;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,18 +13,21 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
+// CORS configuration - Robust for development
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
         policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -32,18 +36,20 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(); // Nice Scalar UI at /scalar-api-reference
 }
 
 app.UseHttpsRedirection();
+
 app.UseCors("AllowAngular");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGroup("/identity").MapIdentityApi<IdentityUser>();
-
 app.MapControllers();
 
-// Seeding logic could go here or in a separate service
+// Seeding logic
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
