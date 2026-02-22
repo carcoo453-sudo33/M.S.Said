@@ -1,0 +1,18 @@
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docuser
+.vs/
+.vscode/
+
+# Angular
+node_modules/
+dist/
+.angular/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
