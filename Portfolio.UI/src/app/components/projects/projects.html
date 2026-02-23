@@ -29,7 +29,7 @@
         </app-shared-empty-state>
 
         <!-- LOADED STATE -->
-        <ng-container *ngIf="!isLoading && !hasError && projects.length > 0">
+        <div *ngIf="!isLoading && !hasError && projects.length > 0" class="space-y-32">
 
             <!-- Header Section -->
             <app-projects-header [filters]="filters" [selectedFilter]="selectedFilter"
@@ -51,7 +51,7 @@
             <!-- Bottom CTA -->
             <app-projects-bottom-cta></app-projects-bottom-cta>
 
-        </ng-container>
+        </div>
     </div>
 
     <!-- Footer -->
