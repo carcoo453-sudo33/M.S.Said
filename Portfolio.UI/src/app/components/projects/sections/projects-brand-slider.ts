@@ -61,9 +61,9 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Client Name *</label>
                     <input [(ngModel)]="editingClient.name" placeholder="Company or brand name"
-                        [class]="submitted && !editingClient.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                        [class]="submitted && editingClient.name && !editingClient.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                         class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                    <p *ngIf="submitted && !editingClient.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Client name is required</p>
+                    <p *ngIf="submitted && editingClient.name && !editingClient.name.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Client name is required</p>
                 </div>
 
                 <div>
@@ -116,7 +116,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Client?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteClient?.name }}</strong>?</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteClient.name }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteClient = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
@@ -184,7 +184,7 @@ export class ProjectsBrandSliderComponent {
     saveClient() {
         this.submitted = true;
 
-        if (!this.editingClient.name?.trim()) {
+        if (!this.editingClient.name || !this.editingClient.name.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }

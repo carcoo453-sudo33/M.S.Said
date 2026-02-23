@@ -146,9 +146,9 @@ import { ToastService } from '../../../services/toast.service';
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
                     <input [(ngModel)]="editForm.name" type="text"
-                        [class]="submitted && !editForm.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                        [class]="submitted && !editForm.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                         class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                    <p *ngIf="submitted && !editForm.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
+                    <p *ngIf="submitted && !editForm.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title</label>
@@ -169,9 +169,9 @@ import { ToastService } from '../../../services/toast.service';
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
                         <input [(ngModel)]="editForm.email" type="email"
-                            [class]="submitted && !editForm.email?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                            [class]="submitted && !editForm.email.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                        <p *ngIf="submitted && !editForm.email?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
+                        <p *ngIf="submitted && !editForm.email.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
@@ -389,7 +389,7 @@ export class HomeSidebarProfileComponent {
 
     saveBio() {
         this.submitted = true;
-        if (!this.editForm.name?.trim() || !this.editForm.email?.trim()) {
+        if (!this.editForm.name.trim() || !this.editForm.email.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }

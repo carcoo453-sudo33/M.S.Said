@@ -118,7 +118,7 @@ import { ToastService } from '../../../services/toast.service';
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Experience?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!]?.role || 'this experience' }}</strong>? This action cannot be undone.</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!].role || 'this experience' }}</strong>? This action cannot be undone.</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteIndex = null" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
                 <button (click)="executeDelete()" [disabled]="isDeleting"

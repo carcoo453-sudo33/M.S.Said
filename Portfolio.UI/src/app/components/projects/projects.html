@@ -37,7 +37,11 @@
             </app-projects-header>
 
             <!-- Project Grid -->
-            <app-projects-grid [projects]="filteredProjects" (projectsUpdated)="onProjectsUpdated($event)"></app-projects-grid>
+            <app-projects-grid 
+                [projects]="filteredProjects" 
+                [totalCount]="totalProjectCount"
+                (projectsUpdated)="onProjectsUpdated($event)">
+            </app-projects-grid>
 
             <!-- Work History Section -->
             <app-projects-work-history [experiences]="experiences" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
@@ -53,8 +57,7 @@
 
         </div>
     </div>
-
-    <!-- Footer -->
-    <app-shared-footer></app-shared-footer>
-
 </main>
+
+<!-- Footer -->
+<app-shared-footer></app-shared-footer>

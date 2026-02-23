@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
-import { RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { LucideAngularModule } from 'lucide-angular';
@@ -29,7 +28,6 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
   imports: [
     CommonModule,
     NavbarComponent,
-    RouterLink,
     LucideAngularModule,
     ProjectsHeaderComponent,
     ProjectsGridComponent,
@@ -53,6 +51,7 @@ export class ProjectsComponent implements OnInit {
   experiences: ExperienceEntry[] = [];
   testimonials: Testimonial[] = [];
   clients: Client[] = [];
+  totalProjectCount = 0;
   isLoading = true;
   hasError = false;
   selectedFilter = 'All';
@@ -76,17 +75,26 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadData() {
-    this.projectService.getProjects().subscribe({
+    // Load featured projects (Latest, Most Viewed, Trending)
+    this.projectService.getFeaturedProjects().subscribe({
       next: (data: ProjectEntry[]) => {
-        console.log('Projects loaded:', data.length);
+        console.log('Featured projects loaded:', data.length);
         this.projects = data;
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Projects: Failed to load projects', err);
+        console.error('Projects: Failed to load featured projects', err);
         this.isLoading = false;
         this.hasError = true;
       }
+    });
+
+    // Load total project count
+    this.projectService.getProjects().subscribe({
+      next: (data: ProjectEntry[]) => {
+        this.totalProjectCount = data.length;
+      },
+      error: (err) => console.error('Projects: Failed to load project count', err)
     });
 
     this.profileService.getExperiences().subscribe({

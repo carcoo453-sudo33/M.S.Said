@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { ProjectEntry } from '../../../models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-home-featured-projects',
@@ -43,12 +44,12 @@ import { ProjectEntry } from '../../../models';
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
                     </div>
-                    <img [src]="project.imageUrl || 'assets/project-placeholder.png'"
+                    <img [src]="getFullImageUrl(project.imageUrl || '')"
                         class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
                     <div
                         class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
                         <div class="flex flex-wrap gap-1.5">
-                            <span *ngFor="let tech of project.technologies?.split(',')"
+                            <span *ngFor="let tech of (project.technologies || '').split(',')"
                                 class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
                                 {{ tech.trim() }}
                             </span>
@@ -91,5 +92,20 @@ export class HomeFeaturedProjectsComponent {
         // but we need to find the maximum CreatedAt among the current set.
         const latestDate = Math.max(...this.projects.map(p => p.createdAt ? new Date(p.createdAt).getTime() : 0));
         return (project.createdAt ? new Date(project.createdAt).getTime() : 0) === latestDate;
+    }
+
+    getFullImageUrl(url?: string): string {
+        if (!url) return 'assets/project-placeholder.png';
+        
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+        
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        if (url.startsWith('/')) {
+            return `${baseUrl}${url}`;
+        }
+        
+        return `${baseUrl}/${url}`;
     }
 }

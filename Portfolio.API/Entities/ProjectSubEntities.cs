@@ -59,4 +59,7 @@ public class ProjectComment : BaseEntity
     public string Content { get; set; } = string.Empty;
     
     public int Likes { get; set; }
+    
+    // Store replies as JSON to avoid complex relationships
+    public string? RepliesJson { get; set; }
 }

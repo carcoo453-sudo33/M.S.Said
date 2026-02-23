@@ -56,8 +56,27 @@ export class ProjectService {
         return this.http.post(`${this.apiUrl}/projects/${projectId}/comments/${commentId}/like`, {});
     }
 
+    addReply(projectId: string, commentId: string, reply: { author: string; avatarUrl: string; content: string }): Observable<any> {
+        return this.http.post(`${this.apiUrl}/projects/${projectId}/comments/${commentId}/reply`, reply);
+    }
+
     reactToProject(projectId: string): Observable<number> {
         return this.http.post<number>(`${this.apiUrl}/projects/${projectId}/react`, {});
+    }
+
+    importFromGitHub(projectId: string, githubUrl: string): Observable<ProjectEntry> {
+        console.log('[ProjectService] importFromGitHub called');
+        console.log('[ProjectService] Project ID:', projectId);
+        console.log('[ProjectService] GitHub URL:', githubUrl);
+        console.log('[ProjectService] Full API URL:', `${this.apiUrl}/projects/${projectId}/import-from-github`);
+        
+        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects/${projectId}/import-from-github`, {
+            gitHubUrl: githubUrl
+        });
+    }
+
+    testCors(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/projects/test-cors`);
     }
 
 }

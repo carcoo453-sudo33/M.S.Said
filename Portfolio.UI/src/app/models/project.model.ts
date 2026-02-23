@@ -24,6 +24,15 @@ export interface Comment {
     date: string;
     content: string;
     likes: number;
+    replies: CommentReply[];
+}
+
+export interface CommentReply {
+    id: string;
+    author: string;
+    avatarUrl: string;
+    date: string;
+    content: string;
 }
 
 export interface ProjectSummary {

@@ -1,59 +1,77 @@
 <app-navbar></app-navbar>
 
 <main
-    class="min-h-screen bg-zinc-950 text-zinc-50 pt-32 px-6 transition-colors duration-500 overflow-hidden relative selection:bg-red-600 selection:text-white space-y-32">
+    class="min-h-screen bg-zinc-950 text-zinc-50 transition-colors duration-500 overflow-hidden relative selection:bg-red-600 selection:text-white">
 
     <!-- SKELETON STATE -->
-    <div class="max-w-7xl mx-auto">
-        <app-shared-skeleton *ngIf="isLoading" [count]="3" height="400px"></app-shared-skeleton>
+    <div *ngIf="isLoading" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <app-shared-skeleton [count]="3" height="400px"></app-shared-skeleton>
     </div>
 
     <!-- ERROR STATE -->
-    <app-shared-error-state *ngIf="!isLoading && hasError" title="Project Encrypted" retryText="Restore Blueprint"
-        (retry)="loadProject()">
-    </app-shared-error-state>
+    <div *ngIf="!isLoading && hasError" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <app-shared-error-state title="Project Encrypted" retryText="Restore Blueprint"
+            (retry)="loadProject()">
+        </app-shared-error-state>
+    </div>
 
-    <!-- LOADED STATE -->
-    <div *ngIf="!isLoading && !hasError && project" class="max-w-7xl mx-auto space-y-32">
+    <!-- LOADED STATE - Responsive Grid Layout -->
+    <div *ngIf="!isLoading && !hasError && project" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 px-6 pt-32 pb-24 relative z-10">
 
-        <!-- Header Section -->
-        <app-project-details-header [project]="project"></app-project-details-header>
+        <!-- Main Content Area (Left Side) - lg:col-span-8 -->
+        <div class="lg:col-span-8 space-y-16 lg:space-y-24">
 
-        <!-- Technical Specification Bar with extra bottom spacing -->
-        <div class="pb-16">
+            <!-- Header Section -->
+            <app-project-details-header 
+                [project]="project"
+                (onEdit)="onEditProject()"
+                (onDelete)="onDeleteProject()">
+            </app-project-details-header>
+
+            <!-- Technical Specification Bar -->
             <app-project-details-specs [project]="project"></app-project-details-specs>
-        </div>
 
-        <!-- Featured Media & Actions -->
-        <app-project-details-gallery [project]="project"></app-project-details-gallery>
+            <!-- Featured Media & Actions -->
+            <app-project-details-gallery 
+                [project]="project"
+                (onReactEvent)="onReact()"
+                (onShareEvent)="onShare()">
+            </app-project-details-gallery>
 
-        <!-- Main Content -->
-        <div class="space-y-32">
             <!-- Features & Responsibilities -->
             <app-project-details-features [project]="project"></app-project-details-features>
-            
-            <!-- Changelog, Metrics, Related Projects in responsive grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <app-project-details-sidebar [project]="project"></app-project-details-sidebar>
-            </div>
             
             <!-- Interactions & Discussion -->
             <app-project-details-interactions 
                 [project]="project" 
+                [triggerShare]="triggerShareModal"
                 (onReact)="onReact()" 
                 (onShare)="onShare()"
                 (onCommentAdded)="loadProject()">
             </app-project-details-interactions>
         </div>
+
+        <!-- Sidebar (Right Side) - lg:col-span-4 -->
+        <div class="lg:col-span-4 space-y-16 lg:space-y-24 lg:pt-6">
+            <app-project-details-sidebar [project]="project"></app-project-details-sidebar>
+        </div>
     </div>
 
     <!-- Engineer Profile / Signature Section -->
-    <div class="max-w-7xl mx-auto">
+    <div *ngIf="!isLoading && !hasError && project" class="max-w-7xl mx-auto px-6 pb-24">
         <app-shared-signature [bio]="bio"
             quote="This project represents a fusion of technical scalability and human-centric design. Every line of code was engineered to ensure long-term stability and high-fidelity user engagement.">
         </app-shared-signature>
     </div>
 
-    <!-- Footer -->
-    <app-shared-footer></app-shared-footer>
+    <!-- Management Component -->
+    <app-project-details-manage 
+        *ngIf="project"
+        [project]="project" 
+        [canEdit]="isAuthenticated"
+        [triggerEdit]="triggerEditModal"
+        (onUpdate)="onProjectUpdate($event)">
+    </app-project-details-manage>
 </main>
+
+<app-shared-footer></app-shared-footer>

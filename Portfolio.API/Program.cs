@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:65068", "http://127.0.0.1:65068")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -25,7 +25,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 // Register Unit of Work
 builder.Services.AddScoped<Portfolio.API.Repositories.IUnitOfWork, Portfolio.API.Repositories.UnitOfWork>();
@@ -74,6 +79,27 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<PortfolioDbContext>();
         context.Database.Migrate();
+        
+        // Add RepliesJson column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectComments' 
+                    AND COLUMN_NAME = 'RepliesJson'
+                )
+                BEGIN
+                    ALTER TABLE ProjectComments ADD RepliesJson NVARCHAR(MAX) NULL;
+                END
+            ");
+            Console.WriteLine("RepliesJson column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (may already exist): {colEx.Message}");
+        }
+        
         await DbInitializer.Initialize(services);
     }
     catch (Exception ex)

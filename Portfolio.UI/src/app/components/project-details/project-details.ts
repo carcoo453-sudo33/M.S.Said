@@ -1,8 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
+import { AuthService } from '../../services/auth.service';
 import { ProjectEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
@@ -14,6 +15,7 @@ import { ProjectDetailsGalleryComponent } from './sections/project-details-galle
 import { ProjectDetailsFeaturesComponent } from './sections/project-details-features';
 import { ProjectDetailsInteractionsComponent } from './sections/project-details-interactions';
 import { ProjectDetailsSidebarComponent } from './sections/project-details-sidebar';
+import { ProjectDetailsManageComponent } from './sections/project-details-manage';
 
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
@@ -27,7 +29,6 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
   imports: [
     CommonModule,
     NavbarComponent,
-    RouterLink,
     LucideAngularModule,
     ProjectDetailsHeaderComponent,
     ProjectDetailsSpecsComponent,
@@ -35,6 +36,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ProjectDetailsFeaturesComponent,
     ProjectDetailsInteractionsComponent,
     ProjectDetailsSidebarComponent,
+    ProjectDetailsManageComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
     SharedSkeletonComponent,
@@ -44,20 +46,31 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
 })
 export class ProjectDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
+  private authService = inject(AuthService);
 
   project?: ProjectEntry;
   bio: BioEntry | null = null;
   isLoading = true;
   hasError = false;
+  isAuthenticated = false;
+  triggerEditModal = false;
+  triggerShareModal = false;
 
   ngOnInit() {
     this.profileService.getBio().subscribe({
       next: (bio) => this.bio = bio,
       error: (err) => console.error('ProjectDetails: Failed to load bio', err)
     });
+    this.checkAuth();
     this.loadProject();
+  }
+
+  checkAuth() {
+    const token = localStorage.getItem('auth_token');
+    this.isAuthenticated = !!token;
   }
 
   loadProject() {
@@ -72,17 +85,25 @@ export class ProjectDetailsComponent implements OnInit {
           this.project = this.enrichProjectData(data);
           console.log('Enriched project:', this.project);
           console.log('Final project ID:', this.project.id);
-          this.isLoading = false;
+          // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 0);
         },
         error: (err) => {
           console.error('Failed to load project:', err);
-          this.isLoading = false;
-          this.hasError = true;
+          // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+          setTimeout(() => {
+            this.isLoading = false;
+            this.hasError = true;
+          }, 0);
         }
       });
     } else {
-      this.isLoading = false;
-      this.hasError = true;
+      setTimeout(() => {
+        this.isLoading = false;
+        this.hasError = true;
+      }, 0);
     }
   }
 
@@ -127,6 +148,44 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onShare() {
-    // Share is now handled by the child component
+    // Trigger share modal via flag
+    this.triggerShareModal = true;
+    setTimeout(() => this.triggerShareModal = false, 100);
+  }
+
+  onProjectUpdate(updatedProject: ProjectEntry) {
+    this.project = updatedProject;
+  }
+
+  onEditProject() {
+    // Trigger the management modal
+    this.triggerEditModal = true;
+    setTimeout(() => this.triggerEditModal = false, 100);
+  }
+
+  onDeleteProject() {
+    if (!this.project || !this.project.id) return;
+    
+    if (!this.authService.isLoggedIn()) {
+      alert('You must be logged in to delete projects.');
+      return;
+    }
+
+    this.projectService.deleteProject(this.project.id).subscribe({
+      next: () => {
+        console.log('Project deleted successfully');
+        this.router.navigate(['/projects']);
+      },
+      error: (err) => {
+        console.error('Failed to delete project:', err);
+        if (err.status === 401) {
+          alert('Authentication failed. Please log in again.');
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        } else {
+          alert('Failed to delete project. Please try again.');
+        }
+      }
+    });
   }
 }

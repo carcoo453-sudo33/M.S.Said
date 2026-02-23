@@ -54,7 +54,7 @@ import { ToastService } from '../../../services/toast.service';
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
                 <div *ngFor="let item of editList; let i = index"
                     class="p-4 rounded-xl border space-y-3"
-                    [class]="submitted && !item.title?.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
+                    [class]="submitted && !item.title.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Service {{ i + 1 }}</span>
                         <button (click)="confirmDelete(i)"
@@ -64,9 +64,9 @@ import { ToastService } from '../../../services/toast.service';
                     </div>
                     <div>
                         <input [(ngModel)]="item.title" placeholder="Title *"
-                            [class]="submitted && !item.title?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                            [class]="submitted && !item.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                        <p *ngIf="submitted && !item.title?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Title is required</p>
+                        <p *ngIf="submitted && !item.title.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Title is required</p>
                     </div>
                     <textarea [(ngModel)]="item.description" placeholder="Description" rows="2"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
@@ -94,7 +94,7 @@ import { ToastService } from '../../../services/toast.service';
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Service?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!]?.title || 'this service' }}</strong>? This action cannot be undone.</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!].title || 'this service' }}</strong>? This action cannot be undone.</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteIndex = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
@@ -179,7 +179,7 @@ export class HomeServicesComponent {
 
     saveServices() {
         this.submitted = true;
-        if (this.editList.some(item => !item.title?.trim())) {
+        if (this.editList.some(item => !item.title.trim())) {
             this.toast.error('Please fill in all required fields'); return;
         }
         this.isSaving = true;

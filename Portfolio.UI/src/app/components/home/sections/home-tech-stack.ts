@@ -52,13 +52,13 @@ import { ToastService } from '../../../services/toast.service';
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
                 <div *ngFor="let item of editList; let i = index"
                     class="p-4 rounded-xl border flex items-center gap-3"
-                    [class]="submitted && !item.name?.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
+                    [class]="submitted && !item.name.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
                     <div class="flex-1 space-y-3">
                         <div>
                             <input [(ngModel)]="item.name" placeholder="Skill Name *"
-                                [class]="submitted && !item.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                                [class]="submitted && !item.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                 class="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                            <p *ngIf="submitted && !item.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
+                            <p *ngIf="submitted && !item.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
                         </div>
                         
                         <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
@@ -121,7 +121,7 @@ import { ToastService } from '../../../services/toast.service';
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Skill?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!]?.name || 'this skill' }}</strong>?</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!].name || 'this skill' }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteIndex = null" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
                 <button (click)="executeDelete()" [disabled]="isDeleting"
@@ -239,7 +239,7 @@ export class HomeTechStackComponent {
 
     saveSkills() {
         this.submitted = true;
-        if (this.editList.some(item => !item.name?.trim())) {
+        if (this.editList.some(item => !item.name.trim())) {
             this.toast.error('Please fill in all required fields'); return;
         }
         this.isSaving = true;

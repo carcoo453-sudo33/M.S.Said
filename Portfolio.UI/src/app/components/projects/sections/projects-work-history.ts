@@ -76,17 +76,17 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company *</label>
                         <input [(ngModel)]="editingExperience.company" placeholder="Company name"
-                            [class]="submitted && !editingExperience.company?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingExperience.company && !editingExperience.company.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && !editingExperience.company?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Company is required</p>
+                        <p *ngIf="submitted && editingExperience.company && !editingExperience.company.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Company is required</p>
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role *</label>
                         <input [(ngModel)]="editingExperience.role" placeholder="Job title"
-                            [class]="submitted && !editingExperience.role?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingExperience.role && !editingExperience.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && !editingExperience.role?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
+                        <p *ngIf="submitted && editingExperience.role && !editingExperience.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
                     </div>
 
                     <div>
@@ -137,7 +137,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Experience?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteExperience?.role }} @ {{ deleteExperience?.company }}</strong>?</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteExperience.role }} @ {{ deleteExperience.company }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteExperience = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
@@ -206,7 +206,8 @@ export class ProjectsWorkHistoryComponent {
     saveExperience() {
         this.submitted = true;
 
-        if (!this.editingExperience.company?.trim() || !this.editingExperience.role?.trim()) {
+        if (!this.editingExperience.company || !this.editingExperience.company.trim() || 
+            !this.editingExperience.role || !this.editingExperience.role.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }

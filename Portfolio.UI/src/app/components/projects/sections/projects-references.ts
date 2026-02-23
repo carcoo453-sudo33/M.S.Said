@@ -87,17 +87,17 @@ import { ToastService } from '../../../services/toast.service';
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
                         <input [(ngModel)]="editingTestimonial.name" placeholder="Full name"
-                            [class]="submitted && !editingTestimonial.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingTestimonial.name && !editingTestimonial.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && !editingTestimonial.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Name is required</p>
+                        <p *ngIf="submitted && editingTestimonial.name && !editingTestimonial.name.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Name is required</p>
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role *</label>
                         <input [(ngModel)]="editingTestimonial.role" placeholder="e.g. Senior Developer"
-                            [class]="submitted && !editingTestimonial.role?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingTestimonial.role && !editingTestimonial.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && !editingTestimonial.role?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
+                        <p *ngIf="submitted && editingTestimonial.role && !editingTestimonial.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
                     </div>
 
                     <div class="col-span-2">
@@ -109,9 +109,9 @@ import { ToastService } from '../../../services/toast.service';
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content *</label>
                         <textarea [(ngModel)]="editingTestimonial.content" placeholder="What they said about you..." rows="4"
-                            [class]="submitted && !editingTestimonial.content?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingTestimonial.content && !editingTestimonial.content.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
-                        <p *ngIf="submitted && !editingTestimonial.content?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Content is required</p>
+                        <p *ngIf="submitted && editingTestimonial.content && !editingTestimonial.content.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Content is required</p>
                     </div>
 
                     <!-- Avatar Upload Section -->
@@ -166,7 +166,7 @@ import { ToastService } from '../../../services/toast.service';
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Testimonial?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete the testimonial from <strong class="text-zinc-900 dark:text-white">{{ deleteTestimonial?.name }}</strong>?</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete the testimonial from <strong class="text-zinc-900 dark:text-white">{{ deleteTestimonial.name }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteTestimonial = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
@@ -297,9 +297,9 @@ export class ProjectsReferencesComponent {
     saveTestimonial() {
         this.submitted = true;
 
-        if (!this.editingTestimonial.name?.trim() || 
-            !this.editingTestimonial.role?.trim() || 
-            !this.editingTestimonial.content?.trim()) {
+        if (!this.editingTestimonial.name || !this.editingTestimonial.name.trim() || 
+            !this.editingTestimonial.role || !this.editingTestimonial.role.trim() || 
+            !this.editingTestimonial.content || !this.editingTestimonial.content.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }

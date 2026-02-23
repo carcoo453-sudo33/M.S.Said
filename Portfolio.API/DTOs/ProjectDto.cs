@@ -77,4 +77,56 @@ public class CommentDto
     public string Date { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public int Likes { get; set; }
+    public List<CommentReplyDto> Replies { get; set; } = new();
+}
+
+public class CommentReplyDto
+{
+    public string Id { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+    public string Date { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+}
+
+public class CreateCommentDto
+{
+    public string Author { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+    public string Content { get; set; } = string.Empty;
+}
+
+public class CreateReplyDto
+{
+    public string Author { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+    public string Content { get; set; } = string.Empty;
+}
+
+public class GitHubImportRequest
+{
+    public string GitHubUrl { get; set; } = string.Empty;
+    public string? GitHubToken { get; set; }
+}
+
+public class GitHubReadmeResponse
+{
+    public string? Content { get; set; }
+    public string? Encoding { get; set; }
+}
+
+public class GitHubRelease
+{
+    public string? TagName { get; set; }
+    public string? Name { get; set; }
+    public string? Body { get; set; }
+    public DateTime? PublishedAt { get; set; }
+}
+
+public class GitHubRepository
+{
+    public int StargazersCount { get; set; }
+    public int ForksCount { get; set; }
+    public int OpenIssuesCount { get; set; }
+    public string? Language { get; set; }
 }

@@ -604,6 +604,9 @@ namespace Portfolio.API.Migrations
                     b.Property<Guid>("ProjectEntryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("RepliesJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 

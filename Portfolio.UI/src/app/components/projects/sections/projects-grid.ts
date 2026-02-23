@@ -16,9 +16,18 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     standalone: true,
     imports: [CommonModule, RouterLink, LucideAngularModule, FormsModule],
     template: `
-    <!-- Add Project Button -->
-    <div *ngIf="auth.isLoggedIn()" class="flex justify-end mb-6">
-        <button (click)="openCreateModal()"
+    <!-- Selected Works Header -->
+    <div class="flex items-center justify-between mb-12">
+        <div class="flex items-center gap-6">
+            <h2 class="text-4xl lg:text-5xl font-black italic tracking-tighter uppercase text-zinc-900 dark:text-white">
+                Selected Works
+            </h2>
+            <div class="flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-red-600 rounded-2xl">
+                <span class="text-2xl lg:text-3xl font-black italic text-white">{{ totalCount }}</span>
+            </div>
+        </div>
+        <!-- Add Project Button -->
+        <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
             class="px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
             <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
             Add Project
@@ -51,7 +60,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
             </div>
 
             <div class="relative aspect-[16/10] overflow-hidden">
-                <img [src]="project.imageUrl || 'assets/project-placeholder.png'"
+                <img [src]="getFullImageUrl(project.imageUrl || '')"
                     class="w-full h-full object-cover dark:grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1000ms]">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
@@ -104,17 +113,17 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title *</label>
                         <input [(ngModel)]="editingProject.title" placeholder="Project title"
-                            [class]="submitted && !editingProject.title?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingProject.title && !editingProject.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && !editingProject.title?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Title is required</p>
+                        <p *ngIf="submitted && editingProject.title && !editingProject.title.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Title is required</p>
                     </div>
 
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description *</label>
                         <textarea [(ngModel)]="editingProject.description" placeholder="Project description" rows="3"
-                            [class]="submitted && !editingProject.description?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                            [class]="submitted && editingProject.description && !editingProject.description.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
-                        <p *ngIf="submitted && !editingProject.description?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Description is required</p>
+                        <p *ngIf="submitted && editingProject.description && !editingProject.description.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Description is required</p>
                     </div>
 
                     <div>
@@ -170,7 +179,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                         </div>
                         <!-- Image Preview -->
                         <div *ngIf="editingProject.imageUrl" class="mt-3 relative w-full h-40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                            <img [src]="editingProject.imageUrl" alt="Preview" class="w-full h-full object-cover">
+                            <img [src]="getFullImageUrl(editingProject.imageUrl)" alt="Preview" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
                                 <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-white"></lucide-icon>
                             </div>
@@ -196,7 +205,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                         <!-- Gallery Preview Grid -->
                         <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
                             <div *ngFor="let img of galleryImages; let i = index" class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                                <img [src]="img" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
+                                <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
                                 <button (click)="removeGalleryImage(i)" type="button"
                                     class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
@@ -251,7 +260,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
             <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Project?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteProject?.title }}</strong>?</p>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteProject.title }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
                 <button (click)="deleteProject = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
@@ -271,6 +280,7 @@ export class ProjectsGridComponent {
     private http = inject(HttpClient);
     
     @Input() projects: ProjectEntry[] = [];
+    @Input() totalCount: number = 0;
     @Output() edit = new EventEmitter<ProjectEntry>();
     @Output() delete = new EventEmitter<ProjectEntry>();
     @Output() projectsUpdated = new EventEmitter<ProjectEntry[]>();
@@ -518,7 +528,8 @@ export class ProjectsGridComponent {
     saveProject() {
         this.submitted = true;
         
-        if (!this.editingProject.title?.trim() || !this.editingProject.description?.trim()) {
+        if (!this.editingProject.title || !this.editingProject.title.trim() || 
+            !this.editingProject.description || !this.editingProject.description.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }
@@ -601,5 +612,20 @@ export class ProjectsGridComponent {
                 console.error('Project Delete Error:', err);
             }
         });
+    }
+
+    getFullImageUrl(url: string): string {
+        if (!url) return '';
+        
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+        
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        if (url.startsWith('/')) {
+            return `${baseUrl}${url}`;
+        }
+        
+        return `${baseUrl}/${url}`;
     }
 }

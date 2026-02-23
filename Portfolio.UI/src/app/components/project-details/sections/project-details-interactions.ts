@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Heart, Share2, User, X, Facebook, Twitter, Linkedin, Link, MessageCircle, CheckCircle, AlertCircle } from 'lucide-angular';
+import { LucideAngularModule, Heart, Share2, User, X, Facebook, Twitter, Linkedin, Link, MessageCircle, CheckCircle, AlertCircle, Eye } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { ProjectService } from '../../../services/project.service';
 
@@ -80,20 +80,6 @@ import { ProjectService } from '../../../services/project.service';
             </div>
         </div>
 
-        <!-- Interactions -->
-        <div class="flex items-center gap-4">
-            <button (click)="onReact.emit()"
-                class="flex items-center gap-3 bg-zinc-900 hover:bg-red-600 px-8 py-4 rounded-xl border border-zinc-800 hover:border-red-600 text-zinc-400 hover:text-white transition-all group">
-                <lucide-icon [img]="HeartIcon" class="w-5 h-5 transition-transform group-hover:scale-125 text-red-600 group-hover:text-white"></lucide-icon>
-                <span class="font-black text-xs uppercase text-white">{{ project.reactionsCount || 0 }}</span>
-            </button>
-            <button (click)="openShareModal()"
-                class="flex items-center gap-3 bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white transition-all group">
-                <lucide-icon [img]="ShareIcon" class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
-                <span class="font-black text-xs uppercase">Share</span>
-            </button>
-        </div>
-
         <!-- Discussion -->
         <section class="space-y-16">
             <h2 class="text-2xl font-black italic uppercase tracking-tighter">Discussion</h2>
@@ -107,11 +93,14 @@ import { ProjectService } from '../../../services/project.service';
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Your Name</label>
+                        <label for="comment-user-name" class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Your Name</label>
                         <input 
-                            type="text" 
+                            type="text"
+                            id="comment-user-name"
+                            name="userName"
                             [(ngModel)]="tempUserName"
                             placeholder="Enter your name"
+                            autocomplete="name"
                             class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                     </div>
                     
@@ -163,9 +152,13 @@ import { ProjectService } from '../../../services/project.service';
                             Change
                         </button>
                     </div>
+                    <label for="comment-text" class="sr-only">Your comment</label>
                     <textarea 
+                        id="comment-text"
+                        name="commentText"
                         [(ngModel)]="commentText"
                         placeholder="Join the conversation..."
+                        autocomplete="off"
                         class="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-6 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[120px]"></textarea>
                     <div class="flex justify-end">
                         <button 
@@ -195,13 +188,65 @@ import { ProjectService } from '../../../services/project.service';
                         </div>
                         <p class="text-zinc-400 text-sm leading-relaxed font-medium">{{ comment.content }}</p>
                         <div class="flex items-center gap-4 pt-2">
-                            <button class="text-[10px] font-black uppercase text-zinc-600 hover:text-white transition-colors">Reply</button>
                             <button 
                                 (click)="likeComment(comment.id)"
                                 [disabled]="likingComments.has(comment.id)"
-                                class="flex items-center gap-2 text-[10px] font-black uppercase text-zinc-600 hover:text-red-600 transition-colors disabled:opacity-50">
-                                <lucide-icon [img]="HeartIcon" class="w-3 h-3"></lucide-icon> {{ comment.likes }}
+                                class="flex items-center gap-2 bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 px-4 py-2 rounded-lg transition-all group disabled:opacity-50 disabled:cursor-not-allowed">
+                                <lucide-icon [img]="HeartIcon" class="w-3 h-3 text-red-600 group-hover:text-white transition-colors"></lucide-icon>
+                                <span class="text-[10px] font-black uppercase text-zinc-400 group-hover:text-white">{{ comment.likes }}</span>
                             </button>
+                            <button 
+                                *ngIf="userName"
+                                (click)="startReply(comment.id)"
+                                class="text-[10px] font-black uppercase text-zinc-600 hover:text-white transition-colors">
+                                Reply
+                            </button>
+                        </div>
+
+                        <!-- Reply Form -->
+                        <div *ngIf="replyingTo === comment.id && userName" class="mt-4 pl-6 border-l-2 border-zinc-800">
+                            <div class="flex gap-4">
+                                <img [src]="userAvatar" class="w-10 h-10 rounded-lg object-cover shrink-0 grayscale">
+                                <div class="flex-1 space-y-3">
+                                    <label [attr.for]="'reply-text-' + comment.id" class="sr-only">Your reply</label>
+                                    <textarea 
+                                        [attr.id]="'reply-text-' + comment.id"
+                                        [attr.name]="'replyText-' + comment.id"
+                                        [(ngModel)]="replyText"
+                                        placeholder="Write your reply..."
+                                        autocomplete="off"
+                                        class="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-4 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[80px]"></textarea>
+                                    <div class="flex justify-end gap-3">
+                                        <button 
+                                            (click)="cancelReply()"
+                                            class="px-6 py-2 rounded-lg text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-colors">
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            (click)="postReply(comment.id)"
+                                            [disabled]="!replyText.trim() || isPostingReply"
+                                            [class.opacity-50]="!replyText.trim() || isPostingReply"
+                                            [class.cursor-not-allowed]="!replyText.trim() || isPostingReply"
+                                            class="bg-white text-black px-6 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition-all disabled:hover:bg-white disabled:hover:text-black">
+                                            {{ isPostingReply ? 'Posting...' : 'Post Reply' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Replies List -->
+                        <div *ngIf="comment.replies && comment.replies.length > 0" class="mt-6 pl-6 border-l-2 border-zinc-800 space-y-6">
+                            <div *ngFor="let reply of comment.replies" class="flex gap-4">
+                                <img [src]="reply.avatarUrl" class="w-10 h-10 rounded-lg object-cover shrink-0 grayscale hover:grayscale-0 transition-all">
+                                <div class="flex-1 space-y-2">
+                                    <div class="flex items-center gap-3">
+                                        <h5 class="font-black text-zinc-200 text-xs italic uppercase">{{ reply.author }}</h5>
+                                        <span class="text-[9px] text-zinc-600 font-bold">{{ reply.date }}</span>
+                                    </div>
+                                    <p class="text-zinc-400 text-sm leading-relaxed font-medium">{{ reply.content }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,10 +255,11 @@ import { ProjectService } from '../../../services/project.service';
     </div>
   `
 })
-export class ProjectDetailsInteractionsComponent {
+export class ProjectDetailsInteractionsComponent implements OnChanges {
     private projectService = inject(ProjectService);
     
     @Input() project?: ProjectEntry;
+    @Input() triggerShare: boolean = false;
     @Output() onReact = new EventEmitter<void>();
     @Output() onShare = new EventEmitter<void>();
     @Output() onCommentAdded = new EventEmitter<void>();
@@ -229,6 +275,7 @@ export class ProjectDetailsInteractionsComponent {
     MessageCircleIcon = MessageCircle;
     CheckCircleIcon = CheckCircle;
     AlertCircleIcon = AlertCircle;
+    EyeIcon = Eye;
 
     // Share modal
     showShareModal = false;
@@ -253,6 +300,11 @@ export class ProjectDetailsInteractionsComponent {
     commentText: string = '';
     isPosting: boolean = false;
     likingComments = new Set<string>();
+    
+    // Reply state
+    replyingTo: string | null = null;
+    replyText: string = '';
+    isPostingReply: boolean = false;
 
     ngOnInit() {
         // Load user info from localStorage
@@ -264,18 +316,27 @@ export class ProjectDetailsInteractionsComponent {
         }
     }
 
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['triggerShare'] && changes['triggerShare'].currentValue === true) {
+            this.openShareModal();
+        }
+    }
+
     // Toast methods
     showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
-        this.toastMessage = message;
-        this.toastType = type;
-        
-        if (this.toastTimeout) {
-            clearTimeout(this.toastTimeout);
-        }
-        
-        this.toastTimeout = setTimeout(() => {
-            this.closeToast();
-        }, 5000);
+        // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+        setTimeout(() => {
+            this.toastMessage = message;
+            this.toastType = type;
+            
+            if (this.toastTimeout) {
+                clearTimeout(this.toastTimeout);
+            }
+            
+            this.toastTimeout = setTimeout(() => {
+                this.closeToast();
+            }, 5000);
+        }, 0);
     }
 
     closeToast() {
@@ -434,6 +495,48 @@ export class ProjectDetailsInteractionsComponent {
                 console.error('Failed to like comment:', err);
                 this.showToast('Failed to like comment', 'error');
                 this.likingComments.delete(commentId);
+            }
+        });
+    }
+
+    startReply(commentId: string) {
+        this.replyingTo = commentId;
+        this.replyText = '';
+    }
+
+    cancelReply() {
+        this.replyingTo = null;
+        this.replyText = '';
+    }
+
+    postReply(commentId: string) {
+        if (!this.project || !this.replyText.trim() || this.isPostingReply) return;
+
+        this.isPostingReply = true;
+        const reply = {
+            author: this.userName,
+            avatarUrl: this.userAvatar || '',
+            content: this.replyText.trim()
+        };
+
+        this.projectService.addReply(this.project.id, commentId, reply).subscribe({
+            next: (updatedComment) => {
+                console.log('Reply posted successfully:', updatedComment);
+                if (this.project) {
+                    const comment = this.project.comments?.find(c => c.id === commentId);
+                    if (comment) {
+                        comment.replies = updatedComment.replies || [];
+                        this.showToast('Reply posted successfully!', 'success');
+                    }
+                }
+                this.replyingTo = null;
+                this.replyText = '';
+                this.isPostingReply = false;
+            },
+            error: (err) => {
+                console.error('Failed to post reply:', err);
+                this.showToast('Failed to post reply', 'error');
+                this.isPostingReply = false;
             }
         });
     }

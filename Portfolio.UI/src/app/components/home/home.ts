@@ -4,12 +4,10 @@ import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
 import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry, SkillEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
-import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { ToastService } from '../../services/toast.service';
 
 // Section Components
-import { HomeHeroComponent } from './sections/home-hero';
 import { HomeSidebarProfileComponent } from './sections/home-sidebar-profile';
 import { HomeBriefBioComponent } from './sections/home-brief-bio';
 import { HomeServicesComponent } from './sections/home-services';
@@ -27,9 +25,7 @@ import { SharedFooterComponent } from '../shared/footer/footer';
     imports: [
         CommonModule,
         NavbarComponent,
-        RouterLink,
         LucideAngularModule,
-        HomeHeroComponent,
         HomeSidebarProfileComponent,
         HomeBriefBioComponent,
         HomeServicesComponent,
