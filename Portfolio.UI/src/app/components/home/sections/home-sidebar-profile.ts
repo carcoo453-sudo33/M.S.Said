@@ -8,7 +8,7 @@ import { BioEntry } from '../../../models';
     standalone: true,
     imports: [CommonModule, LucideAngularModule],
     template: `
-    <aside class="md:col-span-4 lg:col-span-3 lg:sticky lg:top-24 h-fit space-y-8 animate-fade-in-left">
+    <aside class="lg:sticky lg:top-24 h-fit space-y-8 animate-fade-in-left">
         <div
             class="bg-zinc-50/50 dark:bg-zinc-900/40 backdrop-blur-xl rounded-[3rem] p-6 lg:p-10 border border-zinc-100 dark:border-zinc-800/50 text-center transition-all hover:shadow-2xl group relative overflow-hidden">
             <div
