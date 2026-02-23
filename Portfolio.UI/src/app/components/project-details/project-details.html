@@ -19,25 +19,31 @@
         <!-- Header Section -->
         <app-project-details-header [project]="project"></app-project-details-header>
 
-        <!-- Technical Specification Bar -->
-        <app-project-details-specs [project]="project"></app-project-details-specs>
+        <!-- Technical Specification Bar with extra bottom spacing -->
+        <div class="pb-16">
+            <app-project-details-specs [project]="project"></app-project-details-specs>
+        </div>
 
         <!-- Featured Media & Actions -->
         <app-project-details-gallery [project]="project"></app-project-details-gallery>
 
-        <!-- Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-32">
-            <!-- Left Column -->
-            <div class="lg:col-span-7 space-y-32">
-                <app-project-details-features [project]="project"></app-project-details-features>
-                <app-project-details-interactions [project]="project" (onReact)="onReact()" (onShare)="onShare()">
-                </app-project-details-interactions>
-            </div>
-
-            <!-- Right Column -->
-            <div class="lg:col-span-5 space-y-32">
+        <!-- Main Content -->
+        <div class="space-y-32">
+            <!-- Features & Responsibilities -->
+            <app-project-details-features [project]="project"></app-project-details-features>
+            
+            <!-- Changelog, Metrics, Related Projects in responsive grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <app-project-details-sidebar [project]="project"></app-project-details-sidebar>
             </div>
+            
+            <!-- Interactions & Discussion -->
+            <app-project-details-interactions 
+                [project]="project" 
+                (onReact)="onReact()" 
+                (onShare)="onShare()"
+                (onCommentAdded)="loadProject()">
+            </app-project-details-interactions>
         </div>
     </div>
 

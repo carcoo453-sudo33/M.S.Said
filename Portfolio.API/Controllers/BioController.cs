@@ -65,6 +65,10 @@ public class BioController : ControllerBase
         bio.YearsOfExperience = dto.YearsOfExperience;
         bio.ProjectsCompleted = dto.ProjectsCompleted;
         bio.CodeCommits = dto.CodeCommits;
+        bio.EducationQuote = dto.EducationQuote;
+        bio.TechnicalFocusTitle = dto.TechnicalFocusTitle;
+        bio.TechnicalFocusDescription = dto.TechnicalFocusDescription;
+        bio.TechnicalFocusItems = dto.TechnicalFocusItems;
         bio.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.CompleteAsync();

@@ -20,4 +20,8 @@ public class BioDto
     public string YearsOfExperience { get; set; } = string.Empty;
     public string ProjectsCompleted { get; set; } = string.Empty;
     public string CodeCommits { get; set; } = string.Empty;
+    public string? EducationQuote { get; set; }
+    public string? TechnicalFocusTitle { get; set; }
+    public string? TechnicalFocusDescription { get; set; }
+    public string? TechnicalFocusItems { get; set; }
 }

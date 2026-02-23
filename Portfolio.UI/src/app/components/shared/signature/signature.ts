@@ -22,12 +22,12 @@ import { environment } from '../../../../environments/environment';
             <div class="lg:col-span-8 space-y-8">
                 <div>
                     <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.6em] mb-4 text-center lg:text-left">Strategic Lead</p>
-                    <h2 class="text-4xl md:text-6xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-none text-center lg:text-left">
+                    <h2 class="text-3xl md:text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-tight text-center lg:text-left">
                         {{ bio.name }}<br>
                         <span class="text-zinc-400">Arch. Design</span>
                     </h2>
                 </div>
-                <p *ngIf="quote" class="text-zinc-500 dark:text-zinc-400 text-lg leading-relaxed italic border-l-2 border-zinc-100 dark:border-zinc-800 pl-8">
+                <p *ngIf="quote" class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic border-l-2 border-zinc-100 dark:border-zinc-800 pl-8">
                     "{{ quote }}"
                 </p>
                 <div class="flex flex-wrap justify-center lg:justify-start gap-8">

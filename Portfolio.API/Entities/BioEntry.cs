@@ -21,4 +21,10 @@ public class BioEntry : BaseEntity
     public string YearsOfExperience { get; set; } = "5+";
     public string ProjectsCompleted { get; set; } = "40+";
     public string CodeCommits { get; set; } = "12k";
+
+    // Education Page Content
+    public string? EducationQuote { get; set; }
+    public string? TechnicalFocusTitle { get; set; }
+    public string? TechnicalFocusDescription { get; set; }
+    public string? TechnicalFocusItems { get; set; } // Comma-separated list
 }

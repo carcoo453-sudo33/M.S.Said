@@ -15,4 +15,8 @@ export interface BioEntry {
     whatsAppUrl?: string;
     cvUrl?: string;
     twitterUrl?: string;
+    educationQuote?: string;
+    technicalFocusTitle?: string;
+    technicalFocusDescription?: string;
+    technicalFocusItems?: string;
 }

@@ -18,6 +18,8 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<EducationEntry> EducationEntries { get; set; }
     public DbSet<ContactMessage> ContactMessages { get; set; }
     public DbSet<SkillEntry> Skills { get; set; }
+    public DbSet<TestimonialEntry> Testimonials { get; set; }
+    public DbSet<ClientEntry> Clients { get; set; }
     public DbSet<ProjectKeyFeature> ProjectKeyFeatures { get; set; }
     public DbSet<ProjectChangelogItem> ProjectChangelogItems { get; set; }
     public DbSet<ProjectMetric> ProjectMetrics { get; set; }
@@ -36,6 +38,8 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<EducationEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ContactMessage>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<SkillEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<TestimonialEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ClientEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectKeyFeature>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectMetric>().HasQueryFilter(x => !x.IsDeleted);

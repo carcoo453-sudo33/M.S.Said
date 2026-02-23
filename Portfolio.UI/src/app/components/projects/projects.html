@@ -37,16 +37,16 @@
             </app-projects-header>
 
             <!-- Project Grid -->
-            <app-projects-grid [projects]="filteredProjects"></app-projects-grid>
+            <app-projects-grid [projects]="filteredProjects" (projectsUpdated)="onProjectsUpdated($event)"></app-projects-grid>
 
             <!-- Work History Section -->
-            <app-projects-work-history [experiences]="experiences"></app-projects-work-history>
+            <app-projects-work-history [experiences]="experiences" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
 
             <!-- Brand Slider Section -->
-            <app-projects-brand-slider [clients]="clients"></app-projects-brand-slider>
+            <app-projects-brand-slider [clients]="clients" (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
 
             <!-- References Section -->
-            <app-projects-references [testimonials]="testimonials"></app-projects-references>
+            <app-projects-references [testimonials]="testimonials" (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
 
             <!-- Bottom CTA -->
             <app-projects-bottom-cta></app-projects-bottom-cta>

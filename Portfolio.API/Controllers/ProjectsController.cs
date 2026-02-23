@@ -77,7 +77,7 @@ public class ProjectsController : ControllerBase
 
         // Map sub-collections if provided
         if (dto.KeyFeatures != null)
-            entry.KeyFeatures = dto.KeyFeatures.Select(f => new ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Description = f.Description }).ToList();
+            entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Description = f.Description }).ToList();
             
         // ... other sub-collections can be added similarly
 
@@ -127,7 +127,7 @@ public class ProjectsController : ControllerBase
         // In a real production app, you might want to track changes more granularly
         project.KeyFeatures.Clear();
         foreach (var f in dto.KeyFeatures) 
-            project.KeyFeatures.Add(new ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Description = f.Description });
+            project.KeyFeatures.Add(new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Description = f.Description });
 
         await _unitOfWork.CompleteAsync();
         return Ok(MapToDto(project));
@@ -219,4 +219,111 @@ public class ProjectsController : ControllerBase
         await _unitOfWork.CompleteAsync();
         return NoContent();
     }
+
+    [HttpPost("{projectId}/comments")]
+    public async Task<ActionResult<CommentDto>> AddComment(Guid projectId, [FromBody] CommentDto commentDto)
+    {
+        try
+        {
+            var repository = _unitOfWork.Repository<ProjectEntry>();
+            var project = await repository
+                .Query()
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null) return NotFound(new { message = "Project not found" });
+
+            // Ensure Comments collection is initialized
+            if (project.Comments == null)
+            {
+                project.Comments = new List<ProjectComment>();
+            }
+
+            var comment = new ProjectComment
+            {
+                Id = Guid.NewGuid(),
+                ProjectEntryId = projectId,
+                Author = commentDto.Author ?? "Anonymous",
+                AvatarUrl = commentDto.AvatarUrl,
+                Date = DateTime.UtcNow.ToString("MMM dd, yyyy"),
+                Content = commentDto.Content,
+                Likes = 0,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            project.Comments.Add(comment);
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(new CommentDto
+            {
+                Id = comment.Id.ToString(),
+                Author = comment.Author,
+                AvatarUrl = comment.AvatarUrl,
+                Date = comment.Date,
+                Content = comment.Content,
+                Likes = comment.Likes
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Failed to add comment", error = ex.Message });
+        }
+    }
+
+    [HttpPost("{projectId}/comments/{commentId}/like")]
+    public async Task<ActionResult<CommentDto>> LikeComment(Guid projectId, Guid commentId)
+    {
+        try
+        {
+            var project = await _unitOfWork.Repository<ProjectEntry>()
+                .Query()
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null) return NotFound(new { message = "Project not found" });
+
+            var comment = project.Comments?.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null) return NotFound(new { message = "Comment not found" });
+
+            comment.Likes++;
+            comment.UpdatedAt = DateTime.UtcNow;
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(new CommentDto
+            {
+                Id = comment.Id.ToString(),
+                Author = comment.Author,
+                AvatarUrl = comment.AvatarUrl,
+                Date = comment.Date,
+                Content = comment.Content,
+                Likes = comment.Likes
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Failed to like comment", error = ex.Message });
+        }
+    }
+
+    [HttpPost("{projectId}/react")]
+    public async Task<ActionResult<int>> ReactToProject(Guid projectId)
+    {
+        try
+        {
+            var project = await _unitOfWork.Repository<ProjectEntry>().GetByIdAsync(projectId);
+            if (project == null) return NotFound(new { message = "Project not found" });
+
+            project.ReactionsCount++;
+            project.UpdatedAt = DateTime.UtcNow;
+            await _unitOfWork.CompleteAsync();
+
+            return Ok(project.ReactionsCount);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Failed to react to project", error = ex.Message });
+        }
+    }
+
 }

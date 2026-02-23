@@ -36,7 +36,8 @@ public class EducationController : ControllerBase
             Duration = dto.Duration,
             Description = dto.Description,
             Location = dto.Location,
-            IsCompleted = dto.IsCompleted
+            IsCompleted = dto.IsCompleted,
+            Category = dto.Category
         };
         await _unitOfWork.Repository<EducationEntry>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
@@ -58,6 +59,7 @@ public class EducationController : ControllerBase
         education.Description = dto.Description;
         education.Location = dto.Location;
         education.IsCompleted = dto.IsCompleted;
+        education.Category = dto.Category;
         education.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.CompleteAsync();

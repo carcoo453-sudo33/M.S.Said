@@ -35,6 +35,13 @@ public class UploadsController : ControllerBase
         return await ProcessFileUpload(file, "uploads/skills");
     }
 
+    [Authorize]
+    [HttpPost("project-image")]
+    public async Task<IActionResult> UploadProjectImage(IFormFile file)
+    {
+        return await ProcessFileUpload(file, "uploads/projects");
+    }
+
     private async Task<IActionResult> ProcessFileUpload(IFormFile file, string subFolder)
     {
         if (file == null || file.Length == 0)

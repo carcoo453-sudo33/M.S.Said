@@ -10,4 +10,5 @@ public class EducationEntry : BaseEntity
     public string? Description { get; set; }
     public string? Location { get; set; }
     public bool IsCompleted { get; set; } = true;
+    public string Category { get; set; } = "Education"; // Education, Training, Certification
 }

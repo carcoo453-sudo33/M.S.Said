@@ -5,6 +5,7 @@ import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { AuthService } from '../../services/auth.service';
 import { LucideAngularModule } from 'lucide-angular';
 
 // Section Components
@@ -46,6 +47,7 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
 export class ProjectsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
+  public auth = inject(AuthService);
 
   projects: ProjectEntry[] = [];
   experiences: ExperienceEntry[] = [];
@@ -59,7 +61,6 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
-    this.loadMockData();
 
     // Safety guard: Ensure skeleton doesn't hang forever
     setTimeout(() => {
@@ -77,10 +78,12 @@ export class ProjectsComponent implements OnInit {
   loadData() {
     this.projectService.getProjects().subscribe({
       next: (data: ProjectEntry[]) => {
+        console.log('Projects loaded:', data.length);
         this.projects = data;
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Projects: Failed to load projects', err);
         this.isLoading = false;
         this.hasError = true;
       }
@@ -90,26 +93,20 @@ export class ProjectsComponent implements OnInit {
       next: (data) => this.experiences = data,
       error: (err) => console.error('Projects: Failed to load experiences', err)
     });
+
+    this.profileService.getClients().subscribe({
+      next: (data) => this.clients = data,
+      error: (err) => console.error('Projects: Failed to load clients', err)
+    });
+
+    this.profileService.getTestimonials().subscribe({
+      next: (data) => this.testimonials = data,
+      error: (err) => console.error('Projects: Failed to load testimonials', err)
+    });
   }
 
   loadMockData() {
-    this.clients = [
-      { name: 'WE3DS', logoUrl: 'assets/brands/we3ds.png' },
-      { name: 'CMS', logoUrl: 'assets/brands/cms.png' },
-      { name: 'Google', logoUrl: 'assets/brands/google.png' },
-      { name: 'Microsoft', logoUrl: 'assets/brands/microsoft.png' },
-      { name: 'Amazon', logoUrl: 'assets/brands/amazon.png' },
-    ];
-
-    this.testimonials = [
-      {
-        name: 'Sarah Johnson',
-        role: 'Senior Product Manager',
-        company: 'TaskFlow',
-        content: '"Mostafa is an exceptional developer who consistently delivers high-quality code. His ability to handle complex front-end challenges while maintaining meticulous attention to design detail is impressive. A true professional who adds immense value to any team."',
-        avatarUrl: 'https://i.pravatar.cc/150?u=sarah'
-      }
-    ];
+    // Removed - now loading from API
   }
 
   setFilter(filter: string) {
@@ -129,6 +126,180 @@ export class ProjectsComponent implements OnInit {
       if (filter === 'net core') return tech.includes('.net') || tech.includes('core');
 
       return cat.includes(filter) || tech.includes(filter);
+    });
+  }
+
+  onEditProject(project: ProjectEntry) {
+    // Navigate to project details page for editing
+    window.location.href = `/projects/${project.slug}`;
+  }
+
+  onProjectsUpdated(updatedProjects: ProjectEntry[]) {
+    this.projects = updatedProjects;
+    console.log('Projects list updated:', this.projects.length);
+  }
+
+  onDeleteProject(project: ProjectEntry) {
+    if (!project.id) return;
+    
+    if (!this.auth.isLoggedIn()) {
+      alert('You must be logged in to delete projects. Please log in first.');
+      return;
+    }
+    
+    this.projectService.deleteProject(project.id).subscribe({
+      next: () => {
+        this.projects = this.projects.filter(p => p.id !== project.id);
+        console.log('Project deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete project:', err);
+        if (err.status === 401) {
+          alert('Authentication failed. Please log in again.');
+          this.auth.logout();
+          window.location.href = '/login';
+        } else {
+          alert('Failed to delete project. Please try again.');
+        }
+      }
+    });
+  }
+
+  onEditExperience(experience: ExperienceEntry) {
+    // Navigate to home page experiences section for editing
+    window.location.href = '/#experiences';
+  }
+
+  onExperiencesUpdated(updatedExperiences: ExperienceEntry[]) {
+    this.experiences = updatedExperiences;
+    console.log('Experiences list updated:', this.experiences.length);
+  }
+
+  onDeleteExperience(experience: ExperienceEntry) {
+    if (!experience.id) return;
+    
+    if (!this.auth.isLoggedIn()) {
+      alert('You must be logged in to delete experiences. Please log in first.');
+      return;
+    }
+    
+    this.profileService.deleteExperience(experience.id).subscribe({
+      next: () => {
+        this.experiences = this.experiences.filter(e => e.id !== experience.id);
+        console.log('Experience deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete experience:', err);
+        if (err.status === 401) {
+          alert('Authentication failed. Please log in again.');
+          this.auth.logout();
+          window.location.href = '/login';
+        } else {
+          alert('Failed to delete experience. Please try again.');
+        }
+      }
+    });
+  }
+
+  onEditClient(client: Client) {
+    const newName = prompt('Edit client name:', client.name);
+    if (newName && newName.trim() && client.id) {
+      const updated = { ...client, name: newName.trim() };
+      this.profileService.updateClient(client.id, updated).subscribe({
+        next: () => {
+          const index = this.clients.findIndex(c => c.id === client.id);
+          if (index !== -1) {
+            this.clients[index] = updated;
+          }
+          console.log('Client updated successfully');
+        },
+        error: (err) => {
+          console.error('Failed to update client:', err);
+          alert('Failed to update client. Please try again.');
+        }
+      });
+    }
+  }
+
+  onClientsUpdated(updatedClients: Client[]) {
+    this.clients = updatedClients;
+    console.log('Clients list updated:', this.clients.length);
+  }
+
+  onDeleteClient(client: Client) {
+    if (!client.id) return;
+    
+    if (!this.auth.isLoggedIn()) {
+      alert('You must be logged in to delete clients. Please log in first.');
+      return;
+    }
+    
+    this.profileService.deleteClient(client.id).subscribe({
+      next: () => {
+        this.clients = this.clients.filter(c => c.id !== client.id);
+        console.log('Client deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete client:', err);
+        if (err.status === 401) {
+          alert('Authentication failed. Please log in again.');
+          this.auth.logout();
+          window.location.href = '/login';
+        } else {
+          alert('Failed to delete client. Please try again.');
+        }
+      }
+    });
+  }
+
+  onEditTestimonial(testimonial: Testimonial) {
+    const newContent = prompt('Edit testimonial content:', testimonial.content);
+    if (newContent && newContent.trim() && testimonial.id) {
+      const updated = { ...testimonial, content: newContent.trim() };
+      this.profileService.updateTestimonial(testimonial.id, updated).subscribe({
+        next: () => {
+          const index = this.testimonials.findIndex(t => t.id === testimonial.id);
+          if (index !== -1) {
+            this.testimonials[index] = updated;
+          }
+          console.log('Testimonial updated successfully');
+        },
+        error: (err) => {
+          console.error('Failed to update testimonial:', err);
+          alert('Failed to update testimonial. Please try again.');
+        }
+      });
+    }
+  }
+
+  onTestimonialsUpdated(updatedTestimonials: Testimonial[]) {
+    this.testimonials = updatedTestimonials;
+    console.log('Testimonials list updated:', this.testimonials.length);
+  }
+
+  onDeleteTestimonial(testimonial: Testimonial) {
+    if (!testimonial.id) return;
+    
+    if (!this.auth.isLoggedIn()) {
+      alert('You must be logged in to delete testimonials. Please log in first.');
+      return;
+    }
+    
+    this.profileService.deleteTestimonial(testimonial.id).subscribe({
+      next: () => {
+        this.testimonials = this.testimonials.filter(t => t.id !== testimonial.id);
+        console.log('Testimonial deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete testimonial:', err);
+        if (err.status === 401) {
+          alert('Authentication failed. Please log in again.');
+          this.auth.logout();
+          window.location.href = '/login';
+        } else {
+          alert('Failed to delete testimonial. Please try again.');
+        }
+      }
     });
   }
 }

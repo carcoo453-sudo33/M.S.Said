@@ -44,7 +44,11 @@ public static class DbInitializer
                 TwitterUrl = "https://twitter.com/mostafasaid",
                 YearsOfExperience = "3+",
                 ProjectsCompleted = "40+",
-                CodeCommits = "12k"
+                CodeCommits = "12k",
+                EducationQuote = "Education is the synthesis of inquiry and architecture. My academic foundation provides the rigorous framework through which I approach complex engineering challenges and innovative system design.",
+                TechnicalFocusTitle = "Technical Focus",
+                TechnicalFocusDescription = "Continuous specialization in modern web development, cloud architecture, and enterprise system design.",
+                TechnicalFocusItems = "ASP.NET Core,Angular,Distributed Systems,Cloud Architecture,Identity & Security,RESTful APIs,SQL Server,Entity Framework"
             });
             await context.SaveChangesAsync();
         }
@@ -161,10 +165,10 @@ public static class DbInitializer
                     Language = "English",
                     Architecture = "N-Tier / Clean Architecture",
                     Status = "Active",
-                    KeyFeatures = new List<ProjectKeyFeature>
+                    KeyFeatures = new List<Entities.ProjectKeyFeature>
                     {
-                        new ProjectKeyFeature { Icon = "lucide-layout", Title = "Admin Dashboard", Description = "Full-featured dashboard for content management." },
-                        new ProjectKeyFeature { Icon = "lucide-shield", Title = "JWT Auth", Description = "Secure authentication using JSON Web Tokens." }
+                        new Entities.ProjectKeyFeature { Icon = "lucide-layout", Title = "Admin Dashboard", Description = "Full-featured dashboard for content management." },
+                        new Entities.ProjectKeyFeature { Icon = "lucide-shield", Title = "JWT Auth", Description = "Secure authentication using JSON Web Tokens." }
                     }
                 },
                 new ProjectEntry
@@ -185,27 +189,67 @@ public static class DbInitializer
         }
 
 
-        // Seed Education
+        // Seed Education - Clear and reseed to add categories
+        var existingEducation = context.EducationEntries.ToList();
+        if (existingEducation.Any(e => string.IsNullOrEmpty(e.Category)))
+        {
+            context.EducationEntries.RemoveRange(existingEducation);
+            await context.SaveChangesAsync();
+        }
+
         if (!context.EducationEntries.Any())
         {
             context.EducationEntries.AddRange(
+                // Education
                 new EducationEntry
                 {
                     Institution = "Tanta University",
-                    Degree = "B.Sc. in Computer Engineering & Automatic Control",
+                    Degree = "Bachelor of Computer Engineering & Automatic Control",
                     Duration = "2018 - 2023",
-                    Description = "Specialized in software development and intelligent systems architecture.",
-                    Location = "Tanta, Egypt"
+                    Description = "Specialized in software development, intelligent systems architecture, and control systems engineering.",
+                    Location = "Tanta, Egypt",
+                    Category = "Education"
                 },
+                // Training
                 new EducationEntry
                 {
                     Institution = "Ministry of Communications and Information Technology (MCIT)",
-                    Degree = "Full Stack Web Developer Diploma",
+                    Degree = "Full Stack Web Development Professional Diploma",
                     Duration = "2023",
-                    Description = "Intensive training on MERN stack and ASP.NET Core advanced architectures.",
-                    Location = "Cairo, Egypt"
+                    Description = "Intensive training program covering MERN stack, ASP.NET Core, advanced architectures, and modern web development practices.",
+                    Location = "Cairo, Egypt",
+                    Category = "Training"
+                },
+                new EducationEntry
+                {
+                    Institution = "Udemy",
+                    Degree = "Advanced Angular Development",
+                    Duration = "2023",
+                    Description = "Comprehensive course on Angular framework, RxJS, state management, and enterprise application patterns.",
+                    Location = "Online",
+                    Category = "Training"
+                },
+                // Certifications
+                new EducationEntry
+                {
+                    Institution = "Microsoft",
+                    Degree = "Microsoft Certified: Azure Fundamentals",
+                    Duration = "2024",
+                    Description = "Certification demonstrating foundational knowledge of cloud services and Azure platform capabilities.",
+                    Location = "Online",
+                    Category = "Certification"
+                },
+                new EducationEntry
+                {
+                    Institution = "LinkedIn Learning",
+                    Degree = "ASP.NET Core Web API Development",
+                    Duration = "2023",
+                    Description = "Professional certification in building RESTful APIs, authentication, and microservices architecture.",
+                    Location = "Online",
+                    Category = "Certification"
                 }
             );
+            await context.SaveChangesAsync();
         }
 
         // Seed Blog
@@ -281,6 +325,55 @@ public static class DbInitializer
                 new SkillEntry { Name = "SQL", Icon = "lucide-database", Order = 4 },
                 new SkillEntry { Name = "HTML5", Icon = "lucide-html5", Order = 5 },
                 new SkillEntry { Name = "CSS3", Icon = "lucide-css3", Order = 6 }
+            );
+        }
+
+        // Seed Clients
+        if (!context.Clients.Any())
+        {
+            context.Clients.AddRange(
+                new ClientEntry { Name = "WE3DS", LogoUrl = "/uploads/clients/we3ds.png", Order = 1 },
+                new ClientEntry { Name = "Microsoft", LogoUrl = "/uploads/clients/microsoft.png", Order = 2 },
+                new ClientEntry { Name = "Google", LogoUrl = "/uploads/clients/google.png", Order = 3 },
+                new ClientEntry { Name = "Amazon", LogoUrl = "/uploads/clients/amazon.png", Order = 4 },
+                new ClientEntry { Name = "Meta", LogoUrl = "/uploads/clients/meta.png", Order = 5 }
+            );
+        }
+
+        // Seed Testimonials
+        if (!context.Testimonials.Any())
+        {
+            context.Testimonials.AddRange(
+                new TestimonialEntry
+                {
+                    Name = "Sarah Johnson",
+                    Role = "Senior Product Manager",
+                    Company = "TaskFlow Inc.",
+                    Content = "Mostafa is an exceptional developer who consistently delivers high-quality code. His ability to handle complex front-end challenges while maintaining meticulous attention to design detail is impressive. A true professional who adds immense value to any team.",
+                    AvatarUrl = "https://i.pravatar.cc/150?u=sarah",
+                    Order = 1,
+                    IsFeatured = true
+                },
+                new TestimonialEntry
+                {
+                    Name = "Ahmed Hassan",
+                    Role = "CTO",
+                    Company = "WE3DS",
+                    Content = "Working with Mostafa has been a game-changer for our development team. His expertise in Angular and .NET Core helped us deliver our project ahead of schedule with exceptional quality.",
+                    AvatarUrl = "https://i.pravatar.cc/150?u=ahmed",
+                    Order = 2,
+                    IsFeatured = true
+                },
+                new TestimonialEntry
+                {
+                    Name = "Emily Chen",
+                    Role = "Lead Developer",
+                    Company = "Tech Solutions",
+                    Content = "Mostafa's technical skills are matched only by his professionalism and communication abilities. He's the kind of developer every team needs.",
+                    AvatarUrl = "https://i.pravatar.cc/150?u=emily",
+                    Order = 3,
+                    IsFeatured = false
+                }
             );
         }
 

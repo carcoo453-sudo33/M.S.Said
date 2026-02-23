@@ -6,4 +6,5 @@ export interface EducationEntry {
     description?: string;
     location?: string;
     isCompleted: boolean;
+    category: 'Education' | 'Training' | 'Certification';
 }

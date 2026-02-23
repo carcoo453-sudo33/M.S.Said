@@ -11,4 +11,5 @@ public class EducationDto
     public string? Description { get; set; }
     public string? Location { get; set; }
     public bool IsCompleted { get; set; }
+    public string Category { get; set; } = "Education";
 }

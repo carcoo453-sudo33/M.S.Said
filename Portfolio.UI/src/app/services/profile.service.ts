@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BioEntry, SkillEntry, ExperienceEntry, ServiceEntry, EducationEntry } from '../models';
+import { BioEntry, SkillEntry, ExperienceEntry, ServiceEntry, EducationEntry, Client, Testimonial } from '../models';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 
@@ -99,7 +99,71 @@ export class ProfileService {
 
     // Education
     getEducation() {
-        return this.http.get<EducationEntry[]>(`${this.apiUrl}/education`);
+        return this.http.get<EducationEntry[]>(`${this.apiUrl}/education`).pipe(
+            map(education => education.map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID })))
+        );
+    }
+
+    createEducation(education: EducationEntry) {
+        return this.http.post<EducationEntry>(`${this.apiUrl}/education`, education).pipe(
+            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
+        );
+    }
+
+    updateEducation(id: string, education: EducationEntry) {
+        return this.http.put<EducationEntry>(`${this.apiUrl}/education/${id}`, education).pipe(
+            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
+        );
+    }
+
+    deleteEducation(id: string) {
+        return this.http.delete(`${this.apiUrl}/education/${id}`);
+    }
+
+    // Clients
+    getClients() {
+        return this.http.get<Client[]>(`${this.apiUrl}/clients`).pipe(
+            map(clients => clients.map(c => ({ ...c, id: c.id || (c as any).Id || (c as any).ID })))
+        );
+    }
+
+    createClient(client: Client) {
+        return this.http.post<Client>(`${this.apiUrl}/clients`, client).pipe(
+            map(c => ({ ...c, id: c.id || (c as any).Id || (c as any).ID }))
+        );
+    }
+
+    updateClient(id: string, client: Client) {
+        return this.http.put<Client>(`${this.apiUrl}/clients/${id}`, client).pipe(
+            map(c => ({ ...c, id: c.id || (c as any).Id || (c as any).ID }))
+        );
+    }
+
+    deleteClient(id: string) {
+        return this.http.delete(`${this.apiUrl}/clients/${id}`);
+    }
+
+    // Testimonials
+    getTestimonials() {
+        return this.http.get<Testimonial[]>(`${this.apiUrl}/testimonials`).pipe(
+            map(testimonials => testimonials.map(t => ({ ...t, id: t.id || (t as any).Id || (t as any).ID })))
+        );
+    }
+
+    createTestimonial(testimonial: Testimonial) {
+        return this.http.post<Testimonial>(`${this.apiUrl}/testimonials`, testimonial).pipe(
+            map(t => ({ ...t, id: t.id || (t as any).Id || (t as any).ID }))
+        );
+    }
+
+    updateTestimonial(id: string, testimonial: Testimonial) {
+        return this.http.put<Testimonial>(`${this.apiUrl}/testimonials/${id}`, testimonial).pipe(
+            map(t => ({ ...t, id: t.id || (t as any).Id || (t as any).ID }))
+        );
+    }
+
+    deleteTestimonial(id: string) {
+        return this.http.delete(`${this.apiUrl}/testimonials/${id}`);
     }
 
     // Uploads

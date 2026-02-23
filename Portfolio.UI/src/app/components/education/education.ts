@@ -37,7 +37,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
 })
 export class EducationComponent implements OnInit {
     private profileService = inject(ProfileService);
-    education: EducationEntry[] = [];
+    allEducation: EducationEntry[] = [];
     bio: BioEntry | null = null;
     isLoading = true;
     hasError = false;
@@ -47,15 +47,32 @@ export class EducationComponent implements OnInit {
             next: (bio) => this.bio = bio,
             error: (err) => console.error('Education: Failed to load bio', err)
         });
+        this.loadEducation();
+    }
+
+    loadEducation() {
+        this.isLoading = true;
+        this.hasError = false;
         this.profileService.getEducation().subscribe({
             next: (data) => {
-                this.education = data;
+                const categoryOrder: Record<string, number> = { 'Education': 1, 'Training': 2, 'Certification': 3 };
+                this.allEducation = data.sort((a, b) => 
+                    (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
+                );
                 this.isLoading = false;
             },
-            error: () => {
+            error: (err) => {
+                console.error('Education: Failed to load education entries', err);
                 this.isLoading = false;
                 this.hasError = true;
             }
         });
+    }
+
+    onEducationUpdated(updatedEducation: EducationEntry[]) {
+        const categoryOrder: Record<string, number> = { 'Education': 1, 'Training': 2, 'Certification': 3 };
+        this.allEducation = updatedEducation.sort((a, b) => 
+            (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
+        );
     }
 }

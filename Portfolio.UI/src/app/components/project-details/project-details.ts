@@ -62,13 +62,20 @@ export class ProjectDetailsComponent implements OnInit {
 
   loadProject() {
     const slug = this.route.snapshot.paramMap.get('slug');
+    console.log('Loading project with slug:', slug);
+    
     if (slug) {
       this.projectService.getProject(slug).subscribe({
         next: (data) => {
+          console.log('Project loaded from API:', data);
+          console.log('Project ID from API:', data.id);
           this.project = this.enrichProjectData(data);
+          console.log('Enriched project:', this.project);
+          console.log('Final project ID:', this.project.id);
           this.isLoading = false;
         },
-        error: () => {
+        error: (err) => {
+          console.error('Failed to load project:', err);
           this.isLoading = false;
           this.hasError = true;
         }
@@ -101,12 +108,25 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onReact() {
-    if (this.project) {
-      this.project.reactionsCount = (this.project.reactionsCount || 0) + 1;
+    if (this.project && this.project.id) {
+      console.log('Reacting to project:', this.project.id);
+      this.projectService.reactToProject(this.project.id).subscribe({
+        next: (newCount) => {
+          console.log('React successful, new count:', newCount);
+          if (this.project) {
+            this.project.reactionsCount = newCount;
+          }
+        },
+        error: (err) => {
+          console.error('Failed to react to project:', err);
+        }
+      });
+    } else {
+      console.error('Cannot react: project or project.id is missing', this.project);
     }
   }
 
   onShare() {
-    alert('Share functionality triggered!');
+    // Share is now handled by the child component
   }
 }

@@ -18,7 +18,7 @@ import { ProjectEntry } from '../../../models';
     </div>
 
     <!-- Header Section -->
-    <header *ngIf="project" class="space-y-12 animate-fade-in-up">
+    <header *ngIf="project" class="space-y-16 animate-fade-in-up">
         <div class="space-y-6">
             <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none dark:text-zinc-100 italic">
                 {{ project.title.split(':')[0] }}<span class="text-red-600" *ngIf="project.title.includes(':')">: {{
@@ -30,9 +30,9 @@ import { ProjectEntry } from '../../../models';
         </div>
 
         <!-- Tech Tags -->
-        <div class="flex flex-wrap gap-3">
+        <div class="flex flex-wrap gap-3 pb-8">
             <span *ngFor="let tech of project.technologies.split(',')"
-                class="bg-zinc-900 border border-zinc-800 px-6 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
+                class="bg-zinc-900 border border-zinc-800 px-6 py-3 rounded-xl text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
                 {{ tech.trim() }}
             </span>
         </div>
