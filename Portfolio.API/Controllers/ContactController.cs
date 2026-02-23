@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
+using Portfolio.API.DTOs;
 
 namespace Portfolio.API.Controllers;
 
@@ -26,13 +27,20 @@ public class ContactController : ControllerBase
 
     // POST api/contact — receive a new contact message from the public form
     [HttpPost]
-    public async Task<IActionResult> PostMessage(ContactMessage message)
+    public async Task<IActionResult> PostMessage(ContactDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        message.Id = Guid.NewGuid();
-        message.SentAt = DateTime.UtcNow;
-        message.IsRead = false;
+        var message = new ContactMessage
+        {
+            Id = Guid.NewGuid(),
+            Name = dto.Name,
+            Email = dto.Email,
+            Subject = dto.Subject,
+            Message = dto.Message,
+            SentAt = DateTime.UtcNow,
+            IsRead = false
+        };
 
         await _unitOfWork.Repository<ContactMessage>().AddAsync(message);
         await _unitOfWork.CompleteAsync();
@@ -44,11 +52,12 @@ public class ContactController : ControllerBase
     [HttpPatch("{id:guid}/read")]
     public async Task<IActionResult> MarkAsRead(Guid id)
     {
-        var message = await _unitOfWork.Repository<ContactMessage>().GetByIdAsync(id);
+        var repository = _unitOfWork.Repository<ContactMessage>();
+        var message = await repository.GetByIdAsync(id);
         if (message is null) return NotFound();
 
         message.IsRead = true;
-        _unitOfWork.Repository<ContactMessage>().Update(message);
+        message.UpdatedAt = DateTime.UtcNow;
         await _unitOfWork.CompleteAsync();
 
         return NoContent();

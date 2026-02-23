@@ -42,12 +42,13 @@ public class ProjectsController : ControllerBase
             Title = dto.Title,
             Description = dto.Description,
             ImageUrl = dto.ImageUrl,
-            ProjectUrl = dto.ProjectUrl,
-            GitHubUrl = dto.GitHubUrl,
+            DemoUrl = dto.ProjectUrl,
+            RepoUrl = dto.GitHubUrl,
             Category = dto.Category,
-            Technologies = dto.Technologies,
+            TechStack = dto.Technologies,
             Order = dto.Order,
-            IsFeatured = dto.IsFeatured
+            IsFeatured = dto.IsFeatured,
+            Slug = dto.Title.ToLower().Replace(" ", "-") // Basic slug generation
         };
         await _unitOfWork.Repository<ProjectEntry>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
@@ -66,10 +67,10 @@ public class ProjectsController : ControllerBase
         project.Title = dto.Title;
         project.Description = dto.Description;
         project.ImageUrl = dto.ImageUrl;
-        project.ProjectUrl = dto.ProjectUrl;
-        project.GitHubUrl = dto.GitHubUrl;
+        project.DemoUrl = dto.ProjectUrl;
+        project.RepoUrl = dto.GitHubUrl;
         project.Category = dto.Category;
-        project.Technologies = dto.Technologies;
+        project.TechStack = dto.Technologies;
         project.Order = dto.Order;
         project.IsFeatured = dto.IsFeatured;
         project.UpdatedAt = DateTime.UtcNow;

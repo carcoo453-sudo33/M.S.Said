@@ -27,4 +27,8 @@ public class ProjectEntry : BaseEntity
     public string? RepoUrl { get; set; }
     
     public string? Duration { get; set; } // e.g. "2024-2025"
+    
+    public int Order { get; set; }
+    
+    public bool IsFeatured { get; set; }
 }
