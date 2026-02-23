@@ -17,6 +17,7 @@ export class ContactComponent {
   model: ContactMessage = { name: '', email: '', subject: '', message: '' };
   loading = false;
   success = false;
+  error = false;
 
   MailIcon = Mail;
   PhoneIcon = Phone;
@@ -27,6 +28,7 @@ export class ContactComponent {
 
   submitMessage() {
     this.loading = true;
+    this.error = false;
     this.portfolio.sendContactMessage(this.model).subscribe({
       next: () => {
         this.loading = false;
@@ -36,7 +38,8 @@ export class ContactComponent {
       },
       error: () => {
         this.loading = false;
-        alert('Failed to send message. Please try again later.');
+        this.error = true;
+        setTimeout(() => this.error = false, 5000);
       }
     });
   }

@@ -1,0 +1,54 @@
+<div class="min-h-screen bg-zinc-950 text-white flex items-center justify-center overflow-hidden relative font-sans">
+    <!-- Animated glow background -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div
+            class="absolute top-[10%] left-[20%] w-[50%] h-[50%] bg-red-600/10 rounded-full blur-[150px] animate-pulse">
+        </div>
+        <div class="absolute bottom-[10%] right-[10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[150px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Subtle grid lines -->
+    <div class="absolute inset-0 opacity-[0.04]"
+        style="background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 60px 60px;">
+    </div>
+
+    <div class="relative z-10 text-center px-6 max-w-3xl mx-auto space-y-12">
+        <!-- Glitchy 404 -->
+        <div class="relative select-none">
+            <span class="block text-[12rem] md:text-[18rem] font-black leading-none tracking-tighter uppercase"
+                style="background: linear-gradient(135deg, #dc2626 0%, #9333ea 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 0 60px rgba(220,38,38,0.4));">
+                404
+            </span>
+            <!-- Glitch overlay -->
+            <span
+                class="absolute inset-0 block text-[12rem] md:text-[18rem] font-black leading-none tracking-tighter uppercase opacity-20 animate-ping"
+                style="background: linear-gradient(135deg, #ef4444 0%, #a855f7 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation-duration: 3s;">
+                404
+            </span>
+        </div>
+
+        <div class="space-y-6">
+            <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter">Page Not Found</h1>
+            <p class="text-zinc-400 text-lg md:text-xl leading-relaxed italic">
+                "Looks like this page went rogue. It's not in my codebase."
+            </p>
+            <p class="text-zinc-600 text-sm font-mono uppercase tracking-widest">
+                Error Code: 404 | Status: NOT_FOUND
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+            <a routerLink="/"
+                class="flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black py-5 px-12 rounded-full transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-[10px] shadow-2xl shadow-red-600/30">
+                <lucide-icon [img]="HomeIcon" class="w-4 h-4"></lucide-icon>
+                Back to Home
+            </a>
+            <button onclick="history.back()"
+                class="flex items-center gap-3 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 text-white font-black py-5 px-12 rounded-full transition-all hover:scale-105 active:scale-95 uppercase tracking-widest text-[10px]">
+                <lucide-icon [img]="ArrowLeftIcon" class="w-4 h-4"></lucide-icon>
+                Go Back
+            </button>
+        </div>
+    </div>
+</div>

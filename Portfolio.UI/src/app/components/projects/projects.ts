@@ -4,7 +4,7 @@ import { PortfolioService } from '../../services/portfolio.service';
 import { ProjectEntry } from '../../models/portfolio.models';
 import { NavbarComponent } from '../navbar/navbar';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowRight } from 'lucide-angular';
+import { LucideAngularModule, ArrowRight, ExternalLink, Github, FolderOpen, AlertCircle } from 'lucide-angular';
 
 @Component({
   selector: 'app-projects',
@@ -15,10 +15,27 @@ import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 export class ProjectsComponent implements OnInit {
   private portfolio = inject(PortfolioService);
   projects: ProjectEntry[] = [];
+  isLoading = true;
+  hasError = false;
 
   ArrowRightIcon = ArrowRight;
+  ExternalLinkIcon = ExternalLink;
+  GithubIcon = Github;
+  FolderOpenIcon = FolderOpen;
+  AlertCircleIcon = AlertCircle;
 
   ngOnInit() {
-    this.portfolio.getProjects().subscribe(data => this.projects = data);
+    this.portfolio.getProjects().subscribe({
+      next: (data) => {
+        this.projects = data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.hasError = true;
+      }
+    });
   }
+
+  get skeletonItems() { return Array(6); }
 }

@@ -17,8 +17,8 @@ export class PortfolioService {
         return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects`);
     }
 
-    getProject(id: string) {
-        return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${id}`);
+    getProject(slug: string) {
+        return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${slug}`);
     }
 
     getBio() {

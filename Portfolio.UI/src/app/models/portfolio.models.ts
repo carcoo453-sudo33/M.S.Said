@@ -11,8 +11,12 @@ export interface ExperienceEntry {
 export interface ProjectEntry {
     id: string;
     title: string;
+    slug: string;
     description?: string;
     techStack?: string;
+    category?: string;
+    tags?: string;
+    niche?: string;
     imageUrl?: string;
     demoUrl?: string;
     repoUrl?: string;
@@ -50,6 +54,8 @@ export interface BlogPost {
     summary: string;
     content: string;
     imageUrl?: string;
+    socialUrl?: string;
+    socialType?: string;
     publishedAt: string;
     tags?: string;
     author: string;

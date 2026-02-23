@@ -23,10 +23,10 @@ public class ProjectsController : ControllerBase
         return Ok(projects);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectEntry>> GetProject(Guid id)
+    [HttpGet("{slug}")]
+    public async Task<ActionResult<ProjectEntry>> GetProject(string slug)
     {
-        var project = await _unitOfWork.Repository<ProjectEntry>().GetByIdAsync(id);
+        var project = (await _unitOfWork.Repository<ProjectEntry>().FindAsync(p => p.Slug == slug)).FirstOrDefault();
         if (project == null) return NotFound();
         return project;
     }
