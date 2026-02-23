@@ -55,7 +55,11 @@ import { ToastService } from '../../../services/toast.service';
 
                 <div class="flex items-center gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-pink-600 flex items-center justify-center text-white font-black text-lg overflow-hidden">
-                        <img *ngIf="testimonial.avatarUrl" [src]="testimonial.avatarUrl" alt="{{ testimonial.name }}" class="w-full h-full object-cover">
+                        <img *ngIf="testimonial.avatarUrl" 
+                             [src]="getFullImageUrl(testimonial.avatarUrl)" 
+                             alt="{{ testimonial.name }}" 
+                             class="w-full h-full object-cover"
+                             (error)="onImageError($event)">
                         <span *ngIf="!testimonial.avatarUrl">{{ testimonial.name.charAt(0) }}</span>
                     </div>
                     <div>
@@ -127,8 +131,11 @@ import { ToastService } from '../../../services/toast.service';
                         </div>
                         <!-- Avatar Preview -->
                         <div *ngIf="editingTestimonial.avatarUrl" class="mt-3 flex items-center gap-3">
-                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-700">
-                                <img [src]="editingTestimonial.avatarUrl" alt="Avatar preview" class="w-full h-full object-cover">
+                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
+                                <img [src]="getFullImageUrl(editingTestimonial.avatarUrl)" 
+                                     alt="Avatar preview" 
+                                     class="w-full h-full object-cover"
+                                     (error)="onImageError($event)">
                             </div>
                             <div class="flex-1">
                                 <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Avatar Preview</p>
@@ -337,29 +344,48 @@ export class ProjectsReferencesComponent {
     }
 
     executeDelete() {
-        if (!this.deleteTestimonial?.id) return;
+            if (!this.deleteTestimonial?.id) return;
 
-        this.isDeleting = true;
-        this.profileService.deleteTestimonial(this.deleteTestimonial.id).subscribe({
-            next: () => {
-                this.testimonials = this.testimonials.filter(t => t.id !== this.deleteTestimonial!.id);
-                this.testimonialsUpdated.emit(this.testimonials);
-                this.deleteTestimonial = null;
-                this.isDeleting = false;
-                this.toast.success('Testimonial deleted successfully');
-            },
-            error: (err) => {
-                this.isDeleting = false;
-                this.deleteTestimonial = null;
-                if (err.status === 401) {
-                    this.toast.error('Authentication failed. Please log in again.');
-                    this.auth.logout();
-                    window.location.href = '/login';
-                } else {
-                    this.toast.error('Failed to delete testimonial');
+            this.isDeleting = true;
+            this.profileService.deleteTestimonial(this.deleteTestimonial.id).subscribe({
+                next: () => {
+                    this.testimonials = this.testimonials.filter(t => t.id !== this.deleteTestimonial!.id);
+                    this.testimonialsUpdated.emit(this.testimonials);
+                    this.deleteTestimonial = null;
+                    this.isDeleting = false;
+                    this.toast.success('Testimonial deleted successfully');
+                },
+                error: (err) => {
+                    this.isDeleting = false;
+                    this.deleteTestimonial = null;
+                    if (err.status === 401) {
+                        this.toast.error('Authentication failed. Please log in again.');
+                        this.auth.logout();
+                        window.location.href = '/login';
+                    } else {
+                        this.toast.error('Failed to delete testimonial');
+                    }
+                    console.error('Testimonial Delete Error:', err);
                 }
-                console.error('Testimonial Delete Error:', err);
+            });
+        }
+
+        getFullImageUrl(url: string): string {
+            if (!url) return '';
+
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;
             }
-        });
+
+            if (url.startsWith('/')) {
+                return `${environment.apiUrl.replace('/api', '')}${url}`;
+            }
+
+            return `${environment.apiUrl.replace('/api', '')}/${url}`;
+        }
+
+        onImageError(event: Event) {
+            const img = event.target as HTMLImageElement;
+            img.style.display = 'none';
+        }
     }
-}

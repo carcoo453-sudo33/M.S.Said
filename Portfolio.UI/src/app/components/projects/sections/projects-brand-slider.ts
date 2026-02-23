@@ -1,11 +1,13 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 import { Client } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
-import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from 'lucide-angular';
+import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload } from 'lucide-angular';
 
 @Component({
     selector: 'app-projects-brand-slider',
@@ -65,10 +67,32 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Logo URL</label>
-                    <input [(ngModel)]="editingClient.logoUrl" placeholder="https://... or /uploads/clients/logo.png"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    <p class="text-zinc-400 text-[10px] mt-1.5">Optional: URL to client logo image</p>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Logo Image</label>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <input [(ngModel)]="editingClient.logoUrl" placeholder="Logo URL or upload below"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <label [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
+                            class="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all cursor-pointer flex items-center gap-2">
+                            <lucide-icon [img]="UploadIcon" class="w-4 h-4"></lucide-icon>
+                            <span class="text-[10px] font-bold uppercase tracking-widest">{{ isUploading ? 'Uploading...' : 'Upload' }}</span>
+                            <input type="file" accept="image/*" (change)="onLogoFileSelected($event)" class="hidden">
+                        </label>
+                    </div>
+                    <!-- Logo Preview -->
+                    <div *ngIf="editingClient.logoUrl" class="mt-3 flex items-center gap-3">
+                        <div class="w-16 h-16 rounded-xl overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <img [src]="getFullImageUrl(editingClient.logoUrl)" 
+                                 alt="Logo preview" 
+                                 class="max-w-full max-h-full object-contain"
+                                 (error)="onImageError($event)">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Logo Preview</p>
+                            <p class="text-xs text-zinc-500 mt-0.5">This will appear in the brand slider</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -109,6 +133,7 @@ export class ProjectsBrandSliderComponent {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
+    private http = inject(HttpClient);
 
     @Input() clients: Client[] = [];
     @Output() clientsUpdated = new EventEmitter<Client[]>();
@@ -119,10 +144,12 @@ export class ProjectsBrandSliderComponent {
     SaveIcon = Save;
     PlusIcon = Plus;
     AlertIcon = AlertTriangle;
+    UploadIcon = Upload;
 
     showEditModal = false;
     isSaving = false;
     isDeleting = false;
+    isUploading = false;
     submitted = false;
     isCreating = false;
     deleteClient: Client | null = null;
@@ -223,5 +250,79 @@ export class ProjectsBrandSliderComponent {
                 console.error('Client Delete Error:', err);
             }
         });
+    }
+
+    onLogoFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (!input.files || input.files.length === 0) return;
+
+        const file = input.files[0];
+        
+        if (!file.type.startsWith('image/')) {
+            this.toast.error('Please select an image file');
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            this.toast.error('Image size must be less than 2MB');
+            return;
+        }
+
+        this.uploadLogo(file);
+    }
+
+    uploadLogo(file: File) {
+        if (!this.auth.isLoggedIn()) {
+            this.toast.error('You must be logged in to upload images');
+            return;
+        }
+
+        this.isUploading = true;
+        const formData = new FormData();
+        formData.append('file', file);
+
+        this.http.post<{ url: string }>(`${environment.apiUrl}/uploads/profile-image`, formData)
+            .subscribe({
+                next: (response) => {
+                    this.editingClient.logoUrl = response.url;
+                    this.isUploading = false;
+                    this.toast.success('Logo uploaded successfully');
+                },
+                error: (err) => {
+                    this.isUploading = false;
+                    console.error('Logo Upload Error:', err);
+                    
+                    if (err.status === 401) {
+                        this.toast.error('Authentication failed. Please log in again.');
+                        this.auth.logout();
+                        window.location.href = '/login';
+                    } else if (err.status === 400) {
+                        this.toast.error(err.error?.message || 'Invalid file. Please check file type and size.');
+                    } else if (err.status === 500) {
+                        this.toast.error(err.error || 'Server error while uploading image');
+                    } else {
+                        this.toast.error('Failed to upload logo. Please try again.');
+                    }
+                }
+            });
+    }
+
+    getFullImageUrl(url: string): string {
+        if (!url) return '';
+        
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+        
+        if (url.startsWith('/')) {
+            return `${environment.apiUrl.replace('/api', '')}${url}`;
+        }
+        
+        return `${environment.apiUrl.replace('/api', '')}/${url}`;
+    }
+
+    onImageError(event: Event) {
+        const img = event.target as HTMLImageElement;
+        img.style.display = 'none';
     }
 }
