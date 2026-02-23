@@ -1,108 +1,60 @@
 <app-navbar></app-navbar>
-<div class="min-h-screen bg-zinc-950 text-white font-sans selection:bg-red-500/30">
-    <div class="fixed inset-0 pointer-events-none overflow-hidden">
-        <div
-            class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-600/10 rounded-full blur-[120px] animate-pulse">
+
+<main
+    class="min-h-screen bg-[#F4F2EE] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pb-24 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-6 pt-32">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+
+            <!-- SIDEBAR (Left) -->
+            <aside class="md:col-span-4 space-y-6">
+                <!-- Profile Card -->
+                <app-blog-profile-card [bio]="bio"></app-blog-profile-card>
+
+                <!-- Platform Filter -->
+                <app-blog-platform-filter [platforms]="platforms" [selectedPlatform]="selectedPlatform"
+                    [counts]="platformCounts" (platformChange)="setPlatform($event)">
+                </app-blog-platform-filter>
+
+                <!-- Trending Topics -->
+                <app-blog-trending-topics [topics]="trendingTopics"></app-blog-trending-topics>
+            </aside>
+
+            <!-- FEED (Right) -->
+            <div class="md:col-span-8 space-y-8">
+
+                <!-- Feed Header -->
+                <app-blog-feed-header [title]="'Latest Updates'" [viewMode]="viewMode"
+                    (viewModeChange)="viewMode = $event">
+                </app-blog-feed-header>
+
+                <!-- Loading State -->
+                <app-shared-skeleton *ngIf="isLoading" [count]="4" height="250px"></app-shared-skeleton>
+
+                <!-- Posts List -->
+                <div *ngIf="!isLoading" class="space-y-8">
+                    <app-blog-post-card *ngFor="let post of filteredPosts; let i = index" [post]="post"
+                        [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)">
+                    </app-blog-post-card>
+
+                    <!-- Load More -->
+                    <div class="pt-8 text-center animate-fade-in-up">
+                        <button
+                            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
+                            Load More Updates
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <app-shared-empty-state *ngIf="!isLoading && filteredPosts.length === 0"
+                    [title]="'Sector: ' + selectedPlatform"
+                    message="No transmission detected in this frequency range. System awaiting new content.">
+                </app-shared-empty-state>
+
+            </div>
         </div>
-        <div class="absolute top-[20%] -right-[10%] w-[35%] h-[35%] bg-purple-600/10 rounded-full blur-[120px] animate-pulse"
-            style="animation-delay: 2s"></div>
     </div>
 
-    <main class="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20">
-        <!-- Header -->
-        <header class="mb-24 text-center space-y-6">
-            <h2 class="text-red-500 font-black tracking-[0.4em] uppercase text-sm">Inside My Mind</h2>
-            <h1 class="text-5xl md:text-8xl font-black tracking-tighter leading-none uppercase">
-                Digital <br /><span
-                    class="bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-transparent italic">Thoughtscape</span>
-            </h1>
-        </header>
-
-        <!-- SKELETON STATE -->
-        <div *ngIf="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <div *ngFor="let _ of skeletonItems" class="space-y-6">
-                <div class="skeleton aspect-video rounded-[2rem]"></div>
-                <div class="skeleton h-3 rounded-full w-1/3"></div>
-                <div class="skeleton h-6 rounded-full w-3/4"></div>
-                <div class="skeleton h-3 rounded-full w-full"></div>
-                <div class="skeleton h-3 rounded-full w-5/6"></div>
-            </div>
-        </div>
-
-        <!-- ERROR STATE -->
-        <div *ngIf="!isLoading && hasError" class="text-center py-32 space-y-8">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-red-600/10 text-red-500">
-                <lucide-icon [img]="AlertCircleIcon" class="w-12 h-12"></lucide-icon>
-            </div>
-            <h2 class="text-3xl font-black uppercase tracking-tighter">Failed to Load Posts</h2>
-            <p class="text-zinc-500 italic">Could not connect to server.</p>
-            <button (click)="ngOnInit()"
-                class="bg-red-600 hover:bg-red-700 text-white font-black py-4 px-10 rounded-full uppercase tracking-widest text-xs transition-all hover:scale-105">Retry</button>
-        </div>
-
-        <!-- EMPTY STATE -->
-        <div *ngIf="!isLoading && !hasError && posts.length === 0" class="text-center py-32">
-            <div
-                class="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 rounded-[3rem] p-20 max-w-xl mx-auto space-y-8">
-                <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-zinc-800 text-zinc-600">
-                    <lucide-icon [img]="BookOpenIcon" class="w-12 h-12"></lucide-icon>
-                </div>
-                <h2 class="text-3xl font-black uppercase tracking-tighter">No Posts Yet</h2>
-                <p class="text-zinc-500 italic text-lg">Articles and thoughts are on the way. Stay tuned.</p>
-            </div>
-        </div>
-
-        <!-- LOADED STATE -->
-        <div *ngIf="!isLoading && !hasError && posts.length > 0"
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <article *ngFor="let post of posts" (click)="navigateToPost(post)"
-                class="group cursor-pointer relative bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-[3rem] p-8 transition-all duration-500 hover:border-red-600/30 hover:-translate-y-2 flex flex-col h-full">
-                <div
-                    class="aspect-video mb-8 rounded-[2rem] overflow-hidden border border-zinc-800 shadow-2xl relative">
-                    <img *ngIf="post.imageUrl" [src]="post.imageUrl" [alt]="post.title"
-                        class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-                    <div *ngIf="!post.imageUrl"
-                        class="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">
-                        <lucide-icon [img]="BookOpenIcon" class="w-10 h-10"></lucide-icon>
-                    </div>
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60">
-                    </div>
-                    <div *ngIf="post.socialUrl" class="absolute top-4 right-4">
-                        <span
-                            class="bg-zinc-950/80 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold text-red-500 uppercase tracking-widest border border-zinc-800 flex items-center gap-2">
-                            <lucide-icon [img]="getSocialIcon(post.socialType)" class="w-3 h-3"></lucide-icon>
-                            {{ post.socialType || 'Social' }}
-                        </span>
-                    </div>
-                </div>
-                <div
-                    class="flex items-center gap-3 mb-6 text-[10px] font-black tracking-widest uppercase text-zinc-500">
-                    <span>{{ post.publishedAt | date:'MMM d, yyyy' }}</span>
-                    <span class="w-1 h-1 bg-red-600 rounded-full"></span>
-                    <span>By {{ post.author }}</span>
-                </div>
-                <div class="flex-grow space-y-4">
-                    <h3
-                        class="text-2xl font-black leading-tight uppercase tracking-tighter group-hover:text-red-500 transition-colors">
-                        {{ post.title }}</h3>
-                    <p class="text-zinc-500 text-sm leading-relaxed line-clamp-3 italic">"{{ post.summary }}"</p>
-                </div>
-                <div class="pt-8 mt-8 border-t border-zinc-800/50 flex items-center justify-between">
-                    <span
-                        class="text-red-500 font-bold flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] group-hover:translate-x-2 transition-transform">
-                        {{ post.socialUrl ? 'View Discussion' : 'Read Full Post' }}
-                        <lucide-icon [img]="post.socialUrl ? getSocialIcon(post.socialType) : ArrowRightIcon"
-                            class="w-4 h-4"></lucide-icon>
-                    </span>
-                    <div class="flex gap-4 text-zinc-700">
-                        <lucide-icon [img]="MessageSquareIcon"
-                            class="w-4 h-4 hover:text-white transition-colors"></lucide-icon>
-                        <lucide-icon [img]="Share2Icon"
-                            class="w-4 h-4 hover:text-white transition-colors"></lucide-icon>
-                    </div>
-                </div>
-            </article>
-        </div>
-    </main>
-</div>
+    <!-- Footer -->
+    <app-shared-footer></app-shared-footer>
+</main>

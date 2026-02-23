@@ -1,35 +1,45 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PortfolioService } from '../../services/portfolio.service';
-import { ContactMessage } from '../../models/portfolio.models';
-import { NavbarComponent } from '../navbar/navbar';
-import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin, Twitter } from 'lucide-angular';
+import { ContactService } from '../../services/contact.service';
+import { ContactMessage } from '../../models';
+import { NavbarComponent } from '../shared/navbar/navbar';
+import { LucideAngularModule } from 'lucide-angular';
+
+// Section Components
+import { ContactInfoComponent } from './sections/contact-info';
+import { ContactMapComponent } from './sections/contact-map';
+import { ContactFormComponent } from './sections/contact-form';
+
+// Shared Global Components
+import { SharedFooterComponent } from '../shared/footer/footer';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent, LucideAngularModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NavbarComponent,
+    LucideAngularModule,
+    ContactInfoComponent,
+    ContactMapComponent,
+    ContactFormComponent,
+    SharedFooterComponent
+  ],
   templateUrl: './contact.html'
 })
 export class ContactComponent {
-  private portfolio = inject(PortfolioService);
+  private contactService = inject(ContactService);
   model: ContactMessage = { name: '', email: '', subject: '', message: '' };
   loading = false;
   success = false;
   error = false;
 
-  MailIcon = Mail;
-  PhoneIcon = Phone;
-  MapPinIcon = MapPin;
-  GithubIcon = Github;
-  LinkedInIcon = Linkedin;
-  TwitterIcon = Twitter;
-
   submitMessage() {
     this.loading = true;
     this.error = false;
-    this.portfolio.sendContactMessage(this.model).subscribe({
+    this.contactService.sendContactMessage(this.model).subscribe({
       next: () => {
         this.loading = false;
         this.success = true;

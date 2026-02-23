@@ -9,8 +9,13 @@ public class BlogPost : BaseEntity
     public string Content { get; set; } = string.Empty;
     public string? ImageUrl { get; set; }
     public string? SocialUrl { get; set; }
-    public string? SocialType { get; set; } // LinkedIn, X, GitHub, etc.
+    public string? SocialType { get; set; } // LinkedIn, Dev.to, GitHub, etc.
     public DateTime PublishedAt { get; set; } = DateTime.UtcNow;
     public string? Tags { get; set; } // Comma-separated tags
-    public string Author { get; set; } = "مصطفى سمير سعيد";
+    public string Author { get; set; } = "Mostafa Samir Said";
+    public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
+    public int StarsCount { get; set; } // GitHub specific
+    public int ForksCount { get; set; } // GitHub specific
+    public string? Version { get; set; } // Release specific
 }

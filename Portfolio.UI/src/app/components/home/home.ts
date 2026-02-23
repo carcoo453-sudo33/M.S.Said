@@ -1,27 +1,24 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PortfolioService } from '../../services/portfolio.service';
-import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry } from '../../models/portfolio.models';
-import { NavbarComponent } from '../navbar/navbar';
+import { ProjectService } from '../../services/project.service';
+import { ProfileService } from '../../services/profile.service';
+import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry, SkillEntry } from '../../models';
+import { NavbarComponent } from '../shared/navbar/navbar';
 import { RouterLink } from '@angular/router';
-import {
-    LucideAngularModule,
-    Mail,
-    Phone,
-    MapPin,
-    Linkedin,
-    Github,
-    Twitter,
-    MessageCircle,
-    Download,
-    Code2,
-    Zap,
-    ArrowRight,
-    FileCode,
-    Database,
-    Monitor,
-    Terminal
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
+
+// Section Components
+import { HomeHeroComponent } from './sections/home-hero';
+import { HomeSidebarProfileComponent } from './sections/home-sidebar-profile';
+import { HomeBriefBioComponent } from './sections/home-brief-bio';
+import { HomeServicesComponent } from './sections/home-services';
+import { HomeTechStackComponent } from './sections/home-tech-stack';
+import { HomeFeaturedProjectsComponent } from './sections/home-featured-projects';
+import { HomeTimelineComponent } from './sections/home-timeline';
+import { HomeFinalCTAComponent } from './sections/home-final-cta';
+
+// Shared Global Components
+import { SharedFooterComponent } from '../shared/footer/footer';
 
 @Component({
     selector: 'app-home',
@@ -30,64 +27,38 @@ import {
         CommonModule,
         NavbarComponent,
         RouterLink,
-        LucideAngularModule
+        LucideAngularModule,
+        HomeHeroComponent,
+        HomeSidebarProfileComponent,
+        HomeBriefBioComponent,
+        HomeServicesComponent,
+        HomeTechStackComponent,
+        HomeFeaturedProjectsComponent,
+        HomeTimelineComponent,
+        HomeFinalCTAComponent,
+        SharedFooterComponent
     ],
     templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit {
-    private portfolio = inject(PortfolioService);
+    private projectService = inject(ProjectService);
+    private profileService = inject(ProfileService);
+
     bio?: BioEntry;
     services: ServiceEntry[] = [];
     featuredProjects: ProjectEntry[] = [];
     experiences: ExperienceEntry[] = [];
-
-    // Icons
-    MailIcon = Mail;
-    PhoneIcon = Phone;
-    MapPinIcon = MapPin;
-    LinkedinIcon = Linkedin;
-    GithubIcon = Github;
-    TwitterIcon = Twitter;
-    MessageCircleIcon = MessageCircle;
-    DownloadIcon = Download;
-    Code2Icon = Code2;
-    ZapIcon = Zap;
-    ArrowRightIcon = ArrowRight;
-    FileCodeIcon = FileCode;
-    DatabaseIcon = Database;
-    MonitorIcon = Monitor;
-    TerminalIcon = Terminal;
-
-    // Icons mapping for dynamic icons from backend
-    getServiceIcon(iconName: string): any {
-        const icons: { [key: string]: any } = {
-            'code': Code2,
-            'code-2': Code2,
-            'zap': Zap,
-            'monitor': Monitor,
-            'database': Database,
-            'terminal': Terminal,
-            'file-code': FileCode,
-            'mail': Mail,
-            'phone': Phone,
-            'map-pin': MapPin,
-            'layout': Monitor,
-            'smartphone': Monitor
-        };
-
-        // Remove 'lucide-' prefix if present
-        const cleanName = iconName?.replace('lucide-', '')?.toLowerCase();
-        return icons[cleanName] || Code2; // Default to Code2 if not found
-    }
+    skills: SkillEntry[] = [];
 
     ngOnInit() {
-        this.portfolio.getBio().subscribe(data => this.bio = data);
-        this.portfolio.getServices().subscribe(data => this.services = data);
-        this.portfolio.getExperiences().subscribe(data => {
-            this.experiences = data.slice(0, 2); // Show latest 2
+        this.profileService.getBio().subscribe(data => this.bio = data);
+        this.profileService.getServices().subscribe(data => this.services = data);
+        this.profileService.getSkills().subscribe(data => this.skills = data);
+        this.profileService.getExperiences().subscribe(data => {
+            this.experiences = data.slice(0, 2);
         });
-        this.portfolio.getProjects().subscribe(data => {
-            this.featuredProjects = data.slice(0, 2);
+        this.projectService.getProjects().subscribe(data => {
+            this.featuredProjects = data.slice(0, 4);
         });
     }
 }
