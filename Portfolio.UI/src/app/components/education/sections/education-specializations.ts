@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
         <div class="flex flex-wrap justify-center gap-6">
             <span
                 *ngFor="let focus of ['ASP.NET Core', 'Angular', 'Distributed Systems', 'Cloud Architecture', 'Identity Security']"
-                class="px-8 py-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 group-hover:text-red-600 transition-all shadow-sm">
+                class="px-8 py-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 group-hover:text-red-600 transition-all shadow-sm">
                 {{ focus }}
             </span>
         </div>

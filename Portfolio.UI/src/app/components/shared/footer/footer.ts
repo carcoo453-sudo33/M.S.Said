@@ -1,40 +1,79 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LucideAngularModule, Mail, Github, Linkedin, MapPin, Phone } from 'lucide-angular';
 
 @Component({
     selector: 'app-shared-footer',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, LucideAngularModule],
     template: `
-    <footer class="pt-24 pb-16 border-t border-zinc-200 dark:border-zinc-900 bg-white dark:bg-zinc-950">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-            <a routerLink="/"
-                class="text-2xl font-black tracking-tighter mb-10 flex items-center gap-1 text-zinc-900 dark:text-white group">
-                <span
-                    class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-2 shadow-lg shadow-red-600/20">M</span>
-                Mostafa<span class="text-red-600">.Dev</span>
-            </a>
-            <div class="flex flex-wrap justify-center gap-10 mb-10">
-                <a routerLink="/"
-                    class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors">Origins</a>
-                <a routerLink="/timeline"
-                    class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors">Resume</a>
-                <a routerLink="/projects"
-                    class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors">Projects</a>
-                <a routerLink="/blog"
-                    class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors">Social Feed</a>
-                <a routerLink="/contact"
-                    class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors">Connection</a>
+    <footer class="pt-24 pb-16 border-t border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500" dir="rtl">
+        <div class="max-w-7xl mx-auto px-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20 text-right">
+                <!-- Column 1: Brand -->
+                <div class="space-y-6">
+                    <a routerLink="/" class="text-2xl font-black tracking-tighter flex items-center gap-1 text-zinc-900 dark:text-white group">
+                        Mostafa<span class="text-red-600">.Dev</span>
+                        <div class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center mr-2 shadow-lg shadow-red-600/20">M</div>
+                    </a>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed font-bold">
+                        بناء المستقبل بالكواد، متخصص في تطوير الويب الحديثة، وابتكار حلول برمجية متطورة.
+                    </p>
+                </div>
+
+                <!-- Column 2: Social -->
+                <div>
+                    <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8">تواصل معي</h4>
+                    <div class="flex items-center gap-6">
+                        <a href="mailto:m.ssaid356@gmail.com" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
+                            <lucide-icon [img]="MailIcon" class="w-5 h-5"></lucide-icon>
+                        </a>
+                        <a href="https://github.com/mssaid" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
+                            <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
+                        </a>
+                        <a href="https://linkedin.com/in/mostafasaid" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
+                            <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 3: Stats/Info -->
+                <div>
+                    <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-8">بيانات التواصل</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            <lucide-icon [img]="MapPinIcon" class="w-3 h-3 text-red-600"></lucide-icon>
+                            الغربية، مصر
+                        </li>
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            <lucide-icon [img]="MailIcon" class="w-3 h-3 text-red-600"></lucide-icon>
+                            m.ssaid356@gmail.com
+                        </li>
+                        <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            <lucide-icon [img]="PhoneIcon" class="w-3 h-3 text-red-600"></lucide-icon>
+                            01067358073 20+
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="flex items-center gap-4 mb-4">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p class="text-zinc-400 dark:text-zinc-600 text-[9px] font-black uppercase tracking-[0.5em]">
-                    Cognitive Syncing Active</p>
+
+            <div class="pt-10 border-t border-zinc-100 dark:border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-6">
+                <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest">
+                    &copy; 2024 مصطفى سمير سعيد. جميع الحقوق محفوظة
+                </p>
+                <div class="flex items-center gap-2">
+                    <span class="text-zinc-400 text-[9px] font-black uppercase">صنع بكل ❤️ وحب</span>
+                </div>
             </div>
-            <p class="text-zinc-400 text-[9px] font-black uppercase tracking-[0.4em]">&copy; 2026 Mostafa Samir Said. Engineered for Impact.</p>
         </div>
     </footer>
   `
 })
-export class SharedFooterComponent { }
+export class SharedFooterComponent {
+    MailIcon = Mail;
+    GithubIcon = Github;
+    LinkedinIcon = Linkedin;
+    MapPinIcon = MapPin;
+    PhoneIcon = Phone;
+}

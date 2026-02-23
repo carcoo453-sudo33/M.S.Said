@@ -8,24 +8,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
     imports: [CommonModule, LucideAngularModule],
     template: `
     <div class="animate-fade-in-left">
-        <header class="mb-20">
-            <div
-                class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-8 text-red-600">
-                <span class="text-[10px] font-black uppercase tracking-[0.4em]">Available for Strategic
-                    Build</span>
-            </div>
-            <h1
-                class="text-6xl md:text-9xl font-black mb-10 tracking-tighter uppercase leading-[0.85] dark:text-white text-zinc-900">
-                Let's <br>
-                <span
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]">Collaborate.</span>
-            </h1>
-            <p
-                class="text-zinc-500 dark:text-zinc-400 text-xl max-w-md leading-relaxed italic border-l-2 border-zinc-100 dark:border-zinc-900 pl-8">
-                "Architecting the future through technical excellence and intentional design. Reach out to
-                initiate the roadmap."
-            </p>
-        </header>
+      
 
         <div class="space-y-10">
             <!-- Email -->
@@ -75,11 +58,11 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
         <!-- Social Links -->
         <div class="mt-20 flex gap-6 mb-20">
             <a href="https://github.com" target="_blank"
-                class="w-14 h-14 bg-zinc-50 dark:bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12">
+                class="w-14 h-14 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12">
                 <lucide-icon [img]="GithubIcon" class="w-6 h-6"></lucide-icon>
             </a>
             <a href="https://linkedin.com" target="_blank"
-                class="w-14 h-14 bg-zinc-50 dark:bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12">
+                class="w-14 h-14 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12">
                 <lucide-icon [img]="LinkedInIcon" class="w-6 h-6"></lucide-icon>
             </a>
         </div>

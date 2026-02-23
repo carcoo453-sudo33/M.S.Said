@@ -1,34 +1,33 @@
 <app-navbar></app-navbar>
 
-<main
+<main dir="rtl"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 space-y-32">
 
-    <!-- Hero Section -->
-    <app-home-hero [bio]="bio"></app-home-hero>
-
     <!-- Content Grid Section -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 pb-24 px-6 relative z-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 pb-24 px-6 pt-32 relative z-10">
 
-        <!-- Left Sidebar: Profile Card -->
-        <app-home-sidebar-profile [bio]="bio" class="md:col-span-4 lg:col-span-3"></app-home-sidebar-profile>
+        <!-- Right Sidebar: Profile Card (md:order-2) -->
+        <app-home-sidebar-profile [bio]="bio" (bioUpdated)="bio = $event"
+            class="md:col-span-4 lg:col-span-4 md:order-2"></app-home-sidebar-profile>
 
-        <!-- Right Content Area -->
-        <div class="md:col-span-8 lg:col-span-9 space-y-32">
+        <!-- Left Content Area (md:order-1) -->
+        <div class="md:col-span-8 lg:col-span-8 space-y-16 md:order-1 pt-6">
 
-            <!-- Brief & Bio Section -->
-            <app-home-brief-bio [bio]="bio"></app-home-brief-bio>
+            <!-- Brief & Bio Section (New Hero) -->
+            <app-home-brief-bio [bio]="bio" (bioUpdated)="bio = $event"></app-home-brief-bio>
 
             <!-- Specialized Services Section -->
-            <app-home-services [services]="services"></app-home-services>
+            <app-home-services [services]="services" (servicesUpdated)="services = $event"></app-home-services>
 
             <!-- Tech Stack Section (Dynamic) -->
-            <app-home-tech-stack [skills]="skills"></app-home-tech-stack>
+            <app-home-tech-stack [skills]="skills" (skillsUpdated)="skills = $event"></app-home-tech-stack>
 
             <!-- Featured Projects Section -->
             <app-home-featured-projects [projects]="featuredProjects"></app-home-featured-projects>
 
             <!-- Latest Experience Section -->
-            <app-home-timeline [experiences]="experiences"></app-home-timeline>
+            <app-home-timeline [experiences]="experiences"
+                (experiencesUpdated)="experiences = $event"></app-home-timeline>
 
         </div>
     </div>

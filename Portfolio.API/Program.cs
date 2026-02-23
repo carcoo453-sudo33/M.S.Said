@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -35,6 +35,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// CORS MUST be at the very top to handle preflight and redirects correctly
+app.UseCors("AllowAngular");
+
+app.UseStaticFiles();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -46,13 +51,13 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = "swagger";
     });
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
 // Redirect root to Swagger UI
 app.MapGet("/", () => Results.Redirect("/swagger"));
-
-app.UseHttpsRedirection();
-
-app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();

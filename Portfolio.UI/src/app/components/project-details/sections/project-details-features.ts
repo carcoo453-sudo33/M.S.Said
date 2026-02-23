@@ -19,7 +19,7 @@ import { ProjectEntry } from '../../../models';
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div *ngFor="let feature of project.keyFeatures"
                     class="bg-zinc-950 p-10 rounded-[2.5rem] border border-zinc-900 hover:border-red-600/30 transition-all space-y-6 group">
-                    <div class="w-12 h-12 bg-red-600/10 rounded-2xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
                         <lucide-icon [img]="LayersIcon" class="w-6 h-6" *ngIf="feature.icon === 'Layers'"></lucide-icon>
                         <lucide-icon [img]="RocketIcon" class="w-6 h-6" *ngIf="feature.icon === 'Rocket'"></lucide-icon>
                         <lucide-icon [img]="MonitorIcon" class="w-6 h-6" *ngIf="feature.icon === 'Monitor'"></lucide-icon>
@@ -42,7 +42,7 @@ import { ProjectEntry } from '../../../models';
 
             <div class="space-y-8">
                 <div *ngFor="let resp of project.responsibilities"
-                    class="flex gap-6 p-8 bg-zinc-900/40 rounded-3xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
+                    class="flex gap-6 p-8 bg-zinc-900/40 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
                     <lucide-icon [img]="CheckIcon" class="w-6 h-6 text-red-600 shrink-0"></lucide-icon>
                     <p class="text-zinc-300 font-medium leading-relaxed">{{ resp }}</p>
                 </div>

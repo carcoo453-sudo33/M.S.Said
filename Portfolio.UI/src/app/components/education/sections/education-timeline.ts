@@ -22,7 +22,7 @@ import { EducationEntry } from '../../../models';
             <div
                 class="w-[calc(100%-6rem)] md:w-[calc(50%-4rem)] bg-zinc-50/50 dark:bg-zinc-900/40 p-12 md:p-16 rounded-[4rem] border border-zinc-100 dark:border-zinc-800 group-hover:border-red-600/30 transition-all duration-700 backdrop-blur-xl relative hover:shadow-2xl">
                 <span
-                    class="inline-block bg-red-600/5 px-5 py-2.5 rounded-2xl text-red-600 text-[10px] font-black tracking-[0.3em] uppercase mb-8 border border-red-600/10">{{
+                    class="inline-block bg-red-600/5 px-5 py-2.5 rounded-xl text-red-600 text-[10px] font-black tracking-[0.3em] uppercase mb-8 border border-red-600/10">{{
                     item.duration }}</span>
                 <h3
                     class="text-3xl md:text-4xl font-black mb-4 uppercase tracking-tighter leading-none dark:text-white text-zinc-900">

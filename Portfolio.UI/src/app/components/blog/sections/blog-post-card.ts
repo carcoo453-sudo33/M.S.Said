@@ -12,7 +12,7 @@ import { BlogPost } from '../../../models';
     imports: [CommonModule, LucideAngularModule],
     template: `
     <article
-        class="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-fade-in-up group"
+        class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-fade-in-up group"
         [style.animation-delay]="delay">
 
         <!-- Card Header -->
@@ -50,7 +50,7 @@ import { BlogPost } from '../../../models';
 
             <!-- GitHub Release Special View -->
             <div *ngIf="post.socialType === 'GitHub' && post.version"
-                class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-6 border-l-4 border-red-600 space-y-4">
+                class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-6 border-l-4 border-red-600 space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <lucide-icon [img]="CornerDownRightIcon"
@@ -70,7 +70,7 @@ import { BlogPost } from '../../../models';
 
             <!-- Post Image (Large view for LinkedIn/Dev.to) -->
             <div *ngIf="post.imageUrl && post.socialType !== 'GitHub'"
-                class="rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-xl group/img">
+                class="rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-xl group/img">
                 <img [src]="post.imageUrl"
                     class="w-full h-auto object-cover group-hover/img:scale-105 transition-transform duration-[2000ms]">
             </div>

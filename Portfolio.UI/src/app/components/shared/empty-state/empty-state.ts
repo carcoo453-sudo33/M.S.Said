@@ -11,7 +11,7 @@ import { LucideAngularModule, PackageOpen } from 'lucide-angular';
         <div
             class="bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-800 rounded-[4rem] p-24 max-w-2xl mx-auto space-y-10">
             <div
-                class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white dark:bg-zinc-800 shadow-sm text-zinc-300">
+                class="inline-flex items-center justify-center w-24 h-24 rounded-xl bg-white dark:bg-zinc-800 shadow-sm text-zinc-300">
                 <lucide-icon [img]="icon || PackageOpenIcon" class="w-12 h-12"></lucide-icon>
             </div>
             <h2 class="text-4xl font-black uppercase tracking-tighter leading-none">{{ title }}</h2>

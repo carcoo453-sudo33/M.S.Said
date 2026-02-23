@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, CheckCircle } from 'lucide-angular';
 import { BioEntry } from '../../../models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-shared-signature',
@@ -12,7 +13,7 @@ import { BioEntry } from '../../../models';
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             <div class="lg:col-span-4 relative group">
                 <div class="absolute inset-0 bg-red-600/20 rounded-[3rem] rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>
-                <img [src]="bio.avatarUrl" [alt]="bio.name"
+                <img [src]="getAvatarUrl()" [alt]="bio.name"
                     class="relative w-full aspect-square object-cover rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700">
                 <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 transition-transform">
                     <span class="text-white font-black text-xl italic uppercase tracking-tighter">M.D</span>
@@ -46,4 +47,12 @@ export class SharedSignatureComponent {
     @Input() bio: BioEntry | null = null;
     @Input() quote: string = '';
     CheckIcon = CheckCircle;
+
+    getAvatarUrl() {
+        const avatar = this.bio?.avatarUrl;
+        if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
+        if (avatar.startsWith('http')) return avatar;
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        return `${baseUrl}${avatar}`;
+    }
 }

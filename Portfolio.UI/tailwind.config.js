@@ -32,17 +32,27 @@ module.exports = {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(calc(-250px * 5))' },
         },
+        modalEnter: {
+          from: { opacity: '0', transform: 'scale(0.95) translateY(10px)' },
+          to: { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
       },
       animation: {
         'skeleton-loading': 'skeleton-loading 1.4s ease infinite',
         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
         'fade-in-left': 'fadeInLeft 0.8s ease-out forwards',
         'marquee': 'marquee 30s linear infinite',
+        'modal-enter': 'modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        'fade-in': 'fadeIn 0.3s ease-out forwards',
       },
     },
   },
   plugins: [
-    plugin(function ({ addBase, addUtilities }) {
+    plugin(function ({ addBase, addUtilities, addComponents }) {
       addBase({
         'html.light body': {
           backgroundColor: '#f4f4f5',
@@ -55,7 +65,50 @@ module.exports = {
         },
         '[dir="rtl"]': {
           fontFamily: "'Tajawal', 'Inter', sans-serif",
-        }
+        },
+        /* Global Scrollbar */
+        '::-webkit-scrollbar': {
+          width: '6px',
+          height: '6px',
+        },
+        '::-webkit-scrollbar-track': {
+          backgroundColor: 'theme("colors.zinc.100")',
+          borderRadius: '9999px',
+        },
+        'html.dark ::-webkit-scrollbar-track': {
+          backgroundColor: 'theme("colors.zinc.800")',
+        },
+        '::-webkit-scrollbar-thumb': {
+          backgroundColor: 'theme("colors.zinc.300")',
+          borderRadius: '9999px',
+          borderWidth: '2px',
+          borderColor: 'transparent',
+          backgroundClip: 'content-box',
+          transitionProperty: 'color, background-color, border-color, text-decoration-color, fill, stroke',
+          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+          transitionDuration: '150ms',
+        },
+        'html.dark ::-webkit-scrollbar-thumb': {
+          backgroundColor: 'theme("colors.zinc.600")',
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 'theme("colors.red.500")',
+        },
+      });
+
+      addComponents({
+        '.modal-overlay': {
+          '@apply fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in': {},
+        },
+        '.modal-content': {
+          '@apply relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter': {},
+        },
+        '.custom-scrollbar::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(248, 113, 113, 0.4)', // red-400/40
+        },
+        '.custom-scrollbar::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 'theme("colors.red.500")',
+        },
       });
 
       addUtilities({

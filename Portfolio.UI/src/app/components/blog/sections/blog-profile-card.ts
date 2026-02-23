@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Linkedin, Github, MessageSquare } from 'lucide-angular';
 import { BioEntry } from '../../../models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-blog-profile-card',
@@ -9,11 +10,11 @@ import { BioEntry } from '../../../models';
     imports: [CommonModule, LucideAngularModule],
     template: `
     <div
-        class="bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fade-in-left">
+        class="bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fade-in-left">
         <div class="h-20 bg-gradient-to-r from-red-600 to-purple-600"></div>
         <div class="px-8 pb-8 -mt-10 text-center">
             <div class="relative inline-block">
-                <img [src]="bio?.avatarUrl || 'https://i.pravatar.cc/150?u=mostafa'"
+                <img [src]="getAvatarUrl()"
                     class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-900 object-cover shadow-lg mx-auto mb-4">
                 <div
                     class="absolute bottom-5 right-2 w-4 h-4 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full animate-pulse">
@@ -48,4 +49,12 @@ export class BlogProfileCardComponent {
     LinkedinIcon = Linkedin;
     GithubIcon = Github;
     MessageSquareIcon = MessageSquare;
+
+    getAvatarUrl() {
+        const avatar = this.bio?.avatarUrl;
+        if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
+        if (avatar.startsWith('http')) return avatar;
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        return `${baseUrl}${avatar}`;
+    }
 }

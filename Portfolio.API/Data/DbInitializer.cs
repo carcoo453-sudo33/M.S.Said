@@ -36,11 +36,17 @@ public static class DbInitializer
                 Location = "Gharbia, Egypt",
                 Email = "m.ssaid356@gmail.com",
                 Phone = "01067358073",
-                AvatarUrl = "/profile-sketch.jpg",
+                AvatarUrl = "https://ui-avatars.com/api/?name=Mostafa+Samir+Said&background=f20d0d&color=fff&size=512",
+                LinkedInUrl = "https://linkedin.com/in/mostafasaid",
+                GitHubUrl = "https://github.com/mssaid",
+                WhatsAppUrl = "201067358073",
+                CVUrl = "/cv.pdf",
+                TwitterUrl = "https://twitter.com/mostafasaid",
                 YearsOfExperience = "3+",
                 ProjectsCompleted = "40+",
                 CodeCommits = "12k"
             });
+            await context.SaveChangesAsync();
         }
 
         // Seed Services

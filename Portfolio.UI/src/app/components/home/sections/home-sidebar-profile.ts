@@ -1,96 +1,359 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Mail, MapPin, Linkedin, Github, MessageCircle, Download } from 'lucide-angular';
+import { FormsModule } from '@angular/forms';
+import { LucideAngularModule, Mail, MapPin, Linkedin, Github, MessageCircle, Download, Phone, Edit3, Twitter, X, Save, AlertTriangle, CheckCircle } from 'lucide-angular';
 import { BioEntry } from '../../../models';
+import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../services/auth.service';
+import { ProfileService } from '../../../services/profile.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
     selector: 'app-home-sidebar-profile',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, LucideAngularModule, FormsModule],
     template: `
-    <aside class="lg:sticky lg:top-24 h-fit space-y-8 animate-fade-in-left">
+    <aside class="md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
         <div
-            class="bg-zinc-50/50 dark:bg-zinc-900/40 backdrop-blur-xl rounded-[3rem] p-6 lg:p-10 border border-zinc-100 dark:border-zinc-800/50 text-center transition-all hover:shadow-2xl group relative overflow-hidden">
-            <div
-                class="absolute inset-0 bg-gradient-to-br from-red-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity">
+            class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden transition-all hover:shadow-xl">
+
+            <!-- Avatar Section -->
+            <div class="p-8 pb-4 flex flex-col items-center relative">
+                <!-- Admin Edit Button -->
+                <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
+                    class="absolute top-4 left-4 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all z-20">
+                    <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
+                </button>
+
+                <!-- Circular Avatar -->
+                <div class="relative mb-4">
+                    <img [src]="getAvatarUrl()" [alt]="bio?.name"
+                        class="w-28 h-28 rounded-full object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
+                    <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-zinc-700 rounded-full"></span>
+                </div>
+
+                <!-- Name & Title -->
+                <h2 class="text-xl font-black dark:text-white text-zinc-900 text-center mb-1.5 tracking-tight">
+                    {{ bio?.name }}
+                </h2>
+                <span
+                    class="text-[#FF3B7E] font-bold text-[9px] uppercase tracking-[0.25em] bg-red-600/5 inline-block px-4 py-1.5 rounded-full border border-red-600/10 text-center">
+                    {{ bio?.title }}
+                </span>
             </div>
 
-            <div class="relative w-52 h-52 mx-auto mb-10">
-                <div
-                    class="absolute inset-0 bg-gradient-to-tr from-[#FF3B7E] to-[#7000FF] rounded-[4rem] rotate-6 opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                </div>
-                <img [src]="bio?.avatarUrl" [alt]="bio?.name"
-                    class="relative w-full h-full object-cover rounded-[4rem] shadow-2xl border-4 border-white dark:border-zinc-800 group-hover:scale-[1.02] transition-all duration-700 dark:grayscale group-hover:grayscale-0">
-                <div
-                    class="absolute bottom-4 right-4 w-6 h-6 bg-green-500 border-4 border-white dark:border-zinc-800 rounded-full animate-pulse">
-                </div>
-            </div>
+            <!-- Divider -->
+            <div class="mx-6 border-t border-zinc-100 dark:border-zinc-800 my-4"></div>
 
-            <h2 class="text-3xl font-black mb-2 tracking-tighter uppercase dark:text-white text-zinc-900">{{
-                bio?.name }}</h2>
-            <p
-                class="text-[#FF3B7E] font-black text-[10px] mb-10 uppercase tracking-[0.3em] bg-red-600/5 inline-block px-5 py-2 rounded-full border border-red-600/10">
-                {{ bio?.title }}
-            </p>
-
-            <div class="space-y-4 mb-10">
-                <div
-                    class="flex items-center gap-5 text-left p-4 rounded-3xl hover:bg-white dark:hover:bg-zinc-800 transition-all border border-transparent hover:border-zinc-100 dark:hover:border-zinc-700 group/item">
-                    <div
-                        class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 group-hover/item:text-[#FF3B7E] transition-colors">
-                        <lucide-icon [img]="MailIcon" class="w-5 h-5"></lucide-icon>
+            <!-- Contact Info -->
+            <div class="px-6 space-y-2 pb-6">
+                <!-- Mail -->
+                <div class="flex items-center gap-3 py-2 group">
+                    <div class="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-red-500 transition-all">
+                        <lucide-icon [img]="MailIcon" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white"></lucide-icon>
                     </div>
-                    <div class="min-w-0">
-                        <p class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Email</p>
-                        <p class="text-sm font-black truncate dark:text-zinc-200 text-zinc-800">{{ bio?.email }}</p>
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-0.5">Email</span>
+                        <a [href]="'mailto:' + bio?.email" class="text-[10px] font-bold dark:text-white text-zinc-900 truncate hover:text-red-500 transition-colors">{{ bio?.email }}</a>
                     </div>
                 </div>
-                <div
-                    class="flex items-center gap-5 text-left p-4 rounded-3xl hover:bg-white dark:hover:bg-zinc-800 transition-all border border-transparent hover:border-zinc-100 dark:hover:border-zinc-700 group/item">
-                    <div
-                        class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 group-hover/item:text-[#FF3B7E] transition-colors">
-                        <lucide-icon [img]="MapPinIcon" class="w-5 h-5"></lucide-icon>
+
+                <!-- Phone -->
+                <div class="flex items-center gap-3 py-2 group">
+                    <div class="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-red-500 transition-all">
+                        <lucide-icon [img]="PhoneIcon" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white"></lucide-icon>
                     </div>
-                    <div>
-                        <p class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Location</p>
-                        <p class="text-sm font-black dark:text-zinc-200 text-zinc-800">{{ bio?.location }}</p>
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-0.5">Phone</span>
+                        <span class="text-[10px] font-bold dark:text-white text-zinc-900">{{ bio?.phone }}</span>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="flex items-center gap-3 py-2 group">
+                    <div class="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-red-500 transition-all">
+                        <lucide-icon [img]="MapPinIcon" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white"></lucide-icon>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-0.5">Location</span>
+                        <span class="text-[10px] font-bold dark:text-white text-zinc-900">{{ bio?.location }}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-center gap-4 mb-10">
-                <a *ngIf="bio?.linkedInUrl" [href]="bio?.linkedInUrl" target="_blank"
-                    class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-[#FF3B7E] hover:text-white transition-all">
-                    <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
+            <!-- Footer Socials -->
+            <div class="bg-zinc-50/50 dark:bg-zinc-800/30 p-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-center gap-2">
+                <a *ngIf="bio?.linkedInUrl" [href]="bio?.linkedInUrl" target="_blank" class="social-icon-btn">
+                    <lucide-icon [img]="LinkedinIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </a>
-                <a *ngIf="bio?.gitHubUrl" [href]="bio?.gitHubUrl" target="_blank"
-                    class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-[#FF3B7E] hover:text-white transition-all">
-                    <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
+                <a *ngIf="bio?.gitHubUrl" [href]="bio?.gitHubUrl" target="_blank" class="social-icon-btn">
+                    <lucide-icon [img]="GithubIcon" class="w-3.5 h-3.5"></lucide-icon>
+                </a>
+                <a *ngIf="bio?.twitterUrl" [href]="bio?.twitterUrl" target="_blank" class="social-icon-btn">
+                    <lucide-icon [img]="TwitterIcon" class="w-3.5 h-3.5"></lucide-icon>
+                </a>
+                <a *ngIf="bio?.whatsAppUrl" [href]="'https://wa.me/' + bio?.whatsAppUrl" target="_blank" class="social-icon-btn">
+                    <lucide-icon [img]="MessageCircleIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </a>
             </div>
-
-            <div class="space-y-4">
-                <a [href]="'https://wa.me/' + bio?.whatsAppUrl" target="_blank"
-                    class="flex items-center justify-center gap-3 w-full py-5 bg-[#25D366] text-white font-black rounded-3xl hover:brightness-105 transition-all shadow-xl shadow-green-600/20 uppercase tracking-widest text-[10px]">
-                    <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
-                    Direct WhatsApp
-                </a>
-                <a [href]="bio?.cvUrl" target="_blank"
-                    class="flex items-center justify-center gap-3 w-full py-5 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white font-black rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border border-zinc-100 dark:border-zinc-800 uppercase tracking-widest text-[10px]">
-                    <lucide-icon [img]="DownloadIcon" class="w-5 h-5"></lucide-icon>
-                    Resume PDF
+            
+            <div class="p-4">
+                <a [href]="getCVUrl()" target="_blank"
+                    class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg hover:shadow-xl dark:shadow-none">
+                    <lucide-icon [img]="DownloadIcon" class="w-3.5 h-3.5"></lucide-icon>
+                    Download CV
                 </a>
             </div>
         </div>
     </aside>
-  `
+
+    <!-- Edit Modal -->
+    <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+        <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+                <h3 class="text-base font-black dark:text-white text-zinc-900">Edit Profile</h3>
+                <button (click)="closeEditModal()"
+                    class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
+                    <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+                <!-- Personal Info -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
+                    <input [(ngModel)]="editForm.name" type="text"
+                        [class]="submitted && !editForm.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                        class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
+                    <p *ngIf="submitted && !editForm.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title</label>
+                    <input [(ngModel)]="editForm.title" type="text"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description</label>
+                    <textarea [(ngModel)]="editForm.description" rows="3"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+
+                <!-- Contact Info -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
+                        <input [(ngModel)]="editForm.email" type="email"
+                            [class]="submitted && !editForm.email?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                            class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
+                        <p *ngIf="submitted && !editForm.email?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
+                        <input [(ngModel)]="editForm.phone" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location</label>
+                    <input [(ngModel)]="editForm.location" type="text"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+
+                <!-- URLs -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Avatar URL</label>
+                    <input [(ngModel)]="editForm.avatarUrl" type="text"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">LinkedIn URL</label>
+                        <input [(ngModel)]="editForm.linkedInUrl" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">GitHub URL</label>
+                        <input [(ngModel)]="editForm.gitHubUrl" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Twitter URL</label>
+                        <input [(ngModel)]="editForm.twitterUrl" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">WhatsApp Number</label>
+                        <input [(ngModel)]="editForm.whatsAppUrl" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">CV URL</label>
+                    <input [(ngModel)]="editForm.cvUrl" type="text"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-4 pb-4">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Yrs Exp.</label>
+                        <input [(ngModel)]="editForm.yearsOfExperience" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Projects</label>
+                        <input [(ngModel)]="editForm.projectsCompleted" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Commits</label>
+                        <input [(ngModel)]="editForm.codeCommits" type="text"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+                <button (click)="closeEditModal()"
+                    class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
+                    Cancel
+                </button>
+                <button (click)="saveBio()" [disabled]="isSaving"
+                    class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
+                    <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
+                    {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    `,
+    styles: [`
+        .social-icon-btn {
+            @apply w-8 h-8 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-500/30 hover:scale-110 transition-all;
+        }
+    `]
 })
 export class HomeSidebarProfileComponent {
+    public auth = inject(AuthService);
+    private profileService = inject(ProfileService);
+    private toast = inject(ToastService);
+
     @Input() bio?: BioEntry;
+    @Output() bioUpdated = new EventEmitter<BioEntry>();
+
+    // Icons
     MailIcon = Mail;
     MapPinIcon = MapPin;
     LinkedinIcon = Linkedin;
     GithubIcon = Github;
     MessageCircleIcon = MessageCircle;
     DownloadIcon = Download;
+    PhoneIcon = Phone;
+    EditIcon = Edit3;
+    TwitterIcon = Twitter;
+    XIcon = X;
+    SaveIcon = Save;
+    AlertIcon = AlertTriangle;
+    CheckIcon = CheckCircle;
+
+    // Edit modal state
+    showEditModal = false;
+    isSaving = false;
+    submitted = false;
+    editForm: BioEntry = this.getEmptyBio();
+
+    getEmptyBio(): BioEntry {
+        return {
+            id: '',
+            name: '',
+            title: '',
+            description: '',
+            location: '',
+            email: '',
+            phone: '',
+            yearsOfExperience: '',
+            projectsCompleted: '',
+            codeCommits: '',
+            avatarUrl: '',
+            linkedInUrl: '',
+            gitHubUrl: '',
+            whatsAppUrl: '',
+            cvUrl: '',
+            twitterUrl: ''
+        };
+    }
+
+    openEditModal() {
+        if (this.bio) {
+            console.log('Bio data received:', this.bio);
+            // Reconcile ID casing
+            const id = this.bio.id || (this.bio as any).Id || (this.bio as any).ID || crypto.randomUUID();
+            this.editForm = { ...this.bio, id };
+        } else {
+            this.editForm = this.getEmptyBio();
+            this.editForm.id = crypto.randomUUID(); // Ensure we have an ID for upsert
+        }
+        this.submitted = false;
+        this.showEditModal = true;
+    }
+
+    closeEditModal() {
+        this.showEditModal = false;
+    }
+
+    saveBio() {
+        this.submitted = true;
+        if (!this.editForm.name?.trim() || !this.editForm.email?.trim()) {
+            this.toast.error('Please fill in all required fields');
+            return;
+        }
+        if (!this.editForm.id) {
+            this.toast.error('System error: Profile ID is missing. Please refresh.');
+            return;
+        }
+        this.isSaving = true;
+        this.profileService.updateBio(this.editForm.id, this.editForm).subscribe({
+            next: () => {
+                this.bio = { ...this.editForm };
+                this.bioUpdated.emit(this.bio);
+                this.showEditModal = false;
+                this.isSaving = false;
+                this.toast.success('Profile updated successfully');
+            },
+            error: (err) => {
+                this.isSaving = false;
+                this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+            }
+        });
+    }
+
+    getAvatarUrl() {
+        const avatar = this.bio?.avatarUrl;
+        if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
+        if (avatar.startsWith('http')) return avatar;
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        return `${baseUrl}${avatar}`;
+    }
+
+    getCVUrl() {
+        const cv = this.bio?.cvUrl;
+        if (!cv) return '#';
+        if (cv.startsWith('http')) return cv;
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        return `${baseUrl}${cv}`;
+    }
 }

@@ -6,6 +6,7 @@ import { ThemeService } from '../../../services/theme.service';
 import { LucideAngularModule, Sun, Moon, Menu, X } from 'lucide-angular';
 import { ProfileService } from '../../../services/profile.service';
 import { BioEntry } from '../../../models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -33,5 +34,13 @@ export class NavbarComponent implements OnInit {
 
   toggleMobile() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  getAvatarUrl() {
+    const avatar = this.bio?.avatarUrl;
+    if (!avatar) return null;
+    if (avatar.startsWith('http')) return avatar;
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${avatar}`;
   }
 }

@@ -20,7 +20,7 @@ import { ProjectEntry } from '../../../models';
                 <div *ngFor="let log of project.changelog" class="relative pl-10 space-y-4">
                     <div class="absolute left-[-4px] top-1.5 w-2 h-2 rounded-full bg-red-600 shadow-lg shadow-red-600/40"></div>
                     <div class="text-[10px] font-bold text-red-600 tracking-widest">{{ log.date }}</div>
-                    <div class="bg-zinc-900/40 p-8 rounded-3xl border border-zinc-800/50 hover:bg-zinc-900 transition-all group">
+                    <div class="bg-zinc-900/40 p-8 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-all group">
                         <h4 class="text-white font-black uppercase tracking-tight mb-2 group-hover:text-red-600 transition-colors">
                             {{ log.version }} {{ log.title }}</h4>
                         <p class="text-zinc-500 text-sm leading-relaxed">{{ log.description }}</p>
@@ -50,7 +50,7 @@ import { ProjectEntry } from '../../../models';
             </div>
             <div class="space-y-8">
                 <div *ngFor="let related of project.relatedProjects" [routerLink]="['/projects', related.slug]"
-                    class="flex gap-6 p-6 bg-zinc-950 rounded-3xl border border-zinc-900 hover:border-red-600/30 transition-all group cursor-pointer">
+                    class="flex gap-6 p-6 bg-zinc-950 rounded-xl border border-zinc-900 hover:border-red-600/30 transition-all group cursor-pointer">
                     <div class="w-32 aspect-video rounded-xl overflow-hidden border border-zinc-800 shrink-0">
                         <img [src]="related.imageUrl" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
                     </div>

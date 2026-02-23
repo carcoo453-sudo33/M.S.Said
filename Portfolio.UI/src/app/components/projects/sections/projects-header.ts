@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth.service';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 
 @Component({
     selector: 'app-projects-header',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, LucideAngularModule],
     template: `
     <header class="pt-32 mb-16 text-center animate-fade-in-up">
         <h1
@@ -18,7 +20,7 @@ import { CommonModule } from '@angular/common';
         </p>
 
         <!-- Filter Tabs -->
-        <div class="flex flex-wrap justify-center gap-3 mt-16">
+        <div class="flex flex-wrap justify-center items-center gap-3 mt-16">
             <button *ngFor="let filter of filters" (click)="onFilterChange(filter)"
                 [class]="selectedFilter === filter 
                         ? 'bg-red-600 text-white' 
@@ -26,11 +28,20 @@ import { CommonModule } from '@angular/common';
                 class="px-8 py-3 rounded-xl font-bold text-xs transition-all duration-300 shadow-sm uppercase tracking-widest">
                 {{ filter }}
             </button>
+
+            <!-- Admin Action -->
+            <button *ngIf="auth.isLoggedIn()" 
+                class="ml-4 px-8 py-3 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all shadow-xl">
+                <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
+                Create Project
+            </button>
         </div>
     </header>
   `
 })
 export class ProjectsHeaderComponent {
+    public auth = inject(AuthService);
+    PlusIcon = Plus;
     @Input() filters: string[] = [];
     @Input() selectedFilter: string = 'All';
     @Output() filterChange = new EventEmitter<string>();

@@ -6,6 +6,7 @@ import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry, SkillEntry } fro
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
+import { ToastService } from '../../services/toast.service';
 
 // Section Components
 import { HomeHeroComponent } from './sections/home-hero';
@@ -43,6 +44,7 @@ import { SharedFooterComponent } from '../shared/footer/footer';
 export class HomeComponent implements OnInit {
     private projectService = inject(ProjectService);
     private profileService = inject(ProfileService);
+    private toast = inject(ToastService);
 
     bio?: BioEntry;
     services: ServiceEntry[] = [];
@@ -51,7 +53,16 @@ export class HomeComponent implements OnInit {
     skills: SkillEntry[] = [];
 
     ngOnInit() {
-        this.profileService.getBio().subscribe(data => this.bio = data);
+        this.profileService.getBio().subscribe({
+            next: data => {
+                this.bio = data;
+                console.log('HomeComponent: Bio loaded', data);
+            },
+            error: err => {
+                console.error('HomeComponent: Failed to load bio', err);
+                this.toast.error('Failed to load profile data. Please check your connection.');
+            }
+        });
         this.profileService.getServices().subscribe(data => this.services = data);
         this.profileService.getSkills().subscribe(data => this.skills = data);
         this.profileService.getExperiences().subscribe(data => {

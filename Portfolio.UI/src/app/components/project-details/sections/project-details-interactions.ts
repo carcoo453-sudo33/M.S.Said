@@ -12,12 +12,12 @@ import { ProjectEntry } from '../../../models';
         <!-- Interactions -->
         <div class="flex items-center gap-6 pt-12">
             <button (click)="onReact.emit()"
-                class="flex items-center gap-3 bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-2xl border border-zinc-800 text-zinc-400 hover:text-white transition-all group">
+                class="flex items-center gap-3 bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white transition-all group">
                 <lucide-icon [img]="HeartIcon" class="w-5 h-5 transition-transform group-hover:scale-125 text-red-600"></lucide-icon>
                 <span class="font-black text-xs uppercase">{{ project.reactionsCount }}</span>
             </button>
             <button (click)="onShare.emit()"
-                class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl border border-zinc-800 text-zinc-400 hover:text-white transition-all">
+                class="bg-zinc-900 hover:bg-zinc-800 p-4 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white transition-all">
                 <lucide-icon [img]="ShareIcon" class="w-5 h-5"></lucide-icon>
             </button>
         </div>
@@ -27,10 +27,10 @@ import { ProjectEntry } from '../../../models';
             <h2 class="text-2xl font-black italic uppercase tracking-tighter">Discussion</h2>
 
             <div class="flex gap-6">
-                <img src="https://i.pravatar.cc/150?u=me" class="w-14 h-14 rounded-2xl object-cover shrink-0 grayscale">
+                <img src="https://i.pravatar.cc/150?u=me" class="w-14 h-14 rounded-xl object-cover shrink-0 grayscale">
                 <div class="flex-1 space-y-4">
                     <textarea placeholder="Join the conversation..."
-                        class="w-full bg-zinc-950 border border-zinc-900 rounded-2xl p-6 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[120px]"></textarea>
+                        class="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-6 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[120px]"></textarea>
                     <div class="flex justify-end">
                         <button class="bg-white text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg">Post Comment</button>
                     </div>
@@ -39,7 +39,7 @@ import { ProjectEntry } from '../../../models';
 
             <div class="space-y-12">
                 <div *ngFor="let comment of project.comments" class="flex gap-6 animate-fade-in-up">
-                    <img [src]="comment.avatarUrl" class="w-14 h-14 rounded-2xl object-cover shrink-0 grayscale hover:grayscale-0 transition-all">
+                    <img [src]="comment.avatarUrl" class="w-14 h-14 rounded-xl object-cover shrink-0 grayscale hover:grayscale-0 transition-all">
                     <div class="flex-1 space-y-3">
                         <div class="flex items-center gap-4">
                             <h4 class="font-black text-zinc-100 text-sm italic uppercase">{{ comment.author }}</h4>

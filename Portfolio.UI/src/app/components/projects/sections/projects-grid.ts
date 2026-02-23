@@ -1,12 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProjectEntry } from '../../../models';
+import { AuthService } from '../../../services/auth.service';
+import { LucideAngularModule, Edit3, Trash2 } from 'lucide-angular';
 
 @Component({
     selector: 'app-projects-grid',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, LucideAngularModule],
     template: `
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 animate-fade-in-up"
         style="animation-delay: 0.2s">
@@ -19,6 +21,18 @@ import { ProjectEntry } from '../../../models';
                     class="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-black text-red-600 border border-white/10 uppercase tracking-widest">
                     {{ (project.duration || '2024').split('-')[0] }}
                 </span>
+            </div>
+
+            <!-- Admin Actions -->
+            <div *ngIf="auth.isLoggedIn()" class="absolute top-4 left-4 z-20 flex gap-2">
+                <button (click)="$event.stopPropagation()"
+                    class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-500 border border-white/10 transition-all">
+                    <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button (click)="$event.stopPropagation()"
+                    class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-600 border border-white/10 transition-all">
+                    <lucide-icon [img]="DeleteIcon" class="w-4 h-4"></lucide-icon>
+                </button>
             </div>
 
             <div class="relative aspect-[16/10] overflow-hidden">
@@ -61,5 +75,8 @@ import { ProjectEntry } from '../../../models';
   `
 })
 export class ProjectsGridComponent {
+    public auth = inject(AuthService);
     @Input() projects: ProjectEntry[] = [];
+    EditIcon = Edit3;
+    DeleteIcon = Trash2;
 }

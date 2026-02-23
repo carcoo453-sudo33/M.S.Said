@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl p-8 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fade-in-left"
+    <div class="bg-white dark:bg-zinc-900 rounded-xl p-8 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fade-in-left"
         style="animation-delay: 0.2s">
         <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6">Trending Topics
         </h3>

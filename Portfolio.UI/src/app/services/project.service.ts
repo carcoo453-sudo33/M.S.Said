@@ -17,4 +17,16 @@ export class ProjectService {
     getProject(slug: string) {
         return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${slug}`);
     }
+
+    createProject(project: ProjectEntry) {
+        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects`, project);
+    }
+
+    updateProject(id: string, project: ProjectEntry) {
+        return this.http.put(`${this.apiUrl}/projects/${id}`, project);
+    }
+
+    deleteProject(id: string) {
+        return this.http.delete(`${this.apiUrl}/projects/${id}`);
+    }
 }

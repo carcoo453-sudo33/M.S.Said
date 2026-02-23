@@ -60,6 +60,18 @@ export class ProjectsComponent implements OnInit {
   ngOnInit() {
     this.loadData();
     this.loadMockData();
+
+    // Safety guard: Ensure skeleton doesn't hang forever
+    setTimeout(() => {
+      if (this.isLoading) {
+        console.warn('Projects loading timed out. Clearing skeleton.');
+        this.isLoading = false;
+        // If we still have no projects, show error instead of empty if it was a real timeout
+        if (this.projects.length === 0) {
+          this.hasError = true;
+        }
+      }
+    }, 8000);
   }
 
   loadData() {
