@@ -111,7 +111,7 @@ import { ToastService } from '../../../services/toast.service';
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 max-h-[70vh]">
                 <div *ngFor="let item of editList; let i = index"
                     class="p-4 rounded-xl border space-y-3"
-                    [class]="submitted && (!item.institution?.trim() || !item.degree?.trim()) ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
+                    [class]="submitted && (!item.institution.trim() || !item.degree.trim()) ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Entry {{ i + 1 }}</span>
                         <button (click)="confirmDelete(i)"
@@ -140,17 +140,17 @@ import { ToastService } from '../../../services/toast.service';
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Institution *</label>
                         <input [(ngModel)]="item.institution" placeholder="Institution name"
-                            [class]="submitted && !item.institution?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                            [class]="submitted && !item.institution.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                        <p *ngIf="submitted && !item.institution?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Institution is required</p>
+                        <p *ngIf="submitted && !item.institution.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Institution is required</p>
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Degree/Title *</label>
                         <input [(ngModel)]="item.degree" placeholder="Degree or certification title"
-                            [class]="submitted && !item.degree?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                            [class]="submitted && !item.degree.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                        <p *ngIf="submitted && !item.degree?.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Degree is required</p>
+                        <p *ngIf="submitted && !item.degree.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Degree is required</p>
                     </div>
 
                     <div>
@@ -288,7 +288,7 @@ export class EducationTimelineComponent {
 
     saveEducation() {
         this.submitted = true;
-        if (this.editList.some(item => !item.institution?.trim() || !item.degree?.trim())) {
+        if (this.editList.some(item => !item.institution.trim() || !item.degree.trim())) {
             this.toast.error('Please fill in all required fields');
             return;
         }
