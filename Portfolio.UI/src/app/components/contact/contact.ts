@@ -13,6 +13,7 @@ import { ContactFormComponent } from './sections/contact-form';
 
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
+import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 
 @Component({
   selector: 'app-contact',
@@ -25,7 +26,8 @@ import { SharedFooterComponent } from '../shared/footer/footer';
     ContactInfoComponent,
     ContactMapComponent,
     ContactFormComponent,
-    SharedFooterComponent
+    SharedFooterComponent,
+    SharedPageHeaderComponent
   ],
   templateUrl: './contact.html'
 })
