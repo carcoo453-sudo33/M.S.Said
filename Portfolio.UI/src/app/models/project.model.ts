@@ -51,4 +51,21 @@ export interface ProjectEntry {
     relatedProjects?: Partial<ProjectEntry>[];
     comments?: Comment[];
     reactionsCount?: number;
+    views: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface ProjectDto {
+    id?: string;
+    title: string;
+    description: string;
+    imageUrl?: string;
+    projectUrl?: string;
+    gitHubUrl?: string;
+    category: string;
+    technologies: string;
+    order: number;
+    isFeatured: boolean;
+    views: number;
 }

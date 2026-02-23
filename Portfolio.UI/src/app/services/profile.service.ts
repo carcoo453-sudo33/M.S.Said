@@ -101,4 +101,23 @@ export class ProfileService {
     getEducation() {
         return this.http.get<EducationEntry[]>(`${this.apiUrl}/education`);
     }
+
+    // Uploads
+    uploadAvatar(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/profile-image`, formData);
+    }
+
+    uploadCV(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/cv`, formData);
+    }
+
+    uploadSkillIcon(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/skill-icon`, formData);
+    }
 }

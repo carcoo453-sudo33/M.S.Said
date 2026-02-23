@@ -14,4 +14,5 @@ public class ProjectDto
     public string Technologies { get; set; } = string.Empty;
     public int Order { get; set; }
     public bool IsFeatured { get; set; }
+    public int Views { get; set; }
 }

@@ -73,10 +73,32 @@ public class ProjectsController : ControllerBase
         project.TechStack = dto.Technologies;
         project.Order = dto.Order;
         project.IsFeatured = dto.IsFeatured;
+        project.Views = dto.Views;
         project.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.CompleteAsync();
         return Ok(project);
+    }
+
+    [HttpGet("featured")]
+    public async Task<ActionResult<IEnumerable<ProjectEntry>>> GetFeaturedProjects()
+    {
+        var projects = (await _unitOfWork.Repository<ProjectEntry>().GetAllAsync())
+            .OrderByDescending(p => p.CreatedAt)
+            .ToList();
+
+        if (!projects.Any()) return Ok(new List<ProjectEntry>());
+
+        // 1. Trending: Highest Views
+        var trending = projects.OrderByDescending(p => p.Views).First();
+
+        // 2. Latest: Most recent (excluding trending)
+        var latest = projects.Where(p => p.Id != trending.Id).FirstOrDefault();
+
+        var featured = new List<ProjectEntry> { trending };
+        if (latest != null) featured.Add(latest);
+
+        return Ok(featured);
     }
 
     [Authorize]

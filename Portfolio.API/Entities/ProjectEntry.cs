@@ -31,4 +31,6 @@ public class ProjectEntry : BaseEntity
     public int Order { get; set; }
     
     public bool IsFeatured { get; set; }
+    
+    public int Views { get; set; }
 }

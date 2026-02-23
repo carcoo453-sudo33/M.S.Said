@@ -10,7 +10,7 @@ import { BioEntry } from '../../../models';
     template: `
     <section class="bg-zinc-950 py-28 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 to-purple-600/10 opacity-40"></div>
-        <div class="max-w-4xl mx-auto px-6 relative z-10 text-center space-y-12">
+        <div class="max-w-4xl mx-auto px-6 relative text-center space-y-12">
             <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none uppercase">
                 Let's Build<br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]">Modern</span>

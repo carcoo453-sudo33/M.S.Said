@@ -2,7 +2,8 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { LucideAngularModule, Code2, Database, FileCode, Zap, Monitor, Terminal, Github, Edit3, X, Save, Plus, Trash2, AlertTriangle, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, Code2, Database, FileCode, Zap, Monitor, Terminal, Github, Edit3, X, Save, Plus, Trash2, AlertTriangle, CheckCircle, Upload as LucideUpload, Image as LucideImage, FileText } from 'lucide-angular';
+import { environment } from '../../../../environments/environment';
 import { SkillEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
@@ -22,7 +23,12 @@ import { ToastService } from '../../../services/toast.service';
         <div class="flex flex-wrap justify-center gap-6">
             <div *ngFor="let skill of skills"
                 class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
-                <lucide-icon [img]="getSkillIcon(skill.icon)" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
+                <ng-container *ngIf="!isImagePath(skill.icon); else imgIcon">
+                    <lucide-icon [img]="getSkillIcon(skill.icon)" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
+                </ng-container>
+                <ng-template #imgIcon>
+                    <img [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
+                </ng-template>
                 <span class="text-[9px] font-bold uppercase tracking-wide text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{{ skill.name }}</span>
             </div>
         </div>
@@ -47,18 +53,47 @@ import { ToastService } from '../../../services/toast.service';
                 <div *ngFor="let item of editList; let i = index"
                     class="p-4 rounded-xl border flex items-center gap-3"
                     [class]="submitted && !item.name?.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
-                    <div class="flex-1 space-y-2">
+                    <div class="flex-1 space-y-3">
                         <div>
                             <input [(ngModel)]="item.name" placeholder="Skill Name *"
                                 [class]="submitted && !item.name?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                 class="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                             <p *ngIf="submitted && !item.name?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
                         </div>
-                        <div class="flex gap-2">
-                            <input [(ngModel)]="item.icon" placeholder="Icon key"
-                                class="flex-1 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                            <input [(ngModel)]="item.order" type="number" placeholder="#"
-                                class="w-16 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all text-center">
+                        
+                        <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                            <div class="flex items-center gap-4 mb-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" [name]="'iconType' + i" [value]="'name'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Icon Name</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" [name]="'iconType' + i" [value]="'upload'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Image Upload</span>
+                                </label>
+                            </div>
+
+                            <div *ngIf="iconInputs[i].type === 'name'" class="flex gap-2">
+                                <input [(ngModel)]="item.icon" placeholder="Lucide (e.g. lucide-angular)"
+                                    class="flex-1 px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
+                            </div>
+
+                            <div *ngIf="iconInputs[i].type === 'upload'" class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
+                                    <img *ngIf="isImagePath(item.icon)" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
+                                    <lucide-icon *ngIf="!isImagePath(item.icon)" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
+                                </div>
+                                <label class="flex-1 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all text-center">
+                                    {{ uploadingIndex === i ? 'Uploading...' : (isImagePath(item.icon) ? 'Change Image' : 'Upload Image') }}
+                                    <input type="file" class="hidden" (change)="onIconFileSelected($event, i)" accept="image/*">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Display Order:</span>
+                            <input [(ngModel)]="item.order" type="number"
+                                class="w-16 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-center">
                         </div>
                     </div>
                     <button (click)="confirmDelete(i)"
@@ -106,31 +141,73 @@ export class HomeTechStackComponent {
     @Input() skills: SkillEntry[] = [];
     @Output() skillsUpdated = new EventEmitter<SkillEntry[]>();
 
-    EditIcon = Edit3; XIcon = X; SaveIcon = Save; PlusIcon = Plus; TrashIcon = Trash2;
+    EditIcon = Edit3; XIcon = X; SaveIcon = Save; PlusIcon = Plus; TrashIcon = Trash2; UploadIcon = LucideUpload; ImageIcon = LucideImage;
     AlertIcon = AlertTriangle; CheckIcon = CheckCircle;
 
     showEditModal = false; isSaving = false; isDeleting = false; submitted = false;
     editList: SkillEntry[] = [];
+    iconInputs: { type: 'name' | 'upload' }[] = [];
+    uploadingIndex: number | null = null;
     deleteIndex: number | null = null;
 
     getSkillIcon(iconName?: string): any {
+        if (!iconName) return Code2;
         const icons: { [key: string]: any } = {
             'lucide-angular': Code2, 'lucide-dot-net': Database, 'lucide-javascript': FileCode,
             'lucide-database': Database, 'lucide-html5': Code2, 'lucide-css3': Zap,
             'lucide-layout': Monitor, 'lucide-terminal': Terminal, 'lucide-github': Github
         };
-        return icons[iconName || ''] || Code2;
+        return icons[iconName] || Code2;
+    }
+
+    isImagePath(icon?: string): boolean {
+        if (!icon) return false;
+        return icon.startsWith('/') || icon.startsWith('http');
+    }
+
+    getFullUrl(path?: string): string {
+        if (!path) return '';
+        if (path.startsWith('http')) return path;
+        const baseUrl = environment.apiUrl.replace('/api', '');
+        return `${baseUrl}${path}`;
     }
 
     openEditModal() {
         this.editList = this.skills.map(s => ({ ...s }));
+        this.iconInputs = this.editList.map(s => ({
+            type: this.isImagePath(s.icon) ? 'upload' : 'name'
+        }));
         this.submitted = false;
         this.showEditModal = true;
     }
 
-    closeEditModal() { this.showEditModal = false; }
+    closeEditModal() {
+        this.showEditModal = false;
+    }
 
-    addNewSkill() { this.editList.push({ id: crypto.randomUUID(), name: '', icon: '', order: this.editList.length }); }
+    onIconFileSelected(event: any, index: number) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        this.uploadingIndex = index;
+        this.profileService.uploadSkillIcon(file).subscribe({
+            next: (res) => {
+                this.editList[index].icon = res.url;
+                this.uploadingIndex = null;
+                this.toast.success('Icon uploaded!');
+            },
+            error: (err) => {
+                this.uploadingIndex = null;
+                this.toast.error('Upload failed: ' + (err.error?.message || 'Server error'));
+            }
+        });
+    }
+
+    addNewSkill() {
+        const newItem = { id: crypto.randomUUID(), name: '', icon: '', order: this.editList.length };
+        this.editList.push(newItem);
+        this.iconInputs.push({ type: 'name' });
+    }
 
     confirmDelete(index: number) { this.deleteIndex = index; }
 
@@ -143,6 +220,7 @@ export class HomeTechStackComponent {
             this.profileService.deleteSkill(item.id).subscribe({
                 next: () => {
                     this.editList.splice(this.deleteIndex!, 1);
+                    this.iconInputs.splice(this.deleteIndex!, 1);
                     this.skills = [...this.editList].sort((a, b) => (a.order || 0) - (b.order || 0));
                     this.skillsUpdated.emit(this.skills);
                     this.deleteIndex = null; this.isDeleting = false;

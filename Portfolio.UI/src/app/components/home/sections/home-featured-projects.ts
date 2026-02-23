@@ -25,9 +25,21 @@ import { ProjectEntry } from '../../../models';
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div *ngFor="let project of projects"
+            <div *ngFor="let project of projects; let i = index"
                 class="group bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800/50 shadow-sm hover:shadow-xl transition-all duration-500">
                 <div class="relative aspect-[16/9] overflow-hidden">
+                    <!-- Badges -->
+                    <div class="absolute top-4 left-4 z-30 flex gap-2">
+                        <span *ngIf="isTrending(project)" 
+                            class="bg-red-600/90 backdrop-blur-md text-[#fff] text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg shadow-red-600/20">
+                            Trending 🔥
+                        </span>
+                        <span *ngIf="isLatest(project) && !isTrending(project)" 
+                            class="bg-zinc-900/90 dark:bg-zinc-800/90 backdrop-blur-md text-[#fff] text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg">
+                            Latest ✨
+                        </span>
+                    </div>
+
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
                     </div>
@@ -44,8 +56,11 @@ import { ProjectEntry } from '../../../models';
                     </div>
                 </div>
                 <div class="p-5">
-                    <h3 class="text-base font-black dark:text-white text-zinc-900 mb-2 group-hover:text-red-600 transition-colors">
-                        {{ project.title }}</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
+                            {{ project.title }}</h3>
+                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views }} Views</span>
+                    </div>
                     <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2">
                         {{ project.description }}
                     </p>
@@ -63,4 +78,18 @@ import { ProjectEntry } from '../../../models';
 export class HomeFeaturedProjectsComponent {
     @Input() projects: ProjectEntry[] = [];
     ArrowRightIcon = ArrowRight;
+
+    isTrending(project: ProjectEntry): boolean {
+        if (!this.projects.length) return false;
+        const maxViews = Math.max(...this.projects.map(p => p.views || 0));
+        return (project.views || 0) === maxViews && maxViews > 0;
+    }
+
+    isLatest(project: ProjectEntry): boolean {
+        if (!this.projects.length) return false;
+        // The API returns them ordered by CreatedAt desc, 
+        // but we need to find the maximum CreatedAt among the current set.
+        const latestDate = Math.max(...this.projects.map(p => p.createdAt ? new Date(p.createdAt).getTime() : 0));
+        return (project.createdAt ? new Date(project.createdAt).getTime() : 0) === latestDate;
+    }
 }

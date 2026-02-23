@@ -68,8 +68,8 @@ export class HomeComponent implements OnInit {
         this.profileService.getExperiences().subscribe(data => {
             this.experiences = data.slice(0, 2);
         });
-        this.projectService.getProjects().subscribe(data => {
-            this.featuredProjects = data.slice(0, 4);
+        this.projectService.getFeaturedProjects().subscribe(data => {
+            this.featuredProjects = data;
         });
     }
 }
