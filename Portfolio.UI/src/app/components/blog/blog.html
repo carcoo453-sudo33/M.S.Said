@@ -3,10 +3,10 @@
 <main
     class="min-h-screen bg-[#F4F2EE] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 space-y-32">
     <div class="max-w-7xl mx-auto px-6 pt-32 space-y-32">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16">
 
             <!-- SIDEBAR (Left) -->
-            <aside class="md:col-span-4 space-y-6">
+            <aside class="md:col-span-4 lg:col-span-3 space-y-6">
                 <!-- Profile Card -->
                 <app-blog-profile-card [bio]="bio"></app-blog-profile-card>
 
@@ -20,7 +20,7 @@
             </aside>
 
             <!-- FEED (Right) -->
-            <div class="md:col-span-8 space-y-8">
+            <div class="md:col-span-8 lg:col-span-9 space-y-8">
 
                 <!-- Feed Header -->
                 <app-blog-feed-header [title]="'Latest Updates'" [viewMode]="viewMode"
