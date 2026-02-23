@@ -26,20 +26,27 @@ export interface Comment {
     likes: number;
 }
 
-export interface ProjectEntry {
+export interface ProjectSummary {
     id: string;
     title: string;
     slug: string;
-    description?: string;
-    summary?: string;
-    techStack?: string;
+    imageUrl?: string;
+    technologies?: string;
     category?: string;
+}
+
+export interface BaseProject {
+    title: string;
+    description: string;
+    summary?: string;
+    technologies: string;
+    category: string;
     tags?: string;
     niche?: string;
     imageUrl?: string;
     gallery?: string[];
-    demoUrl?: string;
-    repoUrl?: string;
+    projectUrl?: string;
+    gitHubUrl?: string;
     duration?: string;
     language?: string;
     architecture?: string;
@@ -48,24 +55,21 @@ export interface ProjectEntry {
     changelog?: ChangelogItem[];
     responsibilities?: string[];
     metrics?: Metric[];
-    relatedProjects?: Partial<ProjectEntry>[];
     comments?: Comment[];
     reactionsCount?: number;
     views: number;
+}
+
+export interface ProjectEntry extends BaseProject {
+    id: string;
+    slug: string;
+    relatedProjects?: ProjectSummary[];
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-export interface ProjectDto {
+export interface ProjectDto extends BaseProject {
     id?: string;
-    title: string;
-    description: string;
-    imageUrl?: string;
-    projectUrl?: string;
-    gitHubUrl?: string;
-    category: string;
-    technologies: string;
     order: number;
     isFeatured: boolean;
-    views: number;
 }

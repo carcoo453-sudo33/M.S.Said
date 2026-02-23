@@ -22,7 +22,14 @@ export class NavbarComponent implements OnInit {
   bio: BioEntry | null = null;
 
   ngOnInit() {
-    this.profileService.getBio().subscribe(bio => this.bio = bio);
+    this.profileService.getBio().subscribe({
+      next: (bio) => this.bio = bio,
+      error: (err) => {
+        console.error('Navbar: Failed to load bio', err);
+        // Set default bio to prevent UI breaking
+        this.bio = null;
+      }
+    });
   }
 
   SunIcon = Sun;
@@ -40,7 +47,7 @@ export class NavbarComponent implements OnInit {
     const avatar = this.bio?.avatarUrl;
     if (!avatar) return null;
     if (avatar.startsWith('http')) return avatar;
-    const baseUrl = environment.apiUrl.replace('/api', '');
+    const baseUrl = (environment as any).apiBaseUrl || environment.apiUrl.replace('/api', '');
     return `${baseUrl}${avatar}`;
   }
 }

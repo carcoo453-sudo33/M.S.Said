@@ -42,7 +42,15 @@ public class UploadsController : ControllerBase
 
         try
         {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot", subFolder);
+            // Robust path resolution: if WebRootPath is null (common in some run scenarios),
+            // use ContentRootPath and append wwwroot.
+            var webRoot = _environment.WebRootPath;
+            if (string.IsNullOrEmpty(webRoot))
+            {
+                webRoot = Path.Combine(_environment.ContentRootPath, "wwwroot");
+            }
+
+            var uploadsFolder = Path.Combine(webRoot, subFolder);
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
@@ -54,6 +62,7 @@ public class UploadsController : ControllerBase
                 await file.CopyToAsync(stream);
             }
 
+            // Always return a path starting with / for consistency in the UI
             var relativePath = $"/{subFolder}/{fileName}";
             return Ok(new { url = relativePath });
         }

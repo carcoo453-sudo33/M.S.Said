@@ -63,13 +63,25 @@ export class HomeComponent implements OnInit {
                 this.toast.error('Failed to load profile data. Please check your connection.');
             }
         });
-        this.profileService.getServices().subscribe(data => this.services = data);
-        this.profileService.getSkills().subscribe(data => this.skills = data);
-        this.profileService.getExperiences().subscribe(data => {
-            this.experiences = data.slice(0, 2);
+        
+        this.profileService.getServices().subscribe({
+            next: data => this.services = data,
+            error: err => console.error('HomeComponent: Failed to load services', err)
         });
-        this.projectService.getFeaturedProjects().subscribe(data => {
-            this.featuredProjects = data;
+        
+        this.profileService.getSkills().subscribe({
+            next: data => this.skills = data,
+            error: err => console.error('HomeComponent: Failed to load skills', err)
+        });
+        
+        this.profileService.getExperiences().subscribe({
+            next: data => this.experiences = data.slice(0, 2),
+            error: err => console.error('HomeComponent: Failed to load experiences', err)
+        });
+        
+        this.projectService.getFeaturedProjects().subscribe({
+            next: data => this.featuredProjects = data,
+            error: err => console.error('HomeComponent: Failed to load featured projects', err)
         });
     }
 }

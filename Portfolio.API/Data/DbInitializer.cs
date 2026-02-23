@@ -156,7 +156,16 @@ public static class DbInitializer
                     ImageUrl = "https://images.unsplash.com/photo-1547954575-855750c57bd3?w=1200&q=80",
                     DemoUrl = "https://mostafasaid.dev",
                     RepoUrl = "https://github.com/mssaid/portfolio",
-                    Duration = "2025"
+                    Duration = "2025",
+                    Summary = "A premium personal portfolio CMS built with modern technologies.",
+                    Language = "English",
+                    Architecture = "N-Tier / Clean Architecture",
+                    Status = "Active",
+                    KeyFeatures = new List<ProjectKeyFeature>
+                    {
+                        new ProjectKeyFeature { Icon = "lucide-layout", Title = "Admin Dashboard", Description = "Full-featured dashboard for content management." },
+                        new ProjectKeyFeature { Icon = "lucide-shield", Title = "JWT Auth", Description = "Secure authentication using JSON Web Tokens." }
+                    }
                 },
                 new ProjectEntry
                 {

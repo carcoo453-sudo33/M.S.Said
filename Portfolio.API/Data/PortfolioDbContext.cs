@@ -18,6 +18,10 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<EducationEntry> EducationEntries { get; set; }
     public DbSet<ContactMessage> ContactMessages { get; set; }
     public DbSet<SkillEntry> Skills { get; set; }
+    public DbSet<ProjectKeyFeature> ProjectKeyFeatures { get; set; }
+    public DbSet<ProjectChangelogItem> ProjectChangelogItems { get; set; }
+    public DbSet<ProjectMetric> ProjectMetrics { get; set; }
+    public DbSet<ProjectComment> ProjectComments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -32,6 +36,31 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<EducationEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ContactMessage>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<SkillEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ProjectKeyFeature>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ProjectChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ProjectMetric>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ProjectComment>().HasQueryFilter(x => !x.IsDeleted);
+
+        // Project Relationships
+        builder.Entity<ProjectEntry>()
+            .HasMany(p => p.KeyFeatures)
+            .WithOne()
+            .HasForeignKey(kf => kf.ProjectEntryId);
+
+        builder.Entity<ProjectEntry>()
+            .HasMany(p => p.Changelog)
+            .WithOne()
+            .HasForeignKey(cl => cl.ProjectEntryId);
+
+        builder.Entity<ProjectEntry>()
+            .HasMany(p => p.Metrics)
+            .WithOne()
+            .HasForeignKey(m => m.ProjectEntryId);
+
+        builder.Entity<ProjectEntry>()
+            .HasMany(p => p.Comments)
+            .WithOne()
+            .HasForeignKey(c => c.ProjectEntryId);
     }
 
     public override int SaveChanges()

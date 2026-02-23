@@ -36,11 +36,11 @@ import { ProjectEntry } from '../../../models';
 
         <!-- Action Bar -->
         <section class="flex flex-wrap gap-6 animate-fade-in-up" style="animation-delay: 0.3s">
-            <a [href]="project.demoUrl" target="_blank"
+            <a [href]="project.projectUrl" target="_blank"
                 class="bg-red-600 text-white px-12 py-6 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-4 hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">
                 <lucide-icon [img]="RocketIcon" class="w-4 h-4"></lucide-icon> Live Demo
             </a>
-            <a [href]="project.repoUrl" target="_blank"
+            <a [href]="project.gitHubUrl" target="_blank"
                 class="bg-zinc-950 border border-zinc-800 text-zinc-300 px-12 py-6 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-4 hover:border-red-600/50 hover:text-white transition-all">
                 <lucide-icon [img]="GithubIcon" class="w-4 h-4"></lucide-icon> Source Code
             </a>

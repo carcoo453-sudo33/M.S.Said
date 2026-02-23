@@ -48,7 +48,7 @@ import { ProjectEntry } from '../../../models';
                     <div
                         class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
                         <div class="flex flex-wrap gap-1.5">
-                            <span *ngFor="let tech of project.techStack?.split(',')"
+                            <span *ngFor="let tech of project.technologies?.split(',')"
                                 class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
                                 {{ tech.trim() }}
                             </span>

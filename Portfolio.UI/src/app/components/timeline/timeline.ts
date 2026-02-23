@@ -41,7 +41,10 @@ export class TimelineComponent implements OnInit {
   hasError = false;
 
   ngOnInit() {
-    this.profileService.getBio().subscribe(bio => this.bio = bio);
+    this.profileService.getBio().subscribe({
+      next: (bio) => this.bio = bio,
+      error: (err) => console.error('Timeline: Failed to load bio', err)
+    });
     this.profileService.getExperiences().subscribe({
       next: (data) => {
         this.experiences = data;

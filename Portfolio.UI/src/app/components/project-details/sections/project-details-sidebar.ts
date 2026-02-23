@@ -57,7 +57,7 @@ import { ProjectEntry } from '../../../models';
                     <div class="space-y-2">
                         <h4 class="text-white font-black text-sm uppercase tracking-tight group-hover:text-red-600 transition-colors">{{ related.title }}</h4>
                         <div class="flex flex-wrap gap-2">
-                            <span *ngFor="let t of related.techStack?.split(',')" class="text-[9px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
+                            <span *ngFor="let t of related.technologies?.split(',')" class="text-[9px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
                         </div>
                     </div>
                 </div>

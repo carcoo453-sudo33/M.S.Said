@@ -31,7 +31,7 @@ import { ProjectEntry } from '../../../models';
 
         <!-- Tech Tags -->
         <div class="flex flex-wrap gap-3">
-            <span *ngFor="let tech of project.techStack?.split(',')"
+            <span *ngFor="let tech of project.technologies.split(',')"
                 class="bg-zinc-900 border border-zinc-800 px-6 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
                 {{ tech.trim() }}
             </span>

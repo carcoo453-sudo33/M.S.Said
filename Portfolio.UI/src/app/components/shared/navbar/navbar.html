@@ -15,11 +15,15 @@
             <a routerLink="/" routerLinkActive="text-red-600" [routerLinkActiveOptions]="{exact: true}"
                 class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Home</a>
             <a routerLink="/timeline" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">About</a>
-            <a routerLink="/services" routerLinkActive="text-red-600"
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Resume</a>
+            <a routerLink="/education" routerLinkActive="text-red-600"
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Education</a>
+            <a [routerLink]="['/']" fragment="services" routerLinkActive="text-red-600"
                 class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Services</a>
             <a routerLink="/projects" routerLinkActive="text-red-600"
                 class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Projects</a>
+            <a routerLink="/blog" routerLinkActive="text-red-600"
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Blog</a>
         </div>
 
         <!-- Right side actions -->
@@ -41,8 +45,7 @@
             </ng-container>
             <ng-template #contactBtn>
                 <a routerLink="/contact"
-                    class="hidden md:inline-flex items-center bg-red-600 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wide transition-all hover:bg-red-700 hover:scale-105 active:scale-95 shadow-md shadow-red-600/20">Contact
-                    Me</a>
+                    class="hidden md:inline-flex items-center bg-red-600 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wide transition-all hover:bg-red-700 hover:scale-105 active:scale-95 shadow-md shadow-red-600/20">Connection</a>
             </ng-template>
 
             <!-- Mobile Hamburger -->
@@ -62,11 +65,14 @@
             class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Home</a>
         <a routerLink="/timeline" routerLinkActive="text-red-600" (click)="toggleMobile()"
             class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Resume</a>
+        <a routerLink="/education" routerLinkActive="text-red-600" (click)="toggleMobile()"
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Education</a>
+        <a [routerLink]="['/']" fragment="services" routerLinkActive="text-red-600" (click)="toggleMobile()"
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Services</a>
         <a routerLink="/projects" routerLinkActive="text-red-600" (click)="toggleMobile()"
             class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Projects</a>
         <a routerLink="/blog" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Social
-            Feed</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Blog</a>
         <a routerLink="/contact" routerLinkActive="text-red-600" (click)="toggleMobile()"
             class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Connection</a>
 

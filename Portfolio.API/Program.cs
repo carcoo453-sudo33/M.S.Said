@@ -20,7 +20,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10)); // Cache preflight for 10 minutes
     });
 });
 

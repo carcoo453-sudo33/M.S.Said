@@ -43,7 +43,10 @@ export class EducationComponent implements OnInit {
     hasError = false;
 
     ngOnInit() {
-        this.profileService.getBio().subscribe(bio => this.bio = bio);
+        this.profileService.getBio().subscribe({
+            next: (bio) => this.bio = bio,
+            error: (err) => console.error('Education: Failed to load bio', err)
+        });
         this.profileService.getEducation().subscribe({
             next: (data) => {
                 this.education = data;

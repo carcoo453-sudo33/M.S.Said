@@ -60,7 +60,10 @@ export class BlogComponent implements OnInit {
     this.isLoading = true;
 
     // Fetch Bio for Sidebar
-    this.profileService.getBio().subscribe(data => this.bio = data);
+    this.profileService.getBio().subscribe({
+      next: (data) => this.bio = data,
+      error: (err) => console.error('Blog: Failed to load bio', err)
+    });
 
     // Fetch Posts
     this.blogService.getBlogPosts().subscribe({

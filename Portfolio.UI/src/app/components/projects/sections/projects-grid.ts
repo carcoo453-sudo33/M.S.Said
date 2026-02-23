@@ -59,7 +59,7 @@ import { LucideAngularModule, Edit3, Trash2 } from 'lucide-angular';
                 </p>
 
                 <div class="flex flex-wrap gap-2 mb-8 mt-auto">
-                    <span *ngFor="let tech of project.techStack?.split(',')"
+                    <span *ngFor="let tech of project.technologies.split(',')"
                         class="bg-zinc-50 dark:bg-zinc-800 text-zinc-500 font-black px-3 py-1.5 rounded-lg text-[8px] uppercase border border-zinc-100 dark:border-zinc-700 tracking-wider">
                         {{ tech.trim() }}
                     </span>

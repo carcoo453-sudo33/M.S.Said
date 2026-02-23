@@ -92,13 +92,13 @@ import { ToastService } from '../../../services/toast.service';
                 <a *ngIf="bio?.twitterUrl" [href]="bio?.twitterUrl" target="_blank" class="social-icon-btn">
                     <lucide-icon [img]="TwitterIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </a>
-                <a *ngIf="bio?.whatsAppUrl" [href]="'https://wa.me/' + bio?.whatsAppUrl" target="_blank" class="social-icon-btn">
+                <a *ngIf="bio?.whatsAppUrl" [href]="getWhatsAppUrl()" target="_blank" class="social-icon-btn">
                     <lucide-icon [img]="MessageCircleIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </a>
             </div>
             
             <div class="p-4">
-                <a [href]="getCVUrl()" target="_blank"
+                <a *ngIf="bio?.cvUrl" [href]="getCVUrl()" target="_blank" download
                     class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg hover:shadow-xl dark:shadow-none">
                     <lucide-icon [img]="DownloadIcon" class="w-3.5 h-3.5"></lucide-icon>
                     Download CV
@@ -288,6 +288,7 @@ export class HomeSidebarProfileComponent {
     MapPinIcon = MapPin;
     LinkedinIcon = Linkedin;
     GithubIcon = Github;
+    TwitterIcon = Twitter;
     MessageCircleIcon = MessageCircle;
     DownloadIcon = Download;
     PhoneIcon = Phone;
@@ -416,15 +417,25 @@ export class HomeSidebarProfileComponent {
         const avatar = this.bio?.avatarUrl;
         if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
         if (avatar.startsWith('http')) return avatar;
-        const baseUrl = environment.apiUrl.replace('/api', '');
-        return `${baseUrl}${avatar}`;
+        // Clean up leading slashes to avoid double slashes
+        const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+        const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
+        return `${baseUrl}/${cleanPath}`;
     }
 
     getCVUrl() {
         const cv = this.bio?.cvUrl;
-        if (!cv) return '#';
+        if (!cv) return null;
         if (cv.startsWith('http')) return cv;
-        const baseUrl = environment.apiUrl.replace('/api', '');
-        return `${baseUrl}${cv}`;
+        const cleanPath = cv.startsWith('/') ? cv.substring(1) : cv;
+        const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
+        return `${baseUrl}/${cleanPath}`;
+    }
+
+    getWhatsAppUrl() {
+        if (!this.bio?.whatsAppUrl) return '#';
+        // Remove all non-digit characters for WhatsApp API
+        const cleanNumber = this.bio.whatsAppUrl.replace(/\D/g, '');
+        return `https://wa.me/${cleanNumber}`;
     }
 }

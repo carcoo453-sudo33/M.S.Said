@@ -86,8 +86,9 @@ export class ProjectsComponent implements OnInit {
       }
     });
 
-    this.profileService.getExperiences().subscribe(data => {
-      this.experiences = data;
+    this.profileService.getExperiences().subscribe({
+      next: (data) => this.experiences = data,
+      error: (err) => console.error('Projects: Failed to load experiences', err)
     });
   }
 
@@ -119,7 +120,7 @@ export class ProjectsComponent implements OnInit {
     if (this.selectedFilter === 'All') return this.projects;
 
     return this.projects.filter(p => {
-      const tech = p.techStack?.toLowerCase() || '';
+      const tech = p.technologies?.toLowerCase() || '';
       const cat = p.category?.toLowerCase() || '';
       const filter = this.selectedFilter.toLowerCase();
 

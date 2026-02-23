@@ -15,6 +15,18 @@
 </head>
 
 <body>
+  <!-- Theme init: runs synchronously before paint to prevent FOUC -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('portfolio-theme');
+        var isDark = saved ? saved === 'dark' : true;
+        document.documentElement.classList.add(isDark ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   <app-root></app-root>
 </body>
 

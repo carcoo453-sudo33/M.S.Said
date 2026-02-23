@@ -53,7 +53,10 @@ export class ProjectDetailsComponent implements OnInit {
   hasError = false;
 
   ngOnInit() {
-    this.profileService.getBio().subscribe(bio => this.bio = bio);
+    this.profileService.getBio().subscribe({
+      next: (bio) => this.bio = bio,
+      error: (err) => console.error('ProjectDetails: Failed to load bio', err)
+    });
     this.loadProject();
   }
 
@@ -79,39 +82,21 @@ export class ProjectDetailsComponent implements OnInit {
   enrichProjectData(project: ProjectEntry): ProjectEntry {
     return {
       ...project,
-      summary: project.summary || 'A scalable, headless solution built for high-performance brands, featuring real-time 3D product rendering and integrated digital payments.',
-      gallery: project.gallery || [project.imageUrl || '', project.imageUrl || '', project.imageUrl || ''],
-      duration: project.duration || '4 Months',
-      language: project.language || 'TypeScript',
-      architecture: project.architecture || 'Microservices',
-      status: project.status || 'Completed and Stable',
-      keyFeatures: project.keyFeatures || [
-        { icon: 'Layers', title: 'REAL-TIME INVENTORY', description: 'WebSockets implementation for live stock updates across multiple global nodes.' },
-        { icon: 'Rocket', title: 'SECURE TRANSACTIONS', description: 'Integrated multi-currency payment gateways with advanced encryption protocols.' },
-        { icon: 'Monitor', title: '3D MODEL VIEWER', description: 'Three.js viewer allowing customers to inspect architectural details in 360 degrees.' },
-        { icon: 'Code', title: 'PERFORMANCE ENGINE', description: 'Optimized static generation achieving sub-second load times across devices.' }
-      ],
-      changelog: project.changelog || [
-        { date: 'MAR 2023', version: 'v1.2', title: 'Interface Update', description: 'Refined dark mode aesthetics and accessibility compliance.' },
-        { date: 'FEB 2023', version: 'v1.1', title: 'Core Optimization', description: 'Reduced server asset payload by 75% through advanced compression.' }
-      ],
-      responsibilities: project.responsibilities || [
-        'System Architecture: Engineered a scalable cloud infrastructure to handle high-concurrency event-driven drops.',
-        'Security Framework: Developed a custom authentication layer using state-of-the-art token management.'
-      ],
-      metrics: project.metrics || [
-        { label: 'Total Commits', value: '452' },
-        { label: 'Development Time', value: '120h' },
-        { label: 'Status', value: 'DEPLOYED' }
-      ],
-      relatedProjects: [
-        { title: 'FINTECH DASHBOARD', techStack: 'VUE, FIREBASE', imageUrl: 'assets/projects/fintech.jpg' },
-        { title: 'VAULT SECURE', techStack: 'REACT, RUST', imageUrl: 'assets/projects/vault.jpg' }
-      ],
-      comments: project.comments || [
-        { id: '1', author: 'JOHN DOE', date: '2 days ago', avatarUrl: 'https://i.pravatar.cc/150?u=john', content: 'The 3D model integration is exceptionally smooth. Did you use any specific optimization techniques for the GLTF assets?', likes: 4 }
-      ],
-      reactionsCount: project.reactionsCount || 124
+      summary: project.summary || 'Developing high-performance solutions with modern technologies.',
+      gallery: project.gallery?.length ? project.gallery : [project.imageUrl || ''],
+      duration: project.duration || 'In Progress',
+      language: project.language || 'Multiple Languages',
+      architecture: project.architecture || 'Scalable Architecture',
+      status: project.status || 'Active',
+      keyFeatures: project.keyFeatures?.length ? project.keyFeatures : [],
+      changelog: project.changelog?.length ? project.changelog : [],
+      responsibilities: project.responsibilities?.length ? project.responsibilities : [],
+      metrics: project.metrics?.length ? project.metrics : [],
+      relatedProjects: project.relatedProjects || [],
+      comments: project.comments?.length ? project.comments : [],
+      reactionsCount: project.reactionsCount || 0,
+      projectUrl: project.projectUrl || '',
+      gitHubUrl: project.gitHubUrl || ''
     };
   }
 
