@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
@@ -6,6 +6,8 @@ import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry, SkillEntry } fro
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
 import { ToastService } from '../../services/toast.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 import { HomeSidebarProfileComponent } from './sections/home-sidebar-profile';
@@ -26,6 +28,7 @@ import { SharedFooterComponent } from '../shared/footer/footer';
         CommonModule,
         NavbarComponent,
         LucideAngularModule,
+        TranslateModule,
         HomeSidebarProfileComponent,
         HomeBriefBioComponent,
         HomeServicesComponent,
@@ -41,17 +44,18 @@ export class HomeComponent implements OnInit {
     private projectService = inject(ProjectService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
+    public translationService = inject(TranslationService);
 
-    bio?: BioEntry;
-    services: ServiceEntry[] = [];
-    featuredProjects: ProjectEntry[] = [];
-    experiences: ExperienceEntry[] = [];
-    skills: SkillEntry[] = [];
+    bio = signal<BioEntry | undefined>(undefined);
+    services = signal<ServiceEntry[]>([]);
+    featuredProjects = signal<ProjectEntry[]>([]);
+    experiences = signal<ExperienceEntry[]>([]);
+    skills = signal<SkillEntry[]>([]);
 
     ngOnInit() {
         this.profileService.getBio().subscribe({
             next: data => {
-                this.bio = data;
+                this.bio.set(data);
                 console.log('HomeComponent: Bio loaded', data);
             },
             error: err => {
@@ -61,22 +65,22 @@ export class HomeComponent implements OnInit {
         });
         
         this.profileService.getServices().subscribe({
-            next: data => this.services = data,
+            next: data => this.services.set(data),
             error: err => console.error('HomeComponent: Failed to load services', err)
         });
         
         this.profileService.getSkills().subscribe({
-            next: data => this.skills = data,
+            next: data => this.skills.set(data),
             error: err => console.error('HomeComponent: Failed to load skills', err)
         });
         
         this.profileService.getExperiences().subscribe({
-            next: data => this.experiences = data.slice(0, 2),
+            next: data => this.experiences.set(data.slice(0, 2)),
             error: err => console.error('HomeComponent: Failed to load experiences', err)
         });
         
         this.projectService.getFeaturedProjects().subscribe({
-            next: data => this.featuredProjects = data,
+            next: data => this.featuredProjects.set(data),
             error: err => console.error('HomeComponent: Failed to load featured projects', err)
         });
     }

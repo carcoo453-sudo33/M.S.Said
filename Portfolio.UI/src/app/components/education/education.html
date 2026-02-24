@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<main
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pt-32 transition-colors duration-500 overflow-hidden relative space-y-32">
 
     <!-- Animated Background Elements -->
@@ -15,35 +15,102 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10 space-y-32">
 
         <!-- Header Section -->
-        <app-shared-page-header badge="Knowledge Synthesis"
-            title="ACADEMIC<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]'>FOUNDATION</span>"
-            description="Technical foundations and continuous specialization. The evolution of a system architect through rigorous inquiry and certification.">
+        <app-shared-page-header [badge]="'education.badge' | translate"
+            [title]="('education.title1' | translate) + '<br><span class=\'text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]\'>' + ('education.title2' | translate) + '</span>'"
+            [description]="'education.description' | translate">
         </app-shared-page-header>
 
         <!-- SKELETON STATE -->
-        <app-shared-skeleton *ngIf="isLoading" [count]="3" height="300px"></app-shared-skeleton>
+        <app-shared-skeleton *ngIf="isLoading()" [count]="3" height="300px"></app-shared-skeleton>
 
         <!-- ERROR STATE -->
-        <app-shared-error-state *ngIf="!isLoading && hasError" title="Information Link Severed" retryText="Re-Link Data"
+        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'education.errorTitle' | translate" [retryText]="'education.retryText' | translate"
             (retry)="ngOnInit()">
         </app-shared-error-state>
 
         <!-- EMPTY STATE -->
-        <app-shared-empty-state *ngIf="!isLoading && !hasError && allEducation.length === 0" 
-            title="Awaiting Batching"
-            message="Academic credentials and specialized training are being compiled for display.">
+        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && allEducation().length === 0" 
+            [title]="'education.emptyTitle' | translate"
+            [message]="'education.emptyMessage' | translate">
         </app-shared-empty-state>
 
         <!-- CONTINUOUS TIMELINE -->
-        <app-education-timeline *ngIf="!isLoading && !hasError && allEducation.length > 0"
-            [education]="allEducation" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+        <div *ngIf="!isLoading() && !hasError() && allEducation().length > 0" class="space-y-16">
+            <!-- Education Card -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.educationTitle' | translate }}</h2>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.educationDesc' | translate }}</p>
+                    </div>
+                    <button (click)="toggleSection('education')"
+                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
+                        {{ showEducation() ? ('education.hideDetails' | translate) : ('education.showDetails' | translate) }}
+                    </button>
+                </div>
+                <div *ngIf="showEducation()" class="mt-6">
+                    <app-education-timeline [education]="educationList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+                </div>
+            </div>
+
+            <!-- Training Card -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.trainingTitle' | translate }}</h2>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.trainingDesc' | translate }}</p>
+                    </div>
+                    <button (click)="toggleSection('training')"
+                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
+                        {{ showTraining() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
+                    </button>
+                </div>
+                <div *ngIf="showTraining()" class="mt-6">
+                    <app-education-timeline [education]="trainingList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+                </div>
+            </div>
+
+            <!-- Certification Card -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.certificationTitle' | translate }}</h2>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.certificationDesc' | translate }}</p>
+                    </div>
+                    <button (click)="toggleSection('certification')"
+                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
+                        {{ showCertification() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
+                    </button>
+                </div>
+                <div *ngIf="showCertification()" class="mt-6">
+                    <app-education-timeline [education]="certificationList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+                </div>
+            </div>
+
+            <!-- Achievements Card -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.achievementTitle' | translate }}</h2>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.achievementDesc' | translate }}</p>
+                    </div>
+                    <button (click)="toggleSection('achievement')"
+                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
+                        {{ showAchievement() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
+                    </button>
+                </div>
+                <div *ngIf="showAchievement()" class="mt-6">
+                    <app-education-timeline [education]="achievementList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+                </div>
+            </div>
+        </div>
 
         <!-- SPECIALIZATIONS -->
-        <app-education-specializations [bio]="bio || undefined"></app-education-specializations>
+        <app-education-specializations [bio]="bio() || undefined"></app-education-specializations>
 
         <!-- Strategic Signature Section -->
-        <app-shared-signature [bio]="bio"
-            [quote]="bio?.educationQuote || 'Education is the synthesis of inquiry and architecture. My academic foundation provides the rigorous framework through which I approach complex engineering challenges and innovative system design.'">
+        <app-shared-signature [bio]="bio()"
+            [quote]="bio()?.educationQuote || ('education.defaultQuote' | translate)">
         </app-shared-signature>
     </div>
 </main>

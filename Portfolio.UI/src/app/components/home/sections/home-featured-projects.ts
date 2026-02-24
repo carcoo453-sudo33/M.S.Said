@@ -1,43 +1,46 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { ProjectEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
+import { TranslationHelperService } from '../../../services/translation-helper.service';
+import { inject } from '@angular/core';
 
 @Component({
     selector: 'app-home-featured-projects',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, RouterLink],
+    imports: [CommonModule, LucideAngularModule, RouterLink, TranslateModule],
     template: `
     <section class="animate-fade-in-up pt-10">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
             <div>
                 <div class="flex items-center gap-4 mb-1.5">
                     <div class="w-1 h-8 bg-red-600 rounded-full"></div>
-                    <h2 class="text-xl font-black dark:text-white text-zinc-900 tracking-tight">Featured Projects</h2>
+                    <h2 class="text-xl font-black dark:text-white text-zinc-900 tracking-tight">{{ 'home.featuredProjects.title' | translate }}</h2>
                 </div>
-                <p class="text-zinc-500 text-sm ms-5">Some of the works I am most proud of</p>
+                <p class="text-zinc-500 text-sm ms-5">{{ 'home.featuredProjects.subtitle' | translate }}</p>
             </div>
             <a routerLink="/projects"
                 class="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-all ms-5">
-                View Github
+                {{ 'home.featuredProjects.viewGithub' | translate }}
                 <lucide-icon [img]="ArrowRightIcon" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"></lucide-icon>
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div *ngFor="let project of projects; let i = index"
+            <div *ngFor="let project of translatedProjects; let i = index"
                 class="group bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800/50 shadow-sm hover:shadow-xl transition-all duration-500">
                 <div class="relative aspect-[16/9] overflow-hidden">
                     <!-- Badges -->
                     <div class="absolute top-4 left-4 z-30 flex gap-2">
                         <span *ngIf="isTrending(project)" 
                             class="bg-red-600/90 backdrop-blur-md text-[#fff] text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg shadow-red-600/20">
-                            Trending 🔥
+                            {{ 'home.featuredProjects.trending' | translate }}
                         </span>
                         <span *ngIf="isLatest(project) && !isTrending(project)" 
                             class="bg-zinc-900/90 dark:bg-zinc-800/90 backdrop-blur-md text-[#fff] text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg">
-                            Latest ✨
+                            {{ 'home.featuredProjects.latest' | translate }}
                         </span>
                     </div>
 
@@ -60,14 +63,14 @@ import { environment } from '../../../../environments/environment';
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
                             {{ project.title }}</h3>
-                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views }} Views</span>
+                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views }} {{ 'home.featuredProjects.views' | translate }}</span>
                     </div>
                     <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2">
                         {{ project.description }}
                     </p>
                     <a [routerLink]="['/projects', project.slug]"
                         class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:gap-3 transition-all">
-                        Project Insights
+                        {{ 'home.featuredProjects.projectInsights' | translate }}
                         <lucide-icon [img]="ArrowRightIcon" class="w-3.5 h-3.5"></lucide-icon>
                     </a>
                 </div>
@@ -77,8 +80,14 @@ import { environment } from '../../../../environments/environment';
   `
 })
 export class HomeFeaturedProjectsComponent {
+    public translationHelper = inject(TranslationHelperService);
+    
     @Input() projects: ProjectEntry[] = [];
     ArrowRightIcon = ArrowRight;
+
+    get translatedProjects(): ProjectEntry[] {
+        return this.translationHelper.translateArray(this.projects, ['title', 'description', 'summary']);
+    }
 
     isTrending(project: ProjectEntry): boolean {
         if (!this.projects.length) return false;

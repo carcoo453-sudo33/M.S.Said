@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<main
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pt-32 px-6 overflow-hidden relative transition-colors duration-500 space-y-32">
 
     <!-- Animated Background Elements -->
@@ -14,8 +14,8 @@
 
     <div class="max-w-7xl mx-auto relative z-10 space-y-32">
         <!-- Page Header -->
-        <app-shared-page-header badge="Available for Strategic Build" title="Let's<br>Collaborate."
-            description="Architecting the future through technical excellence and intentional design. Reach out to initiate the roadmap.">
+        <app-shared-page-header [badge]="'contact.badge' | translate" [title]="'contact.title' | translate"
+            [description]="'contact.description' | translate">
         </app-shared-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
@@ -27,7 +27,7 @@
             </div>
 
             <!-- Contact Form -->
-            <app-contact-form [model]="model" [loading]="loading" [success]="success" (submit)="submitMessage()">
+            <app-contact-form [model]="model()" [loading]="loading()" [success]="success()" (submit)="submitMessage()">
             </app-contact-form>
 
         </div>

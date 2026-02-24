@@ -13,8 +13,10 @@ public class ProjectKeyFeature : BaseEntity
     
     [Required]
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
     
     public string Description { get; set; } = string.Empty;
+    public string? Description_Ar { get; set; }
 }
 
 public class ProjectChangelogItem : BaseEntity
@@ -27,8 +29,10 @@ public class ProjectChangelogItem : BaseEntity
     
     [Required]
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
     
     public string Description { get; set; } = string.Empty;
+    public string? Description_Ar { get; set; }
 }
 
 public class ProjectMetric : BaseEntity
@@ -37,6 +41,7 @@ public class ProjectMetric : BaseEntity
     
     [Required]
     public string Label { get; set; } = string.Empty;
+    public string? Label_Ar { get; set; }
     
     [Required]
     public string Value { get; set; } = string.Empty;

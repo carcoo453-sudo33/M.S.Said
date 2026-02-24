@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { LucideAngularModule, Quote, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, User } from 'lucide-angular';
@@ -12,20 +13,20 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
     selector: 'app-projects-references',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule],
+    imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
     <section class="mt-48 animate-fade-in-up" style="animation-delay: 0.6s">
         <div class="flex items-center gap-4 mb-16 relative">
             <div class="w-1 h-12 bg-red-600 rounded-full"></div>
             <h2 class="text-4xl font-black dark:text-white text-zinc-900 tracking-tight uppercase italic">
-                References
+                {{ 'projects.references.title' | translate }}
             </h2>
             
             <!-- Admin Panel -->
             <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
                 class="ms-auto px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-                Add Testimonial
+                {{ 'projects.references.addTestimonial' | translate }}
             </button>
         </div>
 

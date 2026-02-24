@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
@@ -7,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { ProjectEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
+import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 import { ProjectDetailsHeaderComponent } from './sections/project-details-header';
@@ -28,6 +30,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     NavbarComponent,
     LucideAngularModule,
     ProjectDetailsHeaderComponent,
@@ -50,18 +53,19 @@ export class ProjectDetailsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
   private authService = inject(AuthService);
+  public translationService = inject(TranslationService);
 
-  project?: ProjectEntry;
-  bio: BioEntry | null = null;
-  isLoading = true;
-  hasError = false;
-  isAuthenticated = false;
-  triggerEditModal = false;
-  triggerShareModal = false;
+  project = signal<ProjectEntry | undefined>(undefined);
+  bio = signal<BioEntry | null>(null);
+  isLoading = signal(true);
+  hasError = signal(false);
+  isAuthenticated = signal(false);
+  triggerEditModal = signal(false);
+  triggerShareModal = signal(false);
 
   ngOnInit() {
     this.profileService.getBio().subscribe({
-      next: (bio) => this.bio = bio,
+      next: (bio) => this.bio.set(bio),
       error: (err) => console.error('ProjectDetails: Failed to load bio', err)
     });
     this.checkAuth();
@@ -70,7 +74,7 @@ export class ProjectDetailsComponent implements OnInit {
 
   checkAuth() {
     const token = localStorage.getItem('auth_token');
-    this.isAuthenticated = !!token;
+    this.isAuthenticated.set(!!token);
   }
 
   loadProject() {
@@ -82,27 +86,28 @@ export class ProjectDetailsComponent implements OnInit {
         next: (data) => {
           console.log('Project loaded from API:', data);
           console.log('Project ID from API:', data.id);
-          this.project = this.enrichProjectData(data);
-          console.log('Enriched project:', this.project);
-          console.log('Final project ID:', this.project.id);
+          const enriched = this.enrichProjectData(data);
+          this.project.set(enriched);
+          console.log('Enriched project:', enriched);
+          console.log('Final project ID:', enriched.id);
           // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
           setTimeout(() => {
-            this.isLoading = false;
+            this.isLoading.set(false);
           }, 0);
         },
         error: (err) => {
           console.error('Failed to load project:', err);
           // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
           setTimeout(() => {
-            this.isLoading = false;
-            this.hasError = true;
+            this.isLoading.set(false);
+            this.hasError.set(true);
           }, 0);
         }
       });
     } else {
       setTimeout(() => {
-        this.isLoading = false;
-        this.hasError = true;
+        this.isLoading.set(false);
+        this.hasError.set(true);
       }, 0);
     }
   }
@@ -129,49 +134,49 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onReact() {
-    if (this.project && this.project.id) {
-      console.log('Reacting to project:', this.project.id);
-      this.projectService.reactToProject(this.project.id).subscribe({
+    const currentProject = this.project();
+    if (currentProject && currentProject.id) {
+      console.log('Reacting to project:', currentProject.id);
+      this.projectService.reactToProject(currentProject.id).subscribe({
         next: (newCount) => {
           console.log('React successful, new count:', newCount);
-          if (this.project) {
-            this.project.reactionsCount = newCount;
-          }
+          this.project.set({ ...currentProject, reactionsCount: newCount });
         },
         error: (err) => {
           console.error('Failed to react to project:', err);
         }
       });
     } else {
-      console.error('Cannot react: project or project.id is missing', this.project);
+      console.error('Cannot react: project or project.id is missing', currentProject);
     }
   }
 
   onShare() {
     // Trigger share modal via flag
-    this.triggerShareModal = true;
-    setTimeout(() => this.triggerShareModal = false, 100);
+    this.triggerShareModal.set(true);
+    setTimeout(() => this.triggerShareModal.set(false), 100);
   }
 
   onProjectUpdate(updatedProject: ProjectEntry) {
-    this.project = updatedProject;
+    this.project.set(updatedProject);
   }
 
   onEditProject() {
     // Trigger the management modal
-    this.triggerEditModal = true;
-    setTimeout(() => this.triggerEditModal = false, 100);
+    this.triggerEditModal.set(true);
+    setTimeout(() => this.triggerEditModal.set(false), 100);
   }
 
   onDeleteProject() {
-    if (!this.project || !this.project.id) return;
+    const currentProject = this.project();
+    if (!currentProject || !currentProject.id) return;
     
     if (!this.authService.isLoggedIn()) {
       alert('You must be logged in to delete projects.');
       return;
     }
 
-    this.projectService.deleteProject(this.project.id).subscribe({
+    this.projectService.deleteProject(currentProject.id).subscribe({
       next: () => {
         console.log('Project deleted successfully');
         this.router.navigate(['/projects']);

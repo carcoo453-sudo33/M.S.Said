@@ -1,54 +1,86 @@
 <app-navbar></app-navbar>
 
-<main
-    class="min-h-screen bg-[#F4F2EE] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 space-y-32">
-    <div class="max-w-7xl mx-auto px-6 pt-32 space-y-32">
+<!-- Blog Management Component -->
+<app-blog-manage 
+    [post]="selectedPost()"
+    [canEdit]="canEdit"
+    [triggerEdit]="triggerEdit()"
+    (onCreate)="onPostCreated($event)"
+    (onUpdate)="onPostUpdated()"
+    (onDelete)="onPostDeleted($event)">
+</app-blog-manage>
+
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
+    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
+    <div class="max-w-7xl mx-auto px-6 pt-32 pb-32">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16">
 
-            <!-- SIDEBAR (Left) -->
-            <aside class="md:col-span-4 lg:col-span-3 space-y-6">
-                <!-- Profile Card -->
-                <app-blog-profile-card [bio]="bio"></app-blog-profile-card>
+            <!-- Right Sidebar (md:order-2) -->
+            <aside class="md:col-span-4 lg:col-span-4 md:order-2 md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
+                <div class="space-y-6">
+                    <!-- Profile Card -->
+                    <div>
+                        <app-blog-profile-card [bio]="bio()"></app-blog-profile-card>
+                    </div>
 
-                <!-- Platform Filter -->
-                <app-blog-platform-filter [platforms]="platforms" [selectedPlatform]="selectedPlatform"
-                    [counts]="platformCounts" (platformChange)="setPlatform($event)">
-                </app-blog-platform-filter>
+                    <!-- Platform Filter -->
+                    <div>
+                        <app-blog-platform-filter [platforms]="platforms" [selectedPlatform]="selectedPlatform()"
+                            [counts]="platformCounts" (platformChange)="setPlatform($event)">
+                        </app-blog-platform-filter>
+                    </div>
 
-                <!-- Trending Topics -->
-                <app-blog-trending-topics [topics]="trendingTopics"></app-blog-trending-topics>
+                    <!-- Trending Topics -->
+                    <div>
+                        <app-blog-trending-topics [topics]="trendingTopics()"></app-blog-trending-topics>
+                    </div>
+                </div>
             </aside>
 
-            <!-- FEED (Right) -->
-            <div class="md:col-span-8 lg:col-span-9 space-y-8">
+            <!-- Left Content Area (md:order-1) -->
+            <div class="md:col-span-8 lg:col-span-8 space-y-12 md:order-1">
 
                 <!-- Feed Header -->
-                <app-blog-feed-header [title]="'Latest Updates'" [viewMode]="viewMode"
+                <app-blog-feed-header [title]="'blog.latestUpdates' | translate" [viewMode]="viewMode"
                     (viewModeChange)="viewMode = $event">
                 </app-blog-feed-header>
 
                 <!-- Loading State -->
-                <app-shared-skeleton *ngIf="isLoading" [count]="4" height="250px"></app-shared-skeleton>
+                <app-shared-skeleton *ngIf="isLoading()" [count]="4" height="250px"></app-shared-skeleton>
 
                 <!-- Posts List -->
-                <div *ngIf="!isLoading" class="space-y-8">
-                    <app-blog-post-card *ngFor="let post of filteredPosts; let i = index" [post]="post"
-                        [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)">
-                    </app-blog-post-card>
+                <div *ngIf="!isLoading()">
+                    <!-- List View -->
+                    <div *ngIf="viewMode === 'list'" class="space-y-8">
+                        <div *ngFor="let post of filteredPosts; let i = index">
+                            <app-blog-post-card [post]="post"
+                                [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
+                            </app-blog-post-card>
+                        </div>
+                    </div>
+
+                    <!-- Grid View -->
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div *ngFor="let post of filteredPosts; let i = index">
+                            <app-blog-post-card [post]="post"
+                                [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
+                            </app-blog-post-card>
+                        </div>
+                    </div>
 
                     <!-- Load More -->
-                    <div class="pt-8 text-center animate-fade-in-up">
+                    <div class="pt-12 text-center animate-fade-in-up">
                         <button
                             class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
-                            Load More Updates
+                            {{ 'blog.loadMore' | translate }}
                         </button>
                     </div>
                 </div>
 
                 <!-- Empty State -->
-                <app-shared-empty-state *ngIf="!isLoading && filteredPosts.length === 0"
-                    [title]="'Sector: ' + selectedPlatform"
-                    message="No transmission detected in this frequency range. System awaiting new content.">
+                <app-shared-empty-state *ngIf="!isLoading() && filteredPosts.length === 0"
+                    [title]="('blog.emptyTitle' | translate) + ' ' + selectedPlatform()"
+                    [message]="'blog.emptyMessage' | translate">
                 </app-shared-empty-state>
 
             </div>

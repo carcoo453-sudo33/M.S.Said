@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ExperienceEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
@@ -10,16 +11,16 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
 @Component({
     selector: 'app-projects-work-history',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule],
+    imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
     <section class="mt-48 animate-fade-in-up">
         <div class="flex items-center gap-6 mb-20">
             <div class="w-2 h-12 bg-red-600 rounded-full"></div>
-            <h2 class="text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase italic">Work History</h2>
+            <h2 class="text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase italic">{{ 'projects.workHistory.title' | translate }}</h2>
             <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
                 class="ms-auto px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-                Add Experience
+                {{ 'projects.workHistory.addExperience' | translate }}
             </button>
         </div>
 

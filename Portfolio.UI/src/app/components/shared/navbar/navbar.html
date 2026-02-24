@@ -4,28 +4,29 @@
         <!-- Logo -->
         <a routerLink="/"
             class="text-xl font-black tracking-tighter hover:text-red-600 transition-all flex items-center gap-1 text-zinc-900 dark:text-white group">
-            Mostafa<span class="text-red-600">.Dev</span>
             <div
-                class="bg-red-600 text-white w-7 h-7 rounded-lg flex items-center justify-center ms-2 shadow-lg shadow-red-600/20 text-xs">
+                class="bg-red-600 text-white w-7 h-7 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20 text-xs order-first">
                 M</div>
+            Mostafa<span class="text-red-600">.Dev</span>
         </a>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex items-center gap-8">
             <a routerLink="/" routerLinkActive="text-red-600" [routerLinkActiveOptions]="{exact: true}"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Home</a>
-            <a routerLink="/timeline" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Resume</a>
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.home' | translate }}</a>
             <a routerLink="/education" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Education</a>
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.education' | translate }}</a>
             <a routerLink="/projects" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Projects</a>
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.projects' | translate }}</a>
             <a routerLink="/blog" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">Blog</a>
+                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.blog' | translate }}</a>
         </div>
 
         <!-- Right side actions -->
         <div class="flex items-center gap-4">
+            <!-- Language Switcher -->
+            <app-language-switcher></app-language-switcher>
+
             <!-- Theme Toggle Button -->
             <button (click)="theme.toggle()"
                 class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 hover:border-red-600/50 transition-all hover:scale-110 active:scale-95"
@@ -39,11 +40,11 @@
             <!-- Auth/Admin -->
             <ng-container *ngIf="auth.isLoggedIn(); else contactBtn">
                 <button (click)="auth.logout()"
-                    class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 hover:text-red-600 transition-colors">Logout</button>
+                    class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 hover:text-red-600 transition-colors">{{ 'nav.logout' | translate }}</button>
             </ng-container>
             <ng-template #contactBtn>
                 <a routerLink="/contact"
-                    class="hidden md:inline-flex items-center bg-red-600 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wide transition-all hover:bg-red-700 hover:scale-105 active:scale-95 shadow-md shadow-red-600/20">Connection</a>
+                    class="hidden md:inline-flex items-center bg-red-600 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wide transition-all hover:bg-red-700 hover:scale-105 active:scale-95 shadow-md shadow-red-600/20">{{ 'nav.contact' | translate }}</a>
             </ng-template>
 
             <!-- Mobile Hamburger -->
@@ -58,22 +59,20 @@
     <!-- Mobile Menu -->
     <div *ngIf="mobileMenuOpen"
         class="md:hidden mt-6 py-10 border-t border-zinc-100 dark:border-zinc-900 flex flex-col gap-8 items-center bg-white dark:bg-zinc-950 rounded-[2rem] shadow-2xl animate-fade-in-up">
+        
         <a routerLink="/" routerLinkActive="text-red-600" [routerLinkActiveOptions]="{exact: true}"
             (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Home</a>
-        <a routerLink="/timeline" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Resume</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">{{ 'nav.home' | translate }}</a>
         <a routerLink="/education" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Education</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">{{ 'nav.education' | translate }}</a>
         <a routerLink="/projects" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Projects</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">{{ 'nav.projects' | translate }}</a>
         <a routerLink="/blog" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Blog</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">{{ 'nav.blog' | translate }}</a>
         <a routerLink="/contact" routerLinkActive="text-red-600" (click)="toggleMobile()"
-            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">Connection</a>
+            class="text-[12px] font-black uppercase tracking-widest text-zinc-500 hover:text-red-600 transition-colors">{{ 'nav.contact' | translate }}</a>
 
         <a *ngIf="!auth.isLoggedIn()" routerLink="/login" (click)="toggleMobile()"
-            class="mt-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-10 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">Admin
-            System</a>
+            class="mt-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-10 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl">{{ 'nav.admin' | translate }}</a>
     </div>
 </nav>

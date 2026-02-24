@@ -7,11 +7,13 @@ import { LucideAngularModule, Sun, Moon, Menu, X } from 'lucide-angular';
 import { ProfileService } from '../../../services/profile.service';
 import { BioEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
+import { LanguageSwitcherComponent } from '../language-switcher/language-switcher';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LanguageSwitcherComponent, TranslateModule],
   templateUrl: './navbar.html'
 })
 export class NavbarComponent implements OnInit {

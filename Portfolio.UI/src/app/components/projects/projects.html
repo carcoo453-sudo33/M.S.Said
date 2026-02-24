@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<main
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 overflow-hidden relative space-y-32">
 
     <!-- Animated Background Elements -->
@@ -16,41 +16,41 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10">
 
         <!-- SKELETON STATE -->
-        <app-shared-skeleton *ngIf="isLoading" [count]="3" height="400px"></app-shared-skeleton>
+        <app-shared-skeleton *ngIf="isLoading()" [count]="3" height="400px"></app-shared-skeleton>
 
         <!-- ERROR STATE -->
-        <app-shared-error-state *ngIf="!isLoading && hasError" title="Chronology Link Broken"
-            retryText="Restore Sequence" (retry)="ngOnInit()">
+        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'projects.errorTitle' | translate"
+            [retryText]="'projects.retryText' | translate" (retry)="ngOnInit()">
         </app-shared-error-state>
 
         <!-- EMPTY STATE -->
-        <app-shared-empty-state *ngIf="!isLoading && !hasError && projects.length === 0" title="Fresh Origins"
-            message="New chapters of professional excellence are being drafted. Initializing history...">
+        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && projects().length === 0" [title]="'projects.emptyTitle' | translate"
+            [message]="'projects.emptyMessage' | translate">
         </app-shared-empty-state>
 
         <!-- LOADED STATE -->
-        <div *ngIf="!isLoading && !hasError && projects.length > 0" class="space-y-32">
+        <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="space-y-32">
 
             <!-- Header Section -->
-            <app-projects-header [filters]="filters" [selectedFilter]="selectedFilter"
+            <app-projects-header [filters]="filters" [selectedFilter]="selectedFilter()"
                 (filterChange)="setFilter($event)">
             </app-projects-header>
 
             <!-- Project Grid -->
             <app-projects-grid 
                 [projects]="filteredProjects" 
-                [totalCount]="totalProjectCount"
+                [totalCount]="totalProjectCount()"
                 (projectsUpdated)="onProjectsUpdated($event)">
             </app-projects-grid>
 
             <!-- Work History Section -->
-            <app-projects-work-history [experiences]="experiences" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
+            <app-projects-work-history [experiences]="experiences()" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
 
             <!-- Brand Slider Section -->
-            <app-projects-brand-slider [clients]="clients" (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
+            <app-projects-brand-slider [clients]="clients()" (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
 
             <!-- References Section -->
-            <app-projects-references [testimonials]="testimonials" (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
+            <app-projects-references [testimonials]="testimonials()" (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
 
             <!-- Bottom CTA -->
             <app-projects-bottom-cta></app-projects-bottom-cta>

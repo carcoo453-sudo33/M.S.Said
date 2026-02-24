@@ -1,9 +1,13 @@
 export interface BioEntry {
     id: string;
     name: string;
+    name_Ar?: string;
     title: string;
+    title_Ar?: string;
     description: string;
+    description_Ar?: string;
     location: string;
+    location_Ar?: string;
     email: string;
     phone: string;
     avatarUrl?: string;
@@ -16,7 +20,12 @@ export interface BioEntry {
     cvUrl?: string;
     twitterUrl?: string;
     educationQuote?: string;
+    educationQuote_Ar?: string;
     technicalFocusTitle?: string;
+    technicalFocusTitle_Ar?: string;
     technicalFocusDescription?: string;
+    technicalFocusDescription_Ar?: string;
     technicalFocusItems?: string;
+    technicalFocusItems_Ar?: string;
+    [key: string]: any; // Allow dynamic property access for translation fields
 }

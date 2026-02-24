@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'lucide-angular';
 
 @Component({
     selector: 'app-contact-info',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
     <div class="animate-fade-in-left">
-      
-
         <div class="space-y-10">
             <!-- Email -->
             <div class="flex items-center gap-8 group">
@@ -18,8 +17,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
                     <lucide-icon [img]="MailIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">Secure Link
-                    </p>
+                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">{{ 'contact.info.secureLink' | translate }}</p>
                     <a href="mailto:m.ssaid356@gmail.com"
                         class="text-2xl font-black dark:text-zinc-200 text-zinc-900 hover:text-red-600 transition-colors uppercase tracking-tighter">m.ssaid356&#64;gmail.com</a>
                 </div>
@@ -32,8 +30,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
                     <lucide-icon [img]="PhoneIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">Direct
-                        Channel</p>
+                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">{{ 'contact.info.directChannel' | translate }}</p>
                     <a href="tel:+201067358073"
                         class="text-2xl font-black dark:text-zinc-200 text-zinc-900 hover:text-red-600 transition-colors uppercase tracking-tighter">+20
                         106 735 8073</a>
@@ -47,8 +44,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
                     <lucide-icon [img]="MapPinIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">Base Of
-                        Operations</p>
+                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-2">{{ 'contact.info.baseOfOperations' | translate }}</p>
                     <p class="text-2xl font-black dark:text-zinc-200 text-zinc-900 uppercase tracking-tighter">
                         Gharbia, Egypt</p>
                 </div>

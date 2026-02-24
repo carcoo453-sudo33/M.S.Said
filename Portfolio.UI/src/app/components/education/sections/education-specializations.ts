@@ -1,11 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BioEntry } from '../../../models/bio.model';
 
 @Component({
     selector: 'app-education-specializations',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslateModule],
     template: `
     <div
         class="mt-32 p-16 dark:bg-zinc-900/40 bg-zinc-50/50 backdrop-blur-xl rounded-3xl border border-zinc-100 dark:border-zinc-800 text-center animate-fade-in-up">
@@ -26,9 +27,8 @@ import { BioEntry } from '../../../models/bio.model';
 })
 export class EducationSpecializationsComponent {
     @Input() bio?: BioEntry;
+    private translate = inject(TranslateService);
 
-    private defaultTitle = 'Technical Focus';
-    private defaultDescription = 'Continuous specialization in modern web development, cloud architecture, and enterprise system design.';
     private defaultItems = ['ASP.NET Core', 'Angular', 'Distributed Systems', 'Cloud Architecture', 'Identity & Security', 'RESTful APIs', 'SQL Server', 'Entity Framework'];
 
     getTitle(): string {
@@ -40,11 +40,17 @@ export class EducationSpecializationsComponent {
             }
             return this.bio.technicalFocusTitle;
         }
-        return `Technical <span class="text-red-600">Focus</span>`;
+        const translatedTitle = this.translate.instant('education.technicalFocusTitle');
+        const parts = translatedTitle.split(' ');
+        if (parts.length > 1) {
+            const lastWord = parts.pop();
+            return `${parts.join(' ')} <span class="text-red-600">${lastWord}</span>`;
+        }
+        return translatedTitle;
     }
 
     getDescription(): string {
-        return this.bio?.technicalFocusDescription || this.defaultDescription;
+        return this.bio?.technicalFocusDescription || this.translate.instant('education.technicalFocusDescription');
     }
 
     getFocusItems(): string[] {

@@ -1,20 +1,21 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProjectEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-project-details-sidebar',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, TranslateModule],
     template: `
     <div *ngIf="project" class="space-y-16 lg:space-y-20">
         <!-- Changelog -->
         <section class="space-y-6">
             <div class="flex items-center gap-3">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
-                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">Changelog</h2>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.changelog' | translate }}</h2>
             </div>
             <div class="space-y-4 relative">
                 <div class="absolute left-0 top-3 bottom-0 w-[1px] bg-zinc-900"></div>
@@ -35,7 +36,7 @@ import { environment } from '../../../../environments/environment';
             <div class="absolute top-0 right-0 w-24 h-24 bg-red-600/5 blur-[60px]"></div>
             <div class="flex items-center gap-3 relative z-10">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
-                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">Metrics</h2>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.metrics' | translate }}</h2>
             </div>
             <div class="space-y-4 relative z-10">
                 <div *ngFor="let metric of project.metrics" class="flex items-center justify-between group pb-3 border-b border-zinc-800/50 last:border-0 last:pb-0">
@@ -49,7 +50,7 @@ import { environment } from '../../../../environments/environment';
         <section class="space-y-6">
             <div class="flex items-center gap-3">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
-                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">Related</h2>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.related' | translate }}</h2>
             </div>
             <div class="space-y-4">
                 <div *ngFor="let related of project.relatedProjects" [routerLink]="['/projects', related.slug]"

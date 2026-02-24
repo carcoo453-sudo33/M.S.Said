@@ -1,39 +1,39 @@
 <app-navbar></app-navbar>
 
-<main dir="rtl"
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 space-y-32">
 
     <!-- Content Grid Section -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16 pb-24 px-6 pt-32 relative z-10">
 
         <!-- Right Sidebar: Profile Card (md:order-2) -->
-        <app-home-sidebar-profile [bio]="bio" (bioUpdated)="bio = $event"
+        <app-home-sidebar-profile [bio]="bio()" (bioUpdated)="bio.set($event)"
             class="md:col-span-4 lg:col-span-4 md:order-2"></app-home-sidebar-profile>
 
         <!-- Left Content Area (md:order-1) -->
         <div class="md:col-span-8 lg:col-span-8 space-y-16 md:order-1 pt-6">
 
             <!-- Brief & Bio Section (New Hero) -->
-            <app-home-brief-bio [bio]="bio" (bioUpdated)="bio = $event"></app-home-brief-bio>
+            <app-home-brief-bio [bio]="bio()" (bioUpdated)="bio.set($event)"></app-home-brief-bio>
 
             <!-- Specialized Services Section -->
-            <app-home-services [services]="services" (servicesUpdated)="services = $event"></app-home-services>
+            <app-home-services [services]="services()" (servicesUpdated)="services.set($event)"></app-home-services>
 
             <!-- Tech Stack Section (Dynamic) -->
-            <app-home-tech-stack [skills]="skills" (skillsUpdated)="skills = $event"></app-home-tech-stack>
+            <app-home-tech-stack [skills]="skills()" (skillsUpdated)="skills.set($event)"></app-home-tech-stack>
 
             <!-- Featured Projects Section -->
-            <app-home-featured-projects [projects]="featuredProjects"></app-home-featured-projects>
+            <app-home-featured-projects [projects]="featuredProjects()"></app-home-featured-projects>
 
             <!-- Latest Experience Section -->
-            <app-home-timeline [experiences]="experiences"
-                (experiencesUpdated)="experiences = $event"></app-home-timeline>
+            <app-home-timeline [experiences]="experiences()"
+                (experiencesUpdated)="experiences.set($event)"></app-home-timeline>
 
         </div>
     </div>
 
     <!-- Final CTA -->
-    <app-home-final-cta [bio]="bio"></app-home-final-cta>
+    <app-home-final-cta [bio]="bio()"></app-home-final-cta>
 </main>
 
 <!-- Footer -->

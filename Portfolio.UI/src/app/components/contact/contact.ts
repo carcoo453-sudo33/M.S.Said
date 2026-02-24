@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ContactService } from '../../services/contact.service';
 import { ContactMessage } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
+import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 import { ContactInfoComponent } from './sections/contact-info';
@@ -21,6 +23,7 @@ import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
   imports: [
     CommonModule,
     FormsModule,
+    TranslateModule,
     NavbarComponent,
     LucideAngularModule,
     ContactInfoComponent,
@@ -33,25 +36,26 @@ import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 })
 export class ContactComponent {
   private contactService = inject(ContactService);
-  model: ContactMessage = { name: '', email: '', subject: '', message: '' };
-  loading = false;
-  success = false;
-  error = false;
+  public translationService = inject(TranslationService);
+  model = signal<ContactMessage>({ name: '', email: '', subject: '', message: '' });
+  loading = signal(false);
+  success = signal(false);
+  error = signal(false);
 
   submitMessage() {
-    this.loading = true;
-    this.error = false;
-    this.contactService.sendContactMessage(this.model).subscribe({
+    this.loading.set(true);
+    this.error.set(false);
+    this.contactService.sendContactMessage(this.model()).subscribe({
       next: () => {
-        this.loading = false;
-        this.success = true;
-        this.model = { name: '', email: '', subject: '', message: '' };
-        setTimeout(() => this.success = false, 5000);
+        this.loading.set(false);
+        this.success.set(true);
+        this.model.set({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => this.success.set(false), 5000);
       },
       error: () => {
-        this.loading = false;
-        this.error = true;
-        setTimeout(() => this.error = false, 5000);
+        this.loading.set(false);
+        this.error.set(true);
+        setTimeout(() => this.error.set(false), 5000);
       }
     });
   }

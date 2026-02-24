@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<main
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pt-32 transition-colors duration-500 overflow-hidden relative space-y-32">
 
     <!-- Animated Background Elements -->
@@ -16,31 +16,31 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10 space-y-32">
 
         <!-- Header Section -->
-        <app-shared-page-header badge="Operational Roadmap"
-            title="PRO<br><span class='text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]'>HISTORY</span>"
-            description="A definitive technical chronology. Each node representing a milestone in architectural growth and system delivery.">
+        <app-shared-page-header [badge]="'timeline.badge' | translate"
+            [title]="('timeline.title1' | translate) + '<br><span class=\'text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]\'>' + ('timeline.title2' | translate) + '</span>'"
+            [description]="'timeline.description' | translate">
         </app-shared-page-header>
 
         <!-- SKELETON STATE -->
-        <app-shared-skeleton *ngIf="isLoading" [count]="4" height="250px"></app-shared-skeleton>
+        <app-shared-skeleton *ngIf="isLoading()" [count]="4" height="250px"></app-shared-skeleton>
 
         <!-- ERROR STATE -->
-        <app-shared-error-state *ngIf="!isLoading && hasError" title="Chronology Link Broken"
-            retryText="Restore Sequence" (retry)="ngOnInit()">
+        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'timeline.errorTitle' | translate"
+            [retryText]="'timeline.retryText' | translate" (retry)="ngOnInit()">
         </app-shared-error-state>
 
         <!-- EMPTY STATE -->
-        <app-shared-empty-state *ngIf="!isLoading && !hasError && experiences.length === 0" title="Fresh Origins"
-            message="New chapters of professional excellence are being drafted. Initializing history...">
+        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && experiences().length === 0" [title]="'timeline.emptyTitle' | translate"
+            [message]="'timeline.emptyMessage' | translate">
         </app-shared-empty-state>
 
         <!-- LOADED STATE -->
-        <app-timeline-list *ngIf="!isLoading && !hasError && experiences.length > 0"
-            [experiences]="experiences"></app-timeline-list>
+        <app-timeline-list *ngIf="!isLoading() && !hasError() && experiences().length > 0"
+            [experiences]="experiences()"></app-timeline-list>
 
         <!-- Strategic Signature Section -->
-        <app-shared-signature [bio]="bio"
-            quote="Experience is the accumulation of architectural challenges solved through rigorous engineering. This timeline reflects a journey of continuous technical evolution and intentional delivery.">
+        <app-shared-signature [bio]="bio()"
+            [quote]="bio()?.['timelineQuote'] || ('timeline.defaultQuote' | translate)">
         </app-shared-signature>
     </div>
 </main>

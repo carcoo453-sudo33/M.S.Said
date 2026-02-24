@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
     LucideAngularModule, Share2, ThumbsUp, MessageCircle, Star,
-    ArrowRight, CornerDownRight, Linkedin, Github, Layers, ExternalLink, BookOpen
+    ArrowRight, CornerDownRight, Linkedin, Github, Layers, ExternalLink, BookOpen, Edit
 } from 'lucide-angular';
 import { BlogPost } from '../../../models';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-blog-post-card',
@@ -29,7 +30,11 @@ import { BlogPost } from '../../../models';
                     </p>
                 </div>
             </div>
-            <div class="relative">
+            <div class="flex items-center gap-2">
+                <button *ngIf="canEdit" (click)="onEdit.emit(post); $event.stopPropagation()"
+                    class="text-zinc-400 hover:text-red-600 p-2 transition-colors">
+                    <lucide-icon [img]="EditIcon" class="w-5 h-5"></lucide-icon>
+                </button>
                 <button class="text-zinc-400 hover:text-zinc-600 p-2">
                     <lucide-icon [img]="Share2Icon" class="w-5 h-5"></lucide-icon>
                 </button>
@@ -118,9 +123,12 @@ import { BlogPost } from '../../../models';
   `
 })
 export class BlogPostCardComponent {
+    private authService = inject(AuthService);
+    
     @Input() post!: BlogPost;
     @Input() delay: string = '0s';
     @Output() onNavigate = new EventEmitter<BlogPost>();
+    @Output() onEdit = new EventEmitter<BlogPost>();
 
     Share2Icon = Share2;
     ThumbsUpIcon = ThumbsUp;
@@ -128,6 +136,11 @@ export class BlogPostCardComponent {
     StarIcon = Star;
     ArrowRightIcon = ArrowRight;
     CornerDownRightIcon = CornerDownRight;
+    EditIcon = Edit;
+
+    get canEdit(): boolean {
+        return this.authService.isLoggedIn();
+    }
 
     getSocialIcon(type?: string) {
         if (!type) return BookOpen;

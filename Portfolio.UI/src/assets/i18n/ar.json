@@ -1,0 +1,277 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "education": "التعليم",
+    "projects": "المشاريع",
+    "blog": "المدونة",
+    "contact": "تواصل",
+    "logout": "تسجيل الخروج",
+    "admin": "لوحة الإدارة"
+  },
+  "home": {
+    "bio": {
+      "heading1": "بناء",
+      "headingHighlight": "حلول",
+      "heading2": "مبتكرة",
+      "yearsExp": "سنوات الخبرة",
+      "projectsCompleted": "المشاريع المنجزة",
+      "codeCommits": "عمليات الكود",
+      "editTitle": "تعديل قسم السيرة",
+      "descriptionLabel": "الوصف",
+      "yearsLabel": "سنوات الخبرة",
+      "projectsLabel": "المشاريع",
+      "commitsLabel": "العمليات"
+    },
+    "services": {
+      "title": "ماذا أقدم",
+      "manageTitle": "إدارة الخدمات",
+      "serviceLabel": "الخدمة"
+    },
+    "techStack": {
+      "title": "التقنيات والأدوات",
+      "manageTitle": "إدارة التقنيات",
+      "skillLabel": "اسم المهارة",
+      "iconName": "اسم الأيقونة",
+      "imageUpload": "رفع صورة",
+      "uploadImage": "رفع صورة",
+      "changeImage": "تغيير الصورة",
+      "uploading": "جاري الرفع...",
+      "displayOrder": "ترتيب العرض:"
+    },
+    "featuredProjects": {
+      "title": "المشاريع المميزة",
+      "subtitle": "بعض الأعمال التي أفتخر بها",
+      "viewGithub": "عرض Github",
+      "trending": "رائج 🔥",
+      "latest": "الأحدث ✨",
+      "views": "المشاهدات",
+      "projectInsights": "تفاصيل المشروع"
+    },
+    "timeline": {
+      "title": "أحدث الخبرات",
+      "viewAll": "عرض الكل",
+      "manageTitle": "إدارة الخبرات",
+      "experienceLabel": "الخبرة",
+      "roleLabel": "المسمى الوظيفي",
+      "companyLabel": "الشركة",
+      "locationLabel": "الموقع",
+      "durationLabel": "المدة (مثال: 2023 - حتى الآن)",
+      "descriptionLabel": "الوصف",
+      "currentPosition": "الوظيفة الحالية",
+      "required": "مطلوب"
+    },
+    "cta": {
+      "title1": "لنبني",
+      "title2": "سحر",
+      "title3": "حديث.",
+      "description": "متاح حالياً للاستشارات المعمارية وأدوار الهندسة القيادية.",
+      "button1": "تواصل معي",
+      "button2": "البريد الآمن"
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "retry": "إعادة المحاولة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "add": "إضافة",
+    "viewMore": "عرض المزيد",
+    "viewLess": "عرض أقل",
+    "saving": "جاري الحفظ...",
+    "saveChanges": "حفظ التغييرات",
+    "saveAll": "حفظ الكل",
+    "deleting": "جاري الحذف...",
+    "deleteConfirm": "حذف؟",
+    "deleteMessage": "هل أنت متأكد من حذف",
+    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "requiredField": "مطلوب",
+    "fillRequired": "يرجى ملء جميع الحقول المطلوبة",
+    "location": "الموقع",
+    "downloadCV": "تحميل السيرة الذاتية",
+    "uploading": "جاري الرفع...",
+    "uploadImage": "رفع صورة",
+    "changeImage": "تغيير الصورة",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "authRequired": "يجب تسجيل الدخول للحذف",
+    "authFailed": "فشل المصادقة. يرجى تسجيل الدخول مرة أخرى.",
+    "operationFailed": "فشلت العملية. يرجى المحاولة مرة أخرى.",
+    "loginRequired": "يرجى تسجيل الدخول أولاً.",
+    "import": "استيراد",
+    "importing": "جاري الاستيراد...",
+    "importSuccess": "تم استيراد البيانات من GitHub بنجاح! راجع واحفظ التغييرات."
+  },
+  "footer": {
+    "description": "بناء المستقبل بالكود، متخصص في تطوير الويب الحديث وابتكار حلول برمجية متطورة.",
+    "connectTitle": "تواصل معي",
+    "contactTitle": "بيانات التواصل",
+    "location": "الغربية، مصر",
+    "copyright": "© 2024 مصطفى سمير سعيد. جميع الحقوق محفوظة",
+    "madeWith": "صنع بكل ❤️ وحب"
+  },
+  "education": {
+    "badge": "تجميع المعرفة",
+    "title1": "الأساس",
+    "title2": "الأكاديمي",
+    "description": "الأسس التقنية والتخصص المستمر. تطور مهندس الأنظمة من خلال البحث الدقيق والشهادات.",
+    "educationTitle": "التعليم",
+    "educationDesc": "الدرجات الأكاديمية والتعليم الرسمي",
+    "trainingTitle": "التدريب",
+    "trainingDesc": "برامج التدريب المهني وورش العمل",
+    "certificationTitle": "الشهادات",
+    "certificationDesc": "الشهادات والاعتمادات المهنية",
+    "achievementTitle": "الإنجازات",
+    "achievementDesc": "الجوائز والتكريمات والإنجازات البارزة",
+    "hideDetails": "إخفاء التفاصيل",
+    "showDetails": "عرض التفاصيل",
+    "hideList": "إخفاء القائمة",
+    "viewList": "عرض القائمة",
+    "errorTitle": "انقطاع رابط المعلومات",
+    "retryText": "إعادة ربط البيانات",
+    "emptyTitle": "في انتظار التجميع",
+    "emptyMessage": "يتم تجميع الشهادات الأكاديمية والتدريب المتخصص للعرض.",
+    "defaultQuote": "التعليم هو تجميع البحث والهندسة. أساسي الأكاديمي يوفر الإطار الصارم الذي أتعامل من خلاله مع التحديات الهندسية المعقدة وتصميم الأنظمة المبتكرة.",
+    "technicalFocusTitle": "التركيز التقني",
+    "technicalFocusDescription": "التخصص المستمر في تطوير الويب الحديث، وهندسة السحابة، وتصميم أنظمة المؤسسات."
+  },
+  "projects": {
+    "errorTitle": "انقطاع التسلسل الزمني",
+    "retryText": "استعادة التسلسل",
+    "emptyTitle": "بدايات جديدة",
+    "emptyMessage": "يتم صياغة فصول جديدة من التميز المهني. جاري التهيئة...",
+    "header": {
+      "title1": "أعمال",
+      "title2": "مختارة",
+      "subtitle": "هندسة متكاملة • تصميم معماري • أنظمة عالية الأداء",
+      "createProject": "إنشاء مشروع"
+    },
+    "cta": {
+      "question": "هل أنت مستعد لبناء قفزتك الرقمية القادمة؟",
+      "action": "بدء الاتصال"
+    },
+    "workHistory": {
+      "title": "سجل العمل",
+      "addExperience": "إضافة خبرة",
+      "company": "الشركة",
+      "role": "المسمى الوظيفي",
+      "duration": "المدة",
+      "location": "الموقع",
+      "description": "الوصف",
+      "companyPlaceholder": "اسم الشركة",
+      "rolePlaceholder": "المسمى الوظيفي",
+      "durationPlaceholder": "مثال: 2023 - حتى الآن",
+      "locationPlaceholder": "المدينة، الدولة",
+      "descriptionPlaceholder": "المسؤوليات والإنجازات الوظيفية",
+      "companyRequired": "الشركة مطلوبة",
+      "roleRequired": "المسمى الوظيفي مطلوب",
+      "deleteTitle": "حذف الخبرة؟",
+      "deleteMessage": "هل أنت متأكد من حذف"
+    },
+    "brandSlider": {
+      "title": "موثوق من قبل",
+      "addClient": "إضافة عميل",
+      "clientName": "اسم العميل",
+      "clientNamePlaceholder": "اسم الشركة أو العلامة التجارية",
+      "logoUrl": "رابط الشعار",
+      "logoUrlPlaceholder": "رابط الشعار أو رفع أدناه",
+      "uploadLogo": "رفع شعار",
+      "changeLogo": "تغيير الشعار",
+      "nameRequired": "الاسم مطلوب",
+      "deleteTitle": "حذف العميل؟",
+      "deleteMessage": "هل أنت متأكد من حذف"
+    },
+    "references": {
+      "title": "التوصيات",
+      "subtitle": "ما يقوله الزملاء والعملاء",
+      "addTestimonial": "إضافة توصية",
+      "name": "الاسم",
+      "role": "المسمى الوظيفي",
+      "company": "الشركة",
+      "content": "محتوى التوصية",
+      "avatarUrl": "رابط الصورة",
+      "namePlaceholder": "الاسم الكامل",
+      "rolePlaceholder": "مثال: مطور أول",
+      "companyPlaceholder": "اسم الشركة (اختياري)",
+      "contentPlaceholder": "ما قالوه عنك...",
+      "avatarPlaceholder": "رابط الصورة أو رفع أدناه",
+      "uploadAvatar": "رفع صورة",
+      "changeAvatar": "تغيير الصورة",
+      "nameRequired": "الاسم مطلوب",
+      "roleRequired": "المسمى الوظيفي مطلوب",
+      "contentRequired": "المحتوى مطلوب",
+      "deleteTitle": "حذف التوصية؟",
+      "deleteMessage": "هل أنت متأكد من حذف التوصية من"
+    }
+  },
+  "blog": {
+    "latestUpdates": "آخر التحديثات",
+    "loadMore": "تحميل المزيد",
+    "emptyTitle": "القطاع:",
+    "emptyMessage": "لم يتم اكتشاف أي إرسال في هذا النطاق الترددي. النظام في انتظار محتوى جديد.",
+    "allPosts": "جميع المنشورات"
+  },
+  "contact": {
+    "badge": "متاح للبناء الاستراتيجي",
+    "title": "لنتعاون<br>معاً.",
+    "description": "بناء المستقبل من خلال التميز التقني والتصميم المقصود. تواصل لبدء خارطة الطريق.",
+    "info": {
+      "secureLink": "رابط آمن",
+      "directChannel": "قناة مباشرة",
+      "baseOfOperations": "قاعدة العمليات"
+    },
+    "form": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "subject": "الموضوع",
+      "message": "الرسالة",
+      "namePlaceholder": "اسم المستخدم",
+      "emailPlaceholder": "البريد@الإلكتروني.com",
+      "subjectPlaceholder": "طلب استراتيجي",
+      "messagePlaceholder": "ابدأ الإحاطة الأساسية هنا...",
+      "submit": "تنفيذ الإرسال",
+      "submitting": "جاري المزامنة...",
+      "success": "تم الإرسال بنجاح. في انتظار الرد."
+    }
+  },
+  "projectDetails": {
+    "errorTitle": "المشروع مشفر",
+    "retryText": "استعادة المخطط",
+    "defaultQuote": "يمثل هذا المشروع اندماجاً بين قابلية التوسع التقنية والتصميم المتمحور حول الإنسان. تم هندسة كل سطر من الكود لضمان الاستقرار طويل الأمد والتفاعل عالي الدقة مع المستخدم.",
+    "breadcrumb": "المشاريع",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleteConfirm": "هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع عن هذا الإجراء.",
+    "specs": {
+      "language": "اللغة",
+      "duration": "المدة",
+      "architecture": "الهندسة",
+      "status": "الحالة",
+      "multipleLanguages": "لغات متعددة",
+      "scalableArchitecture": "هندسة قابلة للتوسع",
+      "active": "نشط"
+    },
+    "features": {
+      "keyFeatures": "الميزات الرئيسية",
+      "responsibilities": "المسؤوليات"
+    },
+    "sidebar": {
+      "changelog": "سجل التغييرات",
+      "metrics": "المقاييس",
+      "related": "مشاريع ذات صلة"
+    }
+  },
+  "timeline": {
+    "badge": "خارطة الطريق التشغيلية",
+    "title1": "السجل",
+    "title2": "المهني",
+    "description": "تسلسل زمني تقني محدد. كل نقطة تمثل معلماً في النمو المعماري وتسليم الأنظمة.",
+    "errorTitle": "انقطاع التسلسل الزمني",
+    "retryText": "استعادة التسلسل",
+    "emptyTitle": "بدايات جديدة",
+    "emptyMessage": "يتم صياغة فصول جديدة من التميز المهني. جاري التهيئة...",
+    "defaultQuote": "الخبرة هي تراكم التحديات المعمارية التي تم حلها من خلال الهندسة الصارمة. يعكس هذا الجدول الزمني رحلة من التطور التقني المستمر والتسليم المقصود."
+  }
+}

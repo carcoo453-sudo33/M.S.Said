@@ -1,9 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProfileService } from '../../services/profile.service';
 import { ExperienceEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
+import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 import { TimelineListComponent } from './sections/timeline-list';
@@ -21,6 +23,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     NavbarComponent,
     LucideAngularModule,
     TimelineListComponent,
@@ -35,24 +38,25 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
 })
 export class TimelineComponent implements OnInit {
   private profileService = inject(ProfileService);
-  experiences: ExperienceEntry[] = [];
-  bio: BioEntry | null = null;
-  isLoading = true;
-  hasError = false;
+  public translationService = inject(TranslationService);
+  experiences = signal<ExperienceEntry[]>([]);
+  bio = signal<BioEntry | null>(null);
+  isLoading = signal(true);
+  hasError = signal(false);
 
   ngOnInit() {
     this.profileService.getBio().subscribe({
-      next: (bio) => this.bio = bio,
+      next: (bio) => this.bio.set(bio),
       error: (err) => console.error('Timeline: Failed to load bio', err)
     });
     this.profileService.getExperiences().subscribe({
       next: (data) => {
-        this.experiences = data;
-        this.isLoading = false;
+        this.experiences.set(data);
+        this.isLoading.set(false);
       },
       error: () => {
-        this.isLoading = false;
-        this.hasError = true;
+        this.isLoading.set(false);
+        this.hasError.set(true);
       }
     });
   }

@@ -1,50 +1,50 @@
 <app-navbar></app-navbar>
 
-<main
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-zinc-950 text-zinc-50 transition-colors duration-500 overflow-hidden relative selection:bg-red-600 selection:text-white">
 
     <!-- SKELETON STATE -->
-    <div *ngIf="isLoading" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+    <div *ngIf="isLoading()" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
         <app-shared-skeleton [count]="3" height="400px"></app-shared-skeleton>
     </div>
 
     <!-- ERROR STATE -->
-    <div *ngIf="!isLoading && hasError" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <app-shared-error-state title="Project Encrypted" retryText="Restore Blueprint"
+    <div *ngIf="!isLoading() && hasError()" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <app-shared-error-state [title]="'projectDetails.errorTitle' | translate" [retryText]="'projectDetails.retryText' | translate"
             (retry)="loadProject()">
         </app-shared-error-state>
     </div>
 
     <!-- LOADED STATE - Responsive Grid Layout -->
-    <div *ngIf="!isLoading && !hasError && project" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 px-6 pt-32 pb-24 relative z-10">
+    <div *ngIf="!isLoading() && !hasError() && project()" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 px-6 pt-32 pb-24 relative z-10">
 
         <!-- Main Content Area (Left Side) - lg:col-span-8 -->
         <div class="lg:col-span-8 space-y-16 lg:space-y-24">
 
             <!-- Header Section -->
             <app-project-details-header 
-                [project]="project"
+                [project]="project()"
                 (onEdit)="onEditProject()"
                 (onDelete)="onDeleteProject()">
             </app-project-details-header>
 
             <!-- Technical Specification Bar -->
-            <app-project-details-specs [project]="project"></app-project-details-specs>
+            <app-project-details-specs [project]="project()"></app-project-details-specs>
 
             <!-- Featured Media & Actions -->
             <app-project-details-gallery 
-                [project]="project"
+                [project]="project()"
                 (onReactEvent)="onReact()"
                 (onShareEvent)="onShare()">
             </app-project-details-gallery>
 
             <!-- Features & Responsibilities -->
-            <app-project-details-features [project]="project"></app-project-details-features>
+            <app-project-details-features [project]="project()"></app-project-details-features>
             
             <!-- Interactions & Discussion -->
             <app-project-details-interactions 
-                [project]="project" 
-                [triggerShare]="triggerShareModal"
+                [project]="project()" 
+                [triggerShare]="triggerShareModal()"
                 (onReact)="onReact()" 
                 (onShare)="onShare()"
                 (onCommentAdded)="loadProject()">
@@ -53,23 +53,23 @@
 
         <!-- Sidebar (Right Side) - lg:col-span-4 -->
         <div class="lg:col-span-4 space-y-16 lg:space-y-24 lg:pt-6">
-            <app-project-details-sidebar [project]="project"></app-project-details-sidebar>
+            <app-project-details-sidebar [project]="project()"></app-project-details-sidebar>
         </div>
     </div>
 
     <!-- Engineer Profile / Signature Section -->
-    <div *ngIf="!isLoading && !hasError && project" class="max-w-7xl mx-auto px-6 pb-24">
-        <app-shared-signature [bio]="bio"
-            quote="This project represents a fusion of technical scalability and human-centric design. Every line of code was engineered to ensure long-term stability and high-fidelity user engagement.">
+    <div *ngIf="!isLoading() && !hasError() && project()" class="max-w-7xl mx-auto px-6 pb-24">
+        <app-shared-signature [bio]="bio()"
+            [quote]="'projectDetails.defaultQuote' | translate">
         </app-shared-signature>
     </div>
 
     <!-- Management Component -->
     <app-project-details-manage 
-        *ngIf="project"
-        [project]="project" 
-        [canEdit]="isAuthenticated"
-        [triggerEdit]="triggerEditModal"
+        *ngIf="project()"
+        [project]="project()" 
+        [canEdit]="isAuthenticated()"
+        [triggerEdit]="triggerEditModal()"
         (onUpdate)="onProjectUpdate($event)">
     </app-project-details-manage>
 </main>

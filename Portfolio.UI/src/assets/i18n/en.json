@@ -1,0 +1,277 @@
+{
+  "nav": {
+    "home": "Home",
+    "education": "Education",
+    "projects": "Projects",
+    "blog": "Blog",
+    "contact": "Connection",
+    "logout": "Logout",
+    "admin": "Admin System"
+  },
+  "home": {
+    "bio": {
+      "heading1": "Innovative",
+      "headingHighlight": "Solutions",
+      "heading2": "Builder",
+      "yearsExp": "Years of Experience",
+      "projectsCompleted": "Projects Completed",
+      "codeCommits": "Code Commits",
+      "editTitle": "Edit Bio Section",
+      "descriptionLabel": "Description",
+      "yearsLabel": "Yrs Exp.",
+      "projectsLabel": "Projects",
+      "commitsLabel": "Commits"
+    },
+    "services": {
+      "title": "What I Do",
+      "manageTitle": "Manage Services",
+      "serviceLabel": "Service"
+    },
+    "techStack": {
+      "title": "TECH STACK & TOOLS",
+      "manageTitle": "Manage Tech Stack",
+      "skillLabel": "Skill Name",
+      "iconName": "Icon Name",
+      "imageUpload": "Image Upload",
+      "uploadImage": "Upload Image",
+      "changeImage": "Change Image",
+      "uploading": "Uploading...",
+      "displayOrder": "Display Order:"
+    },
+    "featuredProjects": {
+      "title": "Featured Projects",
+      "subtitle": "Some of the works I am most proud of",
+      "viewGithub": "View Github",
+      "trending": "Trending 🔥",
+      "latest": "Latest ✨",
+      "views": "Views",
+      "projectInsights": "Project Insights"
+    },
+    "timeline": {
+      "title": "Latest Experience",
+      "viewAll": "View All",
+      "manageTitle": "Manage Experience",
+      "experienceLabel": "Experience",
+      "roleLabel": "Role / Title",
+      "companyLabel": "Company",
+      "locationLabel": "Location",
+      "durationLabel": "Duration (e.g. 2023 - Present)",
+      "descriptionLabel": "Description",
+      "currentPosition": "Current Position",
+      "required": "Required"
+    },
+    "cta": {
+      "title1": "Let's Build",
+      "title2": "Modern",
+      "title3": "Magic.",
+      "description": "Currently open to architectural consulting and lead engineering roles.",
+      "button1": "Interface with Me",
+      "button2": "Secure Email"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "viewMore": "View More",
+    "viewLess": "View Less",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "saveAll": "Save All",
+    "deleting": "Deleting...",
+    "deleteConfirm": "Delete?",
+    "deleteMessage": "Are you sure you want to delete",
+    "deleteWarning": "This action cannot be undone.",
+    "requiredField": "is required",
+    "fillRequired": "Please fill in all required fields",
+    "location": "Location",
+    "downloadCV": "Download CV",
+    "uploading": "Uploading...",
+    "uploadImage": "Upload Image",
+    "changeImage": "Change Image",
+    "required": "Required",
+    "optional": "optional",
+    "authRequired": "You must be logged in to delete",
+    "authFailed": "Authentication failed. Please log in again.",
+    "operationFailed": "Operation failed. Please try again.",
+    "loginRequired": "Please log in first.",
+    "import": "Import",
+    "importing": "Importing...",
+    "importSuccess": "Successfully imported data from GitHub! Review and save changes."
+  },
+  "footer": {
+    "description": "Building the future with code, specializing in modern web development and innovative software solutions.",
+    "connectTitle": "Connect With Me",
+    "contactTitle": "Contact Info",
+    "location": "Gharbia, Egypt",
+    "copyright": "© 2024 Mostafa Samir Said. All rights reserved",
+    "madeWith": "Made with ❤️ and love"
+  },
+  "education": {
+    "badge": "Knowledge Synthesis",
+    "title1": "ACADEMIC",
+    "title2": "FOUNDATION",
+    "description": "Technical foundations and continuous specialization. The evolution of a system architect through rigorous inquiry and certification.",
+    "educationTitle": "Education",
+    "educationDesc": "Academic degrees and formal education",
+    "trainingTitle": "Training",
+    "trainingDesc": "Professional training programs and workshops",
+    "certificationTitle": "Certifications",
+    "certificationDesc": "Professional certifications and credentials",
+    "achievementTitle": "Achievements",
+    "achievementDesc": "Awards, honors, and notable accomplishments",
+    "hideDetails": "Hide Details",
+    "showDetails": "Show Details",
+    "hideList": "Hide List",
+    "viewList": "View List",
+    "errorTitle": "Information Link Severed",
+    "retryText": "Re-Link Data",
+    "emptyTitle": "Awaiting Batching",
+    "emptyMessage": "Academic credentials and specialized training are being compiled for display.",
+    "defaultQuote": "Education is the synthesis of inquiry and architecture. My academic foundation provides the rigorous framework through which I approach complex engineering challenges and innovative system design.",
+    "technicalFocusTitle": "Technical Focus",
+    "technicalFocusDescription": "Continuous specialization in modern web development, cloud architecture, and enterprise system design."
+  },
+  "projects": {
+    "errorTitle": "Chronology Link Broken",
+    "retryText": "Restore Sequence",
+    "emptyTitle": "Fresh Origins",
+    "emptyMessage": "New chapters of professional excellence are being drafted. Initializing history...",
+    "header": {
+      "title1": "Selected",
+      "title2": "Works",
+      "subtitle": "Full Stack Engineering • Architectural Design • High-Performance Systems",
+      "createProject": "Create Project"
+    },
+    "cta": {
+      "question": "Ready to architect your next digital leap?",
+      "action": "Initiate Connection"
+    },
+    "workHistory": {
+      "title": "Work History",
+      "addExperience": "Add Experience",
+      "company": "Company",
+      "role": "Role",
+      "duration": "Duration",
+      "location": "Location",
+      "description": "Description",
+      "companyPlaceholder": "Company name",
+      "rolePlaceholder": "Job title",
+      "durationPlaceholder": "e.g. 2023 - Present",
+      "locationPlaceholder": "City, Country",
+      "descriptionPlaceholder": "Job responsibilities and achievements",
+      "companyRequired": "Company is required",
+      "roleRequired": "Role is required",
+      "deleteTitle": "Delete Experience?",
+      "deleteMessage": "Are you sure you want to delete"
+    },
+    "brandSlider": {
+      "title": "Trusted By",
+      "addClient": "Add Client",
+      "clientName": "Client Name",
+      "clientNamePlaceholder": "Company or brand name",
+      "logoUrl": "Logo URL",
+      "logoUrlPlaceholder": "Logo URL or upload below",
+      "uploadLogo": "Upload Logo",
+      "changeLogo": "Change Logo",
+      "nameRequired": "Name is required",
+      "deleteTitle": "Delete Client?",
+      "deleteMessage": "Are you sure you want to delete"
+    },
+    "references": {
+      "title": "References",
+      "subtitle": "What colleagues and clients say",
+      "addTestimonial": "Add Testimonial",
+      "name": "Name",
+      "role": "Role",
+      "company": "Company",
+      "content": "Testimonial Content",
+      "avatarUrl": "Avatar URL",
+      "namePlaceholder": "Full name",
+      "rolePlaceholder": "e.g. Senior Developer",
+      "companyPlaceholder": "Company name (optional)",
+      "contentPlaceholder": "What they said about you...",
+      "avatarPlaceholder": "Avatar URL or upload below",
+      "uploadAvatar": "Upload Avatar",
+      "changeAvatar": "Change Avatar",
+      "nameRequired": "Name is required",
+      "roleRequired": "Role is required",
+      "contentRequired": "Content is required",
+      "deleteTitle": "Delete Testimonial?",
+      "deleteMessage": "Are you sure you want to delete the testimonial from"
+    }
+  },
+  "blog": {
+    "latestUpdates": "Latest Updates",
+    "loadMore": "Load More Updates",
+    "emptyTitle": "Sector:",
+    "emptyMessage": "No transmission detected in this frequency range. System awaiting new content.",
+    "allPosts": "All Posts"
+  },
+  "contact": {
+    "badge": "Available for Strategic Build",
+    "title": "Let's<br>Collaborate.",
+    "description": "Architecting the future through technical excellence and intentional design. Reach out to initiate the roadmap.",
+    "info": {
+      "secureLink": "Secure Link",
+      "directChannel": "Direct Channel",
+      "baseOfOperations": "Base Of Operations"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "namePlaceholder": "User Name",
+      "emailPlaceholder": "Endpoint@Email.com",
+      "subjectPlaceholder": "Strategic Request",
+      "messagePlaceholder": "Initiate core briefing here...",
+      "submit": "Execute Transmission",
+      "submitting": "Syncing...",
+      "success": "Transmission Successful. Awaiting Response."
+    }
+  },
+  "projectDetails": {
+    "errorTitle": "Project Encrypted",
+    "retryText": "Restore Blueprint",
+    "defaultQuote": "This project represents a fusion of technical scalability and human-centric design. Every line of code was engineered to ensure long-term stability and high-fidelity user engagement.",
+    "breadcrumb": "Projects",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this project? This action cannot be undone.",
+    "specs": {
+      "language": "Language",
+      "duration": "Duration",
+      "architecture": "Architecture",
+      "status": "Status",
+      "multipleLanguages": "Multiple Languages",
+      "scalableArchitecture": "Scalable Architecture",
+      "active": "Active"
+    },
+    "features": {
+      "keyFeatures": "Key Features",
+      "responsibilities": "Responsibilities"
+    },
+    "sidebar": {
+      "changelog": "Changelog",
+      "metrics": "Metrics",
+      "related": "Related"
+    }
+  },
+  "timeline": {
+    "badge": "Operational Roadmap",
+    "title1": "PRO",
+    "title2": "HISTORY",
+    "description": "A definitive technical chronology. Each node representing a milestone in architectural growth and system delivery.",
+    "errorTitle": "Chronology Link Broken",
+    "retryText": "Restore Sequence",
+    "emptyTitle": "Fresh Origins",
+    "emptyMessage": "New chapters of professional excellence are being drafted. Initializing history...",
+    "defaultQuote": "Experience is the accumulation of architectural challenges solved through rigorous engineering. This timeline reflects a journey of continuous technical evolution and intentional delivery."
+  }
+}

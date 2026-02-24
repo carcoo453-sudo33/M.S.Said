@@ -1,11 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { LucideAngularModule } from 'lucide-angular';
+import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 // Section Components
@@ -27,6 +29,7 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     NavbarComponent,
     LucideAngularModule,
     ProjectsHeaderComponent,
@@ -46,15 +49,16 @@ export class ProjectsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
   public auth = inject(AuthService);
+  public translationService = inject(TranslationService);
 
-  projects: ProjectEntry[] = [];
-  experiences: ExperienceEntry[] = [];
-  testimonials: Testimonial[] = [];
-  clients: Client[] = [];
-  totalProjectCount = 0;
-  isLoading = true;
-  hasError = false;
-  selectedFilter = 'All';
+  projects = signal<ProjectEntry[]>([]);
+  experiences = signal<ExperienceEntry[]>([]);
+  testimonials = signal<Testimonial[]>([]);
+  clients = signal<Client[]>([]);
+  totalProjectCount = signal(0);
+  isLoading = signal(true);
+  hasError = signal(false);
+  selectedFilter = signal('All');
 
   filters = ['All', 'Full Stack', 'Angular', 'NET Core'];
 
@@ -63,12 +67,12 @@ export class ProjectsComponent implements OnInit {
 
     // Safety guard: Ensure skeleton doesn't hang forever
     setTimeout(() => {
-      if (this.isLoading) {
+      if (this.isLoading()) {
         console.warn('Projects loading timed out. Clearing skeleton.');
-        this.isLoading = false;
+        this.isLoading.set(false);
         // If we still have no projects, show error instead of empty if it was a real timeout
-        if (this.projects.length === 0) {
-          this.hasError = true;
+        if (this.projects().length === 0) {
+          this.hasError.set(true);
         }
       }
     }, 8000);
@@ -79,36 +83,36 @@ export class ProjectsComponent implements OnInit {
     this.projectService.getFeaturedProjects().subscribe({
       next: (data: ProjectEntry[]) => {
         console.log('Featured projects loaded:', data.length);
-        this.projects = data;
-        this.isLoading = false;
+        this.projects.set(data);
+        this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Projects: Failed to load featured projects', err);
-        this.isLoading = false;
-        this.hasError = true;
+        this.isLoading.set(false);
+        this.hasError.set(true);
       }
     });
 
     // Load total project count
     this.projectService.getProjects().subscribe({
       next: (data: ProjectEntry[]) => {
-        this.totalProjectCount = data.length;
+        this.totalProjectCount.set(data.length);
       },
       error: (err) => console.error('Projects: Failed to load project count', err)
     });
 
     this.profileService.getExperiences().subscribe({
-      next: (data) => this.experiences = data,
+      next: (data) => this.experiences.set(data),
       error: (err) => console.error('Projects: Failed to load experiences', err)
     });
 
     this.profileService.getClients().subscribe({
-      next: (data) => this.clients = data,
+      next: (data) => this.clients.set(data),
       error: (err) => console.error('Projects: Failed to load clients', err)
     });
 
     this.profileService.getTestimonials().subscribe({
-      next: (data) => this.testimonials = data,
+      next: (data) => this.testimonials.set(data),
       error: (err) => console.error('Projects: Failed to load testimonials', err)
     });
   }
@@ -118,16 +122,16 @@ export class ProjectsComponent implements OnInit {
   }
 
   setFilter(filter: string) {
-    this.selectedFilter = filter;
+    this.selectedFilter.set(filter);
   }
 
   get filteredProjects() {
-    if (this.selectedFilter === 'All') return this.projects;
+    if (this.selectedFilter() === 'All') return this.projects();
 
-    return this.projects.filter(p => {
+    return this.projects().filter(p => {
       const tech = p.technologies?.toLowerCase() || '';
       const cat = p.category?.toLowerCase() || '';
-      const filter = this.selectedFilter.toLowerCase();
+      const filter = this.selectedFilter().toLowerCase();
 
       if (filter === 'full stack') return cat.includes('fullstack') || cat.includes('full-stack') || cat.includes('web');
       if (filter === 'angular') return tech.includes('angular');
@@ -143,8 +147,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   onProjectsUpdated(updatedProjects: ProjectEntry[]) {
-    this.projects = updatedProjects;
-    console.log('Projects list updated:', this.projects.length);
+    this.projects.set(updatedProjects);
+    console.log('Projects list updated:', this.projects().length);
   }
 
   onDeleteProject(project: ProjectEntry) {
@@ -157,7 +161,7 @@ export class ProjectsComponent implements OnInit {
     
     this.projectService.deleteProject(project.id).subscribe({
       next: () => {
-        this.projects = this.projects.filter(p => p.id !== project.id);
+        this.projects.set(this.projects().filter(p => p.id !== project.id));
         console.log('Project deleted successfully');
       },
       error: (err) => {
@@ -179,8 +183,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   onExperiencesUpdated(updatedExperiences: ExperienceEntry[]) {
-    this.experiences = updatedExperiences;
-    console.log('Experiences list updated:', this.experiences.length);
+    this.experiences.set(updatedExperiences);
+    console.log('Experiences list updated:', this.experiences().length);
   }
 
   onDeleteExperience(experience: ExperienceEntry) {
@@ -193,7 +197,7 @@ export class ProjectsComponent implements OnInit {
     
     this.profileService.deleteExperience(experience.id).subscribe({
       next: () => {
-        this.experiences = this.experiences.filter(e => e.id !== experience.id);
+        this.experiences.set(this.experiences().filter(e => e.id !== experience.id));
         console.log('Experience deleted successfully');
       },
       error: (err) => {
@@ -215,9 +219,11 @@ export class ProjectsComponent implements OnInit {
       const updated = { ...client, name: newName.trim() };
       this.profileService.updateClient(client.id, updated).subscribe({
         next: () => {
-          const index = this.clients.findIndex(c => c.id === client.id);
+          const currentClients = this.clients();
+          const index = currentClients.findIndex(c => c.id === client.id);
           if (index !== -1) {
-            this.clients[index] = updated;
+            currentClients[index] = updated;
+            this.clients.set([...currentClients]);
           }
           console.log('Client updated successfully');
         },
@@ -230,8 +236,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   onClientsUpdated(updatedClients: Client[]) {
-    this.clients = updatedClients;
-    console.log('Clients list updated:', this.clients.length);
+    this.clients.set(updatedClients);
+    console.log('Clients list updated:', this.clients().length);
   }
 
   onDeleteClient(client: Client) {
@@ -244,7 +250,7 @@ export class ProjectsComponent implements OnInit {
     
     this.profileService.deleteClient(client.id).subscribe({
       next: () => {
-        this.clients = this.clients.filter(c => c.id !== client.id);
+        this.clients.set(this.clients().filter(c => c.id !== client.id));
         console.log('Client deleted successfully');
       },
       error: (err) => {
@@ -266,9 +272,11 @@ export class ProjectsComponent implements OnInit {
       const updated = { ...testimonial, content: newContent.trim() };
       this.profileService.updateTestimonial(testimonial.id, updated).subscribe({
         next: () => {
-          const index = this.testimonials.findIndex(t => t.id === testimonial.id);
+          const currentTestimonials = this.testimonials();
+          const index = currentTestimonials.findIndex(t => t.id === testimonial.id);
           if (index !== -1) {
-            this.testimonials[index] = updated;
+            currentTestimonials[index] = updated;
+            this.testimonials.set([...currentTestimonials]);
           }
           console.log('Testimonial updated successfully');
         },
@@ -281,8 +289,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   onTestimonialsUpdated(updatedTestimonials: Testimonial[]) {
-    this.testimonials = updatedTestimonials;
-    console.log('Testimonials list updated:', this.testimonials.length);
+    this.testimonials.set(updatedTestimonials);
+    console.log('Testimonials list updated:', this.testimonials().length);
   }
 
   onDeleteTestimonial(testimonial: Testimonial) {
@@ -295,7 +303,7 @@ export class ProjectsComponent implements OnInit {
     
     this.profileService.deleteTestimonial(testimonial.id).subscribe({
       next: () => {
-        this.testimonials = this.testimonials.filter(t => t.id !== testimonial.id);
+        this.testimonials.set(this.testimonials().filter(t => t.id !== testimonial.id));
         console.log('Testimonial deleted successfully');
       },
       error: (err) => {

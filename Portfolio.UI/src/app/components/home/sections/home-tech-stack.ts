@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { LucideAngularModule, Code2, Database, FileCode, Zap, Monitor, Terminal, Github, Edit3, X, Save, Plus, Trash2, AlertTriangle, CheckCircle, Upload as LucideUpload, Image as LucideImage, FileText } from 'lucide-angular';
 import { environment } from '../../../../environments/environment';
@@ -8,20 +9,21 @@ import { SkillEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
+import { TranslationHelperService } from '../../../services/translation-helper.service';
 
 @Component({
     selector: 'app-home-tech-stack',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule],
+    imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
     <section class="animate-fade-in-up pt-12 border-t border-zinc-100 dark:border-zinc-900 relative">
         <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
             class="absolute top-4 right-0 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all z-20">
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
         </button>
-        <p class="text-center text-[10px] font-black uppercase tracking-[0.6em] text-zinc-400 mb-10">TECH STACK & TOOLS</p>
+        <p class="text-center text-[10px] font-black uppercase tracking-[0.6em] text-zinc-400 mb-10">{{ 'home.techStack.title' | translate }}</p>
         <div class="flex flex-wrap justify-center gap-6">
-            <div *ngFor="let skill of skills"
+            <div *ngFor="let skill of translatedSkills"
                 class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
                 <ng-container *ngIf="!isImagePath(skill.icon); else imgIcon">
                     <lucide-icon [img]="getSkillIcon(skill.icon)" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
@@ -38,7 +40,7 @@ import { ToastService } from '../../../services/toast.service';
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
             <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
-                <h3 class="text-base font-black dark:text-white text-zinc-900">Manage Tech Stack</h3>
+                <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.techStack.manageTitle' | translate }}</h3>
                 <div class="flex items-center gap-2">
                     <button (click)="addNewSkill()" class="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-all">
                         <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
@@ -55,21 +57,25 @@ import { ToastService } from '../../../services/toast.service';
                     [class]="submitted && !item.name.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
                     <div class="flex-1 space-y-3">
                         <div>
-                            <input [(ngModel)]="item.name" placeholder="Skill Name *"
+                            <input [(ngModel)]="item.name" placeholder="Skill Name (EN) *"
                                 [class]="submitted && !item.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                 class="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                            <p *ngIf="submitted && !item.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
+                            <p *ngIf="submitted && !item.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">{{ 'home.techStack.skillLabel' | translate }} {{ 'common.requiredField' | translate }}</p>
+                        </div>
+                        <div>
+                            <input [ngModel]="item.name_Ar" (ngModelChange)="item.name_Ar = $event" placeholder="Skill Name (AR)" dir="rtl"
+                                class="w-full px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         
                         <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
                             <div class="flex items-center gap-4 mb-1">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="radio" [name]="'iconType' + i" [value]="'name'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
-                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Icon Name</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ 'home.techStack.iconName' | translate }}</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="radio" [name]="'iconType' + i" [value]="'upload'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
-                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Image Upload</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ 'home.techStack.imageUpload' | translate }}</span>
                                 </label>
                             </div>
 
@@ -84,14 +90,14 @@ import { ToastService } from '../../../services/toast.service';
                                     <lucide-icon *ngIf="!isImagePath(item.icon)" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
                                 </div>
                                 <label class="flex-1 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all text-center">
-                                    {{ uploadingIndex === i ? 'Uploading...' : (isImagePath(item.icon) ? 'Change Image' : 'Upload Image') }}
+                                    {{ uploadingIndex === i ? ('home.techStack.uploading' | translate) : (isImagePath(item.icon) ? ('home.techStack.changeImage' | translate) : ('home.techStack.uploadImage' | translate)) }}
                                     <input type="file" class="hidden" (change)="onIconFileSelected($event, i)" accept="image/*">
                                 </label>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Display Order:</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ 'home.techStack.displayOrder' | translate }}</span>
                             <input [(ngModel)]="item.order" type="number"
                                 class="w-16 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-center">
                         </div>
@@ -103,11 +109,11 @@ import { ToastService } from '../../../services/toast.service';
                 </div>
             </div>
             <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
-                <button (click)="closeEditModal()" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
+                <button (click)="closeEditModal()" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">{{ 'common.cancel' | translate }}</button>
                 <button (click)="saveSkills()" [disabled]="isSaving"
                     class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
                     <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
-                    {{ isSaving ? 'Saving...' : 'Save All' }}
+                    {{ isSaving ? ('common.saving' | translate) : ('common.saveAll' | translate) }}
                 </button>
             </div>
         </div>
@@ -120,13 +126,13 @@ import { ToastService } from '../../../services/toast.service';
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
-            <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Skill?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!].name || 'this skill' }}</strong>?</p>
+            <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">{{ 'common.deleteConfirm' | translate }}</h4>
+            <p class="text-sm text-zinc-500 mb-6">{{ 'common.deleteMessage' | translate }} <strong class="text-zinc-900 dark:text-white">{{ editList[deleteIndex!].name || 'this skill' }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
-                <button (click)="deleteIndex = null" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
+                <button (click)="deleteIndex = null" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">{{ 'common.cancel' | translate }}</button>
                 <button (click)="executeDelete()" [disabled]="isDeleting"
                     class="px-6 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50">
-                    {{ isDeleting ? 'Deleting...' : 'Delete' }}
+                    {{ isDeleting ? ('common.deleting' | translate) : ('common.delete' | translate) }}
                 </button>
             </div>
         </div>
@@ -137,6 +143,7 @@ export class HomeTechStackComponent {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
+    public translationHelper = inject(TranslationHelperService);
 
     @Input() skills: SkillEntry[] = [];
     @Output() skillsUpdated = new EventEmitter<SkillEntry[]>();
@@ -149,6 +156,10 @@ export class HomeTechStackComponent {
     iconInputs: { type: 'name' | 'upload' }[] = [];
     uploadingIndex: number | null = null;
     deleteIndex: number | null = null;
+
+    get translatedSkills(): SkillEntry[] {
+        return this.translationHelper.translateArray(this.skills, ['name']);
+    }
 
     getSkillIcon(iconName?: string): any {
         if (!iconName) return Code2;

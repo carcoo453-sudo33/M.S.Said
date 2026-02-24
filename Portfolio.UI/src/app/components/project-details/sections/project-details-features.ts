@@ -1,19 +1,20 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Layers, Rocket, Monitor, Code, CheckCircle } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 
 @Component({
     selector: 'app-project-details-features',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
     <div *ngIf="project" class="space-y-16 lg:space-y-20">
         <!-- Key Features -->
         <section class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
-                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">Key Features</h2>
+                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.keyFeatures' | translate }}</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
@@ -37,7 +38,7 @@ import { ProjectEntry } from '../../../models';
         <section class="space-y-8">
             <div class="flex items-center gap-4">
                 <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
-                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">Responsibilities</h2>
+                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.responsibilities' | translate }}</h2>
             </div>
 
             <div class="space-y-4 lg:space-y-6">

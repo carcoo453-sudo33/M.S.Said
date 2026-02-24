@@ -1,17 +1,19 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Mail, MapPin, Linkedin, Github, MessageCircle, Download, Phone, Edit3, Twitter, X, Save, AlertTriangle, CheckCircle, Upload as LucideUpload, Image as LucideImage, FileText, Plus, Trash2 } from 'lucide-angular';
 import { BioEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
+import { TranslationHelperService } from '../../../services/translation-helper.service';
 
 @Component({
     selector: 'app-home-sidebar-profile',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule],
+    imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
     <aside class="md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
         <div
@@ -38,7 +40,7 @@ import { ToastService } from '../../../services/toast.service';
                 </h2>
                 <span
                     class="text-[#FF3B7E] font-bold text-[9px] uppercase tracking-[0.25em] bg-red-600/5 inline-block px-4 py-1.5 rounded-full border border-red-600/10 text-center">
-                    {{ bio?.title }}
+                    {{ translatedTitle }}
                 </span>
             </div>
 
@@ -75,8 +77,8 @@ import { ToastService } from '../../../services/toast.service';
                         <lucide-icon [img]="MapPinIcon" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-white"></lucide-icon>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-0.5">Location</span>
-                        <span class="text-[10px] font-bold dark:text-white text-zinc-900">{{ bio?.location }}</span>
+                        <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest leading-none mb-0.5">{{ 'common.location' | translate }}</span>
+                        <span class="text-[10px] font-bold dark:text-white text-zinc-900">{{ translatedLocation }}</span>
                     </div>
                 </div>
             </div>
@@ -101,7 +103,7 @@ import { ToastService } from '../../../services/toast.service';
                 <a *ngIf="bio?.cvUrl" [href]="getCVUrl()" target="_blank" download
                     class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg hover:shadow-xl dark:shadow-none">
                     <lucide-icon [img]="DownloadIcon" class="w-3.5 h-3.5"></lucide-icon>
-                    Download CV
+                    {{ 'common.downloadCV' | translate }}
                 </a>
             </div>
         </div>
@@ -151,37 +153,23 @@ import { ToastService } from '../../../services/toast.service';
                     <p *ngIf="submitted && !editForm.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title</label>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)</label>
                     <input [(ngModel)]="editForm.title" type="text"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description</label>
-                    <textarea [(ngModel)]="editForm.description" rows="3"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                </div>
-
-                <!-- Divider -->
-                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
-
-                <!-- Contact Info -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
-                        <input [(ngModel)]="editForm.email" type="email"
-                            [class]="submitted && !editForm.email.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
-                            class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
-                        <p *ngIf="submitted && !editForm.email.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
-                        <input [(ngModel)]="editForm.phone" type="text"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
+                    <input [ngModel]="editForm.title_Ar" (ngModelChange)="editForm.title_Ar = $event" type="text" dir="rtl"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location</label>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (EN)</label>
                     <input [(ngModel)]="editForm.location" type="text"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (AR)</label>
+                    <input [ngModel]="editForm.location_Ar" (ngModelChange)="editForm.location_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
 
@@ -279,6 +267,7 @@ export class HomeSidebarProfileComponent {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
+    public translationHelper = inject(TranslationHelperService);
 
     @Input() bio?: BioEntry;
     @Output() bioUpdated = new EventEmitter<BioEntry>();
@@ -303,6 +292,14 @@ export class HomeSidebarProfileComponent {
     isUploadingCV = false;
     avatarPreview: string | null = null;
     editForm: BioEntry = this.getEmptyBio();
+
+    get translatedTitle(): string {
+        return this.translationHelper.getTranslatedField(this.bio, 'title');
+    }
+
+    get translatedLocation(): string {
+        return this.translationHelper.getTranslatedField(this.bio, 'location');
+    }
 
     getEmptyBio(): BioEntry {
         return {

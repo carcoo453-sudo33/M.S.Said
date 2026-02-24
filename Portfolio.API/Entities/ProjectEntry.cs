@@ -6,21 +6,27 @@ public class ProjectEntry : BaseEntity
 {
     [Required]
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
 
     [Required]
     public string Slug { get; set; } = string.Empty;
     
     public string? Description { get; set; }
+    public string? Description_Ar { get; set; }
     
     public string? Summary { get; set; }
+    public string? Summary_Ar { get; set; }
     
     public string? TechStack { get; set; } // e.g. "Angular, .NET, SQL"
 
     public string? Category { get; set; } // e.g. "Web Development"
+    public string? Category_Ar { get; set; }
 
     public string? Tags { get; set; } // e.g. "UI/UX, Backend"
+    public string? Tags_Ar { get; set; }
 
     public string? Niche { get; set; } // e.g. "E-commerce"
+    public string? Niche_Ar { get; set; }
     
     public string? ImageUrl { get; set; }
     
