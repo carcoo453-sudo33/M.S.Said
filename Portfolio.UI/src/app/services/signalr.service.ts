@@ -16,7 +16,8 @@ export class SignalRService {
     
     const options: signalR.IHttpConnectionOptions = {
       skipNegotiation: false,
-      transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling
+      transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling,
+      withCredentials: true
     };
 
     // Only add token if it exists (for admin)
@@ -24,9 +25,12 @@ export class SignalRService {
       options.accessTokenFactory = () => token;
     }
 
+    const hubUrl = `${environment.apiBaseUrl}/hubs/notifications`;
+    console.log('🔗 Attempting SignalR connection to:', hubUrl);
+
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${environment.apiUrl.replace('/api', '')}/hubs/notifications`, options)
-      .withAutomaticReconnect()
+      .withUrl(hubUrl, options)
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
@@ -39,7 +43,13 @@ export class SignalRService {
       })
       .catch(err => {
         console.error('❌ Error while starting SignalR connection:', err);
-        console.error('Hub URL:', `${environment.apiUrl.replace('/api', '')}/hubs/notifications`);
+        console.error('Hub URL:', hubUrl);
+        console.error('Error details:', {
+          message: err.message,
+          stack: err.stack,
+          name: err.name
+        });
+        // Don't throw - just log and continue without SignalR
       });
 
     // Handle reconnection

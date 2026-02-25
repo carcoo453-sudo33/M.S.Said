@@ -13,7 +13,7 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
-// CORS configuration - Robust for development and production
+// CORS configuration - Robust for development and production with SignalR support
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
