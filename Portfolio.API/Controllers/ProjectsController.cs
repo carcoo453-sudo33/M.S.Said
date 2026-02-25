@@ -552,6 +552,13 @@ public class ProjectsController : ControllerBase
                     var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
                     Console.WriteLine($"[ImportFromGitHub] README content length: {readmeContent.Length}");
                     ExtractFeaturesAndResponsibilitiesFromReadme(readmeContent, out features, out responsibilities);
+                    
+                    // If no features found, try to extract from description
+                    if (!features.Any() && repoData?.Description != null)
+                    {
+                        Console.WriteLine($"[ImportFromGitHub] No features in README, using repo description");
+                        features.Add(("Layers", "Project Overview", repoData.Description));
+                    }
                 }
             }
 
@@ -584,6 +591,67 @@ public class ProjectsController : ControllerBase
                 }
             }
 
+            // Fetch images from screenshots folder
+            Console.WriteLine($"[ImportFromGitHub] Fetching screenshots folder...");
+            var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/screenshots";
+            var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
+            Console.WriteLine($"[ImportFromGitHub] Screenshots response: {screenshotsResponse.StatusCode}");
+            
+            string? mainImageUrl = null;
+            var galleryImageUrls = new List<string>();
+            
+            if (screenshotsResponse.IsSuccessStatusCode)
+            {
+                var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
+                if (screenshotsData != null && screenshotsData.Any())
+                {
+                    Console.WriteLine($"[ImportFromGitHub] Found {screenshotsData.Count} items in screenshots folder");
+                    
+                    // Filter only image files
+                    var imageFiles = screenshotsData
+                        .Where(f => f.Type == "file" && 
+                               (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
+                        .ToList();
+                    
+                    Console.WriteLine($"[ImportFromGitHub] Found {imageFiles.Count} image files");
+                    
+                    // Find main.png for main image
+                    var mainImage = imageFiles.FirstOrDefault(f => 
+                        f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
+                        f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
+                        f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
+                    
+                    if (mainImage != null)
+                    {
+                        mainImageUrl = mainImage.DownloadUrl;
+                        Console.WriteLine($"[ImportFromGitHub] Found main image: {mainImage.Name}");
+                    }
+                    else if (imageFiles.Any())
+                    {
+                        // Use first image as main if no main.png found
+                        mainImageUrl = imageFiles.First().DownloadUrl;
+                        Console.WriteLine($"[ImportFromGitHub] Using first image as main: {imageFiles.First().Name}");
+                    }
+                    
+                    // Add other images to gallery (excluding the main image)
+                    galleryImageUrls = imageFiles
+                        .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
+                        .Take(10) // Limit to 10 gallery images
+                        .Select(f => f.DownloadUrl!)
+                        .ToList();
+                    
+                    Console.WriteLine($"[ImportFromGitHub] Gallery images count: {galleryImageUrls.Count}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"[ImportFromGitHub] Screenshots folder not found or inaccessible");
+            }
+
             // Now update the database with fetched data
             var repository = _unitOfWork.Repository<ProjectEntry>();
             var project = await repository.GetByIdAsync(projectId);
@@ -598,6 +666,20 @@ public class ProjectsController : ControllerBase
             if (repoData != null && !string.IsNullOrEmpty(repoData.Language))
             {
                 project.Language = repoData.Language;
+            }
+
+            // Update main image if found
+            if (!string.IsNullOrEmpty(mainImageUrl))
+            {
+                project.ImageUrl = mainImageUrl;
+                Console.WriteLine($"[ImportFromGitHub] Set main image URL");
+            }
+
+            // Update gallery images if found
+            if (galleryImageUrls.Any())
+            {
+                project.GalleryJson = JsonSerializer.Serialize(galleryImageUrls);
+                Console.WriteLine($"[ImportFromGitHub] Set gallery with {galleryImageUrls.Count} images");
             }
 
             // Update responsibilities JSON
@@ -719,6 +801,8 @@ public class ProjectsController : ControllerBase
         features = new List<(string, string, string)>();
         responsibilities = new List<string>();
         
+        Console.WriteLine($"[ExtractFeatures] README length: {readme.Length}");
+        
         var lines = readme.Split('\n');
         var inFeaturesSection = false;
         var inResponsibilitiesSection = false;
@@ -731,8 +815,11 @@ public class ProjectsController : ControllerBase
 
             // Detect Features section
             if (trimmed.Contains("## Features", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## Key Features", StringComparison.OrdinalIgnoreCase))
+                trimmed.Contains("## Key Features", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.Contains("## ✨ Features", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.Contains("### Features", StringComparison.OrdinalIgnoreCase))
             {
+                Console.WriteLine($"[ExtractFeatures] Found Features section: {trimmed}");
                 inFeaturesSection = true;
                 inResponsibilitiesSection = false;
                 continue;
@@ -741,40 +828,69 @@ public class ProjectsController : ControllerBase
             // Detect Responsibilities/Tasks section
             if (trimmed.Contains("## Responsibilities", StringComparison.OrdinalIgnoreCase) ||
                 trimmed.Contains("## Tasks", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## What I Did", StringComparison.OrdinalIgnoreCase))
+                trimmed.Contains("## What I Did", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.Contains("### Responsibilities", StringComparison.OrdinalIgnoreCase))
             {
+                Console.WriteLine($"[ExtractFeatures] Found Responsibilities section: {trimmed}");
                 inResponsibilitiesSection = true;
                 inFeaturesSection = false;
                 continue;
             }
 
-            // Stop at next major section
-            if (trimmed.StartsWith("## ") && !trimmed.Contains("Feature", StringComparison.OrdinalIgnoreCase))
+            // Stop at next major section (but not subsections)
+            if (trimmed.StartsWith("## ") && 
+                !trimmed.Contains("Feature", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("Responsibilit", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("Task", StringComparison.OrdinalIgnoreCase))
             {
                 if (inFeaturesSection || inResponsibilitiesSection)
                 {
+                    Console.WriteLine($"[ExtractFeatures] Stopping at section: {trimmed}");
                     inFeaturesSection = false;
                     inResponsibilitiesSection = false;
                 }
             }
 
-            // Extract bullet points
-            if ((inFeaturesSection || inResponsibilitiesSection) && (trimmed.StartsWith("- ") || trimmed.StartsWith("* ")))
+            // Extract bullet points (support -, *, +, and numbered lists)
+            if (inFeaturesSection || inResponsibilitiesSection)
             {
-                var text = trimmed.Substring(2).Trim();
-                if (inFeaturesSection)
-                    featuresList.Add(text);
-                else if (inResponsibilitiesSection)
-                    respList.Add(text);
+                var isBullet = trimmed.StartsWith("- ") || trimmed.StartsWith("* ") || trimmed.StartsWith("+ ");
+                var isNumbered = System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^\d+\.\s");
+                
+                if (isBullet || isNumbered)
+                {
+                    var text = isBullet ? trimmed.Substring(2).Trim() : 
+                               System.Text.RegularExpressions.Regex.Replace(trimmed, @"^\d+\.\s", "").Trim();
+                    
+                    // Remove markdown formatting
+                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\*\*(.*?)\*\*", "$1"); // Bold
+                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\*(.*?)\*", "$1"); // Italic
+                    text = System.Text.RegularExpressions.Regex.Replace(text, @"`(.*?)`", "$1"); // Code
+                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\[(.*?)\]\(.*?\)", "$1"); // Links
+                    
+                    if (inFeaturesSection)
+                    {
+                        featuresList.Add(text);
+                        Console.WriteLine($"[ExtractFeatures] Added feature: {text.Substring(0, Math.Min(50, text.Length))}...");
+                    }
+                    else if (inResponsibilitiesSection)
+                    {
+                        respList.Add(text);
+                        Console.WriteLine($"[ExtractFeatures] Added responsibility: {text.Substring(0, Math.Min(50, text.Length))}...");
+                    }
+                }
             }
         }
 
+        Console.WriteLine($"[ExtractFeatures] Total features found: {featuresList.Count}");
+        Console.WriteLine($"[ExtractFeatures] Total responsibilities found: {respList.Count}");
+
         // Convert features to structured format
-        var icons = new[] { "Layers", "Rocket", "Monitor", "Code" };
+        var icons = new[] { "Layers", "Rocket", "Monitor", "Code", "Zap", "Shield", "Database", "Globe" };
         for (int i = 0; i < Math.Min(featuresList.Count, 8); i++)
         {
             var feature = featuresList[i];
-            var parts = feature.Split(new[] { ':', '-' }, 2);
+            var parts = feature.Split(new[] { ':', '-', '–' }, 2, StringSplitOptions.RemoveEmptyEntries);
             var title = parts.Length > 1 ? parts[0].Trim() : (feature.Length > 50 ? feature.Substring(0, 50) : feature);
             var description = parts.Length > 1 ? parts[1].Trim() : feature;
             description = description.Length > 200 ? description.Substring(0, 200) + "..." : description;
@@ -786,6 +902,9 @@ public class ProjectsController : ControllerBase
         responsibilities = respList.Take(10)
             .Select(r => r.Length > 150 ? r.Substring(0, 150) + "..." : r)
             .ToList();
+            
+        Console.WriteLine($"[ExtractFeatures] Final features count: {features.Count}");
+        Console.WriteLine($"[ExtractFeatures] Final responsibilities count: {responsibilities.Count}");
     }
 
     private (string owner, string repo) ParseGitHubUrl(string url)

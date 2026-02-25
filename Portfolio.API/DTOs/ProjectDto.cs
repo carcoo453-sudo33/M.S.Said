@@ -134,3 +134,13 @@ public class GitHubRepository
     public string? Homepage { get; set; }
     public List<string>? Topics { get; set; }
 }
+
+public class GitHubContentItem
+{
+    public string Name { get; set; } = string.Empty;
+    public string Path { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public string? DownloadUrl { get; set; }
+    public string? Url { get; set; }
+    public long Size { get; set; }
+}

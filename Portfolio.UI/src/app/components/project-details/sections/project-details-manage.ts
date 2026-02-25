@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter, inject, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Edit, Save, X, Plus, Trash2, Code, Clock, Layers, CheckCircle, Github } from 'lucide-angular';
 import { ProjectEntry, KeyFeature, ChangelogItem, Metric } from '../../../models';
 import { ProjectService } from '../../../services/project.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
     selector: 'app-project-details-manage',
@@ -261,6 +262,8 @@ import { ProjectService } from '../../../services/project.service';
 })
 export class ProjectDetailsManageComponent implements OnChanges {
     private projectService = inject(ProjectService);
+    private toast = inject(ToastService);
+    private cdr = inject(ChangeDetectorRef);
     
     @Input() project?: ProjectEntry;
     @Input() canEdit = false;
@@ -383,15 +386,17 @@ export class ProjectDetailsManageComponent implements OnChanges {
         this.projectService.updateProject(this.project.id, updatedProject).subscribe({
             next: (updated) => {
                 console.log('Project updated successfully:', updated);
-                // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-                setTimeout(() => {
-                    this.onUpdate.emit(updated);
-                    this.isEditing = false;
-                    this.isSaving = false;
-                }, 0);
+                this.onUpdate.emit(updated);
+                this.isEditing = false;
+                this.isSaving = false;
+                this.cdr.detectChanges();
+                this.toast.success('Project details updated successfully');
             },
             error: (err) => {
                 console.error('Failed to update project:', err);
+                this.isSaving = false;
+                this.cdr.detectChanges();
+                
                 let errorMessage = 'Failed to save changes. ';
                 
                 if (err.status === 401) {
@@ -402,11 +407,7 @@ export class ProjectDetailsManageComponent implements OnChanges {
                     errorMessage += 'Please try again.';
                 }
                 
-                // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-                setTimeout(() => {
-                    alert(errorMessage);
-                    this.isSaving = false;
-                }, 0);
+                this.toast.error(errorMessage);
             }
         });
     }
@@ -418,42 +419,66 @@ export class ProjectDetailsManageComponent implements OnChanges {
         console.log('[ManageComponent] Project ID:', this.project.id);
         console.log('[ManageComponent] GitHub URL:', this.githubUrl);
 
-        // First test CORS
-        this.projectService.testCors().subscribe({
-            next: (result) => {
-                console.log('[ManageComponent] CORS test successful:', result);
-                this.performImport();
-            },
-            error: (err) => {
-                console.error('[ManageComponent] CORS test failed:', err);
-                alert(`CORS test failed: ${err.status} - ${err.statusText}. Check browser console for details.`);
-            }
-        });
-    }
-
-    private performImport() {
-        if (!this.project || !this.githubUrl) return;
-        
         this.isImporting = true;
+        this.cdr.detectChanges();
 
         this.projectService.importFromGitHub(this.project.id, this.githubUrl).subscribe({
             next: (updated: ProjectEntry) => {
-                console.log('GitHub import successful:', updated);
+                console.log('GitHub import successful - Full response:', updated);
+                console.log('Key Features:', updated.keyFeatures);
+                console.log('Responsibilities:', updated.responsibilities);
+                console.log('Changelog:', updated.changelog);
+                console.log('Metrics:', updated.metrics);
+                console.log('Language:', updated.language);
+                console.log('Image URL:', updated.imageUrl);
+                console.log('Gallery:', updated.gallery);
                 
-                // Update the edit data with imported values
-                this.editData = {
-                    language: updated.language || this.editData.language,
-                    duration: this.editData.duration,
-                    architecture: this.editData.architecture,
-                    status: this.editData.status,
-                    keyFeatures: JSON.parse(JSON.stringify(updated.keyFeatures || [])),
-                    responsibilities: [...(updated.responsibilities || [])],
-                    changelog: JSON.parse(JSON.stringify(updated.changelog || [])),
-                    metrics: JSON.parse(JSON.stringify(updated.metrics || []))
-                };
+                // Count imported items
+                let importedCount = 0;
+                const importedItems: string[] = [];
+                
+                // Update the edit data with imported values (only if they exist)
+                if (updated.keyFeatures && updated.keyFeatures.length > 0) {
+                    this.editData.keyFeatures = JSON.parse(JSON.stringify(updated.keyFeatures));
+                    importedCount += updated.keyFeatures.length;
+                    importedItems.push(`${updated.keyFeatures.length} Key Features`);
+                }
+                if (updated.responsibilities && updated.responsibilities.length > 0) {
+                    this.editData.responsibilities = [...updated.responsibilities];
+                    importedCount += updated.responsibilities.length;
+                    importedItems.push(`${updated.responsibilities.length} Responsibilities`);
+                }
+                if (updated.changelog && updated.changelog.length > 0) {
+                    this.editData.changelog = JSON.parse(JSON.stringify(updated.changelog));
+                    importedCount += updated.changelog.length;
+                    importedItems.push(`${updated.changelog.length} Changelog Entries`);
+                }
+                if (updated.metrics && updated.metrics.length > 0) {
+                    this.editData.metrics = JSON.parse(JSON.stringify(updated.metrics));
+                    importedCount += updated.metrics.length;
+                    importedItems.push(`${updated.metrics.length} Metrics`);
+                }
+                if (updated.language) {
+                    this.editData.language = updated.language;
+                    importedItems.push(`Language: ${updated.language}`);
+                }
+                
+                // Note: Images are already saved to the project, just inform the user
+                if (updated.imageUrl) {
+                    importedItems.push('Main Image');
+                }
+                if (updated.gallery && updated.gallery.length > 0) {
+                    importedItems.push(`${updated.gallery.length} Gallery Images`);
+                }
                 
                 this.isImporting = false;
-                alert('Successfully imported data from GitHub! Review and save changes.');
+                this.cdr.detectChanges();
+                
+                if (importedCount > 0 || updated.imageUrl || (updated.gallery && updated.gallery.length > 0)) {
+                    this.toast.success(`Successfully imported: ${importedItems.join(', ')}. Review and save changes.`);
+                } else {
+                    this.toast.warning('Import completed but no data was found. The repository may not have features, releases, screenshots folder, or README sections.');
+                }
             },
             error: (err: any) => {
                 console.error('Failed to import from GitHub:', err);
@@ -464,8 +489,22 @@ export class ProjectDetailsManageComponent implements OnChanges {
                     error: err.error,
                     url: err.url
                 });
-                alert(`Failed to import from GitHub.\nStatus: ${err.status}\nError: ${err.statusText || err.message}\nCheck console for details.`);
+                
                 this.isImporting = false;
+                this.cdr.detectChanges();
+                
+                let errorMessage = 'Failed to import from GitHub. ';
+                if (err.status === 401) {
+                    errorMessage = 'Your session has expired. Please log in again.';
+                } else if (err.status === 404) {
+                    errorMessage = 'Repository not found. Please check the URL.';
+                } else if (err.error?.message) {
+                    errorMessage += err.error.message;
+                } else {
+                    errorMessage += 'Please check the URL and try again.';
+                }
+                
+                this.toast.error(errorMessage);
             }
         });
     }

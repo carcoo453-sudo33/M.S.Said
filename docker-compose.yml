@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./Portfolio.API
+      dockerfile: Dockerfile
+    container_name: portfolio-api
+    ports:
+      - "5283:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      - JwtSettings__Secret=${JWT_SECRET}
+      - EmailSettings__SmtpServer=${SMTP_SERVER}
+      - EmailSettings__SmtpPort=${SMTP_PORT}
+      - EmailSettings__SmtpUsername=${SMTP_USERNAME}
+      - EmailSettings__SmtpPassword=${SMTP_PASSWORD}
+      - EmailSettings__FromEmail=${FROM_EMAIL}
+      - EmailSettings__FromName=${FROM_NAME}
+    volumes:
+      - ./uploads:/app/wwwroot/uploads
+    restart: unless-stopped
+    networks:
+      - portfolio-network
+
+  ui:
+    build:
+      context: ./Portfolio.UI
+      dockerfile: Dockerfile
+    container_name: portfolio-ui
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - portfolio-network
+
+networks:
+  portfolio-network:
+    driver: bridge
+
+volumes:
+  uploads:
