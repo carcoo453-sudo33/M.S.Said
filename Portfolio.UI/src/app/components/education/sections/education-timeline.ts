@@ -24,22 +24,18 @@ import { environment } from '../../../../environments/environment';
 
         <div class="space-y-12 relative before:absolute before:inset-0 before:left-1/2 before:-translate-x-1/2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800">
             <div *ngFor="let item of education; let i = index"
-                class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group animate-fade-in-up"
+                class="relative flex items-center justify-between group animate-fade-in-up"
                 [style.animation-delay]="(0.1 * i) + 's'">
 
-                <!-- Connector Icon/Image - Centered on Timeline -->
+                <!-- Connector Icon - Centered on Timeline (Always shows category icon) -->
                 <div
-                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-2xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl overflow-hidden"
+                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-2xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl"
                     [ngClass]="{
                         'border-indigo-600 shadow-indigo-500/40 group-hover:shadow-indigo-500/70 group-hover:scale-110': item.category === 'Education',
                         'border-emerald-600 shadow-emerald-500/40 group-hover:shadow-emerald-500/70 group-hover:scale-110': item.category === 'Training',
                         'border-violet-600 shadow-violet-500/40 group-hover:shadow-violet-500/70 group-hover:scale-110': item.category === 'Certification'
                     }">
-                    <!-- Custom Image if available -->
-                    <img *ngIf="item.imageUrl" [src]="getImageUrl(item.imageUrl)" [alt]="item.institution"
-                        class="w-full h-full object-cover">
-                    <!-- Default Icon if no image -->
-                    <div *ngIf="!item.imageUrl" class="flex items-center justify-center w-full h-full rounded-xl transition-all duration-500"
+                    <div class="flex items-center justify-center w-full h-full rounded-xl transition-all duration-500"
                         [ngClass]="{
                             'text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white': item.category === 'Education',
                             'text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white': item.category === 'Training',
@@ -51,7 +47,7 @@ import { environment } from '../../../../environments/environment';
                     </div>
                 </div>
 
-                <!-- Card Content -->
+                <!-- Details Card (Left Side) -->
                 <div
                     class="w-[calc(50%-3.5rem)] bg-white/90 dark:bg-zinc-900/70 p-6 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl"
                     [ngClass]="{
@@ -92,6 +88,39 @@ import { environment } from '../../../../environments/environment';
                         }">
                         <lucide-icon [img]="MapPinIcon" class="w-3 h-3"></lucide-icon>
                         <span class="text-[10px] uppercase tracking-wide font-bold">{{ getLocation(item) }}</span>
+                    </div>
+                </div>
+
+                <!-- Image Card (Right Side) -->
+                <div
+                    class="w-[calc(50%-3.5rem)] bg-white/90 dark:bg-zinc-900/70 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl overflow-hidden"
+                    [ngClass]="{
+                        'border-indigo-500/30 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/20': item.category === 'Education',
+                        'border-emerald-500/30 group-hover:border-emerald-500/60 group-hover:shadow-emerald-500/20': item.category === 'Training',
+                        'border-violet-500/30 group-hover:border-violet-500/60 group-hover:shadow-violet-500/20': item.category === 'Certification'
+                    }">
+                    <!-- Image if available -->
+                    <div *ngIf="item.imageUrl" class="aspect-square">
+                        <img [src]="getImageUrl(item.imageUrl)" [alt]="item.institution"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <!-- Placeholder if no image -->
+                    <div *ngIf="!item.imageUrl" class="aspect-square flex items-center justify-center bg-gradient-to-br"
+                        [ngClass]="{
+                            'from-indigo-50 to-indigo-100 dark:from-indigo-950/30 dark:to-indigo-900/30': item.category === 'Education',
+                            'from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30': item.category === 'Training',
+                            'from-violet-50 to-violet-100 dark:from-violet-950/30 dark:to-violet-900/30': item.category === 'Certification'
+                        }">
+                        <div class="text-center p-6">
+                            <lucide-icon [img]="item.category === 'Education' ? GraduationCapIcon : item.category === 'Training' ? BookOpenIcon : AwardIcon" 
+                                class="w-16 h-16 mx-auto mb-3 opacity-30"
+                                [ngClass]="{
+                                    'text-indigo-600': item.category === 'Education',
+                                    'text-emerald-600': item.category === 'Training',
+                                    'text-violet-600': item.category === 'Certification'
+                                }"></lucide-icon>
+                            <p class="text-xs font-bold uppercase tracking-widest text-zinc-400">No Image</p>
+                        </div>
                     </div>
                 </div>
             </div>
