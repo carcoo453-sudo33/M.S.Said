@@ -8,7 +8,8 @@
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy:check": "node deploy-check.js"
+    "deploy:check": "node deploy-check.js",
+    "check:build": "node check-build.js"
   },
   "prettier": {
     "printWidth": 100,
