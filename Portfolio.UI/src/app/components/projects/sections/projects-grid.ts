@@ -11,7 +11,7 @@ import { ToastService } from '../../../services/toast.service';
 import { TranslationHelperService } from '../../../services/translation-helper.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github } from 'lucide-angular';
+import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github, ArrowRight } from 'lucide-angular';
 
 @Component({
     selector: 'app-projects-grid',
@@ -21,21 +21,13 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     <!-- Selected Works Header -->
     
 
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 animate-fade-in-up"
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up"
         style="animation-delay: 0.2s">
         <div *ngFor="let project of projects; let i = index" [routerLink]="['/projects', project.slug]"
-            class="group cursor-pointer bg-white dark:bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-2xl transition-all duration-700 relative flex flex-col">
-
-            <!-- Year Badge -->
-            <div class="absolute top-4 right-4 z-20">
-                <span
-                    class="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-black text-red-600 border border-white/10 uppercase tracking-widest">
-                    {{ (project.duration || '2024').split('-')[0] }}
-                </span>
-            </div>
+            class="group cursor-pointer bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800/50 shadow-sm hover:shadow-xl transition-all duration-500 relative flex flex-col">
 
             <!-- Admin Actions -->
-            <div *ngIf="auth.isLoggedIn()" class="absolute top-4 left-4 z-20 flex gap-2">
+            <div *ngIf="auth.isLoggedIn()" class="absolute top-4 left-4 z-30 flex gap-2">
                 <button (click)="onEdit($event, project)"
                     class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-500 border border-white/10 transition-all">
                     <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
@@ -46,40 +38,56 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                 </button>
             </div>
 
-            <div class="relative aspect-[16/10] overflow-hidden">
-                <img [src]="getFullImageUrl(project.imageUrl || '')"
-                    class="w-full h-full object-cover dark:grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1000ms]">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            <!-- Year Badge -->
+            <div class="absolute top-4 right-4 z-20">
+                <span
+                    class="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-black text-red-600 border border-white/10 uppercase tracking-widest">
+                    {{ (project.duration || '2024').split('-')[0] }}
+                </span>
             </div>
 
-            <div class="p-8 flex-1 flex flex-col">
-                <div class="mb-4">
-                    <h3
-                        class="text-2xl font-bold dark:text-white text-zinc-900 mb-2 group-hover:text-red-600 transition-colors uppercase italic tracking-tighter">
+            <!-- Image Section -->
+            <div class="relative aspect-[16/9] overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
+                </div>
+                <img [src]="getFullImageUrl(project.imageUrl || '')"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
+                
+                <!-- Tech Stack Tags (shown on hover) -->
+                <div
+                    class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
+                    <div class="flex flex-wrap gap-1.5">
+                        <span *ngFor="let tech of (project.technologies || '').split(',')"
+                            class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
+                            {{ tech.trim() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="p-5 flex-1 flex flex-col">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
                         {{ getProjectTitle(project) }}
                     </h3>
-                    <p
-                        class="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-4">
-                        {{ getProjectNiche(project) }}
-                    </p>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views || 0 }} {{ 'home.featuredProjects.views' | translate }}</span>
                 </div>
+                
+                <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">
+                    {{ getProjectNiche(project) }}
+                </p>
 
-                <p
-                    class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-8 line-clamp-3 font-medium">
+                <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
                     {{ getProjectDescription(project) }}
                 </p>
 
-                <div class="flex flex-wrap gap-2 mb-8 mt-auto">
-                    <span *ngFor="let tech of project.technologies.split(',')"
-                        class="bg-zinc-50 dark:bg-zinc-800 text-zinc-500 font-black px-3 py-1.5 rounded-lg text-[8px] uppercase border border-zinc-100 dark:border-zinc-700 tracking-wider">
-                        {{ tech.trim() }}
-                    </span>
-                </div>
-
-                <button
-                    class="w-full py-4 rounded-xl border border-red-600/20 text-red-600 font-bold text-[10px] uppercase tracking-widest group-hover:bg-red-600 group-hover:text-white transition-all shadow-lg shadow-red-600/5">
-                    {{ 'projects.viewCaseStudy' | translate }}
-                </button>
+                <a [routerLink]="['/projects', project.slug]"
+                    class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:gap-3 transition-all">
+                    {{ 'home.featuredProjects.projectInsights' | translate }}
+                    <lucide-icon [img]="ArrowRightIcon" class="w-3.5 h-3.5"></lucide-icon>
+                </a>
             </div>
         </div>
     </section>
@@ -326,6 +334,7 @@ export class ProjectsGridComponent implements OnChanges {
     UploadIcon = Upload;
     ImageIcon = Image;
     GithubIcon = Github;
+    ArrowRightIcon = ArrowRight;
 
     showEditModal = false;
     isSaving = false;
