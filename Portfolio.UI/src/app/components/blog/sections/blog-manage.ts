@@ -521,10 +521,8 @@ export class BlogManageComponent implements OnChanges {
     deletePost() {
         if (!this.post || this.isSaving) return;
 
-        if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
-            return;
-        }
-
+        // Show warning and proceed with deletion
+        this.toast.warning('Deleting blog post...');
         this.isSaving = true;
 
         this.blogService.deleteBlogPost(this.post.id).subscribe({

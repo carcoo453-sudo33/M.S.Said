@@ -6,6 +6,7 @@ import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
@@ -60,6 +61,7 @@ export class ProjectsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
   public auth = inject(AuthService);
+  private toast = inject(ToastService);
   public translationService = inject(TranslationService);
 
   projects = signal<ProjectEntry[]>([]);
@@ -171,7 +173,7 @@ export class ProjectsComponent implements OnInit {
     if (!project.id) return;
     
     if (!this.auth.isLoggedIn()) {
-      alert('You must be logged in to delete projects. Please log in first.');
+      this.toast.error('You must be logged in to delete projects. Please log in first');
       return;
     }
     
@@ -183,11 +185,11 @@ export class ProjectsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to delete project:', err);
         if (err.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          this.toast.error('Authentication failed. Please log in again');
           this.auth.logout();
           window.location.href = '/login';
         } else {
-          alert('Failed to delete project. Please try again.');
+          this.toast.error('Failed to delete project. Please try again');
         }
       }
     });
@@ -207,7 +209,7 @@ export class ProjectsComponent implements OnInit {
     if (!experience.id) return;
     
     if (!this.auth.isLoggedIn()) {
-      alert('You must be logged in to delete experiences. Please log in first.');
+      this.toast.error('You must be logged in to delete experiences. Please log in first');
       return;
     }
     
@@ -219,11 +221,11 @@ export class ProjectsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to delete experience:', err);
         if (err.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          this.toast.error('Authentication failed. Please log in again');
           this.auth.logout();
           window.location.href = '/login';
         } else {
-          alert('Failed to delete experience. Please try again.');
+          this.toast.error('Failed to delete experience. Please try again');
         }
       }
     });
@@ -245,7 +247,7 @@ export class ProjectsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to update client:', err);
-          alert('Failed to update client. Please try again.');
+          this.toast.error('Failed to update client. Please try again');
         }
       });
     }
@@ -260,7 +262,7 @@ export class ProjectsComponent implements OnInit {
     if (!client.id) return;
     
     if (!this.auth.isLoggedIn()) {
-      alert('You must be logged in to delete clients. Please log in first.');
+      this.toast.error('You must be logged in to delete clients. Please log in first');
       return;
     }
     
@@ -272,11 +274,11 @@ export class ProjectsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to delete client:', err);
         if (err.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          this.toast.error('Authentication failed. Please log in again');
           this.auth.logout();
           window.location.href = '/login';
         } else {
-          alert('Failed to delete client. Please try again.');
+          this.toast.error('Failed to delete client. Please try again');
         }
       }
     });
@@ -298,7 +300,7 @@ export class ProjectsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to update testimonial:', err);
-          alert('Failed to update testimonial. Please try again.');
+          this.toast.error('Failed to update testimonial. Please try again');
         }
       });
     }
@@ -313,7 +315,7 @@ export class ProjectsComponent implements OnInit {
     if (!testimonial.id) return;
     
     if (!this.auth.isLoggedIn()) {
-      alert('You must be logged in to delete testimonials. Please log in first.');
+      this.toast.error('You must be logged in to delete testimonials. Please log in first');
       return;
     }
     
@@ -325,11 +327,11 @@ export class ProjectsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to delete testimonial:', err);
         if (err.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          this.toast.error('Authentication failed. Please log in again');
           this.auth.logout();
           window.location.href = '/login';
         } else {
-          alert('Failed to delete testimonial. Please try again.');
+          this.toast.error('Failed to delete testimonial. Please try again');
         }
       }
     });

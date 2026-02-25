@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { ProjectEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
@@ -65,6 +66,7 @@ export class ProjectDetailsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
   private authService = inject(AuthService);
+  private toast = inject(ToastService);
   public translationService = inject(TranslationService);
 
   project = signal<ProjectEntry | undefined>(undefined);
@@ -184,7 +186,7 @@ export class ProjectDetailsComponent implements OnInit {
     if (!currentProject || !currentProject.id) return;
     
     if (!this.authService.isLoggedIn()) {
-      alert('You must be logged in to delete projects.');
+      this.toast.error('You must be logged in to delete projects');
       return;
     }
 
@@ -196,11 +198,11 @@ export class ProjectDetailsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to delete project:', err);
         if (err.status === 401) {
-          alert('Authentication failed. Please log in again.');
+          this.toast.error('Authentication failed. Please log in again');
           this.authService.logout();
           this.router.navigate(['/login']);
         } else {
-          alert('Failed to delete project. Please try again.');
+          this.toast.error('Failed to delete project. Please try again');
         }
       }
     });

@@ -6,6 +6,7 @@ import { LucideAngularModule, Edit, Trash2 } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { TranslationService } from '../../../services/translation.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
     selector: 'app-project-details-header',
@@ -50,6 +51,7 @@ export class ProjectDetailsHeaderComponent {
     private router = inject(Router);
     private translate = inject(TranslateService);
     private translationService = inject(TranslationService);
+    private toast = inject(ToastService);
     
     @Input() project?: ProjectEntry;
     @Output() onEdit = new EventEmitter<void>();
@@ -75,9 +77,8 @@ export class ProjectDetailsHeaderComponent {
     }
 
     onDeleteClick() {
-        const confirmMessage = this.translate.instant('projectDetails.deleteConfirm');
-        if (confirm(confirmMessage)) {
-            this.onDelete.emit();
-        }
+        // Show warning toast and emit delete event
+        this.toast.warning('Deleting project...');
+        this.onDelete.emit();
     }
 }
