@@ -42,8 +42,8 @@ export class NotificationService {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.apiUrl.replace('/api', '')}/hubs/notifications`, {
         accessTokenFactory: () => token,
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
+        skipNegotiation: false,
+        transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
@@ -51,16 +51,33 @@ export class NotificationService {
 
     // Handle incoming notifications
     this.hubConnection.on('ReceiveNotification', (notification: Notification) => {
-      console.log('[NotificationService] Received notification:', notification);
+      console.log('[NotificationService] ✅ Received notification:', notification);
       
-      // Add to notifications list
+      // Add to notifications list at the beginning
       const currentNotifications = this.notifications();
       this.notifications.set([notification, ...currentNotifications]);
       
       // Increment unread count
       if (!notification.isRead) {
-        this.unreadCount.set(this.unreadCount() + 1);
+        const newCount = this.unreadCount() + 1;
+        this.unreadCount.set(newCount);
+        console.log('[NotificationService] 📊 Unread count updated:', newCount);
       }
+      
+      // Show browser notification if permission granted
+      this.showBrowserNotification(notification);
+    });
+
+    // Handle reconnection
+    this.hubConnection.onreconnected(() => {
+      console.log('[NotificationService] 🔄 SignalR reconnected');
+      this.isConnected.set(true);
+      this.loadStats(); // Reload stats after reconnection
+    });
+
+    this.hubConnection.onclose(() => {
+      console.log('[NotificationService] 🔌 SignalR connection closed');
+      this.isConnected.set(false);
     });
 
     // Start connection
@@ -206,5 +223,40 @@ export class NotificationService {
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
     return notificationDate.toLocaleDateString();
+  }
+
+  private showBrowserNotification(notification: Notification): void {
+    // Check if browser supports notifications
+    if (!('Notification' in window)) {
+      return;
+    }
+
+    // Check permission
+    if (Notification.permission === 'granted') {
+      new Notification(notification.title, {
+        body: notification.message,
+        icon: '/assets/logo.png',
+        badge: '/assets/logo.png',
+        tag: notification.id
+      });
+    } else if (Notification.permission !== 'denied') {
+      // Request permission
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          new Notification(notification.title, {
+            body: notification.message,
+            icon: '/assets/logo.png',
+            badge: '/assets/logo.png',
+            tag: notification.id
+          });
+        }
+      });
+    }
+  }
+
+  public requestNotificationPermission(): void {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }
 }

@@ -18,38 +18,46 @@ import { TranslationService } from '../../../services/translation.service';
         
         <!-- Edit Button -->
         <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
-            class="absolute top-4 right-4 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all z-10">
+            class="absolute top-4 z-10 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all"
+            [ngClass]="isArabic() ? 'left-4' : 'right-4'">
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
         </button>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-            <div class="lg:col-span-4 relative group mx-auto w-full max-w-xs lg:max-w-none">
-                <div class="absolute inset-0 bg-red-600/20 rounded-3xl lg:rounded-[3rem] rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>
+            <div class="lg:col-span-4 relative group mx-auto w-full max-w-xs lg:max-w-none"
+                 [ngClass]="isArabic() ? 'lg:order-2' : 'lg:order-1'">
+                <div class="absolute inset-0 bg-red-600/20 rounded-3xl lg:rounded-[3rem] transition-transform duration-700"
+                     [ngClass]="isArabic() ? '-rotate-6 group-hover:-rotate-12' : 'rotate-6 group-hover:rotate-12'"></div>
                 <img [src]="getAvatarUrl()" [alt]="bio.name"
                     class="relative w-full aspect-square object-cover rounded-3xl lg:rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700">
-                <div class="absolute -bottom-4 -right-4 lg:-bottom-6 lg:-right-6 w-20 h-20 lg:w-24 lg:h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 transition-transform">
+                <div class="absolute -bottom-4 w-20 h-20 lg:w-24 lg:h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 transition-transform"
+                     [ngClass]="isArabic() ? '-left-4 lg:-left-6' : '-right-4 lg:-right-6'">
                     <span class="text-white font-black text-lg lg:text-xl italic uppercase tracking-tighter">M.S</span>
                 </div>
             </div>
-            <div class="lg:col-span-8 space-y-6 lg:space-y-8">
+            <div class="lg:col-span-8 space-y-6 lg:space-y-8"
+                 [ngClass]="isArabic() ? 'lg:order-1' : 'lg:order-2'">
                 <div>
-                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] mb-3 lg:mb-4 text-center lg:text-left"
+                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] mb-3 lg:mb-4"
+                       [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
                        [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
                         {{ getSignatureRole() }}
                     </p>
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-tight text-center lg:text-left break-words"
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-tight break-words"
+                        [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
                         [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
                         {{ getSignatureName() }}<br>
                         <span class="text-zinc-400">{{ getSignatureSubtitle() }}</span>
                     </h2>
                 </div>
                 <p *ngIf="getQuote()" 
-                   class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic pl-6 lg:pl-8"
+                   class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic"
                    [attr.dir]="isArabic() ? 'rtl' : 'ltr'"
-                   [ngClass]="isArabic() ? 'border-r-2 pr-6 lg:pr-8 pl-0' : 'border-l-2 border-zinc-100 dark:border-zinc-800'">
+                   [ngClass]="isArabic() ? 'border-r-2 border-zinc-100 dark:border-zinc-800 pr-6 lg:pr-8' : 'border-l-2 border-zinc-100 dark:border-zinc-800 pl-6 lg:pl-8'">
                     "{{ getQuote() }}"
                 </p>
-                <div class="flex flex-wrap justify-center lg:justify-start gap-6 lg:gap-8">
+                <div class="flex flex-wrap gap-6 lg:gap-8"
+                     [ngClass]="isArabic() ? 'justify-center lg:justify-end' : 'justify-center lg:justify-start'">
                     <div class="flex items-center gap-3 lg:gap-4">
                         <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
                             <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
