@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Eye, EyeOff } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
   email = '';
   password = '';
@@ -25,7 +27,12 @@ export class LoginComponent {
 
   onLogin() {
     this.auth.login({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => {
+        // Initialize notification service after successful login
+        this.notificationService.reconnect();
+        this.notificationService.loadStats();
+        this.router.navigate(['/']);
+      },
       error: () => this.errorMessage = 'Invalid email or password'
     });
   }
