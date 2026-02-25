@@ -12,7 +12,7 @@ export class SignalRService {
   constructor() {}
 
   public startConnection(): void {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     
     const options: signalR.IHttpConnectionOptions = {
       skipNegotiation: false,
@@ -50,6 +50,8 @@ export class SignalRService {
 
     this.hubConnection.onclose(() => {
       console.log('🔌 SignalR Connection closed');
+      // Set admin offline when connection closes
+      this.adminOnlineStatus.set(false);
     });
   }
 

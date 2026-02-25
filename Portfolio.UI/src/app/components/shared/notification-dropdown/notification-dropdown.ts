@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Bell, Check, CheckCheck, Trash2, X, Mail, MessageCircle, CornerDownRight, MessageSquare, Eye, BookOpen } from 'lucide-angular';
 import { NotificationService } from '../../../services/notification.service';
 import { ContactService } from '../../../services/contact.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -218,6 +219,7 @@ import { ContactService } from '../../../services/contact.service';
 export class NotificationDropdownComponent implements OnInit {
   public notificationService = inject(NotificationService);
   private contactService = inject(ContactService);
+  private toast = inject(ToastService);
 
   isOpen = signal(false);
   selectedMessage = signal<any>(null);
@@ -272,11 +274,16 @@ export class NotificationDropdownComponent implements OnInit {
   }
 
   clearAll() {
-    if (confirm('Are you sure you want to clear all notifications?')) {
-      this.notificationService.clearAll().subscribe({
-        error: (err) => console.error('Failed to clear notifications:', err)
-      });
-    }
+    // Show confirmation toast and proceed with clearing
+    this.notificationService.clearAll().subscribe({
+      next: () => {
+        this.toast.success('All notifications cleared');
+      },
+      error: (err) => {
+        console.error('Failed to clear notifications:', err);
+        this.toast.error('Failed to clear notifications');
+      }
+    });
   }
 
   getIcon(type: string): any {
