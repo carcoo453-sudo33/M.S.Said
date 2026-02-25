@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, interval } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../environments/environment';
-import { Notification, NotificationStats } from '../models/notification.model';
+import { Notification as AppNotification, NotificationStats } from '../models/notification.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class NotificationService {
   private hubConnection: signalR.HubConnection | null = null;
 
   // Signals for reactive state
-  notifications = signal<Notification[]>([]);
+  notifications = signal<AppNotification[]>([]);
   unreadCount = signal(0);
   isLoading = signal(false);
   isConnected = signal(false);
@@ -50,7 +50,7 @@ export class NotificationService {
       .build();
 
     // Handle incoming notifications
-    this.hubConnection.on('ReceiveNotification', (notification: Notification) => {
+    this.hubConnection.on('ReceiveNotification', (notification: AppNotification) => {
       console.log('[NotificationService] ✅ Received notification:', notification);
       
       // Add to notifications list at the beginning
@@ -118,14 +118,14 @@ export class NotificationService {
     }
   }
 
-  getNotifications(limit: number = 50, unreadOnly: boolean = false): Observable<Notification[]> {
+  getNotifications(limit: number = 50, unreadOnly: boolean = false): Observable<AppNotification[]> {
     this.isLoading.set(true);
     const params: any = { limit };
     if (unreadOnly) {
       params.unreadOnly = true;
     }
 
-    return this.http.get<Notification[]>(this.apiUrl, { params }).pipe(
+    return this.http.get<AppNotification[]>(this.apiUrl, { params }).pipe(
       tap(notifications => {
         this.notifications.set(notifications);
         this.isLoading.set(false);
@@ -225,7 +225,7 @@ export class NotificationService {
     return notificationDate.toLocaleDateString();
   }
 
-  private showBrowserNotification(notification: Notification): void {
+  private showBrowserNotification(notification: AppNotification): void {
     // Check if browser supports notifications
     if (!('Notification' in window)) {
       return;
