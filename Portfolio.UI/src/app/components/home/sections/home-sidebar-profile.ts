@@ -31,10 +31,16 @@ import { SignalRService } from '../../../services/signalr.service';
                 <!-- Avatar -->
                 <div class="relative mb-4">
                     <img [src]="getAvatarUrl()" [alt]="bio?.name"
-                        class="w-28 h-28 rounded-3xl object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
-                    <span [class]="signalRService.adminOnlineStatus() ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-gray-400'" 
-                        class="absolute bottom-1 right-1 w-4 h-4 border-2 border-white dark:border-zinc-700 rounded-full transition-all duration-300"
-                        [title]="signalRService.adminOnlineStatus() ? 'Online' : 'Offline'"></span>
+                        class="w-40 h-40 rounded-3xl object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
+                    <!-- Online Status Indicator -->
+                    <span 
+                        class="absolute bottom-2 right-2 w-5 h-5 border-[3px] border-white dark:border-zinc-700 rounded-full transition-all duration-300"
+                        [ngClass]="{
+                            'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)] animate-pulse': signalRService.adminOnlineStatus(),
+                            'bg-gray-400': !signalRService.adminOnlineStatus()
+                        }"
+                        [title]="signalRService.adminOnlineStatus() ? 'Online - Available Now' : 'Offline'">
+                    </span>
                 </div>
 
                 <!-- Name & Title -->
