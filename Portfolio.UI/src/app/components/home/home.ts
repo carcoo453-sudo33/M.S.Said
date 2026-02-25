@@ -69,35 +69,64 @@ export class HomeComponent implements OnInit {
     skills = signal<SkillEntry[]>([]);
 
     ngOnInit() {
+        // Load bio data
         this.profileService.getBio().subscribe({
             next: data => {
                 this.bio.set(data);
-                console.log('HomeComponent: Bio loaded', data);
+                console.log('✅ Bio loaded successfully');
             },
             error: err => {
-                console.error('HomeComponent: Failed to load bio', err);
-                this.toast.error('Failed to load profile data. Please check your connection.');
+                console.error('❌ Failed to load bio:', err);
+                // Toast is shown by error interceptor
             }
         });
         
+        // Load services data
         this.profileService.getServices().subscribe({
-            next: data => this.services.set(data),
-            error: err => console.error('HomeComponent: Failed to load services', err)
+            next: data => {
+                this.services.set(data);
+                console.log('✅ Services loaded successfully');
+            },
+            error: err => {
+                console.error('❌ Failed to load services:', err);
+                // Toast is shown by error interceptor
+            }
         });
         
+        // Load skills data
         this.profileService.getSkills().subscribe({
-            next: data => this.skills.set(data),
-            error: err => console.error('HomeComponent: Failed to load skills', err)
+            next: data => {
+                this.skills.set(data);
+                console.log('✅ Skills loaded successfully');
+            },
+            error: err => {
+                console.error('❌ Failed to load skills:', err);
+                // Toast is shown by error interceptor
+            }
         });
         
+        // Load experiences data
         this.profileService.getExperiences().subscribe({
-            next: data => this.experiences.set(data.slice(0, 2)),
-            error: err => console.error('HomeComponent: Failed to load experiences', err)
+            next: data => {
+                this.experiences.set(data.slice(0, 2));
+                console.log('✅ Experiences loaded successfully');
+            },
+            error: err => {
+                console.error('❌ Failed to load experiences:', err);
+                // Toast is shown by error interceptor
+            }
         });
         
+        // Load featured projects
         this.projectService.getFeaturedProjects().subscribe({
-            next: data => this.featuredProjects.set(data),
-            error: err => console.error('HomeComponent: Failed to load featured projects', err)
+            next: data => {
+                this.featuredProjects.set(data);
+                console.log('✅ Featured projects loaded successfully');
+            },
+            error: err => {
+                console.error('❌ Failed to load featured projects:', err);
+                // Toast is shown by error interceptor
+            }
         });
     }
 }
