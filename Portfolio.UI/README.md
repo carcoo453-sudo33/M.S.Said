@@ -1,4 +1,8 @@
-# PortfolioUI
+# Portfolio UI
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3e7dfb30-55d7-4e9c-93e0-bece48556432/deploy-status)](https://app.netlify.com/projects/m-said-portfolio/deploys)
+
+**Live Site:** [https://m-said-portfolio.netlify.app](https://m-said-portfolio.netlify.app)
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
 
@@ -57,3 +61,23 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Deployment
+
+### Production Build
+```bash
+ng build --configuration=production
+```
+
+### Netlify Deployment
+This project is configured for automatic deployment to Netlify:
+- **Site:** https://m-said-portfolio.netlify.app
+- **Backend API:** https://m-protfolio.runasp.net
+- **Auto-deploy:** Enabled on push to `master` branch
+
+Configuration is in `netlify.toml`.
+
+### Environment Configuration
+- **Development:** `src/environments/environment.ts`
+- **Production:** `src/environments/environment.prod.ts`
+
