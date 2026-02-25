@@ -54,26 +54,6 @@ builder.Services.AddScoped<Portfolio.API.Services.IEmailService, Portfolio.API.S
 // Register SignalR
 builder.Services.AddSignalR();
 
-// Configure authentication to support SignalR with JWT tokens
-builder.Services.AddAuthentication().AddJwtBearer(options =>
-{
-    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-            
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
-            {
-                context.Token = accessToken;
-            }
-            
-            return Task.CompletedTask;
-        }
-    };
-});
-
 // Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -86,8 +66,8 @@ app.UseCors("AllowAngular");
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -95,11 +75,10 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
         options.RoutePrefix = "swagger";
     });
-}
-else
-{
+// }
+
     app.UseHttpsRedirection();
-}
+
 
 // Redirect root to Swagger UI
 app.MapGet("/", () => Results.Redirect("/swagger"));
