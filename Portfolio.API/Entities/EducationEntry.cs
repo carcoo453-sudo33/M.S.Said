@@ -18,6 +18,8 @@ public class EducationEntry : BaseEntity
     public string? Location { get; set; }
     public string? Location_Ar { get; set; }
     
+    public string? ImageUrl { get; set; }
+    
     public bool IsCompleted { get; set; } = true;
     public string Category { get; set; } = "Education"; // Education, Training, Certification, Achievement
 }

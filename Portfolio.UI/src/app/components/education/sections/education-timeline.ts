@@ -2,13 +2,14 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { LucideAngularModule, GraduationCap, BookOpen, Award, MapPin, Edit3, X, Save, Plus, Trash2, AlertTriangle } from 'lucide-angular';
+import { LucideAngularModule, GraduationCap, BookOpen, Award, MapPin, Edit3, X, Save, Plus, Trash2, AlertTriangle, Upload } from 'lucide-angular';
 import { EducationEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 import { TranslationHelperService } from '../../../services/translation-helper.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-education-timeline',
@@ -21,20 +22,24 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
         </button>
 
-        <div class="space-y-12 relative before:absolute before:inset-0 before:left-8 md:before:left-1/2 before:-translate-x-px md:before:-translate-x-1/2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800">
+        <div class="space-y-12 relative before:absolute before:inset-0 before:left-1/2 before:-translate-x-1/2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800">
             <div *ngFor="let item of education; let i = index"
                 class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group animate-fade-in-up"
                 [style.animation-delay]="(0.1 * i) + 's'">
 
-                <!-- Connector Icon - Centered on Timeline -->
+                <!-- Connector Icon/Image - Centered on Timeline -->
                 <div
-                    class="absolute left-8 md:left-1/2 top-1/2 -translate-y-1/2 md:-translate-x-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-2xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl"
+                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-2xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl overflow-hidden"
                     [ngClass]="{
                         'border-indigo-600 shadow-indigo-500/40 group-hover:shadow-indigo-500/70 group-hover:scale-110': item.category === 'Education',
                         'border-emerald-600 shadow-emerald-500/40 group-hover:shadow-emerald-500/70 group-hover:scale-110': item.category === 'Training',
                         'border-violet-600 shadow-violet-500/40 group-hover:shadow-violet-500/70 group-hover:scale-110': item.category === 'Certification'
                     }">
-                    <div class="flex items-center justify-center w-full h-full rounded-xl transition-all duration-500"
+                    <!-- Custom Image if available -->
+                    <img *ngIf="item.imageUrl" [src]="getImageUrl(item.imageUrl)" [alt]="item.institution"
+                        class="w-full h-full object-cover">
+                    <!-- Default Icon if no image -->
+                    <div *ngIf="!item.imageUrl" class="flex items-center justify-center w-full h-full rounded-xl transition-all duration-500"
                         [ngClass]="{
                             'text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white': item.category === 'Education',
                             'text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white': item.category === 'Training',
@@ -48,7 +53,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
 
                 <!-- Card Content -->
                 <div
-                    class="ml-20 md:ml-0 w-[calc(100%-6rem)] md:w-[calc(50%-3.5rem)] bg-white/90 dark:bg-zinc-900/70 p-6 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl"
+                    class="w-[calc(50%-3.5rem)] bg-white/90 dark:bg-zinc-900/70 p-6 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl"
                     [ngClass]="{
                         'border-indigo-500/30 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/20': item.category === 'Education',
                         'border-emerald-500/30 group-hover:border-emerald-500/60 group-hover:shadow-emerald-500/20': item.category === 'Training',
@@ -195,6 +200,24 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                         </div>
                     </div>
 
+                    <!-- Image Upload -->
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Institution Logo/Image</label>
+                        <div class="flex items-center gap-3">
+                            <div *ngIf="item.imageUrl" class="w-16 h-16 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 overflow-hidden flex-shrink-0">
+                                <img [src]="getImageUrl(item.imageUrl)" [alt]="item.institution" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <label class="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all flex items-center gap-2 w-fit">
+                                    <lucide-icon [img]="UploadIcon" class="w-3.5 h-3.5"></lucide-icon>
+                                    {{ uploadingImageFor === item.id ? 'Uploading...' : 'Upload Image' }}
+                                    <input type="file" class="hidden" (change)="onImageSelected($event, i)" accept="image/*" [disabled]="uploadingImageFor === item.id">
+                                </label>
+                                <p class="text-zinc-400 text-[9px] mt-1">Upload logo or certificate image (optional)</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-2">
                         <input type="checkbox" [(ngModel)]="item.isCompleted" [id]="'completed-' + i"
                             class="w-4 h-4 rounded border-zinc-300 text-red-600 focus:ring-red-500">
@@ -275,6 +298,7 @@ export class EducationTimelineComponent {
     PlusIcon = Plus;
     TrashIcon = Trash2;
     AlertIcon = AlertTriangle;
+    UploadIcon = Upload;
 
     showEditModal = false;
     isSaving = false;
@@ -282,6 +306,7 @@ export class EducationTimelineComponent {
     submitted = false;
     editList: EducationEntry[] = [];
     deleteIndex: number | null = null;
+    uploadingImageFor: string | null = null;
 
     openEditModal() {
         this.editList = this.education.map(e => ({ ...e }));
@@ -305,6 +330,7 @@ export class EducationTimelineComponent {
             description_Ar: '',
             location: '',
             location_Ar: '',
+            imageUrl: '',
             isCompleted: true,
             category: 'Education'
         });
@@ -405,5 +431,34 @@ export class EducationTimelineComponent {
 
     getLocation(item: EducationEntry): string {
         return this.translationHelper.getTranslatedField(item, 'location');
+    }
+
+    // Image handling methods
+    onImageSelected(event: any, index: number) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const item = this.editList[index];
+        this.uploadingImageFor = item.id;
+
+        this.profileService.uploadAvatar(file).subscribe({
+            next: (res: any) => {
+                item.imageUrl = res.url;
+                this.uploadingImageFor = null;
+                this.toast.success('Image uploaded successfully');
+            },
+            error: (err: any) => {
+                this.uploadingImageFor = null;
+                this.toast.error('Image upload failed: ' + (err.error?.message || 'Server error'));
+            }
+        });
+    }
+
+    getImageUrl(imageUrl: string): string {
+        if (!imageUrl) return '';
+        if (imageUrl.startsWith('http')) return imageUrl;
+        const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+        const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
+        return `${baseUrl}/${cleanPath}`;
     }
 }

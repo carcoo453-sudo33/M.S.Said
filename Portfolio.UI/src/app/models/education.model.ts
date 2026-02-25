@@ -9,6 +9,7 @@ export interface EducationEntry {
     description_Ar?: string;
     location?: string;
     location_Ar?: string;
+    imageUrl?: string;
     isCompleted: boolean;
     category: 'Education' | 'Training' | 'Certification' | 'Achievement';
     [key: string]: any;

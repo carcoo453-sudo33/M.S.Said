@@ -40,6 +40,7 @@ public class EducationController : ControllerBase
             Description_Ar = dto.Description_Ar,
             Location = dto.Location,
             Location_Ar = dto.Location_Ar,
+            ImageUrl = dto.ImageUrl,
             IsCompleted = dto.IsCompleted,
             Category = dto.Category
         };
@@ -66,6 +67,7 @@ public class EducationController : ControllerBase
         education.Description_Ar = dto.Description_Ar;
         education.Location = dto.Location;
         education.Location_Ar = dto.Location_Ar;
+        education.ImageUrl = dto.ImageUrl;
         education.IsCompleted = dto.IsCompleted;
         education.Category = dto.Category;
         education.UpdatedAt = DateTime.UtcNow;

@@ -184,4 +184,12 @@ export class ProfileService {
         formData.append('file', file);
         return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/skill-icon`, formData);
     }
+
+    uploadImage(file: File, type: 'education' | 'project' | 'skill' = 'education') {
+        const formData = new FormData();
+        formData.append('file', file);
+        const endpoint = type === 'skill' ? 'skill-icon' : 'project-image';
+        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/${endpoint}`, formData);
+    }
+
 }
