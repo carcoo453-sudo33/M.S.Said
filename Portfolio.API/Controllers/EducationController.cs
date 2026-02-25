@@ -32,10 +32,14 @@ public class EducationController : ControllerBase
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Institution = dto.Institution,
+            Institution_Ar = dto.Institution_Ar,
             Degree = dto.Degree,
+            Degree_Ar = dto.Degree_Ar,
             Duration = dto.Duration,
             Description = dto.Description,
+            Description_Ar = dto.Description_Ar,
             Location = dto.Location,
+            Location_Ar = dto.Location_Ar,
             IsCompleted = dto.IsCompleted,
             Category = dto.Category
         };
@@ -54,10 +58,14 @@ public class EducationController : ControllerBase
         if (education == null) return NotFound();
 
         education.Institution = dto.Institution;
+        education.Institution_Ar = dto.Institution_Ar;
         education.Degree = dto.Degree;
+        education.Degree_Ar = dto.Degree_Ar;
         education.Duration = dto.Duration;
         education.Description = dto.Description;
+        education.Description_Ar = dto.Description_Ar;
         education.Location = dto.Location;
+        education.Location_Ar = dto.Location_Ar;
         education.IsCompleted = dto.IsCompleted;
         education.Category = dto.Category;
         education.UpdatedAt = DateTime.UtcNow;
