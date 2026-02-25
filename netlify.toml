@@ -1,7 +1,7 @@
 [build]
   base = "Portfolio.UI"
   publish = "dist/portfolio.ui/browser"
-  command = "npm ci && npm run build:prod"
+  command = "npm ci && ./node_modules/.bin/ng build --configuration production"
 
 [[redirects]]
   from = "/*"
