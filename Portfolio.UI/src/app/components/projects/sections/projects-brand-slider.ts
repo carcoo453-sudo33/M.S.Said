@@ -14,7 +14,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule],
     template: `
-    <section class="mt-48 overflow-hidden py-20 border-t border-b border-zinc-100 dark:border-zinc-900 relative">
+    <section class="overflow-hidden py-8 border-t border-b border-zinc-100 dark:border-zinc-900 relative">
         <!-- Admin Panel -->
         <div *ngIf="auth.isLoggedIn()" class="absolute top-4 right-4 z-20">
             <button (click)="openCreateModal()"

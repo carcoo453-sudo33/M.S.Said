@@ -9,7 +9,7 @@ import { LucideAngularModule, ArrowRight } from 'lucide-angular';
     standalone: true,
     imports: [CommonModule, RouterLink, TranslateModule, LucideAngularModule],
     template: `
-    <section class="mt-48 mb-24 animate-fade-in-up">
+    <section class="mt-20 mb-24 animate-fade-in-up">
         <div class="text-center space-y-8">
             <div class="w-px h-24 bg-gradient-to-b from-transparent via-red-600 to-transparent mx-auto"></div>
             <p class="text-zinc-500 font-medium italic uppercase tracking-widest text-[10px]">{{ 'projects.cta.question' | translate }}</p>

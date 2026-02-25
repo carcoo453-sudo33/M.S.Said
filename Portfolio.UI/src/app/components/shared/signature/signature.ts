@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
     standalone: true,
     imports: [CommonModule, LucideAngularModule],
     template: `
-    <section *ngIf="bio" class="max-w-7xl mx-auto px-6 py-32 border-t border-zinc-100 dark:border-zinc-900 mt-32">
+    <section *ngIf="bio" class="max-w-7xl mx-auto px-6 py-10 border-t border-zinc-100 dark:border-zinc-900 mt-2">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             <div class="lg:col-span-4 relative group">
                 <div class="absolute inset-0 bg-red-600/20 rounded-[3rem] rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>

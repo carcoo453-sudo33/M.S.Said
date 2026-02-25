@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Data;
 
@@ -35,6 +36,15 @@ builder.Services.AddControllers()
 // Register Unit of Work
 builder.Services.AddScoped<Portfolio.API.Repositories.IUnitOfWork, Portfolio.API.Repositories.UnitOfWork>();
 
+// Register Notification Service
+builder.Services.AddScoped<Portfolio.API.Services.INotificationService, Portfolio.API.Services.NotificationService>();
+
+// Register Email Service
+builder.Services.AddScoped<Portfolio.API.Services.IEmailService, Portfolio.API.Services.EmailService>();
+
+// Register SignalR
+builder.Services.AddSignalR();
+
 // Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -68,8 +78,24 @@ app.MapGet("/", () => Results.Redirect("/swagger"));
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGroup("/identity").MapIdentityApi<IdentityUser>();
+// Map only login endpoint - removed all other identity endpoints
+app.MapPost("/identity/login", async (SignInManager<IdentityUser> signInManager, [FromBody] LoginRequest login) =>
+{
+    signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
+    var result = await signInManager.PasswordSignInAsync(login.Email, login.Password, false, lockoutOnFailure: false);
+    
+    if (!result.Succeeded)
+    {
+        return Results.Unauthorized();
+    }
+    
+    return Results.Empty;
+}).AllowAnonymous();
+
 app.MapControllers();
+
+// Map SignalR Hub
+app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications");
 
 // Seeding logic
 using (var scope = app.Services.CreateScope())
@@ -110,3 +136,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Login request model
+public record LoginRequest(string Email, string Password);

@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pt-32 transition-colors duration-500 overflow-hidden relative space-y-32">
+    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pt-2 transition-colors duration-500 overflow-hidden relative space-y-20">
 
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 z-0 pointer-events-none">
@@ -12,7 +12,7 @@
             style="animation-delay: 2s"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 relative z-10 space-y-32">
+    <div class="max-w-7xl mx-auto  relative z-10 space-y-2">
 
         <!-- Header Section -->
         <app-shared-page-header [badge]="'education.badge' | translate"
@@ -35,7 +35,7 @@
         </app-shared-empty-state>
 
         <!-- CONTINUOUS TIMELINE -->
-        <div *ngIf="!isLoading() && !hasError() && allEducation().length > 0" class="space-y-16">
+        <div *ngIf="!isLoading() && !hasError() && allEducation().length > 0" class="space-y-2">
             <!-- Education Card -->
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
                 <div class="flex items-center justify-between mb-6">

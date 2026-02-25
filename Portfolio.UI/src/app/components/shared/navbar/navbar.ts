@@ -8,12 +8,13 @@ import { ProfileService } from '../../../services/profile.service';
 import { BioEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher';
+import { NotificationDropdownComponent } from '../notification-dropdown/notification-dropdown';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LanguageSwitcherComponent, TranslateModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LanguageSwitcherComponent, NotificationDropdownComponent, TranslateModule],
   templateUrl: './navbar.html'
 })
 export class NavbarComponent implements OnInit {

@@ -5,6 +5,7 @@ using Portfolio.API.Repositories;
 using Portfolio.API.DTOs;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -13,10 +14,12 @@ namespace Portfolio.API.Controllers;
 public class ProjectsController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly INotificationService _notificationService;
 
-    public ProjectsController(IUnitOfWork unitOfWork)
+    public ProjectsController(IUnitOfWork unitOfWork, INotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
+        _notificationService = notificationService;
     }
 
     [HttpGet]
@@ -356,6 +359,17 @@ public class ProjectsController : ControllerBase
             
             Console.WriteLine($"[AddComment] Comment saved successfully with ID: {comment.Id}");
 
+            // Create notification for new comment
+            await _notificationService.CreateNotificationAsync(
+                type: "Comment",
+                title: "New Project Comment",
+                message: $"{comment.Author} commented on a project: \"{comment.Content.Substring(0, Math.Min(50, comment.Content.Length))}...\"",
+                link: $"/projects/{projectId}",
+                relatedEntityId: comment.Id.ToString(),
+                relatedEntityType: "ProjectComment",
+                senderName: comment.Author
+            );
+
             return Ok(new CommentDto
             {
                 Id = comment.Id.ToString(),
@@ -456,6 +470,17 @@ public class ProjectsController : ControllerBase
             await _unitOfWork.CompleteAsync();
 
             Console.WriteLine($"[AddReply] Reply added successfully");
+
+            // Create notification for new reply
+            await _notificationService.CreateNotificationAsync(
+                type: "Reply",
+                title: "New Comment Reply",
+                message: $"{newReply.Author} replied to a comment: \"{newReply.Content.Substring(0, Math.Min(50, newReply.Content.Length))}...\"",
+                link: $"/projects/{projectId}",
+                relatedEntityId: newReply.Id,
+                relatedEntityType: "CommentReply",
+                senderName: newReply.Author
+            );
 
             return Ok(new CommentDto
             {
@@ -811,4 +836,119 @@ public class ProjectsController : ControllerBase
         return Ok(new { status = "healthy", timestamp = DateTime.UtcNow, version = "1.0" });
     }
 
+    [Authorize]
+    [HttpPost("import-from-url")]
+    public async Task<ActionResult<ProjectDto>> ImportFromUrl([FromBody] GitHubImportRequest request)
+    {
+        try
+        {
+            if (request == null || string.IsNullOrEmpty(request.GitHubUrl))
+            {
+                return BadRequest(new { message = "GitHub URL is required" });
+            }
+
+            // Parse GitHub URL to extract owner and repo
+            var (owner, repo) = ParseGitHubUrl(request.GitHubUrl);
+            
+            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(repo))
+            {
+                return BadRequest(new { message = "Invalid GitHub URL format. Use: https://github.com/owner/repo" });
+            }
+
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Portfolio-App");
+            if (!string.IsNullOrEmpty(request.GitHubToken))
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.GitHubToken}");
+            }
+
+            // Fetch data from GitHub
+            var features = new List<(string icon, string title, string description)>();
+            var responsibilities = new List<string>();
+            var releases = new List<GitHubRelease>();
+            GitHubRepository? repoData = null;
+
+            // Fetch README
+            var readmeUrl = $"https://api.github.com/repos/{owner}/{repo}/readme";
+            var readmeResponse = await httpClient.GetAsync(readmeUrl);
+            
+            if (readmeResponse.IsSuccessStatusCode)
+            {
+                var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
+                if (readmeDataResponse?.Content != null)
+                {
+                    var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
+                    ExtractFeaturesAndResponsibilitiesFromReadme(readmeContent, out features, out responsibilities);
+                }
+            }
+
+            // Fetch releases
+            var releasesUrl = $"https://api.github.com/repos/{owner}/{repo}/releases";
+            var releasesResponse = await httpClient.GetAsync(releasesUrl);
+            
+            if (releasesResponse.IsSuccessStatusCode)
+            {
+                var releasesData = await releasesResponse.Content.ReadFromJsonAsync<List<GitHubRelease>>();
+                if (releasesData != null)
+                {
+                    releases = releasesData;
+                }
+            }
+
+            // Fetch repository stats
+            var repoUrl = $"https://api.github.com/repos/{owner}/{repo}";
+            var repoResponse = await httpClient.GetAsync(repoUrl);
+            
+            if (repoResponse.IsSuccessStatusCode)
+            {
+                repoData = await repoResponse.Content.ReadFromJsonAsync<GitHubRepository>();
+            }
+
+            // Build DTO with imported data
+            var dto = new ProjectDto
+            {
+                Id = Guid.Empty,
+                Title = repoData?.Name?.Replace("-", " ").Replace("_", " ") ?? repo.Replace("-", " ").Replace("_", " "),
+                Description = repoData?.Description ?? "",
+                Summary = repoData?.Description ?? "",
+                GitHubUrl = request.GitHubUrl,
+                ProjectUrl = repoData?.Homepage ?? "",
+                Language = repoData?.Language ?? "Multiple Languages",
+                Duration = DateTime.UtcNow.Year.ToString(),
+                Architecture = "Scalable Architecture",
+                Status = "Active",
+                Technologies = repoData?.Language ?? "",
+                Category = repoData?.Language ?? "Web Development",
+                Tags = repoData?.Topics != null && repoData.Topics.Any() ? string.Join(", ", repoData.Topics) : "",
+                Responsibilities = responsibilities.Take(10).ToList(),
+                KeyFeatures = features.Take(8).Select(f => new KeyFeatureDto
+                {
+                    Icon = f.icon,
+                    Title = f.title,
+                    Description = f.description
+                }).ToList(),
+                Changelog = releases.Take(10).Select(r => new ChangelogItemDto
+                {
+                    Date = r.PublishedAt?.ToString("MMM dd, yyyy") ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
+                    Version = r.TagName ?? "v1.0.0",
+                    Title = r.Name ?? r.TagName ?? "Release",
+                    Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? ""
+                }).ToList(),
+                Metrics = repoData != null ? new List<MetricDto>
+                {
+                    new MetricDto { Label = "GitHub Stars", Value = repoData.StargazersCount.ToString() },
+                    new MetricDto { Label = "Forks", Value = repoData.ForksCount.ToString() },
+                    new MetricDto { Label = "Open Issues", Value = repoData.OpenIssuesCount.ToString() }
+                } : new List<MetricDto>()
+            };
+
+            return Ok(dto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Failed to import from GitHub: {ex.Message}" });
+        }
+    }
+
 }
+

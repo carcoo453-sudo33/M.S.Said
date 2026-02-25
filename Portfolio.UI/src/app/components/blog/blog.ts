@@ -22,6 +22,7 @@ import { BlogManageComponent } from './sections/blog-manage';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
 import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
+import { SharedSignatureComponent } from '../shared/signature/signature';
 
 @Component({
   selector: 'app-blog',
@@ -39,7 +40,8 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
     BlogManageComponent,
     SharedFooterComponent,
     SharedEmptyStateComponent,
-    SharedSkeletonComponent
+    SharedSkeletonComponent,
+    SharedSignatureComponent
   ],
   templateUrl: './blog.html'
 })

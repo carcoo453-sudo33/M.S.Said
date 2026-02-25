@@ -41,17 +41,6 @@ import { AuthService } from '../../../services/auth.service';
                 {{ project.title.split(':')[0] }}<span class="text-red-600" *ngIf="project.title.includes(':')">: {{
                     project.title.split(':')[1] }}</span>
             </h1>
-            <p class="text-zinc-400 text-base md:text-lg lg:text-xl max-w-3xl leading-relaxed font-medium">
-                {{ project.summary }}
-            </p>
-        </div>
-
-        <!-- Tech Tags -->
-        <div class="flex flex-wrap gap-2 lg:gap-3 pb-4 lg:pb-6">
-            <span *ngFor="let tech of project.technologies.split(',')"
-                class="bg-zinc-900 border border-zinc-800 px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl text-[9px] lg:text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
-                {{ tech.trim() }}
-            </span>
         </div>
     </header>
   `

@@ -7,7 +7,7 @@ import { LucideAngularModule, LayoutGrid, List } from 'lucide-angular';
     standalone: true,
     imports: [CommonModule, LucideAngularModule],
     template: `
-    <div class="flex items-center justify-between mb-8 px-4 animate-fade-in-up">
+    <div class="flex items-center justify-between mb-3 px-0 animate-fade-in-up">
         <div class="flex items-center gap-3">
             <h2 class="text-2xl font-black tracking-tight dark:text-white">{{ title }}</h2>
             <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>

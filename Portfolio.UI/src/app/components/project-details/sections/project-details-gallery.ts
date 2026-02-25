@@ -14,7 +14,19 @@ import { environment } from '../../../../environments/environment';
         <!-- Featured Media Section with Vertical Reaction Icons -->
         <section class="space-y-6 lg:space-y-8 animate-fade-in-up" style="animation-delay: 0.2s">
             <div class="relative group rounded-2xl lg:rounded-[2.5rem] overflow-hidden border border-zinc-900 bg-zinc-950 aspect-video shadow-2xl">
-                <img [src]="getFullImageUrl(project.imageUrl || '')" class="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
+                <img [src]="getFullImageUrl(getCurrentImage())" class="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
+                
+                <!-- Centered Action Buttons -->
+                <div class="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
+                    <a [href]="project.projectUrl" target="_blank" *ngIf="project.projectUrl"
+                        class="bg-red-600 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-black text-xs lg:text-sm uppercase tracking-widest flex items-center gap-2 lg:gap-3 hover:bg-red-700 hover:scale-110 transition-all shadow-2xl shadow-red-600/40">
+                        <lucide-icon [img]="RocketIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon> Live Demo
+                    </a>
+                    <a [href]="project.gitHubUrl" target="_blank" *ngIf="project.gitHubUrl"
+                        class="bg-black/80 backdrop-blur-md border-2 border-white/30 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-xl font-black text-xs lg:text-sm uppercase tracking-widest flex items-center gap-2 lg:gap-3 hover:border-red-600 hover:bg-red-600 hover:scale-110 transition-all shadow-2xl">
+                        <lucide-icon [img]="GithubIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon> Source Code
+                    </a>
+                </div>
                 
                 <!-- Vertical Reaction Icons - Right Side -->
                 <div class="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 lg:gap-4 z-20">
@@ -45,7 +57,8 @@ import { environment } from '../../../../environments/environment';
                     </div>
                 </div>
                 
-                <div class="absolute bottom-4 lg:bottom-8 left-4 lg:left-8 right-4 lg:right-8 flex justify-between items-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <!-- Featured Badge - Bottom Left -->
+                <div class="absolute bottom-4 lg:bottom-8 left-4 lg:left-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
                     <div class="bg-black/60 backdrop-blur-md px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl border border-white/10">
                         <span class="text-[9px] lg:text-[10px] font-black tracking-[0.15em] lg:tracking-[0.2em] uppercase text-red-600">Featured Media • Case Study</span>
                     </div>
@@ -53,24 +66,30 @@ import { environment } from '../../../../environments/environment';
             </div>
 
             <!-- Gallery Thumbnails -->
-            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 lg:pb-4 no-scrollbar" *ngIf="project.gallery && project.gallery.length > 0">
-                <div *ngFor="let img of project.gallery; let i = index"
+            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 lg:pb-4 no-scrollbar" *ngIf="getAllImages().length > 0">
+                <div *ngFor="let img of getAllImages(); let i = index"
+                    (click)="selectImage(img)"
+                    [class.ring-2]="selectedImage === img || (!selectedImage && i === 0)"
+                    [class.ring-red-600]="selectedImage === img || (!selectedImage && i === 0)"
                     class="w-32 lg:w-40 xl:w-48 aspect-video rounded-lg lg:rounded-xl border border-zinc-900 overflow-hidden shrink-0 grayscale hover:grayscale-0 cursor-pointer transition-all hover:scale-105 active:scale-95">
                     <img [src]="getFullImageUrl(img)" class="w-full h-full object-cover">
                 </div>
             </div>
-        </section>
-
-        <!-- Action Bar -->
-        <section class="flex flex-wrap gap-3 lg:gap-4 animate-fade-in-up" style="animation-delay: 0.3s">
-            <a [href]="project.projectUrl" target="_blank" *ngIf="project.projectUrl"
-                class="bg-red-600 text-white px-6 lg:px-10 py-3 lg:py-5 rounded-lg lg:rounded-xl font-black text-[10px] lg:text-xs uppercase tracking-widest flex items-center gap-2 lg:gap-3 hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">
-                <lucide-icon [img]="RocketIcon" class="w-3.5 h-3.5 lg:w-4 lg:h-4"></lucide-icon> Live Demo
-            </a>
-            <a [href]="project.gitHubUrl" target="_blank" *ngIf="project.gitHubUrl"
-                class="bg-zinc-950 border border-zinc-800 text-zinc-300 px-6 lg:px-10 py-3 lg:py-5 rounded-lg lg:rounded-xl font-black text-[10px] lg:text-xs uppercase tracking-widest flex items-center gap-2 lg:gap-3 hover:border-red-600/50 hover:text-white transition-all">
-                <lucide-icon [img]="GithubIcon" class="w-3.5 h-3.5 lg:w-4 lg:h-4"></lucide-icon> Source Code
-            </a>
+            
+            <!-- Description -->
+            <div class="">
+                <p class="text-zinc-400 text-base md:text-lg lg:text-xl leading-relaxed font-medium">
+                    {{ project.summary }}
+                </p>
+            </div>
+            
+            <!-- Tech Tags -->
+            <div class="flex flex-wrap gap-2 lg:gap-3">
+                <span *ngFor="let tech of project.technologies.split(',')"
+                    class="bg-zinc-900 border border-zinc-800 px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl text-[9px] lg:text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
+                    {{ tech.trim() }}
+                </span>
+            </div>
         </section>
     </ng-container>
   `
@@ -89,6 +108,25 @@ export class ProjectDetailsGalleryComponent {
     ShareIcon = Share2;
     EyeIcon = Eye;
     MessageCircleIcon = MessageCircle;
+    
+    selectedImage?: string;
+    
+    getAllImages(): string[] {
+        if (!this.project) return [];
+        const images: string[] = [];
+        
+        // Add main image first
+        if (this.project.imageUrl) {
+            images.push(this.project.imageUrl);
+        }
+        
+        // Add gallery images
+        if (this.project.gallery && this.project.gallery.length > 0) {
+            images.push(...this.project.gallery);
+        }
+        
+        return images;
+    }
 
     onReact() {
         this.onReactEvent.emit();
@@ -96,6 +134,14 @@ export class ProjectDetailsGalleryComponent {
 
     onShare() {
         this.onShareEvent.emit();
+    }
+    
+    selectImage(imageUrl: string) {
+        this.selectedImage = imageUrl;
+    }
+    
+    getCurrentImage(): string {
+        return this.selectedImage || this.project?.imageUrl || '';
     }
 
     getFullImageUrl(url?: string): string {

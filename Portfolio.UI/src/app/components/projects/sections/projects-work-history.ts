@@ -13,7 +13,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section class="mt-48 animate-fade-in-up">
+    <section class="mt-10 animate-fade-in-up">
         <div class="flex items-center gap-6 mb-20">
             <div class="w-2 h-12 bg-red-600 rounded-full"></div>
             <h2 class="text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase italic">{{ 'projects.workHistory.title' | translate }}</h2>
@@ -24,7 +24,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
             </button>
         </div>
 
-        <div class="space-y-16 relative">
+        <div class="space-y-5 relative">
             <div *ngFor="let exp of experiences" class="relative pl-16 group">
                 <!-- Timeline Line -->
                 <div class="absolute left-0 top-0 bottom-0 w-[1px] bg-zinc-100 dark:bg-zinc-800 group-last:bg-gradient-to-b group-last:from-zinc-100 dark:group-last:from-zinc-800 group-last:to-transparent"></div>

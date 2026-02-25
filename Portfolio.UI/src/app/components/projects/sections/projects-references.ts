@@ -15,7 +15,7 @@ import { ToastService } from '../../../services/toast.service';
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section class="mt-48 animate-fade-in-up" style="animation-delay: 0.6s">
+    <section class="mt-10 animate-fade-in-up" style="animation-delay: 0.6s">
         <div class="flex items-center gap-4 mb-16 relative">
             <div class="w-1 h-12 bg-red-600 rounded-full"></div>
             <h2 class="text-4xl font-black dark:text-white text-zinc-900 tracking-tight uppercase italic">

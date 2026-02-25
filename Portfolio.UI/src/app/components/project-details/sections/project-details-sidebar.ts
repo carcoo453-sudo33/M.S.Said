@@ -10,7 +10,8 @@ import { environment } from '../../../../environments/environment';
     standalone: true,
     imports: [CommonModule, RouterLink, TranslateModule],
     template: `
-    <div *ngIf="project" class="space-y-16 lg:space-y-20">
+    <aside class="md:sticky md:top-0 lg:sticky lg:top-0 h-fit">
+        <div *ngIf="project" class="space-y-8 lg:space-y-10">
         <!-- Changelog -->
         <section class="space-y-6">
             <div class="flex items-center gap-3">
@@ -32,7 +33,7 @@ import { environment } from '../../../../environments/environment';
         </section>
 
         <!-- Metrics -->
-        <section class="bg-zinc-950 p-6 rounded-2xl border border-zinc-900 space-y-6 shadow-2xl relative overflow-hidden">
+        <section class="bg-zinc-950 p-6 rounded-2xl border border-zinc-900 space-y-6 shadow-2xl relative overflow-hidden mt-5">
             <div class="absolute top-0 right-0 w-24 h-24 bg-red-600/5 blur-[60px]"></div>
             <div class="flex items-center gap-3 relative z-10">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
@@ -68,6 +69,7 @@ import { environment } from '../../../../environments/environment';
             </div>
         </section>
     </div>
+    </aside>
   `
 })
 export class ProjectDetailsSidebarComponent {

@@ -59,6 +59,7 @@ export class ProjectsComponent implements OnInit {
   isLoading = signal(true);
   hasError = signal(false);
   selectedFilter = signal('All');
+  triggerCreateProject = signal(false);
 
   filters = ['All', 'Full Stack', 'Angular', 'NET Core'];
 
@@ -123,6 +124,10 @@ export class ProjectsComponent implements OnInit {
 
   setFilter(filter: string) {
     this.selectedFilter.set(filter);
+  }
+  
+  onCreateProject() {
+    this.triggerCreateProject.set(!this.triggerCreateProject());
   }
 
   get filteredProjects() {

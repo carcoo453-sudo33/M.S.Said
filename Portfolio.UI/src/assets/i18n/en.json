@@ -222,6 +222,14 @@
       "directChannel": "Direct Channel",
       "baseOfOperations": "Base Of Operations"
     },
+    "map": {
+      "title": "Gharbia Registry",
+      "subtitle": "Operational Geo-Lock Active",
+      "baseCoordinate": "Base Coordinate",
+      "location": "Tanta • Zifta Corridor",
+      "syncStatus": "Sync Status",
+      "cognitive": "Cognitive 100%"
+    },
     "form": {
       "name": "Name",
       "email": "Email",
@@ -234,6 +242,9 @@
       "submit": "Execute Transmission",
       "submitting": "Syncing...",
       "success": "Transmission Successful. Awaiting Response."
+    },
+    "signature": {
+      "quote": "Collaboration is the foundation of innovation. Every successful project begins with clear communication and shared vision. Let's build something exceptional together."
     }
   },
   "projectDetails": {
@@ -273,5 +284,16 @@
     "emptyTitle": "Fresh Origins",
     "emptyMessage": "New chapters of professional excellence are being drafted. Initializing history...",
     "defaultQuote": "Experience is the accumulation of architectural challenges solved through rigorous engineering. This timeline reflects a journey of continuous technical evolution and intentional delivery."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "unread",
+    "loading": "Loading notifications...",
+    "empty": "No notifications yet",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all as read",
+    "delete": "Delete",
+    "clearAll": "Clear All",
+    "total": "total"
   }
 }

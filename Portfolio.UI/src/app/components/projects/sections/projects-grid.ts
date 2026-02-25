@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,7 +9,7 @@ import { ProjectService } from '../../../services/project.service';
 import { ToastService } from '../../../services/toast.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image } from 'lucide-angular';
+import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github } from 'lucide-angular';
 
 @Component({
     selector: 'app-projects-grid',
@@ -17,22 +17,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     imports: [CommonModule, RouterLink, LucideAngularModule, FormsModule],
     template: `
     <!-- Selected Works Header -->
-    <div class="flex items-center justify-between mb-12">
-        <div class="flex items-center gap-6">
-            <h2 class="text-4xl lg:text-5xl font-black italic tracking-tighter uppercase text-zinc-900 dark:text-white">
-                Selected Works
-            </h2>
-            <div class="flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 bg-red-600 rounded-2xl">
-                <span class="text-2xl lg:text-3xl font-black italic text-white">{{ totalCount }}</span>
-            </div>
-        </div>
-        <!-- Add Project Button -->
-        <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
-            class="px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
-            <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-            Add Project
-        </button>
-    </div>
+    
 
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 animate-fade-in-up"
         style="animation-delay: 0.2s">
@@ -99,7 +84,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
 
     <!-- Edit/Create Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
-        <div class="modal-content max-w-3xl max-h-[90vh]" (click)="$event.stopPropagation()">
+        <div class="modal-content max-w-3xl mt-20 max-h-[90vh]" (click)="$event.stopPropagation()">
             <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Create Project' : 'Edit Project' }}</h3>
                 <button (click)="closeEditModal()"
@@ -109,6 +94,24 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
             </div>
 
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+                <!-- Import from GitHub Section (only for new projects) -->
+                <div *ngIf="isCreating" class="bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <lucide-icon [img]="GithubIcon" class="w-4 h-4 text-red-600"></lucide-icon>
+                        <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white">Import from GitHub</h4>
+                    </div>
+                    <p class="text-[10px] text-zinc-500">Paste a GitHub repository URL to automatically populate project details</p>
+                    <div class="flex gap-2">
+                        <input type="url" [(ngModel)]="importUrl" name="importUrl" placeholder="https://github.com/owner/repo"
+                            class="flex-1 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
+                        <button (click)="importFromUrl()" [disabled]="isImporting || !importUrl"
+                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            {{ isImporting ? 'Importing...' : 'Import' }}
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-zinc-600">Features, changelog, metrics, and repository info will be imported automatically</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title *</label>
@@ -273,14 +276,16 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     </div>
   `
 })
-export class ProjectsGridComponent {
+export class ProjectsGridComponent implements OnChanges {
     public auth = inject(AuthService);
     private projectService = inject(ProjectService);
     private toast = inject(ToastService);
     private http = inject(HttpClient);
+    private cdr = inject(ChangeDetectorRef);
     
     @Input() projects: ProjectEntry[] = [];
     @Input() totalCount: number = 0;
+    @Input() triggerCreate: boolean = false;
     @Output() edit = new EventEmitter<ProjectEntry>();
     @Output() delete = new EventEmitter<ProjectEntry>();
     @Output() projectsUpdated = new EventEmitter<ProjectEntry[]>();
@@ -293,6 +298,7 @@ export class ProjectsGridComponent {
     AlertIcon = AlertTriangle;
     UploadIcon = Upload;
     ImageIcon = Image;
+    GithubIcon = Github;
 
     showEditModal = false;
     isSaving = false;
@@ -301,6 +307,8 @@ export class ProjectsGridComponent {
     isUploadingGallery = false;
     submitted = false;
     isCreating = false;
+    isImporting = false;
+    importUrl = '';
     deleteProject: ProjectEntry | null = null;
     editingProject: Partial<ProjectEntry> = {};
     galleryImages: string[] = [];
@@ -312,6 +320,12 @@ export class ProjectsGridComponent {
     nicheSuggestions: string[] = [];
     filteredNicheSuggestions: string[] = [];
     showNicheSuggestions = false;
+    
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['triggerCreate'] && !changes['triggerCreate'].firstChange) {
+            this.openCreateModal();
+        }
+    }
 
     onEdit(event: Event, project: ProjectEntry) {
         event.stopPropagation();
@@ -346,8 +360,67 @@ export class ProjectsGridComponent {
         this.galleryImages = [];
         this.isCreating = true;
         this.submitted = false;
+        this.importUrl = '';
         this.loadNicheSuggestions();
         this.showEditModal = true;
+    }
+
+    importFromUrl() {
+        if (!this.importUrl || this.isImporting) return;
+
+        this.isImporting = true;
+
+        this.projectService.importFromUrl(this.importUrl).subscribe({
+            next: (importedData) => {
+                console.log('Successfully imported project data:', importedData);
+                
+                // Populate form with imported data (only if values are not empty)
+                this.editingProject = {
+                    ...this.editingProject,
+                    title: (importedData.title && importedData.title.trim()) || this.editingProject.title || '',
+                    description: (importedData.description && importedData.description.trim()) || (importedData.summary && importedData.summary.trim()) || this.editingProject.description || '',
+                    summary: (importedData.summary && importedData.summary.trim()) || this.editingProject.summary || '',
+                    gitHubUrl: this.importUrl,
+                    projectUrl: (importedData.projectUrl && importedData.projectUrl.trim()) || this.editingProject.projectUrl || '',
+                    category: (importedData.category && importedData.category.trim()) || this.editingProject.category || '',
+                    tags: (importedData.tags && importedData.tags.trim()) || this.editingProject.tags || '',
+                    language: (importedData.language && importedData.language.trim()) || this.editingProject.language || '',
+                    duration: (importedData.duration && importedData.duration.trim()) || this.editingProject.duration || '',
+                    architecture: (importedData.architecture && importedData.architecture.trim()) || this.editingProject.architecture || '',
+                    status: (importedData.status && importedData.status.trim()) || this.editingProject.status || '',
+                    technologies: (importedData.technologies && importedData.technologies.trim()) || this.editingProject.technologies || '',
+                    responsibilities: importedData.responsibilities && importedData.responsibilities.length > 0 ? importedData.responsibilities : this.editingProject.responsibilities || [],
+                    keyFeatures: importedData.keyFeatures && importedData.keyFeatures.length > 0 ? importedData.keyFeatures : this.editingProject.keyFeatures || [],
+                    changelog: importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.editingProject.changelog || [],
+                    metrics: importedData.metrics && importedData.metrics.length > 0 ? importedData.metrics : this.editingProject.metrics || []
+                };
+
+                console.log('Populated editingProject:', this.editingProject);
+                this.isImporting = false;
+                this.cdr.detectChanges();
+                this.toast.success('Project data imported successfully! Review and complete any missing fields, then save.');
+            },
+            error: (err) => {
+                console.error('Failed to import from URL:', err);
+                
+                // Even on error, set the GitHub URL
+                this.editingProject.gitHubUrl = this.importUrl;
+                this.isImporting = false;
+                
+                let errorMessage = 'Could not automatically fetch project data. ';
+                
+                if (err.status === 401) {
+                    errorMessage = 'Your session has expired. Please log in again.';
+                } else if (err.error?.message) {
+                    errorMessage = err.error.message;
+                } else {
+                    errorMessage += 'The URL has been set. Please fill in the remaining fields manually.';
+                }
+                
+                this.cdr.detectChanges();
+                this.toast.error(errorMessage);
+            }
+        });
     }
 
     closeEditModal() {
@@ -368,6 +441,7 @@ export class ProjectsGridComponent {
     onNicheInput(value: string) {
         if (!value || value.trim() === '') {
             this.showNicheSuggestions = false;
+            this.cdr.detectChanges();
             return;
         }
         
@@ -375,11 +449,13 @@ export class ProjectsGridComponent {
             niche.toLowerCase().includes(value.toLowerCase())
         );
         this.showNicheSuggestions = this.filteredNicheSuggestions.length > 0;
+        this.cdr.detectChanges();
     }
 
     selectNiche(niche: string) {
         this.editingProject.niche = niche;
         this.showNicheSuggestions = false;
+        this.cdr.detectChanges();
     }
 
     onNicheBlur() {
@@ -439,6 +515,7 @@ export class ProjectsGridComponent {
                         
                         if (uploadedCount === totalFiles) {
                             this.isUploadingGallery = false;
+                            this.cdr.detectChanges();
                             this.toast.success(`${totalFiles} image(s) uploaded successfully`);
                         }
                     },
@@ -448,6 +525,7 @@ export class ProjectsGridComponent {
                         
                         if (uploadedCount === totalFiles) {
                             this.isUploadingGallery = false;
+                            this.cdr.detectChanges();
                         }
                         
                         if (err.status === 401) {
@@ -504,10 +582,12 @@ export class ProjectsGridComponent {
                 next: (response) => {
                     this.editingProject.imageUrl = response.url;
                     this.isUploading = false;
+                    this.cdr.detectChanges();
                     this.toast.success('Image uploaded successfully');
                 },
                 error: (err) => {
                     this.isUploading = false;
+                    this.cdr.detectChanges();
                     console.error('Image Upload Error:', err);
                     
                     if (err.status === 401) {
@@ -570,10 +650,12 @@ export class ProjectsGridComponent {
                 this.projectsUpdated.emit(this.projects);
                 this.isSaving = false;
                 this.showEditModal = false;
+                this.cdr.detectChanges();
                 this.toast.success(`Project ${this.isCreating ? 'created' : 'updated'} successfully`);
             },
             error: (err) => {
                 this.isSaving = false;
+                this.cdr.detectChanges();
                 this.toast.error(`Failed to ${this.isCreating ? 'create' : 'update'} project`);
                 console.error('Project Save Error:', err);
             }
@@ -597,11 +679,13 @@ export class ProjectsGridComponent {
                 this.delete.emit(this.deleteProject!);
                 this.deleteProject = null;
                 this.isDeleting = false;
+                this.cdr.detectChanges();
                 this.toast.success('Project deleted successfully');
             },
             error: (err) => {
                 this.isDeleting = false;
                 this.deleteProject = null;
+                this.cdr.detectChanges();
                 if (err.status === 401) {
                     this.toast.error('Authentication failed. Please log in again.');
                     this.auth.logout();

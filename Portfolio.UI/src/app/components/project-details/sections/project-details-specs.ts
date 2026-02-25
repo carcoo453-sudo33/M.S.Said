@@ -9,7 +9,7 @@ import { ProjectEntry } from '../../../models';
     standalone: true,
     imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
-    <section *ngIf="project" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 animate-fade-in-up" style="animation-delay: 0.1s">
+    <section *ngIf="project" class=" mt-5 grid grid-cols-2 mb-5 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 animate-fade-in-up" style="animation-delay: 0.1s">
         <!-- Language -->
         <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl lg:rounded-2xl space-y-3 lg:space-y-4 hover:bg-zinc-900 hover:border-zinc-700 transition-all">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">

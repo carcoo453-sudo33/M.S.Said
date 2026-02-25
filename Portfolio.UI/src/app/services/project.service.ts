@@ -75,6 +75,12 @@ export class ProjectService {
         });
     }
 
+    importFromUrl(url: string): Observable<ProjectDto> {
+        return this.http.post<ProjectDto>(`${this.apiUrl}/projects/import-from-url`, { 
+            gitHubUrl: url 
+        });
+    }
+
     testCors(): Observable<any> {
         return this.http.get(`${this.apiUrl}/projects/test-cors`);
     }

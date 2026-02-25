@@ -125,8 +125,12 @@ public class GitHubRelease
 
 public class GitHubRepository
 {
+    public string? Name { get; set; }
+    public string? Description { get; set; }
     public int StargazersCount { get; set; }
     public int ForksCount { get; set; }
     public int OpenIssuesCount { get; set; }
     public string? Language { get; set; }
+    public string? Homepage { get; set; }
+    public List<string>? Topics { get; set; }
 }

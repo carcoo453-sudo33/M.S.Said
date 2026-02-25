@@ -24,6 +24,7 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<ProjectChangelogItem> ProjectChangelogItems { get; set; }
     public DbSet<ProjectMetric> ProjectMetrics { get; set; }
     public DbSet<ProjectComment> ProjectComments { get; set; }
+    public DbSet<NotificationEntry> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -44,6 +45,7 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<ProjectChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectMetric>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectComment>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<NotificationEntry>().HasQueryFilter(x => !x.IsDeleted);
 
         // Project Relationships
         builder.Entity<ProjectEntry>()

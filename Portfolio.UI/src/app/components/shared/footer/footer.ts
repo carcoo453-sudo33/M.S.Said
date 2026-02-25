@@ -10,11 +10,11 @@ import { TranslationService } from '../../../services/translation.service';
     standalone: true,
     imports: [CommonModule, RouterLink, LucideAngularModule, TranslateModule],
     template: `
-    <footer class="pt-24 pb-16 border-t border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
-        <div class="max-w-7xl mx-auto px-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20" [class.text-right]="translationService.isRTL()">
+    <footer class="pt-10 pb-10 border-t border-zinc-200 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
+        <div class="max-w-7xl mx-auto px-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2" [class.text-right]="translationService.isRTL()">
                 <!-- Column 1: Brand -->
-                <div class="space-y-6">
+                <div class="space-y-2">
                     <a routerLink="/" class="text-2xl font-black tracking-tighter flex items-center gap-1 text-zinc-900 dark:text-white group">
                         <div class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20" [class.mr-2]="!translationService.isRTL()" [class.ml-2]="translationService.isRTL()">M</div>
                         Mostafa<span class="text-red-600">.Dev</span>
@@ -54,7 +54,7 @@ import { TranslationService } from '../../../services/translation.service';
                         </li>
                         <li class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-zinc-500">
                             <lucide-icon [img]="PhoneIcon" class="w-3 h-3 text-red-600"></lucide-icon>
-                            +20 1067358073
+                            <span dir="ltr">+20 1067358073</span>
                         </li>
                     </ul>
                 </div>

@@ -27,6 +27,9 @@
             <!-- Language Switcher -->
             <app-language-switcher></app-language-switcher>
 
+            <!-- Notification Dropdown (Only for logged in users) -->
+            <app-notification-dropdown *ngIf="auth.isLoggedIn()"></app-notification-dropdown>
+
             <!-- Theme Toggle Button -->
             <button (click)="theme.toggle()"
                 class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 hover:border-red-600/50 transition-all hover:scale-110 active:scale-95"

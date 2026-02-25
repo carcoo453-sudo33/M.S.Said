@@ -15,7 +15,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section id="services" class="animate-fade-in-up pt-10">
+    <section id="services" class="animate-fade-in-up pt-10 mb-5">
         <div class="flex items-center gap-4 mb-10 relative">
             <div class="w-1 h-8 bg-red-600 rounded-full"></div>
             <h2 class="text-xl font-black dark:text-white text-zinc-900 tracking-tight">{{ 'home.services.title' | translate }}</h2>

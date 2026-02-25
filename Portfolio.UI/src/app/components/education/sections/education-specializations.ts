@@ -9,7 +9,7 @@ import { BioEntry } from '../../../models/bio.model';
     imports: [CommonModule, TranslateModule],
     template: `
     <div
-        class="mt-32 p-16 dark:bg-zinc-900/40 bg-zinc-50/50 backdrop-blur-xl rounded-3xl border border-zinc-100 dark:border-zinc-800 text-center animate-fade-in-up">
+        class="mt-2 p-16 dark:bg-zinc-900/40 bg-zinc-50/50 backdrop-blur-xl rounded-3xl border border-zinc-100 dark:border-zinc-800 text-center animate-fade-in-up">
         <h2 class="text-xl font-black mb-6 uppercase tracking-tight dark:text-white text-zinc-900" [innerHTML]="getTitle()">
         </h2>
         <p class="text-zinc-500 dark:text-zinc-400 mb-12 max-w-2xl mx-auto text-sm">

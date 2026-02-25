@@ -13,4 +13,8 @@ export class ContactService {
     sendContactMessage(message: ContactMessage) {
         return this.http.post(`${this.apiUrl}/contact`, message);
     }
+
+    getMessageById(id: string) {
+        return this.http.get<any>(`${this.apiUrl}/contact/${id}`);
+    }
 }

@@ -9,43 +9,43 @@ import { ProjectEntry } from '../../../models';
     standalone: true,
     imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
-    <div *ngIf="project" class="space-y-16 lg:space-y-20">
-        <!-- Key Features -->
-        <section class="space-y-8">
-            <div class="flex items-center gap-4">
-                <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
-                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.keyFeatures' | translate }}</h2>
+    <div *ngIf="project" class="space-y-8 lg:space-y-10">
+        <!-- Responsibilities -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-1 h-6 bg-red-600 rounded-full"></div>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.responsibilities' | translate }}</h2>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                <div *ngFor="let feature of project.keyFeatures"
-                    class="bg-zinc-950 p-6 lg:p-8 rounded-2xl lg:rounded-[2rem] border border-zinc-900 hover:border-red-600/30 transition-all space-y-4 lg:space-y-5 group">
-                    <div class="w-10 h-10 lg:w-12 lg:h-12 bg-red-600/10 rounded-xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
-                        <lucide-icon [img]="LayersIcon" class="w-5 h-5 lg:w-6 lg:h-6" *ngIf="feature.icon === 'Layers'"></lucide-icon>
-                        <lucide-icon [img]="RocketIcon" class="w-5 h-5 lg:w-6 lg:h-6" *ngIf="feature.icon === 'Rocket'"></lucide-icon>
-                        <lucide-icon [img]="MonitorIcon" class="w-5 h-5 lg:w-6 lg:h-6" *ngIf="feature.icon === 'Monitor'"></lucide-icon>
-                        <lucide-icon [img]="CodeIcon" class="w-5 h-5 lg:w-6 lg:h-6" *ngIf="feature.icon === 'Code'"></lucide-icon>
-                    </div>
-                    <div class="space-y-2 lg:space-y-3">
-                        <h3 class="text-base lg:text-lg font-black tracking-tight uppercase text-zinc-300">{{ feature.title }}</h3>
-                        <p class="text-zinc-500 text-sm leading-relaxed font-medium">{{ feature.description }}</p>
-                    </div>
+            <div class="space-y-3">
+                <div *ngFor="let resp of project.responsibilities"
+                    class="flex gap-3 p-4 bg-zinc-900/40 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
+                    <lucide-icon [img]="CheckIcon" class="w-4 h-4 text-red-600 shrink-0 mt-0.5"></lucide-icon>
+                    <p class="text-zinc-300 text-xs font-medium leading-relaxed">{{ resp }}</p>
                 </div>
             </div>
         </section>
 
-        <!-- Responsibilities -->
-        <section class="space-y-8">
-            <div class="flex items-center gap-4">
-                <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
-                <h2 class="text-2xl lg:text-3xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.responsibilities' | translate }}</h2>
+        <!-- Key Features -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-1 h-6 bg-red-600 rounded-full"></div>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.keyFeatures' | translate }}</h2>
             </div>
 
-            <div class="space-y-4 lg:space-y-6">
-                <div *ngFor="let resp of project.responsibilities"
-                    class="flex gap-4 lg:gap-5 p-5 lg:p-6 bg-zinc-900/40 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
-                    <lucide-icon [img]="CheckIcon" class="w-5 h-5 lg:w-6 lg:h-6 text-red-600 shrink-0 mt-0.5"></lucide-icon>
-                    <p class="text-zinc-300 text-sm font-medium leading-relaxed">{{ resp }}</p>
+            <div class="space-y-4">
+                <div *ngFor="let feature of project.keyFeatures"
+                    class="bg-zinc-950 p-5 rounded-xl border border-zinc-900 hover:border-red-600/30 transition-all space-y-3 group">
+                    <div class="w-9 h-9 bg-red-600/10 rounded-lg flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                        <lucide-icon [img]="LayersIcon" class="w-4 h-4" *ngIf="feature.icon === 'Layers'"></lucide-icon>
+                        <lucide-icon [img]="RocketIcon" class="w-4 h-4" *ngIf="feature.icon === 'Rocket'"></lucide-icon>
+                        <lucide-icon [img]="MonitorIcon" class="w-4 h-4" *ngIf="feature.icon === 'Monitor'"></lucide-icon>
+                        <lucide-icon [img]="CodeIcon" class="w-4 h-4" *ngIf="feature.icon === 'Code'"></lucide-icon>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-sm font-black tracking-tight uppercase text-zinc-300">{{ feature.title }}</h3>
+                        <p class="text-zinc-500 text-xs leading-relaxed font-medium">{{ feature.description }}</p>
+                    </div>
                 </div>
             </div>
         </section>

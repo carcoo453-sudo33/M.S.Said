@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-    <header class="mb-32 text-center animate-fade-in-up">
+    <header class="mb-2 text-center animate-fade-in-up">
         <div *ngIf="badge"
             class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-8 text-red-600">
             <span class="text-[10px] font-black uppercase tracking-[0.4em]">{{ badge }}</span>

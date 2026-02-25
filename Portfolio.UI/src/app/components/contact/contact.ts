@@ -1,11 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContactService } from '../../services/contact.service';
-import { ContactMessage } from '../../models';
+import { ProfileService } from '../../services/profile.service';
+import { ContactMessage, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Github, Linkedin, Facebook, Twitter } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
 // Section Components
@@ -16,6 +17,7 @@ import { ContactFormComponent } from './sections/contact-form';
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
+import { SharedSignatureComponent } from '../shared/signature/signature';
 
 @Component({
   selector: 'app-contact',
@@ -30,17 +32,51 @@ import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
     ContactMapComponent,
     ContactFormComponent,
     SharedFooterComponent,
-    SharedPageHeaderComponent
+    SharedPageHeaderComponent,
+    SharedSignatureComponent
   ],
   templateUrl: './contact.html'
 })
-export class ContactComponent {
+export class ContactComponent implements OnInit, AfterViewInit {
   private contactService = inject(ContactService);
+  private profileService = inject(ProfileService);
   public translationService = inject(TranslationService);
+  private cdr = inject(ChangeDetectorRef);
+  
   model = signal<ContactMessage>({ name: '', email: '', subject: '', message: '' });
   loading = signal(false);
   success = signal(false);
   error = signal(false);
+  bio = signal<BioEntry | null>(null);
+  viewInitialized = signal(false);
+  
+  GithubIcon = Github;
+  LinkedinIcon = Linkedin;
+  FacebookIcon = Facebook;
+  TwitterIcon = Twitter;
+
+  ngOnInit() {
+    this.loadBio();
+  }
+
+  ngAfterViewInit() {
+    // Ensure view is fully initialized before showing content
+    setTimeout(() => {
+      this.viewInitialized.set(true);
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  loadBio() {
+    this.profileService.getBio().subscribe({
+      next: (data) => {
+        this.bio.set(data);
+      },
+      error: (err) => {
+        console.error('Failed to load bio:', err);
+      }
+    });
+  }
 
   submitMessage() {
     this.loading.set(true);

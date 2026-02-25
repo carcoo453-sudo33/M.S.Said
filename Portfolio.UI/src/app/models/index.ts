@@ -9,3 +9,4 @@ export * from './skill.model';
 export * from './auth-response.model';
 export * from './client.model';
 export * from './testimonial.model';
+export * from './notification.model';

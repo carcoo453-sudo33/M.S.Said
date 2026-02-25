@@ -12,12 +12,12 @@
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
-    <div class="max-w-7xl mx-auto px-6 pt-32 pb-32">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16">
+    <div class="max-w-8xl mx-auto px-2 pt-28 pb-2">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 lg:gap-2">
 
             <!-- Right Sidebar (md:order-2) -->
             <aside class="md:col-span-4 lg:col-span-4 md:order-2 md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
-                <div class="space-y-6">
+                <div class="space-y-2">
                     <!-- Profile Card -->
                     <div>
                         <app-blog-profile-card [bio]="bio()"></app-blog-profile-card>
@@ -51,7 +51,7 @@
                 <!-- Posts List -->
                 <div *ngIf="!isLoading()">
                     <!-- List View -->
-                    <div *ngIf="viewMode === 'list'" class="space-y-8">
+                    <div *ngIf="viewMode === 'list'" class="space-y-2">
                         <div *ngFor="let post of filteredPosts; let i = index">
                             <app-blog-post-card [post]="post"
                                 [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
@@ -60,7 +60,7 @@
                     </div>
 
                     <!-- Grid View -->
-                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div *ngFor="let post of filteredPosts; let i = index">
                             <app-blog-post-card [post]="post"
                                 [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
@@ -71,7 +71,7 @@
                     <!-- Load More -->
                     <div class="pt-12 text-center animate-fade-in-up">
                         <button
-                            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
+                            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
                             {{ 'blog.loadMore' | translate }}
                         </button>
                     </div>
@@ -84,6 +84,11 @@
                 </app-shared-empty-state>
 
             </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="max-w-7xl mx-auto px-6 pb-24">
+            <app-shared-signature [bio]="bio()" [quote]="'blog.signature.quote' | translate"></app-shared-signature>
         </div>
     </div>
 </main>

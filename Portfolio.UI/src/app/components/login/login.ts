@@ -25,7 +25,7 @@ export class LoginComponent {
 
   onLogin() {
     this.auth.login({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/timeline']),
+      next: () => this.router.navigate(['/']),
       error: () => this.errorMessage = 'Invalid email or password'
     });
   }

@@ -9,6 +9,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['"Share Tech"', 'sans-serif'],
+        'share-tech': ['"Share Tech"', 'sans-serif'],
+        'changa': ['Changa', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: '#f20d0d',
@@ -40,6 +45,10 @@ module.exports = {
           from: { opacity: '0' },
           to: { opacity: '1' },
         },
+        notificationFadeInUp: {
+          from: { opacity: '0', transform: 'translateY(-10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'skeleton-loading': 'skeleton-loading 1.4s ease infinite',
@@ -48,6 +57,7 @@ module.exports = {
         'marquee': 'marquee 30s linear infinite',
         'modal-enter': 'modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
+        'notification-fade-in-up': 'notificationFadeInUp 0.2s ease-out',
       },
     },
   },
@@ -64,7 +74,7 @@ module.exports = {
           color: '#18181b',
         },
         '[dir="rtl"]': {
-          fontFamily: "'Tajawal', 'Inter', sans-serif",
+          fontFamily: "'Changa', 'Inter', sans-serif",
         },
         /* Global Scrollbar */
         '::-webkit-scrollbar': {
@@ -108,6 +118,19 @@ module.exports = {
         },
         '.custom-scrollbar::-webkit-scrollbar-thumb:hover': {
           backgroundColor: 'theme("colors.red.500")',
+        },
+        '.notification-scrollbar::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '.notification-scrollbar::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '.notification-scrollbar::-webkit-scrollbar-thumb': {
+          background: '#d4d4d8',
+          borderRadius: '3px',
+        },
+        'html.dark .notification-scrollbar::-webkit-scrollbar-thumb': {
+          background: '#3f3f46',
         },
       });
 

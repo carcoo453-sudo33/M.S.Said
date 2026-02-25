@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { LucideAngularModule, Edit3, X, Save, Plus, Trash2, AlertTriangle, CheckCircle } from 'lucide-angular';
 import { ExperienceEntry } from '../../../models';
@@ -14,7 +13,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
 @Component({
     selector: 'app-home-timeline',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule, LucideAngularModule, TranslateModule],
+    imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
     template: `
     <section class="animate-fade-in-up pt-10">
         <div class="flex items-center justify-between gap-6 mb-10">
@@ -27,8 +26,6 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all">
                     <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </button>
-                <a routerLink="/timeline"
-                    class="text-[9px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-200 dark:border-zinc-700 px-4 py-2 rounded-xl transition-all hover:border-red-600/30">{{ 'home.timeline.viewAll' | translate }}</a>
             </div>
         </div>
         <div class="space-y-8">
