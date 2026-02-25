@@ -1,6 +1,6 @@
 [build]
   publish = "dist/portfolio.ui/browser"
-  command = "npm install && npm run build"
+  command = "npm install && ng build --configuration=production"
 
 [[redirects]]
   from = "/*"
