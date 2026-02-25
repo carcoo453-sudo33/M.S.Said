@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Portfolio.API.Data;
 
 #nullable disable
 
-namespace Portfolio.API.Migrations
+namespace Portfolio.API.Data.Migrations
 {
     [DbContext(typeof(PortfolioDbContext))]
-    partial class PortfolioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260225043823_AddTestimonialArabicFields")]
+    partial class AddTestimonialArabicFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,9 +249,6 @@ namespace Portfolio.API.Migrations
                     b.Property<string>("Description_Ar")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DevToUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EducationQuote")
                         .HasColumnType("nvarchar(max)");
 
@@ -257,9 +257,6 @@ namespace Portfolio.API.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FacebookUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GitHubUrl")
@@ -289,9 +286,6 @@ namespace Portfolio.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PinterestUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProjectsCompleted")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -318,9 +312,6 @@ namespace Portfolio.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SignatureVerifiedText_Ar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StackOverflowUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TechnicalFocusDescription")
@@ -383,9 +374,6 @@ namespace Portfolio.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Content_Ar")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -417,20 +405,11 @@ namespace Portfolio.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Summary_Ar")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Tags_Ar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title_Ar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")

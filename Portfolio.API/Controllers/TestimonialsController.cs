@@ -33,8 +33,11 @@ public class TestimonialsController : ControllerBase
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
             Role = dto.Role,
+            Role_Ar = dto.Role_Ar,
             Content = dto.Content,
+            Content_Ar = dto.Content_Ar,
             Company = dto.Company,
+            Company_Ar = dto.Company_Ar,
             AvatarUrl = dto.AvatarUrl,
             Order = dto.Order,
             IsFeatured = dto.IsFeatured
@@ -55,8 +58,11 @@ public class TestimonialsController : ControllerBase
 
         testimonial.Name = dto.Name;
         testimonial.Role = dto.Role;
+        testimonial.Role_Ar = dto.Role_Ar;
         testimonial.Content = dto.Content;
+        testimonial.Content_Ar = dto.Content_Ar;
         testimonial.Company = dto.Company;
+        testimonial.Company_Ar = dto.Company_Ar;
         testimonial.AvatarUrl = dto.AvatarUrl;
         testimonial.Order = dto.Order;
         testimonial.IsFeatured = dto.IsFeatured;

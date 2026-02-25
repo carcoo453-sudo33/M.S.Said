@@ -13,15 +13,23 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
-// CORS configuration - Robust for development
+// CORS configuration - Robust for development and production
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200", "http://localhost:65068", "http://127.0.0.1:65068")
+        policy.WithOrigins(
+                "http://localhost:4200", 
+                "http://127.0.0.1:4200", 
+                "http://localhost:65068", 
+                "http://127.0.0.1:65068",
+                "https://*.netlify.app"  // Allow all Netlify preview and production URLs
+            )
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
+            .WithExposedHeaders("*")
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10)); // Cache preflight for 10 minutes
     });
 });
@@ -44,6 +52,26 @@ builder.Services.AddScoped<Portfolio.API.Services.IEmailService, Portfolio.API.S
 
 // Register SignalR
 builder.Services.AddSignalR();
+
+// Configure authentication to support SignalR with JWT tokens
+builder.Services.AddAuthentication().AddJwtBearer(options =>
+{
+    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            
+            return Task.CompletedTask;
+        }
+    };
+});
 
 // Standard .NET 9 OpenAPI configuration
 builder.Services.AddOpenApi();
@@ -94,8 +122,8 @@ app.MapPost("/identity/login", async (SignInManager<IdentityUser> signInManager,
 
 app.MapControllers();
 
-// Map SignalR Hub
-app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications");
+// Map SignalR Hub - must be after UseCors
+app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications").RequireCors("AllowAngular");
 
 // Seeding logic
 using (var scope = app.Services.CreateScope())

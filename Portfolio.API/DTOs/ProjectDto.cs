@@ -7,13 +7,19 @@ public class ProjectDto
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
     public string Slug { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string? Description_Ar { get; set; }
     public string? Summary { get; set; }
+    public string? Summary_Ar { get; set; }
     public string? Technologies { get; set; }
     public string? Category { get; set; }
+    public string? Category_Ar { get; set; }
     public string? Tags { get; set; }
+    public string? Tags_Ar { get; set; }
     public string? Niche { get; set; }
+    public string? Niche_Ar { get; set; }
     public string? ImageUrl { get; set; }
     public List<string> Gallery { get; set; } = new();
     public string? ProjectUrl { get; set; }
@@ -51,7 +57,9 @@ public class KeyFeatureDto
 {
     public string Icon { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
     public string Description { get; set; } = string.Empty;
+    public string? Description_Ar { get; set; }
 }
 
 public class ChangelogItemDto
@@ -59,12 +67,15 @@ public class ChangelogItemDto
     public string Date { get; set; } = string.Empty;
     public string Version { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string? Title_Ar { get; set; }
     public string Description { get; set; } = string.Empty;
+    public string? Description_Ar { get; set; }
 }
 
 public class MetricDto
 {
     public string Label { get; set; } = string.Empty;
+    public string? Label_Ar { get; set; }
     public string Value { get; set; } = string.Empty;
     public string? Trend { get; set; }
 }

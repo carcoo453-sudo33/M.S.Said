@@ -10,11 +10,14 @@ public class TestimonialEntry : BaseEntity
     
     [Required]
     public string Role { get; set; } = string.Empty;
+    public string? Role_Ar { get; set; }
     
     [Required]
     public string Content { get; set; } = string.Empty;
+    public string? Content_Ar { get; set; }
     
     public string? Company { get; set; }
+    public string? Company_Ar { get; set; }
     
     public string? AvatarUrl { get; set; }
     

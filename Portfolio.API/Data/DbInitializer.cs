@@ -37,8 +37,8 @@ public static class DbInitializer
                 Email = "m.ssaid356@gmail.com",
                 Phone = "01067358073",
                 AvatarUrl = "https://ui-avatars.com/api/?name=Mostafa+Samir+Said&background=f20d0d&color=fff&size=512",
-                LinkedInUrl = "https://linkedin.com/in/mostafasaid",
-                GitHubUrl = "https://github.com/mssaid",
+                LinkedInUrl = "https://www.linkedin.com/in/mostafasamirsaid",
+                GitHubUrl = "https://github.com/Mostafa-SAID7",
                 WhatsAppUrl = "201067358073",
                 CVUrl = "/cv.pdf",
                 TwitterUrl = "https://twitter.com/mostafasaid",
@@ -46,6 +46,10 @@ public static class DbInitializer
                 ProjectsCompleted = "40+",
                 CodeCommits = "12k",
                 EducationQuote = "Education is the synthesis of inquiry and architecture. My academic foundation provides the rigorous framework through which I approach complex engineering challenges and innovative system design.",
+                SignatureRole = "Full-Stack .NET Developer",
+                SignatureName = "Mostafa Samir Said",
+                SignatureSubtitle = "Scalable Web Solutions",
+                SignatureVerifiedText = "Verified Origin",
                 TechnicalFocusTitle = "Technical Focus",
                 TechnicalFocusDescription = "Continuous specialization in modern web development, cloud architecture, and enterprise system design.",
                 TechnicalFocusItems = "ASP.NET Core,Angular,Distributed Systems,Cloud Architecture,Identity & Security,RESTful APIs,SQL Server,Entity Framework"
@@ -131,7 +135,7 @@ public static class DbInitializer
                     Niche = "Retail & Commerce",
                     ImageUrl = "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80",
                     DemoUrl = "https://vengo-roll.example.com",
-                    RepoUrl = "https://github.com/mssaid/vengo-roll",
+                    RepoUrl = "https://github.com/Mostafa-SAID7/vengo-roll",
                     Duration = "2024-2025"
                 },
                 new ProjectEntry
@@ -145,7 +149,7 @@ public static class DbInitializer
                     Niche = "Healthcare & MedTech",
                     ImageUrl = "https://images.unsplash.com/photo-1576091160550-217359f4b88c?w=1200&q=80",
                     DemoUrl = "https://clinic.example.com",
-                    RepoUrl = "https://github.com/mssaid/clinic-management",
+                    RepoUrl = "https://github.com/Mostafa-SAID7/clinic-management",
                     Duration = "2024"
                 },
                 new ProjectEntry
@@ -159,7 +163,7 @@ public static class DbInitializer
                     Niche = "Developer Tools",
                     ImageUrl = "https://images.unsplash.com/photo-1547954575-855750c57bd3?w=1200&q=80",
                     DemoUrl = "https://mostafasaid.dev",
-                    RepoUrl = "https://github.com/mssaid/portfolio",
+                    RepoUrl = "https://github.com/Mostafa-SAID7/portfolio",
                     Duration = "2025",
                     Summary = "A premium personal portfolio CMS built with modern technologies.",
                     Language = "English",
@@ -182,7 +186,7 @@ public static class DbInitializer
                     Niche = "SaaS & Productivity",
                     ImageUrl = "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&q=80",
                     DemoUrl = "https://taskflow.example.com",
-                    RepoUrl = "https://github.com/mssaid/task-flow",
+                    RepoUrl = "https://github.com/Mostafa-SAID7/task-flow",
                     Duration = "2024"
                 }
             );
@@ -265,7 +269,7 @@ public static class DbInitializer
                     Tags = "DotNet, Backend, Performance",
                     ImageUrl = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
                     SocialType = "LinkedIn",
-                    SocialUrl = "https://linkedin.com/posts/mostafasaid",
+                    SocialUrl = "https://www.linkedin.com/in/mostafasamirsaid",
                     LikesCount = 142,
                     CommentsCount = 24,
                     Author = "Mostafa Samir Said"
@@ -292,7 +296,7 @@ public static class DbInitializer
                     PublishedAt = DateTime.UtcNow.AddDays(-7),
                     Tags = "Release, Security, Healthcare",
                     SocialType = "GitHub",
-                    SocialUrl = "https://github.com/mssaid/clinic-management",
+                    SocialUrl = "https://github.com/Mostafa-SAID7/clinic-management",
                     StarsCount = 24,
                     ForksCount = 5,
                     Version = "v2.0.4",
@@ -307,7 +311,7 @@ public static class DbInitializer
                     Tags = "Design, ECommerce, UX",
                     ImageUrl = "https://images.unsplash.com/photo-1557821552-17105176677c?w=1200&q=80",
                     SocialType = "LinkedIn",
-                    SocialUrl = "https://linkedin.com/posts/mostafasaid-vengo",
+                    SocialUrl = "https://www.linkedin.com/in/mostafasamirsaid",
                     LikesCount = 89,
                     CommentsCount = 0,
                     Author = "Mostafa Samir Said"

@@ -32,7 +32,9 @@ public class ServicesController : ControllerBase
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Title = dto.Title,
+            Title_Ar = dto.Title_Ar,
             Description = dto.Description,
+            Description_Ar = dto.Description_Ar,
             Icon = dto.Icon
         };
         await _unitOfWork.Repository<ServiceEntry>().AddAsync(entry);
@@ -50,7 +52,9 @@ public class ServicesController : ControllerBase
         if (service == null) return NotFound();
 
         service.Title = dto.Title;
+        service.Title_Ar = dto.Title_Ar;
         service.Description = dto.Description;
+        service.Description_Ar = dto.Description_Ar;
         service.Icon = dto.Icon;
         service.UpdatedAt = DateTime.UtcNow;
 

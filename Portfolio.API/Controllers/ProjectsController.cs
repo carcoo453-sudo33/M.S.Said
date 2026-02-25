@@ -62,15 +62,21 @@ public class ProjectsController : ControllerBase
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Title = dto.Title,
+            Title_Ar = dto.Title_Ar,
             Description = dto.Description,
+            Description_Ar = dto.Description_Ar,
             Summary = dto.Summary,
+            Summary_Ar = dto.Summary_Ar,
             ImageUrl = dto.ImageUrl,
             DemoUrl = dto.ProjectUrl,
             RepoUrl = dto.GitHubUrl,
             Category = dto.Category,
+            Category_Ar = dto.Category_Ar,
             TechStack = dto.Technologies,
             Tags = dto.Tags,
+            Tags_Ar = dto.Tags_Ar,
             Niche = dto.Niche,
+            Niche_Ar = dto.Niche_Ar,
             Duration = dto.Duration,
             Language = dto.Language,
             Architecture = dto.Architecture,
@@ -86,7 +92,7 @@ public class ProjectsController : ControllerBase
 
         // Map sub-collections if provided
         if (dto.KeyFeatures != null)
-            entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Description = f.Description }).ToList();
+            entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList();
             
         // ... other sub-collections can be added similarly
 
@@ -110,15 +116,21 @@ public class ProjectsController : ControllerBase
         if (project == null) return NotFound();
 
         project.Title = dto.Title;
+        project.Title_Ar = dto.Title_Ar;
         project.Description = dto.Description;
+        project.Description_Ar = dto.Description_Ar;
         project.Summary = dto.Summary;
+        project.Summary_Ar = dto.Summary_Ar;
         project.ImageUrl = dto.ImageUrl;
         project.DemoUrl = dto.ProjectUrl;
         project.RepoUrl = dto.GitHubUrl;
         project.Category = dto.Category;
+        project.Category_Ar = dto.Category_Ar;
         project.TechStack = dto.Technologies;
         project.Tags = dto.Tags;
+        project.Tags_Ar = dto.Tags_Ar;
         project.Niche = dto.Niche;
+        project.Niche_Ar = dto.Niche_Ar;
         project.Duration = dto.Duration;
         project.Language = dto.Language;
         project.Architecture = dto.Architecture;
@@ -147,8 +159,10 @@ public class ProjectsController : ControllerBase
             await featureRepo.AddAsync(new Entities.ProjectKeyFeature 
             { 
                 Icon = f.Icon, 
-                Title = f.Title, 
+                Title = f.Title,
+                Title_Ar = f.Title_Ar,
                 Description = f.Description,
+                Description_Ar = f.Description_Ar,
                 ProjectEntryId = project.Id,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -172,7 +186,9 @@ public class ProjectsController : ControllerBase
                 Date = c.Date,
                 Version = c.Version,
                 Title = c.Title,
+                Title_Ar = c.Title_Ar,
                 Description = c.Description,
+                Description_Ar = c.Description_Ar,
                 ProjectEntryId = project.Id,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -194,6 +210,7 @@ public class ProjectsController : ControllerBase
             await metricsRepo.AddAsync(new Entities.ProjectMetric
             {
                 Label = m.Label,
+                Label_Ar = m.Label_Ar,
                 Value = m.Value,
                 Trend = m.Trend,
                 ProjectEntryId = project.Id,
@@ -212,16 +229,22 @@ public class ProjectsController : ControllerBase
         {
             Id = p.Id,
             Title = p.Title,
+            Title_Ar = p.Title_Ar,
             Slug = p.Slug,
             Description = p.Description,
+            Description_Ar = p.Description_Ar,
             Summary = p.Summary,
+            Summary_Ar = p.Summary_Ar,
             ImageUrl = p.ImageUrl,
             ProjectUrl = p.DemoUrl,
             GitHubUrl = p.RepoUrl,
             Category = p.Category ?? "",
+            Category_Ar = p.Category_Ar,
             Technologies = p.TechStack ?? "",
             Tags = p.Tags,
+            Tags_Ar = p.Tags_Ar,
             Niche = p.Niche,
+            Niche_Ar = p.Niche_Ar,
             Duration = p.Duration,
             Language = p.Language,
             Architecture = p.Architecture,
@@ -233,9 +256,9 @@ public class ProjectsController : ControllerBase
             CreatedAt = p.CreatedAt,
             Gallery = !string.IsNullOrEmpty(p.GalleryJson) ? JsonSerializer.Deserialize<List<string>>(p.GalleryJson) ?? new() : new(),
             Responsibilities = !string.IsNullOrEmpty(p.ResponsibilitiesJson) ? JsonSerializer.Deserialize<List<string>>(p.ResponsibilitiesJson) ?? new() : new(),
-            KeyFeatures = p.KeyFeatures?.Select(f => new KeyFeatureDto { Icon = f.Icon, Title = f.Title, Description = f.Description }).ToList() ?? new(),
-            Changelog = p.Changelog?.Select(c => new ChangelogItemDto { Date = c.Date, Version = c.Version, Title = c.Title, Description = c.Description }).ToList() ?? new(),
-            Metrics = p.Metrics?.Select(m => new MetricDto { Label = m.Label, Value = m.Value, Trend = m.Trend }).ToList() ?? new(),
+            KeyFeatures = p.KeyFeatures?.Select(f => new KeyFeatureDto { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList() ?? new(),
+            Changelog = p.Changelog?.Select(c => new ChangelogItemDto { Date = c.Date, Version = c.Version, Title = c.Title, Title_Ar = c.Title_Ar, Description = c.Description, Description_Ar = c.Description_Ar }).ToList() ?? new(),
+            Metrics = p.Metrics?.Select(m => new MetricDto { Label = m.Label, Label_Ar = m.Label_Ar, Value = m.Value, Trend = m.Trend }).ToList() ?? new(),
             Comments = p.Comments?.Select(c => new CommentDto 
             { 
                 Id = c.Id.ToString(), 

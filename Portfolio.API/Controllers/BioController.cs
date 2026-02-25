@@ -51,9 +51,13 @@ public class BioController : ControllerBase
 
         // Map DTO to Entity manually (avoids tracking issues)
         bio.Name = dto.Name;
+        bio.Name_Ar = dto.Name_Ar;
         bio.Title = dto.Title;
+        bio.Title_Ar = dto.Title_Ar;
         bio.Description = dto.Description;
+        bio.Description_Ar = dto.Description_Ar;
         bio.Location = dto.Location;
+        bio.Location_Ar = dto.Location_Ar;
         bio.Email = dto.Email;
         bio.Phone = dto.Phone;
         bio.AvatarUrl = dto.AvatarUrl;
@@ -66,9 +70,21 @@ public class BioController : ControllerBase
         bio.ProjectsCompleted = dto.ProjectsCompleted;
         bio.CodeCommits = dto.CodeCommits;
         bio.EducationQuote = dto.EducationQuote;
+        bio.EducationQuote_Ar = dto.EducationQuote_Ar;
+        bio.SignatureRole = dto.SignatureRole;
+        bio.SignatureRole_Ar = dto.SignatureRole_Ar;
+        bio.SignatureName = dto.SignatureName;
+        bio.SignatureName_Ar = dto.SignatureName_Ar;
+        bio.SignatureSubtitle = dto.SignatureSubtitle;
+        bio.SignatureSubtitle_Ar = dto.SignatureSubtitle_Ar;
+        bio.SignatureVerifiedText = dto.SignatureVerifiedText;
+        bio.SignatureVerifiedText_Ar = dto.SignatureVerifiedText_Ar;
         bio.TechnicalFocusTitle = dto.TechnicalFocusTitle;
+        bio.TechnicalFocusTitle_Ar = dto.TechnicalFocusTitle_Ar;
         bio.TechnicalFocusDescription = dto.TechnicalFocusDescription;
+        bio.TechnicalFocusDescription_Ar = dto.TechnicalFocusDescription_Ar;
         bio.TechnicalFocusItems = dto.TechnicalFocusItems;
+        bio.TechnicalFocusItems_Ar = dto.TechnicalFocusItems_Ar;
         bio.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.CompleteAsync();

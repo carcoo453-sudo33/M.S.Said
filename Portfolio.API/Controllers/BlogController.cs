@@ -40,13 +40,17 @@ public class BlogController : ControllerBase
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Title = dto.Title,
+            Title_Ar = dto.Title_Ar,
             Summary = dto.Summary,
+            Summary_Ar = dto.Summary_Ar,
             Content = dto.Content,
+            Content_Ar = dto.Content_Ar,
             ImageUrl = dto.ImageUrl,
             SocialUrl = dto.SocialUrl,
             SocialType = dto.SocialType,
             PublishedAt = dto.PublishedAt != default ? dto.PublishedAt : DateTime.UtcNow,
             Tags = dto.Tags,
+            Tags_Ar = dto.Tags_Ar,
             Author = dto.Author,
             LikesCount = dto.LikesCount,
             CommentsCount = dto.CommentsCount,
@@ -69,13 +73,17 @@ public class BlogController : ControllerBase
         if (post == null) return NotFound();
 
         post.Title = dto.Title;
+        post.Title_Ar = dto.Title_Ar;
         post.Summary = dto.Summary;
+        post.Summary_Ar = dto.Summary_Ar;
         post.Content = dto.Content;
+        post.Content_Ar = dto.Content_Ar;
         post.ImageUrl = dto.ImageUrl;
         post.SocialUrl = dto.SocialUrl;
         post.SocialType = dto.SocialType;
         post.PublishedAt = dto.PublishedAt != default ? dto.PublishedAt : post.PublishedAt;
         post.Tags = dto.Tags;
+        post.Tags_Ar = dto.Tags_Ar;
         post.Author = dto.Author;
         post.LikesCount = dto.LikesCount;
         post.CommentsCount = dto.CommentsCount;
