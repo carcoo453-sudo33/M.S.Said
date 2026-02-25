@@ -36,8 +36,8 @@ import { SignalRService } from '../../../services/signalr.service';
                     <span 
                         class="absolute bottom-2 right-2 w-5 h-5 border-[3px] border-white dark:border-zinc-700 rounded-full transition-all duration-300"
                         [ngClass]="{
-                            'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)] animate-pulse': signalRService.adminOnlineStatus(),
-                            'bg-gray-400': !signalRService.adminOnlineStatus()
+                            'bg-green-500 shadow-[0_0_16px_rgba(34,197,94,0.9)] animate-pulse': signalRService.adminOnlineStatus(),
+                            'bg-gray-400 shadow-none': !signalRService.adminOnlineStatus()
                         }"
                         [title]="signalRService.adminOnlineStatus() ? 'Online - Available Now' : 'Offline'">
                     </span>
