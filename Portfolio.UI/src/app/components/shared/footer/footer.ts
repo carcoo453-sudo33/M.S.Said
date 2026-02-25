@@ -31,10 +31,10 @@ import { TranslationService } from '../../../services/translation.service';
                         <a href="mailto:m.ssaid356@gmail.com" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
                             <lucide-icon [img]="MailIcon" class="w-5 h-5"></lucide-icon>
                         </a>
-                        <a href="https://github.com/mssaid" target="_blank" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
+                        <a href="https://github.com/Mostafa-SAID7" target="_blank" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
                             <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
                         </a>
-                        <a href="https://linkedin.com/in/mostafasaid" target="_blank" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
+                        <a href="https://linkedin.com/in/mostafasamirsaid" target="_blank" class="text-zinc-400 hover:text-red-600 transition-all hover:scale-110">
                             <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
                         </a>
                     </div>
@@ -62,7 +62,7 @@ import { TranslationService } from '../../../services/translation.service';
 
             <div class="pt-10 border-t border-zinc-100 dark:border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-6">
                 <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest">
-                    {{ 'footer.copyright' | translate }}
+                    © 2024{{ currentYear > 2024 ? '-' + currentYear : '' }} {{ translationService.isRTL() ? 'مصطفى سمير سعيد. جميع الحقوق محفوظة' : 'Mostafa Samir Said. All rights reserved' }}
                 </p>
                 <div class="flex items-center gap-2">
                     <span class="text-zinc-400 text-[9px] font-black uppercase">{{ 'footer.madeWith' | translate }}</span>
@@ -80,4 +80,6 @@ export class SharedFooterComponent {
     LinkedinIcon = Linkedin;
     MapPinIcon = MapPin;
     PhoneIcon = Phone;
+
+    currentYear = new Date().getFullYear();
 }
