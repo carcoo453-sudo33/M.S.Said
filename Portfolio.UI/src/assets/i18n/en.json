@@ -233,6 +233,10 @@
     }
   },
   "blog": {
+    "badge": "Technical Insights",
+    "title1": "Knowledge",
+    "title2": "Archive",
+    "description": "Technical documentation and insights from the field. A curated collection of development experiences and solutions.",
     "latestUpdates": "Latest Updates",
     "loadMore": "Load More Updates",
     "emptyTitle": "Sector:",

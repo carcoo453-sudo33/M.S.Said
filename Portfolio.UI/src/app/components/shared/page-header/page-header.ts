@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
             <span [innerHTML]="title"></span>
         </h1>
         <p *ngIf="description"
-            class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed italic border-l-2 md:border-l-0 md:border-b-2 border-zinc-100 dark:border-zinc-900 pl-8 md:pl-0 md:pb-8">
+            class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed italic">
             "{{ description }}"
         </p>
     </header>

@@ -11,8 +11,26 @@
 </app-blog-manage>
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
-    <div class="max-w-8xl mx-auto px-4 md:px-5 lg:px-6 xl:px-8 pt-24 md:pt-26 lg:pt-28 pb-12 md:pb-14 lg:pb-16 xl:pb-20">
+    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 overflow-hidden relative space-y-20">
+
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <div
+            class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] animate-pulse">
+        </div>
+        <div class="absolute top-[20%] -right-[10%] w-[35%] h-[35%] bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 2s"></div>
+    </div>
+
+    <div class="max-w-8xl mx-auto px-4 md:px-5 lg:px-6 xl:px-8 relative z-10 space-y-2">
+
+        <!-- Page Header -->
+        <app-shared-page-header 
+            [badge]="'blog.badge' | translate"
+            [title]="('blog.title1' | translate) + '<br><span class=\'text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]\'>' + ('blog.title2' | translate) + '</span>'"
+            [description]="'blog.description' | translate">
+        </app-shared-page-header>
+
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-7 lg:gap-10 xl:gap-16">
 
             <!-- Right Sidebar (md:order-2) -->

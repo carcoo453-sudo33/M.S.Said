@@ -29,6 +29,7 @@ import { BlogPostCardSkeletonComponent } from './sections/blog-post-card-skeleto
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
 import { SharedSignatureComponent } from '../shared/signature/signature';
+import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 
 @Component({
   selector: 'app-blog',
@@ -51,7 +52,8 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     BlogPostCardSkeletonComponent,
     SharedFooterComponent,
     SharedEmptyStateComponent,
-    SharedSignatureComponent
+    SharedSignatureComponent,
+    SharedPageHeaderComponent
   ],
   templateUrl: './blog.html'
 })
