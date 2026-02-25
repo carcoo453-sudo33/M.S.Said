@@ -14,7 +14,7 @@ Your frontend is now configured to connect to:
 cd Portfolio.UI
 git add .
 git commit -m "Configure for Netlify deployment with production API"
-git push origin main
+git push origin master
 ```
 
 ### Step 2: Deploy on Netlify
@@ -95,7 +95,7 @@ Everything is configured. Just follow the 3 steps above to deploy!
 # From Portfolio.UI directory
 git add .
 git commit -m "Configure for Netlify deployment"
-git push origin main
+git push origin master
 
 # Then deploy on Netlify dashboard
 ```

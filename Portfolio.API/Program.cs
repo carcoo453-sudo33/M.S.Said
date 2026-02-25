@@ -23,7 +23,8 @@ builder.Services.AddCors(options =>
                 "http://127.0.0.1:4200", 
                 "http://localhost:65068", 
                 "http://127.0.0.1:65068",
-                "https://*.netlify.app"  // Allow all Netlify preview and production URLs
+                "https://m-said-portfolio.netlify.app",  // Your Netlify production URL
+                "https://*.netlify.app"  // Allow all Netlify preview URLs
             )
             .SetIsOriginAllowedToAllowWildcardSubdomains()
             .AllowAnyHeader()
