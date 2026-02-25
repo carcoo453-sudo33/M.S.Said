@@ -18,15 +18,18 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:4200", 
-                "http://127.0.0.1:4200", 
-                "http://localhost:65068", 
-                "http://127.0.0.1:65068",
-                "https://m-said-portfolio.netlify.app",  // Your Netlify production URL
-                "https://*.netlify.app"  // Allow all Netlify preview URLs
-            )
-            .SetIsOriginAllowedToAllowWildcardSubdomains()
+        policy.SetIsOriginAllowed(origin =>
+            {
+                // Allow localhost for development
+                if (origin.StartsWith("http://localhost:") || origin.StartsWith("http://127.0.0.1:"))
+                    return true;
+                
+                // Allow Netlify domains
+                if (origin.EndsWith(".netlify.app") || origin == "https://m-said-portfolio.netlify.app")
+                    return true;
+                
+                return false;
+            })
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
