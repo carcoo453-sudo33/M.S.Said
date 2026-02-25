@@ -12,6 +12,12 @@ export class SignalRService {
   constructor() {}
 
   public startConnection(): void {
+    // Skip SignalR connection in production if backend doesn't support it yet
+    if (environment.production) {
+      console.log('⚠️ SignalR disabled in production - backend needs redeployment');
+      return;
+    }
+
     const token = localStorage.getItem('auth_token');
     
     const options: signalR.IHttpConnectionOptions = {
@@ -31,7 +37,7 @@ export class SignalRService {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, options)
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(signalR.LogLevel.Warning) // Reduce logging noise
       .build();
 
     this.hubConnection
@@ -42,14 +48,8 @@ export class SignalRService {
         this.checkAdminStatus();
       })
       .catch(err => {
-        console.error('❌ Error while starting SignalR connection:', err);
-        console.error('Hub URL:', hubUrl);
-        console.error('Error details:', {
-          message: err.message,
-          stack: err.stack,
-          name: err.name
-        });
-        // Don't throw - just log and continue without SignalR
+        console.warn('⚠️ SignalR connection failed (non-critical):', err.message);
+        // Don't throw - just continue without SignalR
       });
 
     // Handle reconnection
