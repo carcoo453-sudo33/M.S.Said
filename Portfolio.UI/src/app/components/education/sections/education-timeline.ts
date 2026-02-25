@@ -241,7 +241,26 @@ export class EducationTimelineComponent {
     private toast = inject(ToastService);
     public translationService = inject(TranslationService);
 
-    @Input() education: EducationEntry[] = [];
+    @Input() set education(value: EducationEntry[]) {
+        this._education = value;
+        if (value && value.length > 0) {
+            console.log('=== EDUCATION DATA RECEIVED ===');
+            console.log('First entry:', value[0]);
+            console.log('Arabic fields:', {
+                institution_Ar: value[0]?.institution_Ar,
+                degree_Ar: value[0]?.degree_Ar,
+                description_Ar: value[0]?.description_Ar,
+                location_Ar: value[0]?.location_Ar
+            });
+            console.log('isRTL:', this.translationService.isRTL());
+            console.log('=== END ===');
+        }
+    }
+    get education(): EducationEntry[] {
+        return this._education;
+    }
+    private _education: EducationEntry[] = [];
+    
     @Output() educationUpdated = new EventEmitter<EducationEntry[]>();
 
     GraduationCapIcon = GraduationCap;
@@ -346,7 +365,15 @@ export class EducationTimelineComponent {
 
         forkJoin(requests).subscribe({
             next: (savedEntries) => {
-                console.log('Saved education entries:', savedEntries);
+                console.log('=== EDUCATION SAVE DEBUG ===');
+                console.log('Saved education entries from server:', savedEntries);
+                console.log('First entry Arabic fields:', {
+                    institution_Ar: savedEntries[0]?.institution_Ar,
+                    degree_Ar: savedEntries[0]?.degree_Ar,
+                    description_Ar: savedEntries[0]?.description_Ar,
+                    location_Ar: savedEntries[0]?.location_Ar
+                });
+                console.log('=== END DEBUG ===');
                 this.education = [...savedEntries];
                 this.educationUpdated.emit(this.education);
                 this.isSaving = false;
