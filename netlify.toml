@@ -1,6 +1,6 @@
 [build]
   base = "Portfolio.UI"
-  publish = "Portfolio.UI/dist/portfolio.ui/browser"
+  publish = "dist/portfolio.ui/browser"
   command = "npm install && npm run build:prod"
 
 [[redirects]]
