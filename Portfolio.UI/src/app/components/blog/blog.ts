@@ -28,7 +28,6 @@ import { BlogPostCardSkeletonComponent } from './sections/blog-post-card-skeleto
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
-import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
 import { SharedSignatureComponent } from '../shared/signature/signature';
 
 @Component({
@@ -52,7 +51,6 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     BlogPostCardSkeletonComponent,
     SharedFooterComponent,
     SharedEmptyStateComponent,
-    SharedSkeletonComponent,
     SharedSignatureComponent
   ],
   templateUrl: './blog.html'

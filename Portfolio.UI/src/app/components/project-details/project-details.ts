@@ -30,7 +30,6 @@ import { ProjectDetailsInteractionsSkeletonComponent } from './sections/project-
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
-import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
 import { SharedSignatureComponent } from '../shared/signature/signature';
 
 @Component({
@@ -56,7 +55,6 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ProjectDetailsInteractionsSkeletonComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
-    SharedSkeletonComponent,
     SharedSignatureComponent
   ],
   templateUrl: './project-details.html'

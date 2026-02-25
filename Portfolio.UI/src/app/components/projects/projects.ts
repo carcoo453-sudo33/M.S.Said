@@ -29,7 +29,6 @@ import { ProjectsBottomCTASkeletonComponent } from './sections/projects-bottom-c
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
-import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
 
 @Component({
   selector: 'app-projects',
@@ -53,8 +52,7 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
     ProjectsBottomCTASkeletonComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
-    SharedEmptyStateComponent,
-    SharedSkeletonComponent
+    SharedEmptyStateComponent
   ],
   templateUrl: './projects.html'
 })

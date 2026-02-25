@@ -12,7 +12,6 @@ import { EducationTimelineComponent } from './sections/education-timeline';
 import { EducationSpecializationsComponent } from './sections/education-specializations';
 
 // Skeleton Components
-import { EducationTimelineSkeletonComponent } from './sections/education-timeline-skeleton';
 import { EducationSpecializationsSkeletonComponent } from './sections/education-specializations-skeleton';
 
 // Shared Global Components
@@ -20,7 +19,6 @@ import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
-import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
 import { SharedSignatureComponent } from '../shared/signature/signature';
 
 @Component({
@@ -33,13 +31,11 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
         LucideAngularModule,
         EducationTimelineComponent,
         EducationSpecializationsComponent,
-        EducationTimelineSkeletonComponent,
         EducationSpecializationsSkeletonComponent,
         SharedPageHeaderComponent,
         SharedFooterComponent,
         SharedErrorStateComponent,
         SharedEmptyStateComponent,
-        SharedSkeletonComponent,
         SharedSignatureComponent
     ],
     templateUrl: './education.html'
