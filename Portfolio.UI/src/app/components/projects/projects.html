@@ -16,7 +16,25 @@
     <div class="max-w-7xl mx-auto px-6 relative z-10">
 
         <!-- SKELETON STATE -->
-        <app-shared-skeleton *ngIf="isLoading()" [count]="3" height="400px"></app-shared-skeleton>
+        <div *ngIf="isLoading()" class="space-y-32">
+            <!-- Header Skeleton -->
+            <app-projects-header-skeleton></app-projects-header-skeleton>
+
+            <!-- Project Grid Skeleton -->
+            <app-projects-grid-skeleton></app-projects-grid-skeleton>
+
+            <!-- Work History Skeleton -->
+            <app-projects-work-history-skeleton></app-projects-work-history-skeleton>
+
+            <!-- Brand Slider Skeleton -->
+            <app-projects-brand-slider-skeleton></app-projects-brand-slider-skeleton>
+
+            <!-- References Skeleton -->
+            <app-projects-references-skeleton></app-projects-references-skeleton>
+
+            <!-- Bottom CTA Skeleton -->
+            <app-projects-bottom-cta-skeleton></app-projects-bottom-cta-skeleton>
+        </div>
 
         <!-- ERROR STATE -->
         <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'projects.errorTitle' | translate"

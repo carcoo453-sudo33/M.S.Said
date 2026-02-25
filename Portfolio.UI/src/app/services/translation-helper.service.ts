@@ -1,11 +1,16 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, computed, effect } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TranslationHelperService {
   private translate = inject(TranslateService);
+  private translationService = inject(TranslationService);
+  
+  // Reactive current language
+  private currentLang = this.translationService.currentLang$;
 
   /**
    * Get translated field value based on current language
@@ -16,7 +21,7 @@ export class TranslationHelperService {
   getTranslatedField(obj: any, fieldName: string): string {
     if (!obj) return '';
     
-    const currentLang = this.translate.currentLang || this.translate.defaultLang;
+    const currentLang = this.currentLang();
     
     // If Arabic, try to get the _Ar field first
     if (currentLang === 'ar') {
@@ -50,7 +55,7 @@ export class TranslationHelperService {
     if (!obj) return obj;
     
     const translated = { ...obj } as any;
-    const currentLang = this.translate.currentLang || this.translate.defaultLang;
+    const currentLang = this.currentLang();
     
     if (currentLang === 'ar') {
       fields.forEach(field => {

@@ -14,6 +14,11 @@ import { ContactInfoComponent } from './sections/contact-info';
 import { ContactMapComponent } from './sections/contact-map';
 import { ContactFormComponent } from './sections/contact-form';
 
+// Skeleton Components
+import { ContactInfoSkeletonComponent } from './sections/contact-info-skeleton';
+import { ContactMapSkeletonComponent } from './sections/contact-map-skeleton';
+import { ContactFormSkeletonComponent } from './sections/contact-form-skeleton';
+
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
@@ -31,6 +36,9 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ContactInfoComponent,
     ContactMapComponent,
     ContactFormComponent,
+    ContactInfoSkeletonComponent,
+    ContactMapSkeletonComponent,
+    ContactFormSkeletonComponent,
     SharedFooterComponent,
     SharedPageHeaderComponent,
     SharedSignatureComponent

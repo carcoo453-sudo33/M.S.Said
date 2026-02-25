@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LucideAngularModule, Edit, Trash2 } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
     selector: 'app-project-details-header',
@@ -38,8 +39,7 @@ import { AuthService } from '../../../services/auth.service';
 
         <div class="space-y-4 lg:space-y-6 pr-32 lg:pr-0">
             <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none dark:text-zinc-100 italic">
-                {{ project.title.split(':')[0] }}<span class="text-red-600" *ngIf="project.title.includes(':')">: {{
-                    project.title.split(':')[1] }}</span>
+                {{ getProjectTitle() }}
             </h1>
         </div>
     </header>
@@ -49,6 +49,7 @@ export class ProjectDetailsHeaderComponent {
     public auth = inject(AuthService);
     private router = inject(Router);
     private translate = inject(TranslateService);
+    private translationService = inject(TranslationService);
     
     @Input() project?: ProjectEntry;
     @Output() onEdit = new EventEmitter<void>();
@@ -56,6 +57,18 @@ export class ProjectDetailsHeaderComponent {
     
     EditIcon = Edit;
     DeleteIcon = Trash2;
+
+    getProjectTitle(): string {
+        if (!this.project) return '';
+        const currentLang = this.translationService.currentLang$();
+        const title = currentLang === 'ar' && this.project.title_Ar ? this.project.title_Ar : this.project.title;
+        
+        if (title.includes(':')) {
+            const parts = title.split(':');
+            return parts[0];
+        }
+        return title;
+    }
 
     onEditClick() {
         this.onEdit.emit();

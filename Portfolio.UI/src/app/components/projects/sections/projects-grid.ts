@@ -2,11 +2,13 @@ import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { ProjectEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProjectService } from '../../../services/project.service';
 import { ToastService } from '../../../services/toast.service';
+import { TranslationHelperService } from '../../../services/translation-helper.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github } from 'lucide-angular';
@@ -14,7 +16,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
 @Component({
     selector: 'app-projects-grid',
     standalone: true,
-    imports: [CommonModule, RouterLink, LucideAngularModule, FormsModule],
+    imports: [CommonModule, RouterLink, TranslateModule, LucideAngularModule, FormsModule],
     template: `
     <!-- Selected Works Header -->
     
@@ -54,17 +56,17 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                 <div class="mb-4">
                     <h3
                         class="text-2xl font-bold dark:text-white text-zinc-900 mb-2 group-hover:text-red-600 transition-colors uppercase italic tracking-tighter">
-                        {{ project.title }}
+                        {{ getProjectTitle(project) }}
                     </h3>
                     <p
                         class="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-4">
-                        {{ project.niche }}
+                        {{ getProjectNiche(project) }}
                     </p>
                 </div>
 
                 <p
                     class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-8 line-clamp-3 font-medium">
-                    {{ project.description }}
+                    {{ getProjectDescription(project) }}
                 </p>
 
                 <div class="flex flex-wrap gap-2 mb-8 mt-auto">
@@ -76,7 +78,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
 
                 <button
                     class="w-full py-4 rounded-xl border border-red-600/20 text-red-600 font-bold text-[10px] uppercase tracking-widest group-hover:bg-red-600 group-hover:text-white transition-all shadow-lg shadow-red-600/5">
-                    View Case Study
+                    {{ 'projects.viewCaseStudy' | translate }}
                 </button>
             </div>
         </div>
@@ -114,7 +116,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN) *</label>
                         <input [(ngModel)]="editingProject.title" placeholder="Project title"
                             [class]="submitted && editingProject.title && !editingProject.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
@@ -122,15 +124,27 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                     </div>
 
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
+                        <input [(ngModel)]="editingProject.title_Ar" placeholder="عنوان المشروع" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (EN) *</label>
                         <textarea [(ngModel)]="editingProject.description" placeholder="Project description" rows="3"
                             [class]="submitted && editingProject.description && !editingProject.description.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
                         <p *ngIf="submitted && editingProject.description && !editingProject.description.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Description is required</p>
                     </div>
 
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (AR)</label>
+                        <textarea [(ngModel)]="editingProject.description_Ar" placeholder="وصف المشروع" rows="3" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                    </div>
+
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category (EN) *</label>
                         <select [(ngModel)]="editingProject.category"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                             <option value="">Select category</option>
@@ -138,8 +152,14 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                         </select>
                     </div>
 
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category (AR)</label>
+                        <input [(ngModel)]="editingProject.category_Ar" placeholder="الفئة" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
                     <div class="relative">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche (EN)</label>
                         <input [(ngModel)]="editingProject.niche" 
                             (input)="onNicheInput($any($event.target).value)"
                             (focus)="onNicheInput(editingProject.niche || '')"
@@ -157,6 +177,12 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                                 {{ suggestion }}
                             </button>
                         </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche (AR)</label>
+                        <input [(ngModel)]="editingProject.niche_Ar" placeholder="التخصص" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div class="col-span-2">
@@ -280,6 +306,7 @@ export class ProjectsGridComponent implements OnChanges {
     public auth = inject(AuthService);
     private projectService = inject(ProjectService);
     private toast = inject(ToastService);
+    private translationHelper = inject(TranslationHelperService);
     private http = inject(HttpClient);
     private cdr = inject(ChangeDetectorRef);
     
@@ -620,10 +647,14 @@ export class ProjectsGridComponent implements OnChanges {
             id: this.editingProject.id || crypto.randomUUID(),
             slug: this.editingProject.slug || this.generateSlug(this.editingProject.title!),
             title: this.editingProject.title!,
+            title_Ar: this.editingProject.title_Ar,
             description: this.editingProject.description!,
+            description_Ar: this.editingProject.description_Ar,
             technologies: this.editingProject.technologies || '',
             category: this.editingProject.category || '',
+            category_Ar: this.editingProject.category_Ar,
             niche: this.editingProject.niche,
+            niche_Ar: this.editingProject.niche_Ar,
             imageUrl: this.editingProject.imageUrl,
             gallery: this.galleryImages.length > 0 ? this.galleryImages : undefined,
             projectUrl: this.editingProject.projectUrl,
@@ -711,5 +742,17 @@ export class ProjectsGridComponent implements OnChanges {
         }
         
         return `${baseUrl}/${url}`;
+    }
+
+    getProjectTitle(project: ProjectEntry): string {
+        return this.translationHelper.getTranslatedField(project, 'title');
+    }
+
+    getProjectDescription(project: ProjectEntry): string {
+        return this.translationHelper.getTranslatedField(project, 'description');
+    }
+
+    getProjectNiche(project: ProjectEntry): string {
+        return this.translationHelper.getTranslatedField(project, 'niche');
     }
 }

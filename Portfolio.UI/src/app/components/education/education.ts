@@ -11,6 +11,10 @@ import { TranslationService } from '../../services/translation.service';
 import { EducationTimelineComponent } from './sections/education-timeline';
 import { EducationSpecializationsComponent } from './sections/education-specializations';
 
+// Skeleton Components
+import { EducationTimelineSkeletonComponent } from './sections/education-timeline-skeleton';
+import { EducationSpecializationsSkeletonComponent } from './sections/education-specializations-skeleton';
+
 // Shared Global Components
 import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 import { SharedFooterComponent } from '../shared/footer/footer';
@@ -29,6 +33,8 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
         LucideAngularModule,
         EducationTimelineComponent,
         EducationSpecializationsComponent,
+        EducationTimelineSkeletonComponent,
+        EducationSpecializationsSkeletonComponent,
         SharedPageHeaderComponent,
         SharedFooterComponent,
         SharedErrorStateComponent,
@@ -118,5 +124,9 @@ export class EducationComponent implements OnInit {
         this.allEducation.set(updatedEducation.sort((a, b) => 
             (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
         ));
+    }
+
+    onBioUpdated(updatedBio: BioEntry) {
+        this.bio.set(updatedBio);
     }
 }

@@ -1,15 +1,16 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Linkedin, Github, Layers, ExternalLink, BookOpen } from 'lucide-angular';
 
 @Component({
     selector: 'app-blog-platform-filter',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
     <div class="bg-white dark:bg-zinc-900 rounded-xl p-8 shadow-sm border border-zinc-200 dark:border-zinc-800 animate-fade-in-left"
         style="animation-delay: 0.1s">
-        <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6">Platform Filter
+        <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-6">{{ 'blog.sidebar.platformFilter' | translate }}
         </h3>
         <div class="space-y-4">
             <button *ngFor="let platform of platforms" (click)="platformChange.emit(platform)"

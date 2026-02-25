@@ -5,7 +5,34 @@
 
     <!-- SKELETON STATE -->
     <div *ngIf="isLoading()" class="max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <app-shared-skeleton [count]="3" height="400px"></app-shared-skeleton>
+        <!-- Header Skeleton -->
+        <div class="mb-6 lg:mb-8">
+            <app-project-details-header-skeleton></app-project-details-header-skeleton>
+        </div>
+
+        <!-- Two Column Layout: Main Content + Sidebar -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+            <!-- Main Content Area (Left Side) -->
+            <div class="lg:col-span-8 space-y-16 lg:space-y-24">
+                <!-- Gallery Skeleton -->
+                <app-project-details-gallery-skeleton></app-project-details-gallery-skeleton>
+
+                <!-- Specs Skeleton -->
+                <app-project-details-specs-skeleton></app-project-details-specs-skeleton>
+                
+                <!-- Interactions Skeleton -->
+                <app-project-details-interactions-skeleton></app-project-details-interactions-skeleton>
+            </div>
+
+            <!-- Sidebar (Right Side) -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Features Skeleton -->
+                <app-project-details-features-skeleton></app-project-details-features-skeleton>
+                
+                <!-- Sidebar Skeleton -->
+                <app-project-details-sidebar-skeleton></app-project-details-sidebar-skeleton>
+            </div>
+        </div>
     </div>
 
     <!-- ERROR STATE -->

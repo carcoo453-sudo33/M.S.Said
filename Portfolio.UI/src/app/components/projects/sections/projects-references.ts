@@ -9,6 +9,7 @@ import { Testimonial } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
     selector: 'app-projects-references',
@@ -51,7 +52,7 @@ import { ToastService } from '../../../services/toast.service';
                 </div>
 
                 <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-8 italic">
-                    "{{ testimonial.content }}"
+                    "{{ getTestimonialContent(testimonial) }}"
                 </p>
 
                 <div class="flex items-center gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
@@ -65,7 +66,7 @@ import { ToastService } from '../../../services/toast.service';
                     </div>
                     <div>
                         <h4 class="font-bold text-zinc-900 dark:text-white text-sm">{{ testimonial.name }}</h4>
-                        <p class="text-zinc-500 text-xs">{{ testimonial.role }}<span *ngIf="testimonial.company"> at {{ testimonial.company }}</span></p>
+                        <p class="text-zinc-500 text-xs">{{ getTestimonialRole(testimonial) }}<span *ngIf="getTestimonialCompany(testimonial)"> at {{ getTestimonialCompany(testimonial) }}</span></p>
                     </div>
                 </div>
             </div>
@@ -94,7 +95,7 @@ import { ToastService } from '../../../services/toast.service';
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (EN) *</label>
                         <input [(ngModel)]="editingTestimonial.role" placeholder="e.g. Senior Developer"
                             [class]="submitted && editingTestimonial.role && !editingTestimonial.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
@@ -102,17 +103,35 @@ import { ToastService } from '../../../services/toast.service';
                     </div>
 
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (AR)</label>
+                        <input [(ngModel)]="editingTestimonial.role_Ar" placeholder="مثال: مطور أول" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (EN)</label>
                         <input [(ngModel)]="editingTestimonial.company" placeholder="Company name (optional)"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (AR)</label>
+                        <input [(ngModel)]="editingTestimonial.company_Ar" placeholder="اسم الشركة (اختياري)" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content (EN) *</label>
                         <textarea [(ngModel)]="editingTestimonial.content" placeholder="What they said about you..." rows="4"
                             [class]="submitted && editingTestimonial.content && !editingTestimonial.content.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
                         <p *ngIf="submitted && editingTestimonial.content && !editingTestimonial.content.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Content is required</p>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content (AR)</label>
+                        <textarea [(ngModel)]="editingTestimonial.content_Ar" placeholder="ما قالوه عنك..." rows="4" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
 
                     <!-- Avatar Upload Section -->
@@ -185,6 +204,7 @@ export class ProjectsReferencesComponent {
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
     private http = inject(HttpClient);
+    private translationService = inject(TranslationService);
 
     @Input() testimonials: Testimonial[] = [];
     @Output() testimonialsUpdated = new EventEmitter<Testimonial[]>();
@@ -208,6 +228,30 @@ export class ProjectsReferencesComponent {
     deleteTestimonial: Testimonial | null = null;
     editingTestimonial: Partial<Testimonial> = {};
 
+    getTestimonialRole(testimonial: Testimonial): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && testimonial.role_Ar) {
+            return testimonial.role_Ar;
+        }
+        return testimonial.role;
+    }
+
+    getTestimonialCompany(testimonial: Testimonial): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && testimonial.company_Ar) {
+            return testimonial.company_Ar;
+        }
+        return testimonial.company || '';
+    }
+
+    getTestimonialContent(testimonial: Testimonial): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && testimonial.content_Ar) {
+            return testimonial.content_Ar;
+        }
+        return testimonial.content;
+    }
+
     onEdit(testimonial: Testimonial) {
         this.editingTestimonial = { ...testimonial };
         this.isCreating = false;
@@ -223,8 +267,11 @@ export class ProjectsReferencesComponent {
         this.editingTestimonial = {
             name: '',
             role: '',
+            role_Ar: '',
             company: '',
+            company_Ar: '',
             content: '',
+            content_Ar: '',
             avatarUrl: ''
         };
         this.isCreating = true;
@@ -311,8 +358,11 @@ export class ProjectsReferencesComponent {
             id: this.editingTestimonial.id || crypto.randomUUID(),
             name: this.editingTestimonial.name,
             role: this.editingTestimonial.role,
+            role_Ar: this.editingTestimonial.role_Ar,
             company: this.editingTestimonial.company || '',
+            company_Ar: this.editingTestimonial.company_Ar || '',
             content: this.editingTestimonial.content,
+            content_Ar: this.editingTestimonial.content_Ar,
             avatarUrl: this.editingTestimonial.avatarUrl || ''
         };
 

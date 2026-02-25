@@ -119,14 +119,26 @@ import { ToastService } from '../../../services/toast.service';
                                     </select>
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title</label>
+                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title (EN)</label>
                                     <input type="text" [(ngModel)]="feature.title"
                                         class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description</label>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title (AR)</label>
+                                <input type="text" [(ngModel)]="feature.title_Ar" dir="rtl"
+                                    placeholder="العنوان"
+                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description (EN)</label>
                                 <textarea [(ngModel)]="feature.description" rows="2"
+                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description (AR)</label>
+                                <textarea [(ngModel)]="feature.description_Ar" rows="2" dir="rtl"
+                                    placeholder="الوصف"
                                     class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none resize-none"></textarea>
                             </div>
                         </div>
@@ -188,14 +200,26 @@ import { ToastService } from '../../../services/toast.service';
                                         class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title</label>
+                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title (EN)</label>
                                     <input type="text" [(ngModel)]="item.title"
                                         class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description</label>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Title (AR)</label>
+                                <input type="text" [(ngModel)]="item.title_Ar" dir="rtl"
+                                    placeholder="العنوان"
+                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description (EN)</label>
                                 <textarea [(ngModel)]="item.description" rows="2"
+                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Description (AR)</label>
+                                <textarea [(ngModel)]="item.description_Ar" rows="2" dir="rtl"
+                                    placeholder="الوصف"
                                     class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none resize-none"></textarea>
                             </div>
                         </div>
@@ -224,7 +248,7 @@ import { ToastService } from '../../../services/toast.service';
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Label</label>
+                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Label (EN)</label>
                                     <input type="text" [(ngModel)]="metric.label"
                                         class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                                 </div>
@@ -233,6 +257,12 @@ import { ToastService } from '../../../services/toast.service';
                                     <input type="text" [(ngModel)]="metric.value"
                                         class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                                 </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Label (AR)</label>
+                                <input type="text" [(ngModel)]="metric.label_Ar" dir="rtl"
+                                    placeholder="التسمية"
+                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Trend (optional)</label>

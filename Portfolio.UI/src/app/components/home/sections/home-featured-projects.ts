@@ -63,7 +63,7 @@ import { inject } from '@angular/core';
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
                             {{ project.title }}</h3>
-                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views }} {{ 'home.featuredProjects.views' | translate }}</span>
+                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views || 0 }} {{ 'home.featuredProjects.views' | translate }}</span>
                     </div>
                     <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2">
                         {{ project.description }}
@@ -104,7 +104,7 @@ export class HomeFeaturedProjectsComponent {
     }
 
     getFullImageUrl(url?: string): string {
-        if (!url) return 'assets/project-placeholder.png';
+        if (!url) return 'assets/project-placeholder.svg';
         
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;

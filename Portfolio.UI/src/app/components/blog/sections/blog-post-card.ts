@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import {
     LucideAngularModule, Share2, ThumbsUp, MessageCircle, Star,
     ArrowRight, CornerDownRight, Linkedin, Github, Layers, ExternalLink, BookOpen, Edit
@@ -10,10 +11,13 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
     selector: 'app-blog-post-card',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, TranslateModule, LucideAngularModule],
+    host: {
+        'class': 'flex h-full'
+    },
     template: `
     <article
-        class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-fade-in-up group"
+        class="w-full bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-fade-in-up group h-full flex flex-col"
         [style.animation-delay]="delay">
 
         <!-- Card Header -->
@@ -48,7 +52,7 @@ import { AuthService } from '../../../services/auth.service';
         </div>
 
         <!-- Card Content -->
-        <div class="px-8 pb-8 space-y-6">
+        <div class="px-8 pb-8 space-y-6 flex-1">
             <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed whitespace-pre-line">
                 {{ post.summary }}
             </p>
@@ -97,25 +101,24 @@ import { AuthService } from '../../../services/auth.service';
                     class="flex items-center gap-2 text-zinc-400 hover:text-red-600 transition-colors cursor-pointer group/stat">
                     <lucide-icon [img]="ThumbsUpIcon"
                         class="w-4 h-4 group-hover/stat:scale-125 transition-transform"></lucide-icon>
-                    <span class="text-[10px] font-black">{{ post.likesCount }} Likes</span>
+                    <span class="text-[10px] font-black">{{ post.likesCount }} {{ 'blog.card.likes' | translate }}</span>
                 </div>
                 <div *ngIf="post.commentsCount !== undefined"
                     class="flex items-center gap-2 text-zinc-400 hover:text-red-600 transition-colors cursor-pointer group/stat">
                     <lucide-icon [img]="MessageCircleIcon"
                         class="w-4 h-4 group-hover/stat:scale-125 transition-transform"></lucide-icon>
-                    <span class="text-[10px] font-black">{{ post.commentsCount }} Comments</span>
+                    <span class="text-[10px] font-black">{{ post.commentsCount }} {{ 'blog.card.comments' | translate }}</span>
                 </div>
                 <div *ngIf="post.starsCount !== undefined"
                     class="flex items-center gap-2 text-zinc-400 hover:text-yellow-500 transition-colors cursor-pointer group/stat">
                     <lucide-icon [img]="StarIcon"
                         class="w-4 h-4 group-hover/stat:scale-125 transition-transform"></lucide-icon>
-                    <span class="text-[10px] font-black">{{ post.starsCount }} Stars</span>
+                    <span class="text-[10px] font-black">{{ post.starsCount }} {{ 'blog.card.stars' | translate }}</span>
                 </div>
             </div>
             <button (click)="onNavigate.emit(post)"
                 class="text-red-600 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
-                {{ post.socialType === 'GitHub' ? 'View Repo' : (post.socialUrl ? 'Read on ' +
-                post.socialType : 'Read Article') }}
+                {{ getReadButtonText() }}
                 <lucide-icon [img]="ArrowRightIcon" class="w-4 h-4"></lucide-icon>
             </button>
         </div>
@@ -140,6 +143,16 @@ export class BlogPostCardComponent {
 
     get canEdit(): boolean {
         return this.authService.isLoggedIn();
+    }
+
+    getReadButtonText(): string {
+        if (this.post.socialType === 'GitHub') {
+            return 'View Repo';
+        } else if (this.post.socialUrl) {
+            return `Read on ${this.post.socialType}`;
+        } else {
+            return 'Read Article';
+        }
     }
 
     getSocialIcon(type?: string) {

@@ -19,6 +19,14 @@ import { ProjectDetailsInteractionsComponent } from './sections/project-details-
 import { ProjectDetailsSidebarComponent } from './sections/project-details-sidebar';
 import { ProjectDetailsManageComponent } from './sections/project-details-manage';
 
+// Skeleton Components
+import { ProjectDetailsHeaderSkeletonComponent } from './sections/project-details-header-skeleton';
+import { ProjectDetailsGallerySkeletonComponent } from './sections/project-details-gallery-skeleton';
+import { ProjectDetailsSpecsSkeletonComponent } from './sections/project-details-specs-skeleton';
+import { ProjectDetailsFeaturesSkeletonComponent } from './sections/project-details-features-skeleton';
+import { ProjectDetailsSidebarSkeletonComponent } from './sections/project-details-sidebar-skeleton';
+import { ProjectDetailsInteractionsSkeletonComponent } from './sections/project-details-interactions-skeleton';
+
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
@@ -40,6 +48,12 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ProjectDetailsInteractionsComponent,
     ProjectDetailsSidebarComponent,
     ProjectDetailsManageComponent,
+    ProjectDetailsHeaderSkeletonComponent,
+    ProjectDetailsGallerySkeletonComponent,
+    ProjectDetailsSpecsSkeletonComponent,
+    ProjectDetailsFeaturesSkeletonComponent,
+    ProjectDetailsSidebarSkeletonComponent,
+    ProjectDetailsInteractionsSkeletonComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
     SharedSkeletonComponent,

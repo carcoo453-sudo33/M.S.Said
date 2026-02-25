@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { AuthResponse } from '../models';
 import { environment } from '../../environments/environment';
+import { SignalRService } from './signalr.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private http = inject(HttpClient);
+    private signalRService = inject(SignalRService);
     private baseUrl = (environment as any).apiBaseUrl || environment.apiUrl.replace('/api', '');
 
     private currentUserSubject = new BehaviorSubject<any>(null);
@@ -19,6 +21,8 @@ export class AuthService {
             tap(response => {
                 localStorage.setItem('token', response.accessToken);
                 this.currentUserSubject.next(response);
+                // Reconnect SignalR with the new token
+                this.signalRService.reconnectWithAuth();
             })
         );
     }
@@ -26,6 +30,8 @@ export class AuthService {
     logout() {
         localStorage.removeItem('token');
         this.currentUserSubject.next(null);
+        // Reconnect SignalR without token
+        this.signalRService.reconnectWithAuth();
     }
 
     getToken() {

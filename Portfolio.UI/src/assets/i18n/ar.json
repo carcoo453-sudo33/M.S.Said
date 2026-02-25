@@ -138,6 +138,7 @@
     "technicalFocusDescription": "التخصص المستمر في تطوير الويب الحديث، وهندسة السحابة، وتصميم أنظمة المؤسسات."
   },
   "projects": {
+    "viewCaseStudy": "عرض دراسة الحالة",
     "errorTitle": "انقطاع التسلسل الزمني",
     "retryText": "استعادة التسلسل",
     "emptyTitle": "بدايات جديدة",
@@ -206,12 +207,50 @@
       "deleteMessage": "هل أنت متأكد من حذف التوصية من"
     }
   },
+  "projectDetails": {
+    "interactions": {
+      "discussion": "النقاش",
+      "joinDiscussion": "انضم إلى النقاش",
+      "yourName": "اسمك",
+      "enterName": "أدخل اسمك",
+      "chooseAvatar": "اختر الصورة الرمزية",
+      "male": "ذكر",
+      "female": "أنثى",
+      "continue": "متابعة",
+      "commentingAs": "التعليق باسم",
+      "change": "تغيير",
+      "yourComment": "تعليقك",
+      "joinConversation": "انضم إلى المحادثة...",
+      "postComment": "نشر التعليق",
+      "posting": "جاري النشر...",
+      "noComments": "لا توجد تعليقات بعد. كن أول من يشارك أفكاره!",
+      "reply": "رد",
+      "yourReply": "ردك",
+      "writeReply": "اكتب ردك...",
+      "cancel": "إلغاء",
+      "postReply": "نشر الرد",
+      "shareProject": "مشاركة المشروع"
+    }
+  },
   "blog": {
     "latestUpdates": "آخر التحديثات",
     "loadMore": "تحميل المزيد",
     "emptyTitle": "القطاع:",
     "emptyMessage": "لم يتم اكتشاف أي إرسال في هذا النطاق الترددي. النظام في انتظار محتوى جديد.",
-    "allPosts": "جميع المنشورات"
+    "allPosts": "جميع المنشورات",
+    "sidebar": {
+      "platformFilter": "تصفية المنصة",
+      "trendingTopics": "المواضيع الرائجة"
+    },
+    "card": {
+      "likes": "إعجاب",
+      "comments": "تعليق",
+      "stars": "نجمة"
+    },
+    "pagination": {
+      "showing": "عرض",
+      "of": "من"
+    }
   },
   "contact": {
     "badge": "متاح للبناء الاستراتيجي",

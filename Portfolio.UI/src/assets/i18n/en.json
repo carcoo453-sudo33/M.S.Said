@@ -138,6 +138,7 @@
     "technicalFocusDescription": "Continuous specialization in modern web development, cloud architecture, and enterprise system design."
   },
   "projects": {
+    "viewCaseStudy": "View Case Study",
     "errorTitle": "Chronology Link Broken",
     "retryText": "Restore Sequence",
     "emptyTitle": "Fresh Origins",
@@ -206,12 +207,50 @@
       "deleteMessage": "Are you sure you want to delete the testimonial from"
     }
   },
+  "projectDetails": {
+    "interactions": {
+      "discussion": "Discussion",
+      "joinDiscussion": "Join the Discussion",
+      "yourName": "Your Name",
+      "enterName": "Enter your name",
+      "chooseAvatar": "Choose Avatar",
+      "male": "Male",
+      "female": "Female",
+      "continue": "Continue",
+      "commentingAs": "Commenting as",
+      "change": "Change",
+      "yourComment": "Your comment",
+      "joinConversation": "Join the conversation...",
+      "postComment": "Post Comment",
+      "posting": "Posting...",
+      "noComments": "No comments yet. Be the first to share your thoughts!",
+      "reply": "Reply",
+      "yourReply": "Your reply",
+      "writeReply": "Write your reply...",
+      "cancel": "Cancel",
+      "postReply": "Post Reply",
+      "shareProject": "Share Project"
+    }
+  },
   "blog": {
     "latestUpdates": "Latest Updates",
     "loadMore": "Load More Updates",
     "emptyTitle": "Sector:",
     "emptyMessage": "No transmission detected in this frequency range. System awaiting new content.",
-    "allPosts": "All Posts"
+    "allPosts": "All Posts",
+    "sidebar": {
+      "platformFilter": "Platform Filter",
+      "trendingTopics": "Trending Topics"
+    },
+    "card": {
+      "likes": "Likes",
+      "comments": "Comments",
+      "stars": "Stars"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "of": "of"
+    }
   },
   "contact": {
     "badge": "Available for Strategic Build",

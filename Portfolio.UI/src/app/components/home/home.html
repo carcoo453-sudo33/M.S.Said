@@ -3,8 +3,26 @@
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 space-y-32">
 
-    <!-- Content Grid Section -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-5 pb-24 px-6 pt-32 relative z-10">
+    <!-- SKELETON STATE -->
+    <div *ngIf="!bio()" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-5 pb-24 px-6 pt-32 relative z-10">
+        <!-- Right Sidebar Skeleton (md:order-2) -->
+        <app-home-sidebar-profile-skeleton class="md:col-span-4 lg:col-span-4 md:order-2"></app-home-sidebar-profile-skeleton>
+
+        <!-- Left Content Area Skeleton (md:order-1) -->
+        <div class="md:col-span-8 lg:col-span-8 space-y-16 md:order-1 pt-6">
+            <app-home-brief-bio-skeleton></app-home-brief-bio-skeleton>
+            <app-home-services-skeleton></app-home-services-skeleton>
+            <app-home-tech-stack-skeleton></app-home-tech-stack-skeleton>
+            <app-home-featured-projects-skeleton></app-home-featured-projects-skeleton>
+            <app-home-timeline-skeleton></app-home-timeline-skeleton>
+        </div>
+    </div>
+
+    <!-- Final CTA Skeleton -->
+    <app-home-final-cta-skeleton *ngIf="!bio()"></app-home-final-cta-skeleton>
+
+    <!-- LOADED STATE -->
+    <div *ngIf="bio()" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 lg:gap-5 pb-24 px-6 pt-32 relative z-10">
 
         <!-- Right Sidebar: Profile Card (md:order-2) -->
         <app-home-sidebar-profile [bio]="bio()" (bioUpdated)="bio.set($event)"
@@ -33,7 +51,7 @@
     </div>
 
     <!-- Final CTA -->
-    <app-home-final-cta [bio]="bio()"></app-home-final-cta>
+    <app-home-final-cta *ngIf="bio()" [bio]="bio()"></app-home-final-cta>
 </main>
 
 <!-- Footer -->

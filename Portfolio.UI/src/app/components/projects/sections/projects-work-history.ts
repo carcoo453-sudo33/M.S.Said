@@ -6,6 +6,7 @@ import { ExperienceEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
+import { TranslationService } from '../../../services/translation.service';
 import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from 'lucide-angular';
 
 @Component({
@@ -46,15 +47,15 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div class="space-y-4">
                         <h3 class="text-3xl font-black dark:text-white text-zinc-900 uppercase tracking-tight flex items-center gap-4 italic">
-                            {{ exp.role }} <span class="text-red-600 text-sm font-black tracking-[0.2em] uppercase">@ {{ exp.company }}</span>
+                            {{ getExperienceRole(exp) }} <span class="text-red-600 text-sm font-black tracking-[0.2em] uppercase">@ {{ getExperienceCompany(exp) }}</span>
                         </h3>
                         <p class="text-zinc-500 dark:text-zinc-400 text-lg leading-relaxed max-w-3xl font-medium">
-                            {{ exp.description }}
+                            {{ getExperienceDescription(exp) }}
                         </p>
                     </div>
                     <div class="text-left shrink-0">
                         <span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 block mb-2">{{ exp.duration }}</span>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 italic">{{ exp.location }}</span>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 italic">{{ getExperienceLocation(exp) }}</span>
                     </div>
                 </div>
             </div>
@@ -75,7 +76,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (EN) *</label>
                         <input [(ngModel)]="editingExperience.company" placeholder="Company name"
                             [class]="submitted && editingExperience.company && !editingExperience.company.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
@@ -83,11 +84,23 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role *</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (AR)</label>
+                        <input [(ngModel)]="editingExperience.company_Ar" placeholder="اسم الشركة" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (EN) *</label>
                         <input [(ngModel)]="editingExperience.role" placeholder="Job title"
                             [class]="submitted && editingExperience.role && !editingExperience.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
                         <p *ngIf="submitted && editingExperience.role && !editingExperience.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (AR)</label>
+                        <input [(ngModel)]="editingExperience.role_Ar" placeholder="المسمى الوظيفي" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div>
@@ -97,14 +110,26 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (EN)</label>
                         <input [(ngModel)]="editingExperience.location" placeholder="e.g. Remote, Cairo"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (AR)</label>
+                        <input [(ngModel)]="editingExperience.location_Ar" placeholder="مثال: عن بعد، القاهرة" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (EN)</label>
                         <textarea [(ngModel)]="editingExperience.description" placeholder="Job responsibilities and achievements" rows="4"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (AR)</label>
+                        <textarea [(ngModel)]="editingExperience.description_Ar" placeholder="المسؤوليات والإنجازات الوظيفية" rows="4" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
 
@@ -155,6 +180,7 @@ export class ProjectsWorkHistoryComponent {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
+    private translationService = inject(TranslationService);
 
     @Input() experiences: ExperienceEntry[] = [];
     @Output() experiencesUpdated = new EventEmitter<ExperienceEntry[]>();
@@ -174,6 +200,38 @@ export class ProjectsWorkHistoryComponent {
     deleteExperience: ExperienceEntry | null = null;
     editingExperience: Partial<ExperienceEntry> = {};
 
+    getExperienceRole(exp: ExperienceEntry): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && exp.role_Ar) {
+            return exp.role_Ar;
+        }
+        return exp.role;
+    }
+
+    getExperienceCompany(exp: ExperienceEntry): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && exp.company_Ar) {
+            return exp.company_Ar;
+        }
+        return exp.company;
+    }
+
+    getExperienceDescription(exp: ExperienceEntry): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && exp.description_Ar) {
+            return exp.description_Ar;
+        }
+        return exp.description || '';
+    }
+
+    getExperienceLocation(exp: ExperienceEntry): string {
+        const currentLang = this.translationService.currentLang$();
+        if (currentLang === 'ar' && exp.location_Ar) {
+            return exp.location_Ar;
+        }
+        return exp.location || '';
+    }
+
     onEdit(experience: ExperienceEntry) {
         this.editingExperience = { ...experience };
         this.isCreating = false;
@@ -188,10 +246,14 @@ export class ProjectsWorkHistoryComponent {
     openCreateModal() {
         this.editingExperience = {
             company: '',
+            company_Ar: '',
             role: '',
+            role_Ar: '',
             duration: '',
             description: '',
+            description_Ar: '',
             location: '',
+            location_Ar: '',
             isCurrent: false
         };
         this.isCreating = true;
@@ -218,10 +280,14 @@ export class ProjectsWorkHistoryComponent {
         const experienceData: any = {
             id: this.editingExperience.id || crypto.randomUUID(),
             company: this.editingExperience.company,
+            company_Ar: this.editingExperience.company_Ar,
             role: this.editingExperience.role,
+            role_Ar: this.editingExperience.role_Ar,
             duration: this.editingExperience.duration || '',
             description: this.editingExperience.description,
+            description_Ar: this.editingExperience.description_Ar,
             location: this.editingExperience.location,
+            location_Ar: this.editingExperience.location_Ar,
             isCurrent: this.editingExperience.isCurrent || false
         };
 

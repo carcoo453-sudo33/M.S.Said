@@ -9,6 +9,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationHelperService } from '../../../services/translation-helper.service';
+import { SignalRService } from '../../../services/signalr.service';
 
 @Component({
     selector: 'app-home-sidebar-profile',
@@ -27,21 +28,31 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                     <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
                 </button>
 
-                <!-- Circular Avatar -->
+                <!-- Avatar -->
                 <div class="relative mb-4">
                     <img [src]="getAvatarUrl()" [alt]="bio?.name"
-                        class="w-28 h-28 rounded-full object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
-                    <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-zinc-700 rounded-full"></span>
+                        class="w-28 h-28 rounded-3xl object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
+                    <span [class]="signalRService.adminOnlineStatus() ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-gray-400'" 
+                        class="absolute bottom-1 right-1 w-4 h-4 border-2 border-white dark:border-zinc-700 rounded-full transition-all duration-300"
+                        [title]="signalRService.adminOnlineStatus() ? 'Online' : 'Offline'"></span>
                 </div>
 
                 <!-- Name & Title -->
                 <h2 class="text-xl font-black dark:text-white text-zinc-900 text-center mb-1.5 tracking-tight">
-                    {{ bio?.name }}
+                    {{ translatedName }}
                 </h2>
                 <span
                     class="text-[#FF3B7E] font-bold text-[9px] uppercase tracking-[0.25em] bg-red-600/5 inline-block px-4 py-1.5 rounded-full border border-red-600/10 text-center">
                     {{ translatedTitle }}
                 </span>
+                
+                <!-- Tech Stack Tags -->
+                <div *ngIf="techStackArray.length > 0" class="flex flex-wrap gap-1.5 justify-center mt-3">
+                    <span *ngFor="let tech of techStackArray"
+                        class="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[8px] font-bold rounded-md border border-zinc-200 dark:border-zinc-700">
+                        {{ tech }}
+                    </span>
+                </div>
             </div>
 
             <!-- Divider -->
@@ -84,18 +95,22 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
             </div>
 
             <!-- Footer Socials -->
-            <div class="bg-zinc-50/50 dark:bg-zinc-800/30 p-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-center gap-2">
-                <a *ngIf="bio?.linkedInUrl" [href]="bio?.linkedInUrl" target="_blank" class="social-icon-btn">
-                    <lucide-icon [img]="LinkedinIcon" class="w-3.5 h-3.5"></lucide-icon>
+            <div class="bg-zinc-50/50 dark:bg-zinc-800/30 p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-center gap-3 flex-wrap">
+                <a *ngIf="bio?.linkedInUrl" [href]="bio?.linkedInUrl" target="_blank" 
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:shadow-[0_0_20px_rgba(10,102,194,0.5)]">
+                    <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
                 </a>
-                <a *ngIf="bio?.gitHubUrl" [href]="bio?.gitHubUrl" target="_blank" class="social-icon-btn">
-                    <lucide-icon [img]="GithubIcon" class="w-3.5 h-3.5"></lucide-icon>
+                <a *ngIf="bio?.gitHubUrl" [href]="bio?.gitHubUrl" target="_blank" 
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#333] hover:border-[#333] hover:shadow-[0_0_20px_rgba(51,51,51,0.5)]">
+                    <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
                 </a>
-                <a *ngIf="bio?.twitterUrl" [href]="bio?.twitterUrl" target="_blank" class="social-icon-btn">
-                    <lucide-icon [img]="TwitterIcon" class="w-3.5 h-3.5"></lucide-icon>
+                <a *ngIf="bio?.twitterUrl" [href]="bio?.twitterUrl" target="_blank" 
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#000000] hover:border-[#000000] hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    <lucide-icon [img]="TwitterIcon" class="w-5 h-5"></lucide-icon>
                 </a>
-                <a *ngIf="bio?.whatsAppUrl" [href]="getWhatsAppUrl()" target="_blank" class="social-icon-btn">
-                    <lucide-icon [img]="MessageCircleIcon" class="w-3.5 h-3.5"></lucide-icon>
+                <a *ngIf="bio?.whatsAppUrl" [href]="getWhatsAppUrl()" target="_blank" 
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#25D366] hover:border-[#25D366] hover:shadow-[0_0_20px_rgba(37,211,102,0.5)]">
+                    <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
                 </a>
             </div>
             
@@ -127,8 +142,8 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                 <div class="flex items-center gap-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                     <div class="relative group">
                         <img [src]="avatarPreview || getAvatarUrl()" 
-                            class="w-20 h-20 rounded-full object-cover border-2 border-white dark:border-zinc-700 shadow-lg">
-                        <div *ngIf="isUploadingAvatar" class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+                            class="w-20 h-20 rounded-3xl object-cover border-2 border-white dark:border-zinc-700 shadow-lg">
+                        <div *ngIf="isUploadingAvatar" class="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center">
                             <div class="w-5 h-5 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
                         </div>
                     </div>
@@ -137,20 +152,26 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                         <div class="flex gap-2">
                             <label class="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all flex items-center gap-2">
                                 <lucide-icon [img]="UploadIcon" class="w-3.5 h-3.5"></lucide-icon>
-                                {{ isUploadingAvatar ? 'Uploading...' : 'Change Photo' }}
+                                {{ isUploadingAvatar ? 'Uploading...' : 'Upload Photo' }}
                                 <input type="file" class="hidden" (change)="onAvatarSelected($event)" accept="image/*">
                             </label>
                         </div>
+                        <p class="text-zinc-400 text-[9px] mt-2">Upload from your device. Preview will show immediately.</p>
                     </div>
                 </div>
 
                 <!-- Personal Info -->
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (EN) *</label>
                     <input [(ngModel)]="editForm.name" type="text"
                         [class]="submitted && !editForm.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                         class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                     <p *ngIf="submitted && !editForm.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (AR)</label>
+                    <input [ngModel]="editForm.name_Ar" (ngModelChange)="editForm.name_Ar = $event" type="text" dir="rtl"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)</label>
@@ -171,6 +192,62 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (AR)</label>
                     <input [ngModel]="editForm.location_Ar" (ngModelChange)="editForm.location_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Tech Stack (comma-separated)</label>
+                    <input [(ngModel)]="editForm.technicalFocusItems" type="text" placeholder="e.g., .NET, Angular, EF, MVC"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    <p class="text-zinc-400 text-[9px] mt-1 ms-1">Separate technologies with commas (e.g., .NET, Angular, EF, MVC)</p>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+
+                <!-- Social Media URLs -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">Social Media Links</label>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">LinkedIn</label>
+                            <input [(ngModel)]="editForm.linkedInUrl" type="text" placeholder="https://linkedin.com/in/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub</label>
+                            <input [(ngModel)]="editForm.gitHubUrl" type="text" placeholder="https://github.com/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Twitter / X</label>
+                            <input [(ngModel)]="editForm.twitterUrl" type="text" placeholder="https://x.com/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Facebook</label>
+                            <input [(ngModel)]="editForm.facebookUrl" type="text" placeholder="https://facebook.com/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Dev.to</label>
+                            <input [(ngModel)]="editForm.devToUrl" type="text" placeholder="https://dev.to/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Pinterest</label>
+                            <input [(ngModel)]="editForm.pinterestUrl" type="text" placeholder="https://pinterest.com/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Stack Overflow</label>
+                            <input [(ngModel)]="editForm.stackOverflowUrl" type="text" placeholder="https://stackoverflow.com/users/id/username"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">WhatsApp Number</label>
+                            <input [(ngModel)]="editForm.whatsAppUrl" type="text" placeholder="+1234567890"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Divider -->
@@ -257,17 +334,14 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         </div>
     </div>
     `,
-    styles: [`
-        .social-icon-btn {
-            @apply w-8 h-8 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-500/30 hover:scale-110 transition-all;
-        }
-    `]
+    styles: []
 })
 export class HomeSidebarProfileComponent {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
     public translationHelper = inject(TranslationHelperService);
+    public signalRService = inject(SignalRService);
 
     @Input() bio?: BioEntry;
     @Output() bioUpdated = new EventEmitter<BioEntry>();
@@ -293,12 +367,24 @@ export class HomeSidebarProfileComponent {
     avatarPreview: string | null = null;
     editForm: BioEntry = this.getEmptyBio();
 
+    get translatedName(): string {
+        return this.translationHelper.getTranslatedField(this.bio, 'name');
+    }
+
     get translatedTitle(): string {
         return this.translationHelper.getTranslatedField(this.bio, 'title');
     }
 
     get translatedLocation(): string {
         return this.translationHelper.getTranslatedField(this.bio, 'location');
+    }
+
+    get techStackArray(): string[] {
+        if (!this.bio?.technicalFocusItems) return [];
+        return this.bio.technicalFocusItems
+            .split(',')
+            .map(tech => tech.trim())
+            .filter(tech => tech.length > 0);
     }
 
     getEmptyBio(): BioEntry {

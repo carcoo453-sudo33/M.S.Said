@@ -63,7 +63,7 @@ import { ToastService } from '../../../services/toast.service';
                     <div>
                         <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                             <lucide-icon [img]="EditIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
-                            Title
+                            Title (EN)
                         </label>
                         <input type="text" [(ngModel)]="editData.title" id="blog-title" name="title"
                             placeholder="Enter post title"
@@ -72,7 +72,17 @@ import { ToastService } from '../../../services/toast.service';
 
                     <div>
                         <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
-                            Summary
+                            <lucide-icon [img]="EditIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
+                            Title (AR)
+                        </label>
+                        <input type="text" [(ngModel)]="editData.title_Ar" id="blog-title-ar" name="titleAr" dir="rtl"
+                            placeholder="أدخل عنوان المنشور"
+                            class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                            Summary (EN)
                         </label>
                         <textarea [(ngModel)]="editData.summary" rows="3" id="blog-summary" name="summary"
                             placeholder="Brief summary of the post"
@@ -81,10 +91,28 @@ import { ToastService } from '../../../services/toast.service';
 
                     <div>
                         <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
-                            Content
+                            Summary (AR)
+                        </label>
+                        <textarea [(ngModel)]="editData.summary_Ar" rows="3" id="blog-summary-ar" name="summaryAr" dir="rtl"
+                            placeholder="ملخص موجز للمنشور"
+                            class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none resize-none transition-colors"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                            Content (EN)
                         </label>
                         <textarea [(ngModel)]="editData.content" rows="6" id="blog-content" name="content"
                             placeholder="Full post content"
+                            class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none resize-none transition-colors"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                            Content (AR)
+                        </label>
+                        <textarea [(ngModel)]="editData.content_Ar" rows="6" id="blog-content-ar" name="contentAr" dir="rtl"
+                            placeholder="محتوى المنشور الكامل"
                             class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none resize-none transition-colors"></textarea>
                     </div>
 
@@ -147,7 +175,7 @@ import { ToastService } from '../../../services/toast.service';
                                 Published Date
                             </label>
                             <input type="datetime-local" [(ngModel)]="editData.publishedAt" id="blog-published-at" name="publishedAt"
-                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors [color-scheme:dark]">
                         </div>
                     </div>
                 </section>
@@ -162,7 +190,7 @@ import { ToastService } from '../../../services/toast.service';
                                 Likes
                             </label>
                             <input type="number" [(ngModel)]="editData.likesCount" min="0" id="blog-likes" name="likesCount"
-                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
 
                         <div>
@@ -170,7 +198,7 @@ import { ToastService } from '../../../services/toast.service';
                                 Comments
                             </label>
                             <input type="number" [(ngModel)]="editData.commentsCount" min="0" id="blog-comments" name="commentsCount"
-                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
 
                         <div>
@@ -178,7 +206,7 @@ import { ToastService } from '../../../services/toast.service';
                                 Stars (GitHub)
                             </label>
                             <input type="number" [(ngModel)]="editData.starsCount" min="0" id="blog-stars" name="starsCount"
-                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
 
                         <div>
@@ -186,7 +214,7 @@ import { ToastService } from '../../../services/toast.service';
                                 Forks (GitHub)
                             </label>
                             <input type="number" [(ngModel)]="editData.forksCount" min="0" id="blog-forks" name="forksCount"
-                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
                     </div>
                 </section>

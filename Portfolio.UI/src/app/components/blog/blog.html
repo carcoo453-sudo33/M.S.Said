@@ -12,46 +12,65 @@
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
     class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
-    <div class="max-w-8xl mx-auto px-2 pt-28 pb-2">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 lg:gap-2">
+    <div class="max-w-8xl mx-auto px-4 md:px-5 lg:px-6 xl:px-8 pt-24 md:pt-26 lg:pt-28 pb-12 md:pb-14 lg:pb-16 xl:pb-20">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-7 lg:gap-10 xl:gap-16">
 
             <!-- Right Sidebar (md:order-2) -->
             <aside class="md:col-span-4 lg:col-span-4 md:order-2 md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
-                <div class="space-y-2">
+                <div class="space-y-4 md:space-y-5 lg:space-y-6">
                     <!-- Profile Card -->
                     <div>
-                        <app-blog-profile-card [bio]="bio()"></app-blog-profile-card>
+                        <app-blog-profile-card-skeleton *ngIf="isLoading()"></app-blog-profile-card-skeleton>
+                        <app-blog-profile-card *ngIf="!isLoading()" [bio]="bio()"></app-blog-profile-card>
                     </div>
 
                     <!-- Platform Filter -->
                     <div>
-                        <app-blog-platform-filter [platforms]="platforms" [selectedPlatform]="selectedPlatform()"
+                        <app-blog-platform-filter-skeleton *ngIf="isLoading()"></app-blog-platform-filter-skeleton>
+                        <app-blog-platform-filter *ngIf="!isLoading()" [platforms]="platforms" [selectedPlatform]="selectedPlatform()"
                             [counts]="platformCounts" (platformChange)="setPlatform($event)">
                         </app-blog-platform-filter>
                     </div>
 
                     <!-- Trending Topics -->
                     <div>
-                        <app-blog-trending-topics [topics]="trendingTopics()"></app-blog-trending-topics>
+                        <app-blog-trending-topics-skeleton *ngIf="isLoading()"></app-blog-trending-topics-skeleton>
+                        <app-blog-trending-topics *ngIf="!isLoading()" [topics]="trendingTopics()"></app-blog-trending-topics>
                     </div>
                 </div>
             </aside>
 
             <!-- Left Content Area (md:order-1) -->
-            <div class="md:col-span-8 lg:col-span-8 space-y-12 md:order-1">
+            <div class="md:col-span-8 lg:col-span-8 space-y-8 md:space-y-9 lg:space-y-10 xl:space-y-12 md:order-1">
 
                 <!-- Feed Header -->
-                <app-blog-feed-header [title]="'blog.latestUpdates' | translate" [viewMode]="viewMode"
+                <app-blog-feed-header-skeleton *ngIf="isLoading()"></app-blog-feed-header-skeleton>
+                <app-blog-feed-header *ngIf="!isLoading()" [title]="'blog.latestUpdates' | translate" [viewMode]="viewMode"
                     (viewModeChange)="viewMode = $event">
                 </app-blog-feed-header>
 
                 <!-- Loading State -->
-                <app-shared-skeleton *ngIf="isLoading()" [count]="4" height="250px"></app-shared-skeleton>
+                <div *ngIf="isLoading()">
+                    <!-- List View Skeleton -->
+                    <div *ngIf="viewMode === 'list'" class="space-y-6 md:space-y-7 lg:space-y-8">
+                        <app-blog-post-card-skeleton *ngFor="let _ of [].constructor(4); let i = index" 
+                            [delay]="(0.1 * i) + 's'">
+                        </app-blog-post-card-skeleton>
+                    </div>
+
+                    <!-- Grid View Skeleton -->
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-8 auto-rows-fr items-stretch">
+                        <app-blog-post-card-skeleton *ngFor="let _ of [].constructor(4); let i = index" 
+                            [delay]="(0.1 * i) + 's'"
+                            class="flex">
+                        </app-blog-post-card-skeleton>
+                    </div>
+                </div>
 
                 <!-- Posts List -->
                 <div *ngIf="!isLoading()">
                     <!-- List View -->
-                    <div *ngIf="viewMode === 'list'" class="space-y-2">
+                    <div *ngIf="viewMode === 'list'" class="space-y-6 md:space-y-7 lg:space-y-8">
                         <div *ngFor="let post of filteredPosts; let i = index">
                             <app-blog-post-card [post]="post"
                                 [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
@@ -60,20 +79,24 @@
                     </div>
 
                     <!-- Grid View -->
-                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div *ngFor="let post of filteredPosts; let i = index">
-                            <app-blog-post-card [post]="post"
-                                [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)">
-                            </app-blog-post-card>
-                        </div>
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-8 auto-rows-fr items-stretch">
+                        <app-blog-post-card *ngFor="let post of filteredPosts; let i = index" [post]="post"
+                            [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)"
+                            class="flex">
+                        </app-blog-post-card>
                     </div>
 
-                    <!-- Load More -->
-                    <div class="pt-12 text-center animate-fade-in-up">
-                        <button
-                            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
-                            {{ 'blog.loadMore' | translate }}
-                        </button>
+                    <!-- Load More / Pagination -->
+                    <div *ngIf="totalFilteredPosts > 0" class="pt-8 md:pt-9 lg:pt-10 xl:pt-12 text-center animate-fade-in-up">
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                {{ 'blog.pagination.showing' | translate }} {{ filteredPosts.length }} {{ 'blog.pagination.of' | translate }} {{ totalFilteredPosts }}
+                            </span>
+                            <button *ngIf="hasMorePosts" (click)="loadMorePosts()"
+                                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:border-red-600 hover:text-red-600 transition-all shadow-sm">
+                                {{ 'blog.loadMore' | translate }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +110,7 @@
         </div>
 
         <!-- Signature Section -->
-        <div class="max-w-7xl mx-auto px-6 pb-24">
+        <div class="max-w-7xl mx-auto px-4 md:px-5 lg:px-6 xl:px-8 pb-16 md:pb-18 lg:pb-20 xl:pb-24">
             <app-shared-signature [bio]="bio()" [quote]="'blog.signature.quote' | translate"></app-shared-signature>
         </div>
     </div>

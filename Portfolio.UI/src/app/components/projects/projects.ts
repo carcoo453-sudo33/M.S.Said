@@ -10,13 +10,20 @@ import { LucideAngularModule } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
 // Section Components
-// Section Components
 import { ProjectsHeaderComponent } from './sections/projects-header';
 import { ProjectsGridComponent } from './sections/projects-grid';
 import { ProjectsWorkHistoryComponent } from './sections/projects-work-history';
 import { ProjectsBrandSliderComponent } from './sections/projects-brand-slider';
 import { ProjectsReferencesComponent } from './sections/projects-references';
 import { ProjectsBottomCTAComponent } from './sections/projects-bottom-cta';
+
+// Skeleton Components
+import { ProjectsHeaderSkeletonComponent } from './sections/projects-header-skeleton';
+import { ProjectsGridSkeletonComponent } from './sections/projects-grid-skeleton';
+import { ProjectsWorkHistorySkeletonComponent } from './sections/projects-work-history-skeleton';
+import { ProjectsBrandSliderSkeletonComponent } from './sections/projects-brand-slider-skeleton';
+import { ProjectsReferencesSkeletonComponent } from './sections/projects-references-skeleton';
+import { ProjectsBottomCTASkeletonComponent } from './sections/projects-bottom-cta-skeleton';
 
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
@@ -38,6 +45,12 @@ import { SharedSkeletonComponent } from '../shared/skeleton/skeleton';
     ProjectsBrandSliderComponent,
     ProjectsReferencesComponent,
     ProjectsBottomCTAComponent,
+    ProjectsHeaderSkeletonComponent,
+    ProjectsGridSkeletonComponent,
+    ProjectsWorkHistorySkeletonComponent,
+    ProjectsBrandSliderSkeletonComponent,
+    ProjectsReferencesSkeletonComponent,
+    ProjectsBottomCTASkeletonComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
     SharedEmptyStateComponent,

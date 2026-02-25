@@ -18,6 +18,13 @@ import { BlogFeedHeaderComponent } from './sections/blog-feed-header';
 import { BlogPostCardComponent } from './sections/blog-post-card';
 import { BlogManageComponent } from './sections/blog-manage';
 
+// Skeleton Components
+import { BlogProfileCardSkeletonComponent } from './sections/blog-profile-card-skeleton';
+import { BlogPlatformFilterSkeletonComponent } from './sections/blog-platform-filter-skeleton';
+import { BlogTrendingTopicsSkeletonComponent } from './sections/blog-trending-topics-skeleton';
+import { BlogFeedHeaderSkeletonComponent } from './sections/blog-feed-header-skeleton';
+import { BlogPostCardSkeletonComponent } from './sections/blog-post-card-skeleton';
+
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
@@ -38,6 +45,11 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     BlogFeedHeaderComponent,
     BlogPostCardComponent,
     BlogManageComponent,
+    BlogProfileCardSkeletonComponent,
+    BlogPlatformFilterSkeletonComponent,
+    BlogTrendingTopicsSkeletonComponent,
+    BlogFeedHeaderSkeletonComponent,
+    BlogPostCardSkeletonComponent,
     SharedFooterComponent,
     SharedEmptyStateComponent,
     SharedSkeletonComponent,
@@ -64,6 +76,10 @@ export class BlogComponent implements OnInit {
 
   selectedPost = signal<BlogPost | undefined>(undefined);
   triggerEdit = signal(false);
+
+  // Pagination
+  currentPage = signal(1);
+  postsPerPage = 6;
 
   get canEdit(): boolean {
     return this.authService.isLoggedIn();
@@ -104,12 +120,40 @@ export class BlogComponent implements OnInit {
 
   get filteredPosts() {
     const allPostsKey = this.selectedPlatform();
-    if (allPostsKey === 'All Posts' || allPostsKey === 'جميع المنشورات') return this.posts();
-    return this.posts().filter(p => p.socialType === this.selectedPlatform());
+    const filtered = (allPostsKey === 'All Posts' || allPostsKey === 'جميع المنشورات') 
+      ? this.posts() 
+      : this.posts().filter(p => p.socialType === this.selectedPlatform());
+    
+    // Apply pagination
+    const startIndex = (this.currentPage() - 1) * this.postsPerPage;
+    const endIndex = startIndex + this.postsPerPage;
+    return filtered.slice(startIndex, endIndex);
+  }
+
+  get totalFilteredPosts(): number {
+    const allPostsKey = this.selectedPlatform();
+    return (allPostsKey === 'All Posts' || allPostsKey === 'جميع المنشورات') 
+      ? this.posts().length 
+      : this.posts().filter(p => p.socialType === this.selectedPlatform()).length;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalFilteredPosts / this.postsPerPage);
+  }
+
+  get hasMorePosts(): boolean {
+    return this.currentPage() < this.totalPages;
+  }
+
+  loadMorePosts() {
+    if (this.hasMorePosts) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
   }
 
   setPlatform(platform: string) {
     this.selectedPlatform.set(platform);
+    this.currentPage.set(1); // Reset to first page when changing platform
   }
 
   get platformCounts(): { [key: string]: number } {

@@ -25,7 +25,7 @@ export class ProfileService {
     }
 
     updateBio(id: string, bio: BioEntry) {
-        return this.http.put(`${this.apiUrl}/bio/${id}`, bio);
+        return this.http.put<BioEntry>(`${this.apiUrl}/bio/${id}`, bio);
     }
 
     // Skills

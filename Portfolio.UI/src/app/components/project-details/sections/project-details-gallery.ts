@@ -145,7 +145,7 @@ export class ProjectDetailsGalleryComponent {
     }
 
     getFullImageUrl(url?: string): string {
-        if (!url) return 'assets/project-placeholder.png';
+        if (!url) return 'assets/project-placeholder.svg';
         
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;

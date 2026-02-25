@@ -21,7 +21,54 @@
         </app-shared-page-header>
 
         <!-- SKELETON STATE -->
-        <app-shared-skeleton *ngIf="isLoading()" [count]="3" height="300px"></app-shared-skeleton>
+        <div *ngIf="isLoading()" class="space-y-2">
+            <!-- Education Card Skeleton -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="space-y-3">
+                        <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
+                        <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-64"></div>
+                    </div>
+                    <div class="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-32"></div>
+                </div>
+            </div>
+
+            <!-- Training Card Skeleton -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="space-y-3">
+                        <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
+                        <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-64"></div>
+                    </div>
+                    <div class="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-32"></div>
+                </div>
+            </div>
+
+            <!-- Certification Card Skeleton -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="space-y-3">
+                        <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
+                        <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-64"></div>
+                    </div>
+                    <div class="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-32"></div>
+                </div>
+            </div>
+
+            <!-- Achievements Card Skeleton -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="space-y-3">
+                        <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
+                        <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-64"></div>
+                    </div>
+                    <div class="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-32"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specializations Skeleton -->
+        <app-education-specializations-skeleton *ngIf="isLoading()"></app-education-specializations-skeleton>
 
         <!-- ERROR STATE -->
         <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'education.errorTitle' | translate" [retryText]="'education.retryText' | translate"
@@ -106,11 +153,12 @@
         </div>
 
         <!-- SPECIALIZATIONS -->
-        <app-education-specializations [bio]="bio() || undefined"></app-education-specializations>
+        <app-education-specializations [bio]="bio() || undefined" (bioUpdated)="onBioUpdated($event)"></app-education-specializations>
 
         <!-- Strategic Signature Section -->
         <app-shared-signature [bio]="bio()"
-            [quote]="bio()?.educationQuote || ('education.defaultQuote' | translate)">
+            [quote]="bio()?.educationQuote || ('education.defaultQuote' | translate)"
+            (bioUpdated)="onBioUpdated($event)">
         </app-shared-signature>
     </div>
 </main>

@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Layers, Rocket, Monitor, Code, CheckCircle } from 'lucide-angular';
-import { ProjectEntry } from '../../../models';
+import { ProjectEntry, KeyFeature } from '../../../models';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
     selector: 'app-project-details-features',
@@ -43,8 +44,8 @@ import { ProjectEntry } from '../../../models';
                         <lucide-icon [img]="CodeIcon" class="w-4 h-4" *ngIf="feature.icon === 'Code'"></lucide-icon>
                     </div>
                     <div class="space-y-2">
-                        <h3 class="text-sm font-black tracking-tight uppercase text-zinc-300">{{ feature.title }}</h3>
-                        <p class="text-zinc-500 text-xs leading-relaxed font-medium">{{ feature.description }}</p>
+                        <h3 class="text-sm font-black tracking-tight uppercase text-zinc-300">{{ getFeatureTitle(feature) }}</h3>
+                        <p class="text-zinc-500 text-xs leading-relaxed font-medium">{{ getFeatureDescription(feature) }}</p>
                     </div>
                 </div>
             </div>
@@ -54,9 +55,21 @@ import { ProjectEntry } from '../../../models';
 })
 export class ProjectDetailsFeaturesComponent {
     @Input() project?: ProjectEntry;
+    private translationService = inject(TranslationService);
+    
     LayersIcon = Layers;
     RocketIcon = Rocket;
     MonitorIcon = Monitor;
     CodeIcon = Code;
     CheckIcon = CheckCircle;
+
+    getFeatureTitle(feature: KeyFeature): string {
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && feature.title_Ar ? feature.title_Ar : feature.title;
+    }
+
+    getFeatureDescription(feature: KeyFeature): string {
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && feature.description_Ar ? feature.description_Ar : feature.description;
+    }
 }

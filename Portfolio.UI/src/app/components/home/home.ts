@@ -18,6 +18,15 @@ import { HomeFeaturedProjectsComponent } from './sections/home-featured-projects
 import { HomeTimelineComponent } from './sections/home-timeline';
 import { HomeFinalCTAComponent } from './sections/home-final-cta';
 
+// Skeleton Components
+import { HomeSidebarProfileSkeletonComponent } from './sections/home-sidebar-profile-skeleton';
+import { HomeBriefBioSkeletonComponent } from './sections/home-brief-bio-skeleton';
+import { HomeServicesSkeletonComponent } from './sections/home-services-skeleton';
+import { HomeTechStackSkeletonComponent } from './sections/home-tech-stack-skeleton';
+import { HomeFeaturedProjectsSkeletonComponent } from './sections/home-featured-projects-skeleton';
+import { HomeTimelineSkeletonComponent } from './sections/home-timeline-skeleton';
+import { HomeFinalCTASkeletonComponent } from './sections/home-final-cta-skeleton';
+
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 
@@ -36,6 +45,13 @@ import { SharedFooterComponent } from '../shared/footer/footer';
         HomeFeaturedProjectsComponent,
         HomeTimelineComponent,
         HomeFinalCTAComponent,
+        HomeSidebarProfileSkeletonComponent,
+        HomeBriefBioSkeletonComponent,
+        HomeServicesSkeletonComponent,
+        HomeTechStackSkeletonComponent,
+        HomeFeaturedProjectsSkeletonComponent,
+        HomeTimelineSkeletonComponent,
+        HomeFinalCTASkeletonComponent,
         SharedFooterComponent
     ],
     templateUrl: './home.html'

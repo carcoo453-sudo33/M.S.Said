@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { ProjectEntry } from '../../../models';
+import { ProjectEntry, ChangelogItem, Metric } from '../../../models';
+import { TranslationService } from '../../../services/translation.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,8 +26,8 @@ import { environment } from '../../../../environments/environment';
                     <div class="text-[9px] font-bold text-red-600 tracking-widest uppercase">{{ log.date }}</div>
                     <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-all group">
                         <h4 class="text-white font-black uppercase tracking-tight mb-1.5 text-xs group-hover:text-red-600 transition-colors">
-                            {{ log.version }} {{ log.title }}</h4>
-                        <p class="text-zinc-500 text-[11px] leading-relaxed font-medium">{{ log.description }}</p>
+                            {{ log.version }} {{ getChangelogTitle(log) }}</h4>
+                        <p class="text-zinc-500 text-[11px] leading-relaxed font-medium">{{ getChangelogDescription(log) }}</p>
                     </div>
                 </div>
             </div>
@@ -41,7 +42,7 @@ import { environment } from '../../../../environments/environment';
             </div>
             <div class="space-y-4 relative z-10">
                 <div *ngFor="let metric of project.metrics" class="flex items-center justify-between group pb-3 border-b border-zinc-800/50 last:border-0 last:pb-0">
-                    <span class="text-zinc-500 text-xs font-medium">{{ metric.label }}</span>
+                    <span class="text-zinc-500 text-xs font-medium">{{ getMetricLabel(metric) }}</span>
                     <span class="text-white font-black text-lg italic group-hover:text-red-600 transition-colors">{{ metric.value }}</span>
                 </div>
             </div>
@@ -74,6 +75,22 @@ import { environment } from '../../../../environments/environment';
 })
 export class ProjectDetailsSidebarComponent {
     @Input() project?: ProjectEntry;
+    private translationService = inject(TranslationService);
+
+    getChangelogTitle(log: ChangelogItem): string {
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && log.title_Ar ? log.title_Ar : log.title;
+    }
+
+    getChangelogDescription(log: ChangelogItem): string {
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && log.description_Ar ? log.description_Ar : log.description;
+    }
+
+    getMetricLabel(metric: Metric): string {
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && metric.label_Ar ? metric.label_Ar : metric.label;
+    }
 
     getFullImageUrl(imageUrl: string | undefined): string {
         if (!imageUrl) return '';
