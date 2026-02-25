@@ -21,7 +21,41 @@ public class ExperiencesController : ControllerBase
     public async Task<ActionResult<IEnumerable<ExperienceEntry>>> GetExperiences()
     {
         var experiences = await _unitOfWork.Repository<ExperienceEntry>().GetAllAsync();
-        return Ok(experiences.OrderByDescending(e => e.Duration));
+        
+        // Sort by IsCurrent first (current jobs at top), then by Duration descending
+        return Ok(experiences
+            .OrderByDescending(e => e.IsCurrent)
+            .ThenByDescending(e => ExtractYear(e.Duration))
+            .ThenByDescending(e => e.Duration));
+    }
+
+    private int ExtractYear(string duration)
+    {
+        if (string.IsNullOrEmpty(duration)) return 0;
+        
+        // Handle formats like "05/2024 - Present", "2023", "2022-2023"
+        var parts = duration.Split(new[] { '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+        
+        foreach (var part in parts)
+        {
+            var trimmed = part.Trim();
+            // Try to find a 4-digit year
+            if (int.TryParse(trimmed, out int year) && year >= 2000 && year <= 2100)
+            {
+                return year;
+            }
+            // Check if it contains a year (like "05/2024")
+            if (trimmed.Length >= 4)
+            {
+                var lastFour = trimmed.Substring(trimmed.Length - 4);
+                if (int.TryParse(lastFour, out int yearFromEnd) && yearFromEnd >= 2000 && yearFromEnd <= 2100)
+                {
+                    return yearFromEnd;
+                }
+            }
+        }
+        
+        return 0;
     }
 
     // [Authorize] // Temporarily disabled for testing
