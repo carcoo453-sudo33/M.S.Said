@@ -66,7 +66,7 @@ import { environment } from '../../../../environments/environment';
             </div>
 
             <!-- Gallery Thumbnails -->
-            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 lg:pb-4 no-scrollbar" *ngIf="getAllImages().length > 0">
+            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 pt-2 lg:pb-4 no-scrollbar" *ngIf="getAllImages().length > 0">
                 <div *ngFor="let img of getAllImages(); let i = index"
                     (click)="selectImage(img)"
                     [class.ring-2]="selectedImage === img || (!selectedImage && i === 0)"

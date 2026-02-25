@@ -8,6 +8,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
+import { TranslationHelperService } from '../../../services/translation-helper.service';
 
 @Component({
     selector: 'app-education-timeline',
@@ -75,9 +76,9 @@ import { TranslationService } from '../../../services/translation.service';
                     </div>
 
                     <h3 class="text-base font-black mb-2 uppercase tracking-tight leading-tight dark:text-white text-zinc-900">
-                        {{ (translationService.isRTL() && item.degree_Ar) ? item.degree_Ar : item.degree }}</h3>
-                    <p class="text-[10px] font-bold uppercase tracking-wide text-zinc-400 mb-3">{{ (translationService.isRTL() && item.institution_Ar) ? item.institution_Ar : item.institution }}</p>
-                    <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed mb-3" *ngIf="item.description">"{{ (translationService.isRTL() && item.description_Ar) ? item.description_Ar : item.description }}"</p>
+                        {{ getDegree(item) }}</h3>
+                    <p class="text-[10px] font-bold uppercase tracking-wide text-zinc-400 mb-3">{{ getInstitution(item) }}</p>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed mb-3" *ngIf="item.description">"{{ getDescription(item) }}"</p>
                     <div class="flex items-center gap-2 text-zinc-400 transition-colors"
                         [ngClass]="{
                             'group-hover:text-indigo-600 dark:group-hover:text-indigo-400': item.category === 'Education',
@@ -85,7 +86,7 @@ import { TranslationService } from '../../../services/translation.service';
                             'group-hover:text-violet-600 dark:group-hover:text-violet-400': item.category === 'Certification'
                         }">
                         <lucide-icon [img]="MapPinIcon" class="w-3 h-3"></lucide-icon>
-                        <span class="text-[10px] uppercase tracking-wide font-bold">{{ (translationService.isRTL() && item.location_Ar) ? item.location_Ar : item.location }}</span>
+                        <span class="text-[10px] uppercase tracking-wide font-bold">{{ getLocation(item) }}</span>
                     </div>
                 </div>
             </div>
@@ -240,6 +241,7 @@ export class EducationTimelineComponent {
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
     public translationService = inject(TranslationService);
+    public translationHelper = inject(TranslationHelperService);
 
     @Input() set education(value: EducationEntry[]) {
         this._education = value;
@@ -386,5 +388,22 @@ export class EducationTimelineComponent {
                 console.error('Education Save Error:', err);
             }
         });
+    }
+
+    // Helper methods for translated fields
+    getDegree(item: EducationEntry): string {
+        return this.translationHelper.getTranslatedField(item, 'degree');
+    }
+
+    getInstitution(item: EducationEntry): string {
+        return this.translationHelper.getTranslatedField(item, 'institution');
+    }
+
+    getDescription(item: EducationEntry): string {
+        return this.translationHelper.getTranslatedField(item, 'description');
+    }
+
+    getLocation(item: EducationEntry): string {
+        return this.translationHelper.getTranslatedField(item, 'location');
     }
 }
