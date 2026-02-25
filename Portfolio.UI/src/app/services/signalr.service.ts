@@ -12,12 +12,6 @@ export class SignalRService {
   constructor() {}
 
   public startConnection(): void {
-    // Skip SignalR connection in production if backend doesn't support it yet
-    if (environment.production) {
-      console.log('⚠️ SignalR disabled in production - backend needs redeployment');
-      return;
-    }
-
     const token = localStorage.getItem('auth_token');
     
     const options: signalR.IHttpConnectionOptions = {
@@ -32,34 +26,30 @@ export class SignalRService {
     }
 
     const hubUrl = `${environment.apiBaseUrl}/hubs/notifications`;
-    console.log('🔗 Attempting SignalR connection to:', hubUrl);
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, options)
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-      .configureLogging(signalR.LogLevel.Warning) // Reduce logging noise
+      .configureLogging(signalR.LogLevel.Error) // Only show errors
       .build();
 
     this.hubConnection
       .start()
       .then(() => {
-        console.log('✅ SignalR Connected successfully');
+        console.log('✅ SignalR Connected');
         this.registerAdminStatusListener();
         this.checkAdminStatus();
       })
-      .catch(err => {
-        console.warn('⚠️ SignalR connection failed (non-critical):', err.message);
-        // Don't throw - just continue without SignalR
+      .catch(() => {
+        // Silently fail - SignalR is optional
       });
 
     // Handle reconnection
     this.hubConnection.onreconnected(() => {
-      console.log('🔄 SignalR Reconnected');
       this.checkAdminStatus();
     });
 
     this.hubConnection.onclose(() => {
-      console.log('🔌 SignalR Connection closed');
       // Set admin offline when connection closes
       this.adminOnlineStatus.set(false);
     });
