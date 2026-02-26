@@ -16,6 +16,12 @@ import { TranslationService } from '../../../services/translation.service';
     template: `
     <section *ngIf="bio" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 border-t border-zinc-100 dark:border-zinc-900 mt-2 relative overflow-hidden">
         
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 pointer-events-none opacity-30">
+            <div class="absolute top-0 left-1/4 w-64 h-64 bg-red-500/10 rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-float-delayed"></div>
+        </div>
+        
         <!-- Edit Button -->
         <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
             class="absolute top-4 z-10 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all"
@@ -23,46 +29,76 @@ import { TranslationService } from '../../../services/translation.service';
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
         </button>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-            <div class="lg:col-span-4 relative group mx-auto w-full max-w-xs lg:max-w-none"
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center relative z-10">
+            <!-- Image Column with Enhanced Animations -->
+            <div class="lg:col-span-4 relative group mx-auto w-full max-w-xs lg:max-w-none animate-fade-in-up"
                  [ngClass]="isArabic() ? 'lg:order-2' : 'lg:order-1'">
-                <div class="absolute inset-0 bg-red-600/20 rounded-3xl lg:rounded-[3rem] transition-transform duration-700"
-                     [ngClass]="isArabic() ? '-rotate-6 group-hover:-rotate-12' : 'rotate-6 group-hover:rotate-12'"></div>
+                <!-- Animated Background Shape -->
+                <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 to-purple-600/20 rounded-3xl lg:rounded-[3rem] transition-all duration-700 animate-pulse-slow"
+                     [ngClass]="isArabic() ? '-rotate-6 group-hover:-rotate-12 group-hover:scale-105' : 'rotate-6 group-hover:rotate-12 group-hover:scale-105'"></div>
+                
+                <!-- Floating Particles -->
+                <div class="absolute -top-4 -left-4 w-3 h-3 bg-red-500/50 rounded-full animate-float-particle"></div>
+                <div class="absolute top-1/4 -right-4 w-2 h-2 bg-purple-500/50 rounded-full animate-float-particle-delayed"></div>
+                <div class="absolute bottom-1/4 -left-6 w-2 h-2 bg-blue-500/50 rounded-full animate-float-particle-slow"></div>
+                
+                <!-- Main Image -->
                 <img [src]="getAvatarUrl()" [alt]="bio.name"
-                    class="relative w-full aspect-square object-cover rounded-3xl lg:rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700">
-                <div class="absolute -bottom-4 w-20 h-20 lg:w-24 lg:h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 transition-transform"
+                    class="relative w-full aspect-square object-cover rounded-3xl lg:rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-[1.02]">
+                
+                <!-- Badge with Animation -->
+                <div class="absolute -bottom-4 w-20 h-20 lg:w-24 lg:h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"
                      [ngClass]="isArabic() ? '-left-4 lg:-left-6' : '-right-4 lg:-right-6'">
-                    <span class="text-white font-black text-lg lg:text-xl italic uppercase tracking-tighter">M.S</span>
+                    <span class="text-white font-black text-lg lg:text-xl italic uppercase tracking-tighter animate-pulse">M.S</span>
                 </div>
             </div>
+            
+            <!-- Content Column with Staggered Animations -->
             <div class="lg:col-span-8 space-y-6 lg:space-y-8"
                  [ngClass]="isArabic() ? 'lg:order-1' : 'lg:order-2'">
-                <div>
-                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] mb-3 lg:mb-4"
+                <!-- Role Badge -->
+                <div class="animate-fade-in-up">
+                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] mb-3 lg:mb-4 inline-block relative"
                        [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
                        [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
                         {{ getSignatureRole() }}
+                        <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-red-600 to-transparent animate-expand-width"></span>
                     </p>
+                </div>
+                
+                <!-- Name and Title with Gradient Animation -->
+                <div class="animate-fade-in-up animation-delay-200">
                     <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-tight break-words"
                         [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
                         [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
-                        {{ getSignatureName() }}<br>
-                        <span class="text-zinc-400">{{ getSignatureSubtitle() }}</span>
+                        <span class="inline-block hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-red-600 hover:to-purple-600 transition-all duration-500">
+                            {{ getSignatureName() }}
+                        </span>
+                        <br>
+                        <span class="text-zinc-400 inline-block animate-fade-in animation-delay-400">{{ getSignatureSubtitle() }}</span>
                     </h2>
                 </div>
-                <p *ngIf="getQuote()" 
-                   class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic"
-                   [attr.dir]="isArabic() ? 'rtl' : 'ltr'"
-                   [ngClass]="isArabic() ? 'border-r-2 border-zinc-100 dark:border-zinc-800 pr-6 lg:pr-8' : 'border-l-2 border-zinc-100 dark:border-zinc-800 pl-6 lg:pl-8'">
-                    "{{ getQuote() }}"
-                </p>
-                <div class="flex flex-wrap gap-6 lg:gap-8"
+                
+                <!-- Quote with Border Animation -->
+                <div *ngIf="getQuote()" class="animate-fade-in-up animation-delay-400">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic relative"
+                       [attr.dir]="isArabic() ? 'rtl' : 'ltr'"
+                       [ngClass]="isArabic() ? 'pr-6 lg:pr-8' : 'pl-6 lg:pl-8'">
+                        <span class="absolute top-0 h-full w-0.5 bg-gradient-to-b from-transparent via-red-600 to-transparent animate-pulse-slow"
+                              [ngClass]="isArabic() ? 'right-0' : 'left-0'"></span>
+                        "{{ getQuote() }}"
+                    </p>
+                </div>
+                
+                <!-- Verified Badge with Glow Effect -->
+                <div class="flex flex-wrap gap-6 lg:gap-8 animate-fade-in-up animation-delay-600"
                      [ngClass]="isArabic() ? 'justify-center lg:justify-end' : 'justify-center lg:justify-start'">
-                    <div class="flex items-center gap-3 lg:gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                            <lucide-icon [img]="CheckIcon" class="w-5 h-5"></lucide-icon>
+                    <div class="flex items-center gap-3 lg:gap-4 group cursor-default">
+                        <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 shrink-0 group-hover:bg-green-500/20 group-hover:scale-110 transition-all duration-300 relative">
+                            <lucide-icon [img]="CheckIcon" class="w-5 h-5 relative z-10"></lucide-icon>
+                            <span class="absolute inset-0 rounded-xl bg-green-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                         </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400"
+                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-green-500 transition-colors duration-300"
                               [attr.dir]="isArabic() ? 'rtl' : 'ltr'">{{ getVerifiedText() }}</span>
                     </div>
                 </div>
@@ -149,7 +185,127 @@ import { TranslationService } from '../../../services/translation.service';
             </div>
         </div>
     </div>
-  `
+  `,
+    styles: [`
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(20px) scale(1.1); }
+        }
+        
+        @keyframes float-particle {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(15px, -20px) scale(1.5);
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes float-particle-delayed {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(-20px, 15px) scale(1.3);
+                opacity: 0.6;
+            }
+        }
+        
+        @keyframes float-particle-slow {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.2;
+            }
+            50% { 
+                transform: translate(10px, 20px) scale(1.4);
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes expand-width {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .animate-float-delayed {
+            animation: float-delayed 10s ease-in-out infinite;
+        }
+        
+        .animate-float-particle {
+            animation: float-particle 6s ease-in-out infinite;
+        }
+        
+        .animate-float-particle-delayed {
+            animation: float-particle-delayed 8s ease-in-out infinite;
+        }
+        
+        .animate-float-particle-slow {
+            animation: float-particle-slow 10s ease-in-out infinite;
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+        
+        .animate-expand-width {
+            animation: expand-width 1s ease-out forwards;
+        }
+        
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .animation-delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .animation-delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        .animation-delay-600 {
+            animation-delay: 0.6s;
+        }
+    `]
 })
 export class SharedSignatureComponent {
     @Input() bio: BioEntry | null = null;
