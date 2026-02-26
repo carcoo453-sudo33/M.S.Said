@@ -14,7 +14,7 @@ import { TranslationService } from '../../../services/translation.service';
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
     template: `
-    <section *ngIf="bio" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 border-t border-zinc-100 dark:border-zinc-900 mt-2 relative overflow-hidden">
+    <section *ngIf="bio" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 mt-2 relative overflow-hidden">
         
         <!-- Animated Background Elements -->
         <div class="absolute inset-0 pointer-events-none opacity-30">
@@ -56,27 +56,31 @@ import { TranslationService } from '../../../services/translation.service';
             <!-- Content Column with Staggered Animations -->
             <div class="lg:col-span-8 space-y-6 lg:space-y-8"
                  [ngClass]="isArabic() ? 'lg:order-1' : 'lg:order-2'">
-                <!-- Role Badge -->
-                <div class="animate-fade-in-up">
-                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] mb-3 lg:mb-4 inline-block relative"
-                       [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
-                       [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
-                        {{ getSignatureRole() }}
-                        <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-red-600 to-transparent animate-expand-width"></span>
-                    </p>
-                </div>
                 
                 <!-- Name and Title with Gradient Animation -->
-                <div class="animate-fade-in-up animation-delay-200">
+                <div class="animate-fade-in-up">
                     <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase leading-tight break-words"
                         [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
                         [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
                         <span class="inline-block hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-red-600 hover:to-purple-600 transition-all duration-500">
                             {{ getSignatureName() }}
                         </span>
-                        <br>
-                        <span class="text-zinc-400 inline-block animate-fade-in animation-delay-400">{{ getSignatureSubtitle() }}</span>
                     </h2>
+                    <p class="text-zinc-400 text-lg md:text-xl lg:text-2xl font-bold mt-2 animate-fade-in animation-delay-200"
+                       [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
+                       [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
+                        {{ getSignatureSubtitle() }}
+                    </p>
+                </div>
+                
+                <!-- Role Badge -->
+                <div class="animate-fade-in-up animation-delay-200">
+                    <p class="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] lg:tracking-[0.6em] inline-block relative"
+                       [ngClass]="isArabic() ? 'text-center lg:text-right' : 'text-center lg:text-left'"
+                       [attr.dir]="isArabic() ? 'rtl' : 'ltr'">
+                        {{ getSignatureRole() }}
+                        <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-red-600 to-transparent animate-expand-width"></span>
+                    </p>
                 </div>
                 
                 <!-- Quote with Border Animation -->

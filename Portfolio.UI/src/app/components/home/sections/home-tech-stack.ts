@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
-import { LucideAngularModule, Code2, Database, FileCode, Zap, Monitor, Terminal, Github, Edit3, X, Save, Plus, Trash2, AlertTriangle, CheckCircle, Upload as LucideUpload, Image as LucideImage, FileText } from 'lucide-angular';
+import { LucideAngularModule, Edit3, X, Save, Plus, Trash2, AlertTriangle, Image as LucideImage } from 'lucide-angular';
 import { environment } from '../../../../environments/environment';
 import { SkillEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
@@ -25,12 +25,8 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         <div class="flex flex-wrap justify-center gap-6">
             <div *ngFor="let skill of translatedSkills"
                 class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
-                <ng-container *ngIf="!isImagePath(skill.icon); else imgIcon">
-                    <lucide-icon [img]="getSkillIcon(skill.icon)" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
-                </ng-container>
-                <ng-template #imgIcon>
-                    <img [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
-                </ng-template>
+                <img *ngIf="skill.icon" [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
+                <lucide-icon *ngIf="!skill.icon" [img]="ImageIcon" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
                 <span class="text-[9px] font-bold uppercase tracking-wide text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{{ skill.name }}</span>
             </div>
         </div>
@@ -68,29 +64,15 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                         </div>
                         
                         <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                            <div class="flex items-center gap-4 mb-1">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" [name]="'iconType' + i" [value]="'name'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
-                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ 'home.techStack.iconName' | translate }}</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" [name]="'iconType' + i" [value]="'upload'" [(ngModel)]="iconInputs[i].type" class="text-red-600 focus:ring-red-500">
-                                    <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ 'home.techStack.imageUpload' | translate }}</span>
-                                </label>
-                            </div>
-
-                            <div *ngIf="iconInputs[i].type === 'name'" class="flex gap-2">
-                                <input [(ngModel)]="item.icon" placeholder="Lucide (e.g. lucide-angular)"
-                                    class="flex-1 px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                            </div>
-
-                            <div *ngIf="iconInputs[i].type === 'upload'" class="flex items-center gap-3">
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-1">{{ 'home.techStack.skillIcon' | translate }}</span>
+                            
+                            <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
-                                    <img *ngIf="isImagePath(item.icon)" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
-                                    <lucide-icon *ngIf="!isImagePath(item.icon)" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
+                                    <img *ngIf="item.icon" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
+                                    <lucide-icon *ngIf="!item.icon" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
                                 </div>
                                 <label class="flex-1 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all text-center">
-                                    {{ uploadingIndex === i ? ('home.techStack.uploading' | translate) : (isImagePath(item.icon) ? ('home.techStack.changeImage' | translate) : ('home.techStack.uploadImage' | translate)) }}
+                                    {{ uploadingIndex === i ? ('home.techStack.uploading' | translate) : (item.icon ? ('home.techStack.changeImage' | translate) : ('home.techStack.uploadImage' | translate)) }}
                                     <input type="file" class="hidden" (change)="onIconFileSelected($event, i)" accept="image/*">
                                 </label>
                             </div>
@@ -148,32 +130,16 @@ export class HomeTechStackComponent {
     @Input() skills: SkillEntry[] = [];
     @Output() skillsUpdated = new EventEmitter<SkillEntry[]>();
 
-    EditIcon = Edit3; XIcon = X; SaveIcon = Save; PlusIcon = Plus; TrashIcon = Trash2; UploadIcon = LucideUpload; ImageIcon = LucideImage;
-    AlertIcon = AlertTriangle; CheckIcon = CheckCircle;
+    EditIcon = Edit3; XIcon = X; SaveIcon = Save; PlusIcon = Plus; TrashIcon = Trash2; ImageIcon = LucideImage;
+    AlertIcon = AlertTriangle;
 
     showEditModal = false; isSaving = false; isDeleting = false; submitted = false;
     editList: SkillEntry[] = [];
-    iconInputs: { type: 'name' | 'upload' }[] = [];
     uploadingIndex: number | null = null;
     deleteIndex: number | null = null;
 
     get translatedSkills(): SkillEntry[] {
         return this.translationHelper.translateArray(this.skills, ['name']);
-    }
-
-    getSkillIcon(iconName?: string): any {
-        if (!iconName) return Code2;
-        const icons: { [key: string]: any } = {
-            'lucide-angular': Code2, 'lucide-dot-net': Database, 'lucide-javascript': FileCode,
-            'lucide-database': Database, 'lucide-html5': Code2, 'lucide-css3': Zap,
-            'lucide-layout': Monitor, 'lucide-terminal': Terminal, 'lucide-github': Github
-        };
-        return icons[iconName] || Code2;
-    }
-
-    isImagePath(icon?: string): boolean {
-        if (!icon) return false;
-        return icon.startsWith('/') || icon.startsWith('http');
     }
 
     getFullUrl(path?: string): string {
@@ -185,9 +151,6 @@ export class HomeTechStackComponent {
 
     openEditModal() {
         this.editList = this.skills.map(s => ({ ...s }));
-        this.iconInputs = this.editList.map(s => ({
-            type: this.isImagePath(s.icon) ? 'upload' : 'name'
-        }));
         this.submitted = false;
         this.showEditModal = true;
     }
@@ -217,7 +180,6 @@ export class HomeTechStackComponent {
     addNewSkill() {
         const newItem = { id: crypto.randomUUID(), name: '', icon: '', order: this.editList.length };
         this.editList.push(newItem);
-        this.iconInputs.push({ type: 'name' });
     }
 
     confirmDelete(index: number) { this.deleteIndex = index; }
@@ -231,7 +193,6 @@ export class HomeTechStackComponent {
             this.profileService.deleteSkill(item.id).subscribe({
                 next: () => {
                     this.editList.splice(this.deleteIndex!, 1);
-                    this.iconInputs.splice(this.deleteIndex!, 1);
                     this.skills = [...this.editList].sort((a, b) => (a.order || 0) - (b.order || 0));
                     this.skillsUpdated.emit(this.skills);
                     this.deleteIndex = null; this.isDeleting = false;

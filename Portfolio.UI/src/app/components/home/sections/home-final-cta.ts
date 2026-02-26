@@ -9,7 +9,7 @@ import { BioEntry } from '../../../models';
     standalone: true,
     imports: [CommonModule, RouterLink, TranslateModule],
     template: `
-    <section class="bg-zinc-950 py-20 md:py-32 relative overflow-hidden">
+    <section class="bg-zinc-950 py-12 md:py-16 relative overflow-hidden">
         <!-- Animated gradient background -->
         <div class="absolute inset-0 bg-gradient-to-br from-red-600/10 via-purple-600/10 to-blue-600/10 opacity-40 animate-gradient"></div>
         
@@ -23,17 +23,11 @@ import { BioEntry } from '../../../models';
         
         <div class="max-w-5xl mx-auto px-6 relative text-center">
             <!-- Title with stagger animation -->
-            <div class="space-y-2 mb-8">
-                <h2 class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-none uppercase animate-fade-in-up">
-                    {{ 'home.cta.title1' | translate }}
-                </h2>
-                <h2 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none uppercase animate-fade-in-up animation-delay-200">
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] via-[#FF6B9D] to-[#7000FF] animate-gradient-x">
-                        {{ 'home.cta.title2' | translate }}
-                    </span>
-                </h2>
-                <h2 class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-none uppercase animate-fade-in-up animation-delay-400">
-                    {{ 'home.cta.title3' | translate }}
+            <div class="mb-8">
+                <h2 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none uppercase animate-fade-in-up">
+                    <span class="text-white">{{ 'home.cta.title1' | translate }} </span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] via-[#FF6B9D] to-[#7000FF] animate-gradient-x">{{ 'home.cta.title2' | translate }}</span>
+                    <span class="text-white"> {{ 'home.cta.title3' | translate }}</span>
                 </h2>
             </div>
             
@@ -45,21 +39,20 @@ import { BioEntry } from '../../../models';
             <!-- Buttons with hover effects -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up animation-delay-800">
                 <a routerLink="/contact"
-                    class="group relative px-12 py-5 bg-white text-black rounded-full font-black uppercase tracking-widest text-xs overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/20">
-                    <span class="relative z-10">{{ 'home.cta.button1' | translate }}</span>
+                    class="group relative px-12 py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-full font-black uppercase tracking-widest text-xs overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-red-600/20">
+                    <span class="relative z-10 group-hover:text-white transition-colors duration-300">{{ 'home.cta.button1' | translate }}</span>
                     <div class="absolute inset-0 bg-gradient-to-r from-[#FF3B7E] to-[#7000FF] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span class="relative z-10 text-black group-hover:text-white transition-colors duration-300">{{ 'home.cta.button1' | translate }}</span>
                 </a>
                 
                 <a [href]="'mailto:' + bio?.email"
-                    class="group relative px-12 py-5 bg-transparent text-white border-2 border-zinc-700 rounded-full font-black uppercase tracking-widest text-xs overflow-hidden transition-all duration-300 hover:scale-105 hover:border-white/50">
+                    class="group relative px-12 py-5 bg-transparent text-zinc-900 dark:text-white border-2 border-zinc-300 dark:border-zinc-700 rounded-full font-black uppercase tracking-widest text-xs overflow-hidden transition-all duration-300 hover:scale-105 hover:border-zinc-400 dark:hover:border-white/50">
                     <span class="relative z-10 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                         {{ 'home.cta.button2' | translate }}
                     </span>
-                    <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute inset-0 bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
             </div>
             

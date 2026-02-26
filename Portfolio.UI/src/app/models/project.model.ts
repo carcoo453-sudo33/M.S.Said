@@ -17,14 +17,6 @@ export interface ChangelogItem {
     [key: string]: any;
 }
 
-export interface Metric {
-    label: string;
-    label_Ar?: string;
-    value: string | number;
-    trend?: 'up' | 'down';
-    [key: string]: any;
-}
-
 export interface Comment {
     id: string;
     author: string;
@@ -71,13 +63,16 @@ export interface BaseProject {
     projectUrl?: string;
     gitHubUrl?: string;
     duration?: string;
+    duration_Ar?: string;
     language?: string;
+    language_Ar?: string;
     architecture?: string;
+    architecture_Ar?: string;
     status?: string;
+    status_Ar?: string;
     keyFeatures?: KeyFeature[];
     changelog?: ChangelogItem[];
     responsibilities?: string[];
-    metrics?: Metric[];
     comments?: Comment[];
     reactionsCount?: number;
     views: number;

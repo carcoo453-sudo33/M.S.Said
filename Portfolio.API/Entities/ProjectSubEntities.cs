@@ -35,20 +35,6 @@ public class ProjectChangelogItem : BaseEntity
     public string? Description_Ar { get; set; }
 }
 
-public class ProjectMetric : BaseEntity
-{
-    public Guid ProjectEntryId { get; set; }
-    
-    [Required]
-    public string Label { get; set; } = string.Empty;
-    public string? Label_Ar { get; set; }
-    
-    [Required]
-    public string Value { get; set; } = string.Empty;
-    
-    public string? Trend { get; set; } // "up" or "down"
-}
-
 public class ProjectComment : BaseEntity
 {
     public Guid ProjectEntryId { get; set; }

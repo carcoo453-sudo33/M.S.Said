@@ -18,17 +18,6 @@ import { CommonModule } from '@angular/common';
                 </div>
             </div>
         </div>
-
-        <!-- Metrics Section -->
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 space-y-6">
-            <div class="h-6 bg-zinc-800 rounded w-24"></div>
-            <div class="grid grid-cols-2 gap-4">
-                <div *ngFor="let _ of [].constructor(4)" class="space-y-2">
-                    <div class="h-8 bg-zinc-800 rounded w-16"></div>
-                    <div class="h-3 bg-zinc-800 rounded w-20"></div>
-                </div>
-            </div>
-        </div>
     </div>
   `
 })

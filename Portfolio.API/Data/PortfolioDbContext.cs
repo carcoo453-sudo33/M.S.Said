@@ -10,6 +10,14 @@ public class PortfolioDbContext : IdentityDbContext
     {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        // Suppress pending model changes warning temporarily
+        optionsBuilder.ConfigureWarnings(warnings => 
+            warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    }
+
     public DbSet<ExperienceEntry> Experiences { get; set; }
     public DbSet<ProjectEntry> Projects { get; set; }
     public DbSet<BioEntry> BioEntries { get; set; }
@@ -22,7 +30,6 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<ClientEntry> Clients { get; set; }
     public DbSet<ProjectKeyFeature> ProjectKeyFeatures { get; set; }
     public DbSet<ProjectChangelogItem> ProjectChangelogItems { get; set; }
-    public DbSet<ProjectMetric> ProjectMetrics { get; set; }
     public DbSet<ProjectComment> ProjectComments { get; set; }
     public DbSet<NotificationEntry> Notifications { get; set; }
 
@@ -43,7 +50,6 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<ClientEntry>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectKeyFeature>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectMetric>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ProjectComment>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<NotificationEntry>().HasQueryFilter(x => !x.IsDeleted);
 
@@ -57,11 +63,6 @@ public class PortfolioDbContext : IdentityDbContext
             .HasMany(p => p.Changelog)
             .WithOne()
             .HasForeignKey(cl => cl.ProjectEntryId);
-
-        builder.Entity<ProjectEntry>()
-            .HasMany(p => p.Metrics)
-            .WithOne()
-            .HasForeignKey(m => m.ProjectEntryId);
 
         builder.Entity<ProjectEntry>()
             .HasMany(p => p.Comments)

@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { LucideAngularModule, GraduationCap, BookOpen, Award, MapPin, Edit3, X, Save, Plus, Trash2, AlertTriangle, Upload } from 'lucide-angular';
+import { LucideAngularModule, GraduationCap, BookOpen, Award, MapPin, Edit3, X, Save, Plus, Trash2, AlertTriangle, Upload, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { EducationEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
@@ -94,6 +94,8 @@ import { environment } from '../../../../environments/environment';
                 <!-- Image Card (Right Side) -->
                 <div
                     class="w-[calc(50%-3.5rem)] bg-white/90 dark:bg-zinc-900/70 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl overflow-hidden"
+                    [class.cursor-pointer]="item.imageUrl"
+                    (click)="item.imageUrl && openLightbox(item.imageUrl)"
                     [ngClass]="{
                         'border-indigo-500/30 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/20': item.category === 'Education',
                         'border-emerald-500/30 group-hover:border-emerald-500/60 group-hover:shadow-emerald-500/20': item.category === 'Training',
@@ -125,6 +127,70 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div *ngIf="showLightbox" 
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fade-in"
+        (click)="closeLightbox()">
+        
+        <!-- Close Button -->
+        <button (click)="closeLightbox()" 
+            class="absolute top-4 ltr:right-4 rtl:left-4 z-[210] w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-600 hover:border-red-600 transition-all group">
+            <lucide-icon [img]="XIcon" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-300"></lucide-icon>
+        </button>
+
+        <!-- Image Counter (only show if multiple images) -->
+        <div *ngIf="getAllEducationImages().length > 1" class="absolute top-4 left-1/2 -translate-x-1/2 z-[210] px-6 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
+            <span class="text-white font-black text-sm tracking-widest">
+                {{ currentLightboxIndex + 1 }} / {{ getAllEducationImages().length }}
+            </span>
+        </div>
+
+        <!-- Main Image Container -->
+        <div class="relative w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-16" (click)="$event.stopPropagation()">
+            <img [src]="getImageUrl(lightboxImage)" 
+                class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-scale-in"
+                [class.animate-slide-left]="slideDirection === 'left'"
+                [class.animate-slide-right]="slideDirection === 'right'">
+        </div>
+
+        <!-- Navigation Buttons (only show if multiple images) -->
+        <button *ngIf="getAllEducationImages().length > 1"
+            (click)="previousLightboxImage(); $event.stopPropagation()"
+            class="absolute ltr:left-4 ltr:md:left-8 rtl:right-4 rtl:md:right-8 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-600 hover:border-red-600 transition-all group">
+            <lucide-icon [img]="ChevronLeftIcon" class="w-7 h-7 group-hover:scale-110 transition-transform"></lucide-icon>
+        </button>
+
+        <button *ngIf="getAllEducationImages().length > 1"
+            (click)="nextLightboxImage(); $event.stopPropagation()"
+            class="absolute ltr:right-4 ltr:md:right-8 rtl:left-4 rtl:md:left-8 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-600 hover:border-red-600 transition-all group">
+            <lucide-icon [img]="ChevronRightIcon" class="w-7 h-7 group-hover:scale-110 transition-transform"></lucide-icon>
+        </button>
+
+        <!-- Thumbnail Strip (only show if multiple images) -->
+        <div *ngIf="getAllEducationImages().length > 1" 
+            class="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[210] max-w-[90%]"
+            (click)="$event.stopPropagation()">
+            <div class="overflow-x-auto no-scrollbar">
+                <div class="flex gap-2 md:gap-3 px-4 py-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                    <div *ngFor="let img of getAllEducationImages(); let i = index"
+                        (click)="goToLightboxImage(i)"
+                        [class.ring-2]="i === currentLightboxIndex"
+                        [class.ring-red-600]="i === currentLightboxIndex"
+                        [class.opacity-50]="i !== currentLightboxIndex"
+                        class="w-16 md:w-20 aspect-video rounded-lg overflow-hidden shrink-0 cursor-pointer hover:opacity-100 transition-all hover:scale-105 border border-white/20">
+                        <img [src]="getImageUrl(img)" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Close Button - Red Background (Always visible) -->
+        <button (click)="closeLightbox()"
+            class="absolute top-20 md:top-24 ltr:right-4 ltr:md:right-8 rtl:left-4 rtl:md:left-8 z-[210] w-12 h-12 rounded-xl bg-red-600 backdrop-blur-md border border-red-500 flex items-center justify-center text-white hover:bg-red-700 transition-all group shadow-lg">
+            <lucide-icon [img]="XIcon" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-300"></lucide-icon>
+        </button>
     </div>
 
     <!-- Edit Modal -->
@@ -328,6 +394,8 @@ export class EducationTimelineComponent {
     TrashIcon = Trash2;
     AlertIcon = AlertTriangle;
     UploadIcon = Upload;
+    ChevronLeftIcon = ChevronLeft;
+    ChevronRightIcon = ChevronRight;
 
     showEditModal = false;
     isSaving = false;
@@ -336,6 +404,12 @@ export class EducationTimelineComponent {
     editList: EducationEntry[] = [];
     deleteIndex: number | null = null;
     uploadingImageFor: string | null = null;
+    
+    // Lightbox state
+    showLightbox = false;
+    lightboxImage = '';
+    currentLightboxIndex = 0;
+    slideDirection: 'left' | 'right' | null = null;
 
     openEditModal() {
         this.editList = this.education.map(e => ({ ...e }));
@@ -490,4 +564,87 @@ export class EducationTimelineComponent {
         const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
         return `${baseUrl}/${cleanPath}`;
     }
+
+    // Lightbox methods
+    getAllEducationImages(): string[] {
+        return this.education
+            .filter(item => item.imageUrl)
+            .map(item => item.imageUrl!);
+    }
+
+    openLightbox(imageUrl: string) {
+        const images = this.getAllEducationImages();
+        this.currentLightboxIndex = images.indexOf(imageUrl);
+        if (this.currentLightboxIndex === -1) this.currentLightboxIndex = 0;
+
+        this.lightboxImage = imageUrl;
+        this.showLightbox = true;
+        this.slideDirection = null;
+
+        // Prevent body scroll when lightbox is open
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeLightbox() {
+        this.showLightbox = false;
+        this.slideDirection = null;
+
+        // Restore body scroll
+        document.body.style.overflow = '';
+    }
+
+    nextLightboxImage() {
+        const images = this.getAllEducationImages();
+        if (images.length <= 1) return;
+
+        this.slideDirection = 'right';
+        this.currentLightboxIndex = (this.currentLightboxIndex + 1) % images.length;
+        this.lightboxImage = images[this.currentLightboxIndex];
+
+        // Reset animation
+        setTimeout(() => this.slideDirection = null, 300);
+    }
+
+    previousLightboxImage() {
+        const images = this.getAllEducationImages();
+        if (images.length <= 1) return;
+
+        this.slideDirection = 'left';
+        this.currentLightboxIndex = this.currentLightboxIndex === 0 ? images.length - 1 : this.currentLightboxIndex - 1;
+        this.lightboxImage = images[this.currentLightboxIndex];
+
+        // Reset animation
+        setTimeout(() => this.slideDirection = null, 300);
+    }
+
+    goToLightboxImage(index: number) {
+        const images = this.getAllEducationImages();
+        if (index < 0 || index >= images.length) return;
+
+        this.slideDirection = index > this.currentLightboxIndex ? 'right' : 'left';
+        this.currentLightboxIndex = index;
+        this.lightboxImage = images[index];
+
+        // Reset animation
+        setTimeout(() => this.slideDirection = null, 300);
+    }
+
+    // Keyboard navigation for lightbox
+    @HostListener('window:keydown', ['$event'])
+    handleKeyboardEvent(event: KeyboardEvent) {
+        if (!this.showLightbox) return;
+
+        switch(event.key) {
+            case 'Escape':
+                this.closeLightbox();
+                break;
+            case 'ArrowLeft':
+                this.previousLightboxImage();
+                break;
+            case 'ArrowRight':
+                this.nextLightboxImage();
+                break;
+        }
+    }
+
 }

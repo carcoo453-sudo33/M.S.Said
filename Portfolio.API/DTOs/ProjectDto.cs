@@ -25,14 +25,17 @@ public class ProjectDto
     public string? ProjectUrl { get; set; }
     public string? GitHubUrl { get; set; }
     public string? Duration { get; set; }
+    public string? Duration_Ar { get; set; }
     public string? Language { get; set; }
+    public string? Language_Ar { get; set; }
     public string? Architecture { get; set; }
+    public string? Architecture_Ar { get; set; }
     public string? Status { get; set; }
+    public string? Status_Ar { get; set; }
     
     public List<KeyFeatureDto> KeyFeatures { get; set; } = new();
     public List<ChangelogItemDto> Changelog { get; set; } = new();
     public List<string> Responsibilities { get; set; } = new();
-    public List<MetricDto> Metrics { get; set; } = new();
     public List<CommentDto> Comments { get; set; } = new();
     
     public int ReactionsCount { get; set; }
@@ -70,14 +73,6 @@ public class ChangelogItemDto
     public string? Title_Ar { get; set; }
     public string Description { get; set; } = string.Empty;
     public string? Description_Ar { get; set; }
-}
-
-public class MetricDto
-{
-    public string Label { get; set; } = string.Empty;
-    public string? Label_Ar { get; set; }
-    public string Value { get; set; } = string.Empty;
-    public string? Trend { get; set; }
 }
 
 public class CommentDto

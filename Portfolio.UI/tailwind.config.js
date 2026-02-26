@@ -49,6 +49,18 @@ module.exports = {
           from: { opacity: '0', transform: 'translateY(-10px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        scaleIn: {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        slideLeft: {
+          from: { opacity: '0', transform: 'translateX(100px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideRight: {
+          from: { opacity: '0', transform: 'translateX(-100px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       animation: {
         'skeleton-loading': 'skeleton-loading 1.4s ease infinite',
@@ -58,6 +70,9 @@ module.exports = {
         'modal-enter': 'modalEnter 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'notification-fade-in-up': 'notificationFadeInUp 0.2s ease-out',
+        'scale-in': 'scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'slide-left': 'slideLeft 0.3s ease-out',
+        'slide-right': 'slideRight 0.3s ease-out',
       },
     },
   },

@@ -294,8 +294,8 @@ export class ProjectDetailsInteractionsComponent implements OnChanges {
     tempGender: 'male' | 'female' | '' = '';
     
     // Avatar URLs
-    maleAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=male&backgroundColor=b6e3f4';
-    femaleAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=female&backgroundColor=ffdfbf';
+    maleAvatar = '/Male.png';
+    femaleAvatar = '/Female.png';
     
     // Comment state
     commentText: string = '';

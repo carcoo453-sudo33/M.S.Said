@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-    class="min-h-screen bg-zinc-950 text-zinc-50 transition-colors duration-500 relative selection:bg-red-600 selection:text-white">
+    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 relative selection:bg-red-600 selection:text-white">
 
     <!-- SKELETON STATE -->
     <div *ngIf="isLoading()" class="max-w-7xl mx-auto px-6 pt-32 pb-24">

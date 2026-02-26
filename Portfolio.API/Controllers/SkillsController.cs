@@ -32,6 +32,7 @@ public class SkillsController : ControllerBase
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
+            Name_Ar = dto.Name_Ar,
             Icon = dto.Icon,
             Order = dto.Order
         };
@@ -50,6 +51,7 @@ public class SkillsController : ControllerBase
         if (skill == null) return NotFound();
 
         skill.Name = dto.Name;
+        skill.Name_Ar = dto.Name_Ar;
         skill.Icon = dto.Icon;
         skill.Order = dto.Order;
         skill.UpdatedAt = DateTime.UtcNow;

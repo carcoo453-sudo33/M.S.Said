@@ -40,7 +40,6 @@ public class ProjectsController : ControllerBase
             .Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
-            .Include(p => p.Metrics)
             .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Slug == slug);
             
@@ -109,7 +108,6 @@ public class ProjectsController : ControllerBase
         var project = await repository.Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
-            .Include(p => p.Metrics)
             .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Id == id);
         
@@ -132,9 +130,13 @@ public class ProjectsController : ControllerBase
         project.Niche = dto.Niche;
         project.Niche_Ar = dto.Niche_Ar;
         project.Duration = dto.Duration;
+        project.Duration_Ar = dto.Duration_Ar;
         project.Language = dto.Language;
+        project.Language_Ar = dto.Language_Ar;
         project.Architecture = dto.Architecture;
+        project.Architecture_Ar = dto.Architecture_Ar;
         project.Status = dto.Status;
+        project.Status_Ar = dto.Status_Ar;
         project.Order = dto.Order;
         project.IsFeatured = dto.IsFeatured;
         project.Views = dto.Views;
@@ -195,30 +197,6 @@ public class ProjectsController : ControllerBase
             });
         }
 
-        // Update Metrics - Remove existing and add new
-        var metricsRepo = _unitOfWork.Repository<Entities.ProjectMetric>();
-        var existingMetrics = await metricsRepo.Query()
-            .Where(m => m.ProjectEntryId == id)
-            .ToListAsync();
-        foreach (var metric in existingMetrics)
-        {
-            metricsRepo.Delete(metric);
-        }
-        
-        foreach (var m in dto.Metrics)
-        {
-            await metricsRepo.AddAsync(new Entities.ProjectMetric
-            {
-                Label = m.Label,
-                Label_Ar = m.Label_Ar,
-                Value = m.Value,
-                Trend = m.Trend,
-                ProjectEntryId = project.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            });
-        }
-
         await _unitOfWork.CompleteAsync();
         return Ok(MapToDto(project));
     }
@@ -246,9 +224,13 @@ public class ProjectsController : ControllerBase
             Niche = p.Niche,
             Niche_Ar = p.Niche_Ar,
             Duration = p.Duration,
+            Duration_Ar = p.Duration_Ar,
             Language = p.Language,
+            Language_Ar = p.Language_Ar,
             Architecture = p.Architecture,
+            Architecture_Ar = p.Architecture_Ar,
             Status = p.Status,
+            Status_Ar = p.Status_Ar,
             Order = p.Order,
             IsFeatured = p.IsFeatured,
             Views = p.Views,
@@ -258,7 +240,6 @@ public class ProjectsController : ControllerBase
             Responsibilities = !string.IsNullOrEmpty(p.ResponsibilitiesJson) ? JsonSerializer.Deserialize<List<string>>(p.ResponsibilitiesJson) ?? new() : new(),
             KeyFeatures = p.KeyFeatures?.Select(f => new KeyFeatureDto { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList() ?? new(),
             Changelog = p.Changelog?.Select(c => new ChangelogItemDto { Date = c.Date, Version = c.Version, Title = c.Title, Title_Ar = c.Title_Ar, Description = c.Description, Description_Ar = c.Description_Ar }).ToList() ?? new(),
-            Metrics = p.Metrics?.Select(m => new MetricDto { Label = m.Label, Label_Ar = m.Label_Ar, Value = m.Value, Trend = m.Trend }).ToList() ?? new(),
             Comments = p.Comments?.Select(c => new CommentDto 
             { 
                 Id = c.Id.ToString(), 
@@ -762,47 +743,10 @@ public class ProjectsController : ControllerBase
                 Console.WriteLine($"[ImportFromGitHub] Added {releases.Count} changelog items");
             }
 
-            // Add metrics if any and project doesn't have metrics
-            var metricsRepo = _unitOfWork.Repository<Entities.ProjectMetric>();
-            var existingMetrics = await metricsRepo.Query()
-                .Where(m => m.ProjectEntryId == projectId && !m.IsDeleted)
-                .CountAsync();
-                
-            if (repoData != null && existingMetrics == 0)
-            {
-                await metricsRepo.AddAsync(new Entities.ProjectMetric
-                {
-                    Label = "GitHub Stars",
-                    Value = repoData.StargazersCount.ToString(),
-                    ProjectEntryId = projectId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                });
-                await metricsRepo.AddAsync(new Entities.ProjectMetric
-                {
-                    Label = "Forks",
-                    Value = repoData.ForksCount.ToString(),
-                    ProjectEntryId = projectId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                });
-                await metricsRepo.AddAsync(new Entities.ProjectMetric
-                {
-                    Label = "Open Issues",
-                    Value = repoData.OpenIssuesCount.ToString(),
-                    ProjectEntryId = projectId,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                });
-                await _unitOfWork.CompleteAsync();
-                Console.WriteLine($"[ImportFromGitHub] Added 3 metrics");
-            }
-
             // Fetch the updated project with all includes
             var updatedProject = await repository.Query()
                 .Include(p => p.KeyFeatures)
                 .Include(p => p.Changelog)
-                .Include(p => p.Metrics)
                 .Include(p => p.Comments)
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -1075,13 +1019,7 @@ public class ProjectsController : ControllerBase
                     Version = r.TagName ?? "v1.0.0",
                     Title = r.Name ?? r.TagName ?? "Release",
                     Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? ""
-                }).ToList(),
-                Metrics = repoData != null ? new List<MetricDto>
-                {
-                    new MetricDto { Label = "GitHub Stars", Value = repoData.StargazersCount.ToString() },
-                    new MetricDto { Label = "Forks", Value = repoData.ForksCount.ToString() },
-                    new MetricDto { Label = "Open Issues", Value = repoData.OpenIssuesCount.ToString() }
-                } : new List<MetricDto>()
+                }).ToList()
             };
 
             return Ok(dto);

@@ -15,10 +15,12 @@ import { CommonModule } from '@angular/common';
             class="text-3xl md:text-5xl font-black mb-10 tracking-tighter uppercase leading-tight dark:text-white text-zinc-900">
             <span [innerHTML]="title"></span>
         </h1>
-        <p *ngIf="description"
-            class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed italic">
-            "{{ description }}"
-        </p>
+        <div *ngIf="description"
+            class="max-w-2xl mx-auto px-6 py-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base leading-relaxed italic">
+                "{{ description }}"
+            </p>
+        </div>
     </header>
   `
 })

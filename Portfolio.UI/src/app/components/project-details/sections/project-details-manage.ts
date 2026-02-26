@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, OnChanges, ChangeDetect
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Edit, Save, X, Plus, Trash2, Code, Clock, Layers, CheckCircle, Github } from 'lucide-angular';
-import { ProjectEntry, KeyFeature, ChangelogItem, Metric } from '../../../models';
+import { ProjectEntry, KeyFeature, ChangelogItem } from '../../../models';
 import { ProjectService } from '../../../services/project.service';
 import { ToastService } from '../../../services/toast.service';
 
@@ -28,7 +28,7 @@ import { ToastService } from '../../../services/toast.service';
                         <lucide-icon [img]="GithubIcon" class="w-5 h-5 text-red-600"></lucide-icon>
                         <h3 class="text-sm font-black uppercase text-white">Import from GitHub</h3>
                     </div>
-                    <p class="text-xs text-zinc-500">Automatically populate features, changelog, and metrics from a GitHub repository</p>
+                    <p class="text-xs text-zinc-500">Automatically populate features and changelog from a GitHub repository</p>
                     <div class="flex gap-3">
                         <input type="text" [(ngModel)]="githubUrl" placeholder="https://github.com/owner/repo"
                             class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg px-4 py-2 text-white text-sm focus:border-red-600 outline-none">
@@ -50,39 +50,66 @@ import { ToastService } from '../../../services/toast.service';
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 <lucide-icon [img]="CodeIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
-                                Language
+                                Language (EN)
                             </label>
-                            <input type="text" [(ngModel)]="editData.language"
+                            <input type="text" [(ngModel)]="editData.language" placeholder="e.g. TypeScript"
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                                <lucide-icon [img]="CodeIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
+                                Language (AR)
+                            </label>
+                            <input type="text" [(ngModel)]="editData.language_Ar" placeholder="مثال: تايب سكريبت" dir="rtl"
                                 class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 <lucide-icon [img]="ClockIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
-                                Duration
+                                Duration (EN)
                             </label>
-                            <input type="text" [(ngModel)]="editData.duration"
+                            <input type="text" [(ngModel)]="editData.duration" placeholder="e.g. 2025"
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                                <lucide-icon [img]="ClockIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
+                                Duration (AR)
+                            </label>
+                            <input type="text" [(ngModel)]="editData.duration_Ar" placeholder="مثال: 2025" dir="rtl"
                                 class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 <lucide-icon [img]="LayersIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
-                                Architecture
+                                Architecture (EN)
                             </label>
-                            <input type="text" [(ngModel)]="editData.architecture"
+                            <input type="text" [(ngModel)]="editData.architecture" placeholder="e.g. Scalable Architecture"
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                                <lucide-icon [img]="LayersIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
+                                Architecture (AR)
+                            </label>
+                            <input type="text" [(ngModel)]="editData.architecture_Ar" placeholder="مثال: هندسة قابلة للتوسع" dir="rtl"
                                 class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                         </div>
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 <lucide-icon [img]="CheckIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
-                                Status
+                                Status (EN)
                             </label>
-                            <select [(ngModel)]="editData.status"
+                            <input type="text" [(ngModel)]="editData.status" placeholder="e.g. Active"
                                 class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
-                                <option value="Active">Active</option>
-                                <option value="Completed">Completed</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Archived">Archived</option>
-                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
+                                <lucide-icon [img]="CheckIcon" class="w-3 h-3 inline mr-1"></lucide-icon>
+                                Status (AR)
+                            </label>
+                            <input type="text" [(ngModel)]="editData.status_Ar" placeholder="مثال: نشط" dir="rtl"
+                                class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                         </div>
                     </div>
                 </section>
@@ -225,53 +252,6 @@ import { ToastService } from '../../../services/toast.service';
                         </div>
                     </div>
                 </section>
-
-                <!-- Metrics -->
-                <section class="space-y-6">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-black uppercase text-red-600">Metrics</h3>
-                        <button (click)="addMetric()" 
-                            class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-colors">
-                            <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-                            Add Metric
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div *ngFor="let metric of editData.metrics; let i = index"
-                            class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-black uppercase text-zinc-600">Metric {{i + 1}}</span>
-                                <button (click)="removeMetric(i)" 
-                                    class="text-red-600 hover:text-red-500 transition-colors">
-                                    <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
-                                </button>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Label (EN)</label>
-                                    <input type="text" [(ngModel)]="metric.label"
-                                        class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Value</label>
-                                    <input type="text" [(ngModel)]="metric.value"
-                                        class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Label (AR)</label>
-                                <input type="text" [(ngModel)]="metric.label_Ar" dir="rtl"
-                                    placeholder="التسمية"
-                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Trend (optional)</label>
-                                <input type="text" [(ngModel)]="metric.trend" placeholder="+12%"
-                                    class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-white text-sm focus:border-red-600 outline-none">
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </div>
 
             <!-- Footer -->
@@ -328,13 +308,16 @@ export class ProjectDetailsManageComponent implements OnChanges {
         
         this.editData = {
             language: this.project.language || '',
+            language_Ar: this.project.language_Ar || '',
             duration: this.project.duration || '',
+            duration_Ar: this.project.duration_Ar || '',
             architecture: this.project.architecture || '',
+            architecture_Ar: this.project.architecture_Ar || '',
             status: this.project.status || 'Active',
+            status_Ar: this.project.status_Ar || '',
             keyFeatures: JSON.parse(JSON.stringify(this.project.keyFeatures || [])),
             responsibilities: [...(this.project.responsibilities || [])],
-            changelog: JSON.parse(JSON.stringify(this.project.changelog || [])),
-            metrics: JSON.parse(JSON.stringify(this.project.metrics || []))
+            changelog: JSON.parse(JSON.stringify(this.project.changelog || []))
         };
         
         // Pre-fill GitHub URL if available
@@ -383,19 +366,6 @@ export class ProjectDetailsManageComponent implements OnChanges {
         this.editData.changelog.splice(index, 1);
     }
 
-    // Metrics
-    addMetric() {
-        this.editData.metrics.push({
-            label: '',
-            value: '',
-            trend: ''
-        });
-    }
-
-    removeMetric(index: number) {
-        this.editData.metrics.splice(index, 1);
-    }
-
     saveChanges() {
         if (!this.project || this.isSaving) return;
 
@@ -404,13 +374,16 @@ export class ProjectDetailsManageComponent implements OnChanges {
         const updatedProject = {
             ...this.project,
             language: this.editData.language,
+            language_Ar: this.editData.language_Ar,
             duration: this.editData.duration,
+            duration_Ar: this.editData.duration_Ar,
             architecture: this.editData.architecture,
+            architecture_Ar: this.editData.architecture_Ar,
             status: this.editData.status,
+            status_Ar: this.editData.status_Ar,
             keyFeatures: this.editData.keyFeatures,
             responsibilities: this.editData.responsibilities.filter((r: string) => r.trim()),
-            changelog: this.editData.changelog,
-            metrics: this.editData.metrics
+            changelog: this.editData.changelog
         };
 
         this.projectService.updateProject(this.project.id, updatedProject).subscribe({
@@ -458,7 +431,6 @@ export class ProjectDetailsManageComponent implements OnChanges {
                 console.log('Key Features:', updated.keyFeatures);
                 console.log('Responsibilities:', updated.responsibilities);
                 console.log('Changelog:', updated.changelog);
-                console.log('Metrics:', updated.metrics);
                 console.log('Language:', updated.language);
                 console.log('Image URL:', updated.imageUrl);
                 console.log('Gallery:', updated.gallery);
@@ -483,11 +455,7 @@ export class ProjectDetailsManageComponent implements OnChanges {
                     importedCount += updated.changelog.length;
                     importedItems.push(`${updated.changelog.length} Changelog Entries`);
                 }
-                if (updated.metrics && updated.metrics.length > 0) {
-                    this.editData.metrics = JSON.parse(JSON.stringify(updated.metrics));
-                    importedCount += updated.metrics.length;
-                    importedItems.push(`${updated.metrics.length} Metrics`);
-                }
+
                 if (updated.language) {
                     this.editData.language = updated.language;
                     importedItems.push(`Language: ${updated.language}`);

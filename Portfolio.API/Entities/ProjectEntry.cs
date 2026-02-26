@@ -35,12 +35,16 @@ public class ProjectEntry : BaseEntity
     public string? RepoUrl { get; set; }
     
     public string? Duration { get; set; } // e.g. "2024-2025"
+    public string? Duration_Ar { get; set; }
     
     public string? Language { get; set; }
+    public string? Language_Ar { get; set; }
     
     public string? Architecture { get; set; }
+    public string? Architecture_Ar { get; set; }
     
     public string? Status { get; set; }
+    public string? Status_Ar { get; set; }
 
     public int Order { get; set; }
     
@@ -57,6 +61,5 @@ public class ProjectEntry : BaseEntity
     // Navigation Properties
     public virtual ICollection<ProjectKeyFeature> KeyFeatures { get; set; } = new List<ProjectKeyFeature>();
     public virtual ICollection<ProjectChangelogItem> Changelog { get; set; } = new List<ProjectChangelogItem>();
-    public virtual ICollection<ProjectMetric> Metrics { get; set; } = new List<ProjectMetric>();
     public virtual ICollection<ProjectComment> Comments { get; set; } = new List<ProjectComment>();
 }

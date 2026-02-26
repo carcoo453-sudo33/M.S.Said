@@ -1,7 +1,7 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule, Layers, Rocket, Monitor, Code, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, Layers, Rocket, Monitor, Code } from 'lucide-angular';
 import { ProjectEntry, KeyFeature } from '../../../models';
 import { TranslationService } from '../../../services/translation.service';
 
@@ -11,22 +11,6 @@ import { TranslationService } from '../../../services/translation.service';
     imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
     <div *ngIf="project" class="space-y-8 lg:space-y-10">
-        <!-- Responsibilities -->
-        <section class="space-y-6">
-            <div class="flex items-center gap-3">
-                <div class="w-1 h-6 bg-red-600 rounded-full"></div>
-                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.responsibilities' | translate }}</h2>
-            </div>
-
-            <div class="space-y-3">
-                <div *ngFor="let resp of project.responsibilities"
-                    class="flex gap-3 p-4 bg-zinc-900/40 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-colors">
-                    <lucide-icon [img]="CheckIcon" class="w-4 h-4 text-red-600 shrink-0 mt-0.5"></lucide-icon>
-                    <p class="text-zinc-300 text-xs font-medium leading-relaxed">{{ resp }}</p>
-                </div>
-            </div>
-        </section>
-
         <!-- Key Features -->
         <section class="space-y-6">
             <div class="flex items-center gap-3">
@@ -35,7 +19,7 @@ import { TranslationService } from '../../../services/translation.service';
             </div>
 
             <div class="space-y-4">
-                <div *ngFor="let feature of project.keyFeatures"
+                <div *ngFor="let feature of getFilteredFeatures()"
                     class="bg-zinc-950 p-5 rounded-xl border border-zinc-900 hover:border-red-600/30 transition-all space-y-3 group">
                     <div class="w-9 h-9 bg-red-600/10 rounded-lg flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
                         <lucide-icon [img]="LayersIcon" class="w-4 h-4" *ngIf="feature.icon === 'Layers'"></lucide-icon>
@@ -61,15 +45,38 @@ export class ProjectDetailsFeaturesComponent {
     RocketIcon = Rocket;
     MonitorIcon = Monitor;
     CodeIcon = Code;
-    CheckIcon = CheckCircle;
+
+    getFilteredFeatures(): KeyFeature[] {
+        if (!this.project?.keyFeatures) return [];
+        
+        // Show all features - don't filter by language
+        // The getFeatureTitle and getFeatureDescription methods will handle fallback
+        return this.project.keyFeatures.filter(feature => {
+            // Only filter out completely empty features (no title in any language)
+            return (feature.title && feature.title.trim().length > 0) || 
+                   (feature.title_Ar && feature.title_Ar.trim().length > 0);
+        });
+    }
 
     getFeatureTitle(feature: KeyFeature): string {
         const currentLang = this.translationService.currentLang$();
-        return currentLang === 'ar' && feature.title_Ar ? feature.title_Ar : feature.title;
+        
+        // Try to get the title in current language, fallback to other language if not available
+        if (currentLang === 'ar') {
+            return (feature.title_Ar && feature.title_Ar.trim().length > 0) ? feature.title_Ar : feature.title;
+        } else {
+            return (feature.title && feature.title.trim().length > 0) ? feature.title : (feature.title_Ar || '');
+        }
     }
 
     getFeatureDescription(feature: KeyFeature): string {
         const currentLang = this.translationService.currentLang$();
-        return currentLang === 'ar' && feature.description_Ar ? feature.description_Ar : feature.description;
+        
+        // Try to get the description in current language, fallback to other language if not available
+        if (currentLang === 'ar') {
+            return (feature.description_Ar && feature.description_Ar.trim().length > 0) ? feature.description_Ar : feature.description;
+        } else {
+            return (feature.description && feature.description.trim().length > 0) ? feature.description : (feature.description_Ar || '');
+        }
     }
 }

@@ -119,7 +119,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                             {{ isImporting ? 'Importing...' : 'Import' }}
                         </button>
                     </div>
-                    <p class="text-[9px] text-zinc-600">Features, changelog, metrics, and repository info will be imported automatically</p>
+                    <p class="text-[9px] text-zinc-600">Features, changelog, and repository info will be imported automatically</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -148,6 +148,21 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (AR)</label>
                         <textarea [(ngModel)]="editingProject.description_Ar" placeholder="وصف المشروع" rows="3" dir="rtl"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
+                            Summary (EN)
+                            <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- Brief description for project details page</span>
+                        </label>
+                        <textarea [(ngModel)]="editingProject.summary" placeholder="Brief project summary..." rows="2"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Summary (AR)</label>
+                        <textarea [(ngModel)]="editingProject.summary_Ar" placeholder="ملخص موجز للمشروع..." rows="2" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
 
@@ -427,8 +442,7 @@ export class ProjectsGridComponent implements OnChanges {
                     technologies: (importedData.technologies && importedData.technologies.trim()) || this.editingProject.technologies || '',
                     responsibilities: importedData.responsibilities && importedData.responsibilities.length > 0 ? importedData.responsibilities : this.editingProject.responsibilities || [],
                     keyFeatures: importedData.keyFeatures && importedData.keyFeatures.length > 0 ? importedData.keyFeatures : this.editingProject.keyFeatures || [],
-                    changelog: importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.editingProject.changelog || [],
-                    metrics: importedData.metrics && importedData.metrics.length > 0 ? importedData.metrics : this.editingProject.metrics || []
+                    changelog: importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.editingProject.changelog || []
                 };
 
                 console.log('Populated editingProject:', this.editingProject);

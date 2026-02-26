@@ -66,6 +66,7 @@ var app = builder.Build();
 // CORS MUST be at the very top to handle preflight and redirects correctly
 app.UseCors("AllowAngular");
 
+// Serve static files from wwwroot (includes uploads folder)
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.

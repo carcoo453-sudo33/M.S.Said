@@ -7,11 +7,10 @@ import { NavbarComponent } from '../shared/navbar/navbar';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Plus } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
 // Section Components
-import { ProjectsHeaderComponent } from './sections/projects-header';
 import { ProjectsGridComponent } from './sections/projects-grid';
 import { ProjectsWorkHistoryComponent } from './sections/projects-work-history';
 import { ProjectsBrandSliderComponent } from './sections/projects-brand-slider';
@@ -19,7 +18,6 @@ import { ProjectsReferencesComponent } from './sections/projects-references';
 import { ProjectsBottomCTAComponent } from './sections/projects-bottom-cta';
 
 // Skeleton Components
-import { ProjectsHeaderSkeletonComponent } from './sections/projects-header-skeleton';
 import { ProjectsGridSkeletonComponent } from './sections/projects-grid-skeleton';
 import { ProjectsWorkHistorySkeletonComponent } from './sections/projects-work-history-skeleton';
 import { ProjectsBrandSliderSkeletonComponent } from './sections/projects-brand-slider-skeleton';
@@ -28,8 +26,9 @@ import { ProjectsBottomCTASkeletonComponent } from './sections/projects-bottom-c
 
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
-import { SharedErrorStateComponent } from '../shared/error-state/error-state';
+import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
+import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 
 @Component({
   selector: 'app-projects',
@@ -39,19 +38,18 @@ import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
     TranslateModule,
     NavbarComponent,
     LucideAngularModule,
-    ProjectsHeaderComponent,
     ProjectsGridComponent,
     ProjectsWorkHistoryComponent,
     ProjectsBrandSliderComponent,
     ProjectsReferencesComponent,
     ProjectsBottomCTAComponent,
-    ProjectsHeaderSkeletonComponent,
     ProjectsGridSkeletonComponent,
     ProjectsWorkHistorySkeletonComponent,
     ProjectsBrandSliderSkeletonComponent,
     ProjectsReferencesSkeletonComponent,
     ProjectsBottomCTASkeletonComponent,
     SharedFooterComponent,
+    SharedPageHeaderComponent,
     SharedErrorStateComponent,
     SharedEmptyStateComponent
   ],
@@ -63,6 +61,8 @@ export class ProjectsComponent implements OnInit {
   public auth = inject(AuthService);
   private toast = inject(ToastService);
   public translationService = inject(TranslationService);
+
+  PlusIcon = Plus;
 
   projects = signal<ProjectEntry[]>([]);
   experiences = signal<ExperienceEntry[]>([]);

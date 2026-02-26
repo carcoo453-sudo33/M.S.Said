@@ -7,7 +7,9 @@ public class SkillEntry : BaseEntity
     [Required]
     public string Name { get; set; } = string.Empty; // e.g. "Angular"
     
-    public string? Icon { get; set; } // lucide icon name or image url
+    public string? Name_Ar { get; set; } // Arabic translation
+    
+    public string? Icon { get; set; } // image url only (no longer supports lucide icon names)
     
     public int Order { get; set; }
 }

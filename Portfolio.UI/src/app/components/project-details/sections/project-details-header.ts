@@ -25,7 +25,7 @@ import { ToastService } from '../../../services/toast.service';
     <!-- Header Section -->
     <header *ngIf="project" class="space-y-8 lg:space-y-12 animate-fade-in-up relative">
         <!-- Admin Actions -->
-        <div *ngIf="auth.isLoggedIn()" class="absolute top-0 right-0 flex gap-2 lg:gap-3">
+        <div *ngIf="auth.isLoggedIn()" class="absolute top-0 ltr:right-0 rtl:left-0 flex gap-2 lg:gap-3">
             <button (click)="onEditClick()"
                 class="flex items-center gap-2 bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-white transition-all group">
                 <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:scale-110 transition-transform"></lucide-icon>

@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Portfolio.API.Data;
 
 #nullable disable
 
-namespace Portfolio.API.Migrations
+namespace Portfolio.API.Data.Migrations
 {
     [DbContext(typeof(PortfolioDbContext))]
-    partial class PortfolioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260226175123_AddMetadataArFields")]
+    partial class AddMetadataArFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -933,6 +936,45 @@ namespace Portfolio.API.Migrations
                     b.ToTable("ProjectKeyFeatures");
                 });
 
+            modelBuilder.Entity("Portfolio.API.Entities.ProjectMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Label_Ar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProjectEntryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Trend")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectEntryId");
+
+                    b.ToTable("ProjectMetrics");
+                });
+
             modelBuilder.Entity("Portfolio.API.Entities.ServiceEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -988,9 +1030,6 @@ namespace Portfolio.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_Ar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Order")
@@ -1135,6 +1174,15 @@ namespace Portfolio.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Portfolio.API.Entities.ProjectMetric", b =>
+                {
+                    b.HasOne("Portfolio.API.Entities.ProjectEntry", null)
+                        .WithMany("Metrics")
+                        .HasForeignKey("ProjectEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Portfolio.API.Entities.ProjectEntry", b =>
                 {
                     b.Navigation("Changelog");
@@ -1142,6 +1190,8 @@ namespace Portfolio.API.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("KeyFeatures");
+
+                    b.Navigation("Metrics");
                 });
 #pragma warning restore 612, 618
         }
