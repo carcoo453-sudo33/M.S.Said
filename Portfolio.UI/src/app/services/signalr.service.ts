@@ -30,7 +30,7 @@ export class SignalRService {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, options)
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-      .configureLogging(signalR.LogLevel.Error) // Only show errors
+      .configureLogging(signalR.LogLevel.None) // Suppress all logs
       .build();
 
     this.hubConnection
@@ -47,6 +47,11 @@ export class SignalRService {
     // Handle reconnection
     this.hubConnection.onreconnected(() => {
       this.checkAdminStatus();
+    });
+
+    // Handle reconnecting state
+    this.hubConnection.onreconnecting(() => {
+      // Silently handle reconnection attempts
     });
 
     this.hubConnection.onclose(() => {
