@@ -14,6 +14,9 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Verify build output
+RUN ls -la /app/dist/ && echo "Build output verified"
+
 # Production stage
 FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html
