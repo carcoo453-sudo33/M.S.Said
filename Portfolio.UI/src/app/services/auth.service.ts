@@ -19,7 +19,7 @@ export class AuthService {
     login(credentials: { email: string, password: string }) {
         return this.http.post<AuthResponse>(`${this.baseUrl}/identity/login`, credentials).pipe(
             tap(response => {
-                localStorage.setItem('token', response.accessToken);
+                localStorage.setItem('auth_token', response.accessToken);
                 this.currentUserSubject.next(response);
                 // Reconnect SignalR with the new token
                 this.signalRService.reconnectWithAuth();
@@ -28,14 +28,14 @@ export class AuthService {
     }
 
     logout() {
-        localStorage.removeItem('token');
+        localStorage.removeItem('auth_token');
         this.currentUserSubject.next(null);
         // Reconnect SignalR without token
         this.signalRService.reconnectWithAuth();
     }
 
     getToken() {
-        return localStorage.getItem('token');
+        return localStorage.getItem('auth_token');
     }
 
     isLoggedIn() {
