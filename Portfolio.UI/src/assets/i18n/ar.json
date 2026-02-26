@@ -208,6 +208,13 @@
     }
   },
   "projectDetails": {
+    "errorTitle": "المشروع مشفر",
+    "retryText": "استعادة المخطط",
+    "defaultQuote": "يمثل هذا المشروع اندماجاً بين قابلية التوسع التقنية والتصميم المتمحور حول الإنسان. تم هندسة كل سطر من الكود لضمان الاستقرار طويل الأمد والتفاعل عالي الدقة مع المستخدم.",
+    "breadcrumb": "المشاريع",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleteConfirm": "هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع عن هذا الإجراء.",
     "interactions": {
       "discussion": "النقاش",
       "joinDiscussion": "انضم إلى النقاش",
@@ -230,6 +237,24 @@
       "cancel": "إلغاء",
       "postReply": "نشر الرد",
       "shareProject": "مشاركة المشروع"
+    },
+    "specs": {
+      "language": "اللغة",
+      "duration": "المدة",
+      "architecture": "الهندسة",
+      "status": "الحالة",
+      "multipleLanguages": "لغات متعددة",
+      "scalableArchitecture": "هندسة قابلة للتوسع",
+      "active": "نشط"
+    },
+    "features": {
+      "keyFeatures": "الميزات الرئيسية",
+      "responsibilities": "المسؤوليات"
+    },
+    "sidebar": {
+      "changelog": "سجل التغييرات",
+      "metrics": "المقاييس",
+      "related": "مشاريع ذات صلة"
     }
   },
   "blog": {
@@ -288,33 +313,6 @@
     },
     "signature": {
       "quote": "التعاون هو أساس الابتكار. كل مشروع ناجح يبدأ بتواصل واضح ورؤية مشتركة. لنبني شيئاً استثنائياً معاً."
-    }
-  },
-  "projectDetails": {
-    "errorTitle": "المشروع مشفر",
-    "retryText": "استعادة المخطط",
-    "defaultQuote": "يمثل هذا المشروع اندماجاً بين قابلية التوسع التقنية والتصميم المتمحور حول الإنسان. تم هندسة كل سطر من الكود لضمان الاستقرار طويل الأمد والتفاعل عالي الدقة مع المستخدم.",
-    "breadcrumb": "المشاريع",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "deleteConfirm": "هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع عن هذا الإجراء.",
-    "specs": {
-      "language": "اللغة",
-      "duration": "المدة",
-      "architecture": "الهندسة",
-      "status": "الحالة",
-      "multipleLanguages": "لغات متعددة",
-      "scalableArchitecture": "هندسة قابلة للتوسع",
-      "active": "نشط"
-    },
-    "features": {
-      "keyFeatures": "الميزات الرئيسية",
-      "responsibilities": "المسؤوليات"
-    },
-    "sidebar": {
-      "changelog": "سجل التغييرات",
-      "metrics": "المقاييس",
-      "related": "مشاريع ذات صلة"
     }
   },
   "timeline": {
