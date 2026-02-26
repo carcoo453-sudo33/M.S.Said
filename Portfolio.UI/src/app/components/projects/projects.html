@@ -72,10 +72,12 @@
             <!-- References Section -->
             <app-projects-references [testimonials]="testimonials()" (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
 
-            <!-- Bottom CTA -->
-            <app-projects-bottom-cta></app-projects-bottom-cta>
-
         </div>
+    </div>
+
+    <!-- Bottom CTA - Full Width -->
+    <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="relative z-10">
+        <app-projects-bottom-cta></app-projects-bottom-cta>
     </div>
 </main>
 
