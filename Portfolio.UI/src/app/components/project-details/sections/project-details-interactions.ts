@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Heart, Share2, User, X, Facebook, Twitter, Linkedin, Link, MessageCircle, CheckCircle, AlertCircle, Eye } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { ProjectService } from '../../../services/project.service';
@@ -8,7 +9,7 @@ import { ProjectService } from '../../../services/project.service';
 @Component({
     selector: 'app-project-details-interactions',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule],
+    imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
     template: `
     <div *ngIf="project" class="space-y-32">
         <!-- Toast Notifications -->
@@ -34,7 +35,7 @@ import { ProjectService } from '../../../services/project.service';
             <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 max-w-md w-full space-y-6 animate-scale-in"
                 (click)="$event.stopPropagation()">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">Share Project</h3>
+                    <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">{{ 'projectDetails.interactions.shareProject' | translate }}</h3>
                     <button (click)="closeShareModal()" 
                         class="text-zinc-400 hover:text-white transition-colors">
                         <lucide-icon [img]="XIcon" class="w-6 h-6"></lucide-icon>
@@ -82,30 +83,30 @@ import { ProjectService } from '../../../services/project.service';
 
         <!-- Discussion -->
         <section class="space-y-16">
-            <h2 class="text-2xl font-black italic uppercase tracking-tighter">Discussion</h2>
+            <h2 class="text-2xl font-black italic uppercase tracking-tighter">{{ 'projectDetails.interactions.discussion' | translate }}</h2>
 
             <!-- User Info Form (shown if not set) -->
             <div *ngIf="!userName" class="bg-zinc-950 border border-zinc-900 rounded-xl p-8 space-y-6">
                 <div class="flex items-center gap-3 mb-4">
                     <lucide-icon [img]="UserIcon" class="w-5 h-5 text-red-600"></lucide-icon>
-                    <h3 class="text-sm font-black uppercase text-white">Join the Discussion</h3>
+                    <h3 class="text-sm font-black uppercase text-white">{{ 'projectDetails.interactions.joinDiscussion' | translate }}</h3>
                 </div>
                 
                 <div class="space-y-4">
                     <div>
-                        <label for="comment-user-name" class="block text-[10px] font-black uppercase text-zinc-500 mb-2">Your Name</label>
+                        <label for="comment-user-name" class="block text-[10px] font-black uppercase text-zinc-500 mb-2">{{ 'projectDetails.interactions.yourName' | translate }}</label>
                         <input 
                             type="text"
                             id="comment-user-name"
                             name="userName"
                             [(ngModel)]="tempUserName"
-                            placeholder="Enter your name"
+                            [placeholder]="'projectDetails.interactions.enterName' | translate"
                             autocomplete="name"
                             class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:border-red-600 outline-none transition-colors">
                     </div>
                     
                     <div>
-                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-3">Choose Avatar</label>
+                        <label class="block text-[10px] font-black uppercase text-zinc-500 mb-3">{{ 'projectDetails.interactions.chooseAvatar' | translate }}</label>
                         <div class="flex gap-4">
                             <button 
                                 (click)="selectGender('male')"
@@ -113,7 +114,7 @@ import { ProjectService } from '../../../services/project.service';
                                 [class.ring-red-600]="tempGender === 'male'"
                                 class="flex flex-col items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl p-4 transition-all group">
                                 <img [src]="maleAvatar" class="w-16 h-16 rounded-xl object-cover grayscale group-hover:grayscale-0 transition-all">
-                                <span class="text-[10px] font-black uppercase text-zinc-400 group-hover:text-white">Male</span>
+                                <span class="text-[10px] font-black uppercase text-zinc-400 group-hover:text-white">{{ 'projectDetails.interactions.male' | translate }}</span>
                             </button>
                             
                             <button 
@@ -122,7 +123,7 @@ import { ProjectService } from '../../../services/project.service';
                                 [class.ring-red-600]="tempGender === 'female'"
                                 class="flex flex-col items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl p-4 transition-all group">
                                 <img [src]="femaleAvatar" class="w-16 h-16 rounded-xl object-cover grayscale group-hover:grayscale-0 transition-all">
-                                <span class="text-[10px] font-black uppercase text-zinc-400 group-hover:text-white">Female</span>
+                                <span class="text-[10px] font-black uppercase text-zinc-400 group-hover:text-white">{{ 'projectDetails.interactions.female' | translate }}</span>
                             </button>
                         </div>
                     </div>
@@ -135,7 +136,7 @@ import { ProjectService } from '../../../services/project.service';
                         [class.opacity-50]="!tempUserName || !tempGender"
                         [class.cursor-not-allowed]="!tempUserName || !tempGender"
                         class="bg-white text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white disabled:hover:text-black">
-                        Continue
+                        {{ 'projectDetails.interactions.continue' | translate }}
                     </button>
                 </div>
             </div>
@@ -145,19 +146,19 @@ import { ProjectService } from '../../../services/project.service';
                 <img [src]="userAvatar" class="w-14 h-14 rounded-xl object-cover shrink-0 grayscale">
                 <div class="flex-1 space-y-4">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-black text-zinc-400">Commenting as <span class="text-white">{{ userName }}</span></span>
+                        <span class="text-xs font-black text-zinc-400">{{ 'projectDetails.interactions.commentingAs' | translate }} <span class="text-white">{{ userName }}</span></span>
                         <button 
                             (click)="changeUser()"
                             class="text-[10px] font-black uppercase text-zinc-600 hover:text-red-600 transition-colors">
-                            Change
+                            {{ 'projectDetails.interactions.change' | translate }}
                         </button>
                     </div>
-                    <label for="comment-text" class="sr-only">Your comment</label>
+                    <label for="comment-text" class="sr-only">{{ 'projectDetails.interactions.yourComment' | translate }}</label>
                     <textarea 
                         id="comment-text"
                         name="commentText"
                         [(ngModel)]="commentText"
-                        placeholder="Join the conversation..."
+                        [placeholder]="'projectDetails.interactions.joinConversation' | translate"
                         autocomplete="off"
                         class="w-full bg-zinc-950 border border-zinc-900 rounded-xl p-6 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[120px]"></textarea>
                     <div class="flex justify-end">
@@ -167,7 +168,7 @@ import { ProjectService } from '../../../services/project.service';
                             [class.opacity-50]="!commentText.trim() || isPosting"
                             [class.cursor-not-allowed]="!commentText.trim() || isPosting"
                             class="bg-white text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white disabled:hover:text-black">
-                            {{ isPosting ? 'Posting...' : 'Post Comment' }}
+                            {{ isPosting ? ('projectDetails.interactions.posting' | translate) : ('projectDetails.interactions.postComment' | translate) }}
                         </button>
                     </div>
                 </div>
@@ -176,7 +177,7 @@ import { ProjectService } from '../../../services/project.service';
             <!-- Comments List -->
             <div class="space-y-12">
                 <div *ngIf="!project.comments || project.comments.length === 0" class="text-center py-12">
-                    <p class="text-zinc-600 text-sm font-medium">No comments yet. Be the first to share your thoughts!</p>
+                    <p class="text-zinc-600 text-sm font-medium">{{ 'projectDetails.interactions.noComments' | translate }}</p>
                 </div>
                 
                 <div *ngFor="let comment of project.comments" class="flex gap-6 animate-fade-in-up">
@@ -199,7 +200,7 @@ import { ProjectService } from '../../../services/project.service';
                                 *ngIf="userName"
                                 (click)="startReply(comment.id)"
                                 class="text-[10px] font-black uppercase text-zinc-600 hover:text-white transition-colors">
-                                Reply
+                                {{ 'projectDetails.interactions.reply' | translate }}
                             </button>
                         </div>
 
@@ -208,19 +209,19 @@ import { ProjectService } from '../../../services/project.service';
                             <div class="flex gap-4">
                                 <img [src]="userAvatar" class="w-10 h-10 rounded-lg object-cover shrink-0 grayscale">
                                 <div class="flex-1 space-y-3">
-                                    <label [attr.for]="'reply-text-' + comment.id" class="sr-only">Your reply</label>
+                                    <label [attr.for]="'reply-text-' + comment.id" class="sr-only">{{ 'projectDetails.interactions.yourReply' | translate }}</label>
                                     <textarea 
                                         [attr.id]="'reply-text-' + comment.id"
                                         [attr.name]="'replyText-' + comment.id"
                                         [(ngModel)]="replyText"
-                                        placeholder="Write your reply..."
+                                        [placeholder]="'projectDetails.interactions.writeReply' | translate"
                                         autocomplete="off"
                                         class="w-full bg-zinc-950 border border-zinc-900 rounded-lg p-4 text-white text-sm focus:border-red-600 outline-none transition-colors min-h-[80px]"></textarea>
                                     <div class="flex justify-end gap-3">
                                         <button 
                                             (click)="cancelReply()"
                                             class="px-6 py-2 rounded-lg text-[10px] font-black uppercase text-zinc-400 hover:text-white transition-colors">
-                                            Cancel
+                                            {{ 'projectDetails.interactions.cancel' | translate }}
                                         </button>
                                         <button 
                                             (click)="postReply(comment.id)"
@@ -228,7 +229,7 @@ import { ProjectService } from '../../../services/project.service';
                                             [class.opacity-50]="!replyText.trim() || isPostingReply"
                                             [class.cursor-not-allowed]="!replyText.trim() || isPostingReply"
                                             class="bg-white text-black px-6 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition-all disabled:hover:bg-white disabled:hover:text-black">
-                                            {{ isPostingReply ? 'Posting...' : 'Post Reply' }}
+                                            {{ isPostingReply ? ('projectDetails.interactions.posting' | translate) : ('projectDetails.interactions.postReply' | translate) }}
                                         </button>
                                     </div>
                                 </div>
