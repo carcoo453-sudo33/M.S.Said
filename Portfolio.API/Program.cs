@@ -13,32 +13,15 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
-// CORS configuration - Robust for development and production with SignalR support
+// CORS configuration - Allow all origins temporarily for debugging
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.SetIsOriginAllowed(origin =>
-            {
-                // Allow localhost for development
-                if (origin.StartsWith("http://localhost:") || origin.StartsWith("http://127.0.0.1:"))
-                    return true;
-                
-                // Allow Netlify domains
-                if (origin.EndsWith(".netlify.app") || origin == "https://m-said-portfolio.netlify.app")
-                    return true;
-                
-                // Allow RunASP.net domain (API server)
-                if (origin == "https://m-protfolio.runasp.net")
-                    return true;
-                
-                return false;
-            })
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials()
-            .WithExposedHeaders("*")
-            .SetPreflightMaxAge(TimeSpan.FromMinutes(10)); // Cache preflight for 10 minutes
+            .WithExposedHeaders("*");
     });
 });
 
@@ -111,7 +94,7 @@ app.MapPost("/identity/login", async (SignInManager<IdentityUser> signInManager,
 app.MapControllers();
 
 // Map SignalR Hub - must be after UseCors
-app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications").RequireCors("AllowAngular");
+app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications");
 
 // Seeding logic
 using (var scope = app.Services.CreateScope())
