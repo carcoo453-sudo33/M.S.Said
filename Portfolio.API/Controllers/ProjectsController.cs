@@ -71,11 +71,13 @@ public class ProjectsController : ControllerBase
             RepoUrl = dto.GitHubUrl,
             Category = dto.Category,
             Category_Ar = dto.Category_Ar,
-            TechStack = dto.Technologies,
+            TechStack = dto.Tags,
             Tags = dto.Tags,
             Tags_Ar = dto.Tags_Ar,
             Niche = dto.Niche,
             Niche_Ar = dto.Niche_Ar,
+            Company = dto.Company,
+            Company_Ar = dto.Company_Ar,
             Duration = dto.Duration,
             Language = dto.Language,
             Architecture = dto.Architecture,
@@ -124,11 +126,13 @@ public class ProjectsController : ControllerBase
         project.RepoUrl = dto.GitHubUrl;
         project.Category = dto.Category;
         project.Category_Ar = dto.Category_Ar;
-        project.TechStack = dto.Technologies;
+        project.TechStack = dto.Tags;
         project.Tags = dto.Tags;
         project.Tags_Ar = dto.Tags_Ar;
         project.Niche = dto.Niche;
         project.Niche_Ar = dto.Niche_Ar;
+        project.Company = dto.Company;
+        project.Company_Ar = dto.Company_Ar;
         project.Duration = dto.Duration;
         project.Duration_Ar = dto.Duration_Ar;
         project.Language = dto.Language;
@@ -218,7 +222,6 @@ public class ProjectsController : ControllerBase
             GitHubUrl = p.RepoUrl,
             Category = p.Category ?? "",
             Category_Ar = p.Category_Ar,
-            Technologies = p.TechStack ?? "",
             Tags = p.Tags,
             Tags_Ar = p.Tags_Ar,
             Niche = p.Niche,
@@ -268,7 +271,7 @@ public class ProjectsController : ControllerBase
                 Title = p.Title,
                 Slug = p.Slug,
                 ImageUrl = p.ImageUrl,
-                Technologies = p.TechStack,
+                Tags = p.Tags,
                 Category = p.Category
             })
             .ToList();
@@ -1003,7 +1006,6 @@ public class ProjectsController : ControllerBase
                 Duration = DateTime.UtcNow.Year.ToString(),
                 Architecture = "Scalable Architecture",
                 Status = "Active",
-                Technologies = repoData?.Language ?? "",
                 Category = repoData?.Language ?? "Web Development",
                 Tags = repoData?.Topics != null && repoData.Topics.Any() ? string.Join(", ", repoData.Topics) : "",
                 Responsibilities = responsibilities.Take(10).ToList(),
@@ -1030,5 +1032,48 @@ public class ProjectsController : ControllerBase
         }
     }
 
-}
+    [HttpGet("suggestions/tags")]
+    public async Task<ActionResult<List<string>>> GetTagSuggestions()
+    {
+        var projects = await _unitOfWork.Repository<ProjectEntry>().GetAllAsync();
+        var tags = projects
+            .Where(p => !string.IsNullOrEmpty(p.Tags))
+            .SelectMany(p => p.Tags!.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            .Select(t => t.Trim())
+            .Where(t => !string.IsNullOrEmpty(t))
+            .Distinct()
+            .OrderBy(t => t)
+            .ToList();
+        
+        return Ok(tags);
+    }
 
+    [HttpGet("suggestions/categories")]
+    public async Task<ActionResult<List<string>>> GetCategorySuggestions()
+    {
+        var projects = await _unitOfWork.Repository<ProjectEntry>().GetAllAsync();
+        var categories = projects
+            .Where(p => !string.IsNullOrEmpty(p.Category))
+            .Select(p => p.Category!)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+        
+        return Ok(categories);
+    }
+
+    [HttpGet("suggestions/niches")]
+    public async Task<ActionResult<List<string>>> GetNicheSuggestions()
+    {
+        var projects = await _unitOfWork.Repository<ProjectEntry>().GetAllAsync();
+        var niches = projects
+            .Where(p => !string.IsNullOrEmpty(p.Niche))
+            .Select(p => p.Niche!)
+            .Distinct()
+            .OrderBy(n => n)
+            .ToList();
+        
+        return Ok(niches);
+    }
+
+}

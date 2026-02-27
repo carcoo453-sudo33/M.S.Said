@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,351 +17,9 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
     selector: 'app-projects-grid',
     standalone: true,
     imports: [CommonModule, RouterLink, TranslateModule, LucideAngularModule, FormsModule],
-    template: `
-    <!-- Selected Works Header -->
-    
-
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up"
-        style="animation-delay: 0.2s">
-        <div *ngFor="let project of projects; let i = index" [routerLink]="['/projects', project.slug]"
-            class="group cursor-pointer bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800/50 shadow-sm hover:shadow-xl transition-all duration-500 relative flex flex-col">
-
-            <!-- Admin Actions -->
-            <div *ngIf="auth.isLoggedIn()" class="absolute top-4 left-4 z-30 flex gap-2">
-                <button (click)="onEdit($event, project)"
-                    class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-500 border border-white/10 transition-all">
-                    <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
-                </button>
-                <button (click)="onDelete($event, project)"
-                    class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-600 border border-white/10 transition-all">
-                    <lucide-icon [img]="DeleteIcon" class="w-4 h-4"></lucide-icon>
-                </button>
-            </div>
-
-            <!-- Year Badge -->
-            <div class="absolute top-4 right-4 z-20">
-                <span
-                    class="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-black text-red-600 border border-white/10 uppercase tracking-widest">
-                    {{ (project.duration || '2024').split('-')[0] }}
-                </span>
-            </div>
-
-            <!-- Image Section -->
-            <div class="relative aspect-[16/9] overflow-hidden">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
-                </div>
-                <img [src]="getFullImageUrl(project.imageUrl || '')"
-                    (error)="onImageError($event)"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
-                
-                <!-- Tech Stack Tags (shown on hover) -->
-                <div
-                    class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
-                    <div class="flex flex-wrap gap-1.5">
-                        <span *ngFor="let tech of (project.technologies || '').split(',')"
-                            class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
-                            {{ tech.trim() }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Section -->
-            <div class="p-5 flex-1 flex flex-col">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
-                        {{ getProjectTitle(project) }}
-                    </h3>
-                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views || 0 }} {{ 'home.featuredProjects.views' | translate }}</span>
-                </div>
-                
-                <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">
-                    {{ getProjectNiche(project) }}
-                </p>
-
-                <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                    {{ getProjectDescription(project) }}
-                </p>
-
-                <a [routerLink]="['/projects', project.slug]"
-                    class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:gap-3 transition-all">
-                    {{ 'home.featuredProjects.projectInsights' | translate }}
-                    <lucide-icon [img]="ArrowRightIcon" class="w-3.5 h-3.5"></lucide-icon>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Edit/Create Modal -->
-    <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
-        <div class="modal-content max-w-3xl mt-20 max-h-[90vh]" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
-                <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Create Project' : 'Edit Project' }}</h3>
-                <button (click)="closeEditModal()"
-                    class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
-                    <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                </button>
-            </div>
-
-            <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-                <!-- Import from GitHub Section (only for new projects) -->
-                <div *ngIf="isCreating" class="bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 space-y-3">
-                    <div class="flex items-center gap-2">
-                        <lucide-icon [img]="GithubIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                        <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white">Import from GitHub</h4>
-                    </div>
-                    <p class="text-[10px] text-zinc-500">Paste a GitHub repository URL to automatically populate project details</p>
-                    <div class="flex gap-2">
-                        <input type="url" [(ngModel)]="importUrl" name="importUrl" placeholder="https://github.com/owner/repo"
-                            class="flex-1 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <button (click)="importFromUrl()" [disabled]="isImporting || !importUrl"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            {{ isImporting ? 'Importing...' : 'Import' }}
-                        </button>
-                    </div>
-                    <p class="text-[9px] text-zinc-600">Features, changelog, and repository info will be imported automatically</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN) *</label>
-                        <input [(ngModel)]="editingProject.title" placeholder="Project title"
-                            [class]="submitted && editingProject.title && !editingProject.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
-                            class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && editingProject.title && !editingProject.title.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Title is required</p>
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
-                        <input [(ngModel)]="editingProject.title_Ar" placeholder="عنوان المشروع" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (EN) *</label>
-                        <textarea [(ngModel)]="editingProject.description" placeholder="Project description" rows="3"
-                            [class]="submitted && editingProject.description && !editingProject.description.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
-                            class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
-                        <p *ngIf="submitted && editingProject.description && !editingProject.description.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Description is required</p>
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (AR)</label>
-                        <textarea [(ngModel)]="editingProject.description_Ar" placeholder="وصف المشروع" rows="3" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                            Summary (EN)
-                            <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- Brief description for project details page</span>
-                        </label>
-                        <textarea [(ngModel)]="editingProject.summary" placeholder="Brief project summary..." rows="2"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Summary (AR)</label>
-                        <textarea [(ngModel)]="editingProject.summary_Ar" placeholder="ملخص موجز للمشروع..." rows="2" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category (EN) *</label>
-                        <select [(ngModel)]="editingProject.category"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                            <option value="">Select category</option>
-                            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category (AR)</label>
-                        <input [(ngModel)]="editingProject.category_Ar" placeholder="الفئة" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <div class="relative">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche (EN)</label>
-                        <input [(ngModel)]="editingProject.niche" 
-                            (input)="onNicheInput($any($event.target).value)"
-                            (focus)="onNicheInput(editingProject.niche || '')"
-                            (blur)="onNicheBlur()"
-                            placeholder="e.g. SaaS & Productivity"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        
-                        <!-- Niche Suggestions Dropdown -->
-                        <div *ngIf="showNicheSuggestions && filteredNicheSuggestions.length > 0"
-                            class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                            <button *ngFor="let suggestion of filteredNicheSuggestions"
-                                (click)="selectNiche(suggestion)"
-                                type="button"
-                                class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                                {{ suggestion }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche (AR)</label>
-                        <input [(ngModel)]="editingProject.niche_Ar" placeholder="التخصص" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <div class="col-span-2 relative">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                            Tags (comma-separated)
-                            <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- Start typing for suggestions</span>
-                        </label>
-                        <input [(ngModel)]="editingProject.tags" 
-                            (input)="onTagsInput($any($event.target).value)"
-                            (focus)="onTagsInput(editingProject.tags || '')"
-                            (blur)="onTagsBlur()"
-                            placeholder="e.g. UI/UX, Backend, API Development"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        
-                        <!-- Technology Suggestions Dropdown -->
-                        <div *ngIf="showTechSuggestions && filteredTechSuggestions.length > 0"
-                            class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                            <button *ngFor="let tech of filteredTechSuggestions"
-                                (click)="selectTech(tech)"
-                                type="button"
-                                class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                                <span class="w-2 h-2 bg-red-600 rounded-full"></span>
-                                {{ tech }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Technologies (comma-separated) *</label>
-                        <input [(ngModel)]="editingProject.technologies" placeholder="e.g. Angular, .NET Core, SQL Server"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <!-- Checkboxes Row -->
-                    <div class="col-span-2 flex items-center gap-6 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" [(ngModel)]="editingProject.isTrendy"
-                                class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-red-600 focus:ring-red-500 focus:ring-2">
-                            <span class="text-sm font-bold text-zinc-900 dark:text-white">Mark as Trendy</span>
-                            <span class="text-[10px] text-zinc-500">- Highlight this project as trending</span>
-                        </label>
-                    </div>
-
-                    <!-- Image Upload Section -->
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project Image</label>
-                        <div class="flex gap-3">
-                            <div class="flex-1">
-                                <input [(ngModel)]="editingProject.imageUrl" placeholder="Image URL or upload below"
-                                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                            </div>
-                            <label [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
-                                class="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all cursor-pointer flex items-center gap-2">
-                                <lucide-icon [img]="UploadIcon" class="w-4 h-4"></lucide-icon>
-                                <span class="text-[10px] font-bold uppercase tracking-widest">{{ isUploading ? 'Uploading...' : 'Upload' }}</span>
-                                <input type="file" accept="image/*" (change)="onImageFileSelected($event)" class="hidden">
-                            </label>
-                        </div>
-                        <!-- Image Preview -->
-                        <div *ngIf="editingProject.imageUrl" class="mt-3 relative w-full h-40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                            <img [src]="getFullImageUrl(editingProject.imageUrl)" alt="Preview" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
-                                <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-white"></lucide-icon>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gallery Upload Section -->
-                    <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                            Gallery Images (Max 10)
-                            <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- For project details page</span>
-                        </label>
-                        <label [class.opacity-50]="isUploadingGallery" [class.pointer-events-none]="isUploadingGallery"
-                            class="w-full px-4 py-8 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 bg-zinc-50 dark:bg-zinc-800/50">
-                            <lucide-icon [img]="UploadIcon" class="w-6 h-6 text-zinc-400"></lucide-icon>
-                            <span class="text-sm text-zinc-600 dark:text-zinc-400">
-                                {{ isUploadingGallery ? 'Uploading images...' : 'Click to upload or drag and drop' }}
-                            </span>
-                            <span class="text-[10px] text-zinc-400">PNG, JPG, GIF up to 5MB each</span>
-                            <input type="file" accept="image/*" multiple (change)="onGalleryFilesSelected($event)" class="hidden">
-                        </label>
-                        
-                        <!-- Gallery Preview Grid -->
-                        <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
-                            <div *ngFor="let img of galleryImages; let i = index" class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                                <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
-                                <button (click)="removeGalleryImage(i)" type="button"
-                                    class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
-                                </button>
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
-                                    <span class="text-[8px] text-white font-bold">{{ i + 1 }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p *ngIf="galleryImages.length > 0" class="text-[10px] text-zinc-400 mt-2">
-                            {{ galleryImages.length }} / 10 images uploaded
-                        </p>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Duration</label>
-                        <input [(ngModel)]="editingProject.duration" placeholder="e.g. 2024 or 2024-2025"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project URL</label>
-                        <input [(ngModel)]="editingProject.projectUrl" placeholder="https://..."
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">GitHub URL</label>
-                        <input [(ngModel)]="editingProject.gitHubUrl" placeholder="https://github.com/..."
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-                </div>
-            </div>
-
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
-                <button (click)="closeEditModal()"
-                    class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
-                <button (click)="saveProject()" [disabled]="isSaving"
-                    class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
-                    <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
-                    {{ isSaving ? 'Saving...' : 'Save' }}
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation -->
-    <div *ngIf="deleteProject" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteProject = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
-            <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
-            </div>
-            <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Project?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong class="text-zinc-900 dark:text-white">{{ deleteProject.title }}</strong>?</p>
-            <div class="flex items-center justify-center gap-3">
-                <button (click)="deleteProject = null"
-                    class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
-                <button (click)="executeDelete()" [disabled]="isDeleting"
-                    class="px-6 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50">
-                    {{ isDeleting ? 'Deleting...' : 'Delete' }}
-                </button>
-            </div>
-        </div>
-    </div>
-  `
+    templateUrl: './projects-grid.html'
 })
-export class ProjectsGridComponent implements OnChanges {
+export class ProjectsGridComponent implements OnChanges, OnInit {
     public auth = inject(AuthService);
     private projectService = inject(ProjectService);
     private toast = inject(ToastService);
@@ -425,11 +83,48 @@ export class ProjectsGridComponent implements OnChanges {
     filteredTechSuggestions: string[] = [];
     showTechSuggestions = false;
     currentTagInput = '';
+    selectedTags: string[] = [];
+    tagInput = '';
     
     // Niche suggestions
     nicheSuggestions: string[] = [];
     filteredNicheSuggestions: string[] = [];
     showNicheSuggestions = false;
+    
+    // Category suggestions
+    categorySuggestions: string[] = [];
+    filteredCategorySuggestions: string[] = [];
+    showCategorySuggestions = false;
+    
+    // Category AR suggestions
+    categoryArSuggestions: string[] = [];
+    filteredCategoryArSuggestions: string[] = [];
+    showCategoryArSuggestions = false;
+    
+    // Niche AR suggestions
+    nicheArSuggestions: string[] = [];
+    filteredNicheArSuggestions: string[] = [];
+    showNicheArSuggestions = false;
+    
+    // Company suggestions
+    companySuggestions: string[] = ['WE3DS', 'Remote', 'Self Work', 'Freelance', 'Contract'];
+    filteredCompanySuggestions: string[] = [];
+    showCompanySuggestions = false;
+    
+    // Company AR suggestions
+    companyArSuggestions: string[] = ['WE3DS', 'عن بعد', 'عمل حر', 'مستقل', 'عقد'];
+    filteredCompanyArSuggestions: string[] = [];
+    showCompanyArSuggestions = false;
+    
+    // Manager modals
+    showCategoryManager = false;
+    showNicheManager = false;
+    newCategoryName = '';
+    newCategoryNameAr = '';
+    newNicheName = '';
+    newNicheNameAr = '';
+    managedCategories: any[] = [];
+    managedNiches: any[] = [];
     
     ngOnChanges(changes: SimpleChanges) {
         if (changes['triggerCreate'] && !changes['triggerCreate'].firstChange) {
@@ -437,11 +132,49 @@ export class ProjectsGridComponent implements OnChanges {
         }
     }
 
+    ngOnInit() {
+        this.loadTagSuggestions();
+        this.loadCategorySuggestions();
+    }
+
+    loadTagSuggestions() {
+        this.projectService.getTagSuggestions().subscribe({
+            next: (tags) => {
+                // Merge with predefined suggestions
+                this.techSuggestions = [...new Set([...this.techSuggestions, ...tags])].sort();
+            },
+            error: (err) => {
+                console.error('Failed to load tag suggestions:', err);
+            }
+        });
+    }
+
+    loadCategorySuggestions() {
+        this.projectService.getCategories().subscribe({
+            next: (categories) => {
+                this.managedCategories = categories;
+                // Extract names for autocomplete
+                this.categories = categories.map((c: any) => c.name).sort();
+                this.categoryArSuggestions = categories
+                    .map((c: any) => c.name_Ar)
+                    .filter((name: string) => !!name && name.trim() !== '')
+                    .sort();
+            },
+            error: (err) => {
+                console.error('Failed to load categories:', err);
+                // Fallback to predefined categories
+                this.categories = ['Frontend', 'Backend', 'Fullstack'];
+            }
+        });
+    }
+
     onEdit(event: Event, project: ProjectEntry) {
         event.stopPropagation();
         event.preventDefault();
         this.editingProject = { ...project };
         this.galleryImages = project.gallery ? [...project.gallery] : [];
+        this.selectedTags = project.tags ? project.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+        this.tagInput = '';
         this.isCreating = false;
         this.submitted = false;
         this.loadNicheSuggestions();
@@ -458,7 +191,6 @@ export class ProjectsGridComponent implements OnChanges {
         this.editingProject = {
             title: '',
             description: '',
-            technologies: '',
             category: '',
             niche: '',
             tags: '',
@@ -470,6 +202,8 @@ export class ProjectsGridComponent implements OnChanges {
             isTrendy: false
         };
         this.galleryImages = [];
+        this.selectedTags = [];
+        this.tagInput = '';
         this.isCreating = true;
         this.submitted = false;
         this.importUrl = '';
@@ -500,7 +234,6 @@ export class ProjectsGridComponent implements OnChanges {
                     duration: (importedData.duration && importedData.duration.trim()) || this.editingProject.duration || '',
                     architecture: (importedData.architecture && importedData.architecture.trim()) || this.editingProject.architecture || '',
                     status: (importedData.status && importedData.status.trim()) || this.editingProject.status || '',
-                    technologies: (importedData.technologies && importedData.technologies.trim()) || this.editingProject.technologies || '',
                     responsibilities: importedData.responsibilities && importedData.responsibilities.length > 0 ? importedData.responsibilities : this.editingProject.responsibilities || [],
                     keyFeatures: importedData.keyFeatures && importedData.keyFeatures.length > 0 ? importedData.keyFeatures : this.editingProject.keyFeatures || [],
                     changelog: importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.editingProject.changelog || []
@@ -538,15 +271,29 @@ export class ProjectsGridComponent implements OnChanges {
         this.showEditModal = false;
         this.editingProject = {};
         this.galleryImages = [];
+        this.selectedTags = [];
+        this.tagInput = '';
         this.showNicheSuggestions = false;
+        this.showTechSuggestions = false;
     }
 
     loadNicheSuggestions() {
-        // Load both from existing projects and predefined options
-        const projectNiches = this.projects
-            .map(p => p.niche)
-            .filter((niche): niche is string => !!niche && niche.trim() !== '');
-        this.nicheSuggestions = [...new Set([...this.nicheOptions, ...projectNiches])];
+        this.projectService.getNiches().subscribe({
+            next: (niches) => {
+                this.managedNiches = niches;
+                // Extract names for autocomplete
+                this.nicheSuggestions = niches.map((n: any) => n.name).sort();
+                this.nicheArSuggestions = niches
+                    .map((n: any) => n.name_Ar)
+                    .filter((name: string) => !!name && name.trim() !== '')
+                    .sort();
+            },
+            error: (err) => {
+                console.error('Failed to load niches:', err);
+                // Fallback to predefined niches
+                this.nicheSuggestions = this.nicheOptions;
+            }
+        });
     }
 
     onNicheInput(value: string) {
@@ -578,30 +325,255 @@ export class ProjectsGridComponent implements OnChanges {
         }, 200);
     }
 
-    // Tag/Technology suggestions
-    onTagsInput(value: string) {
-        this.currentTagInput = value;
+    // Category autocomplete
+    onCategoryInput(value: string) {
+        if (!value || value.trim() === '') {
+            this.filteredCategorySuggestions = this.categories;
+            this.showCategorySuggestions = true;
+            this.cdr.detectChanges();
+            return;
+        }
+        
+        this.filteredCategorySuggestions = this.categories.filter(cat =>
+            cat.toLowerCase().includes(value.toLowerCase())
+        );
+        this.showCategorySuggestions = true;
+        this.cdr.detectChanges();
+    }
+
+    selectCategory(category: string) {
+        this.editingProject.category = category;
+        this.showCategorySuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onCategoryBlur() {
+        setTimeout(() => {
+            this.showCategorySuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Category AR autocomplete
+    onCategoryArInput(value: string) {
+        if (!value || value.trim() === '') {
+            this.filteredCategoryArSuggestions = this.categoryArSuggestions;
+            this.showCategoryArSuggestions = true;
+            this.cdr.detectChanges();
+            return;
+        }
+        
+        this.filteredCategoryArSuggestions = this.categoryArSuggestions.filter(cat =>
+            cat.includes(value)
+        );
+        this.showCategoryArSuggestions = true;
+        this.cdr.detectChanges();
+    }
+
+    selectCategoryAr(category: string) {
+        this.editingProject.category_Ar = category;
+        this.showCategoryArSuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onCategoryArBlur() {
+        setTimeout(() => {
+            this.showCategoryArSuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Niche AR autocomplete
+    onNicheArInput(value: string) {
+        if (!value || value.trim() === '') {
+            this.filteredNicheArSuggestions = this.nicheArSuggestions;
+            this.showNicheArSuggestions = true;
+            this.cdr.detectChanges();
+            return;
+        }
+        
+        this.filteredNicheArSuggestions = this.nicheArSuggestions.filter(niche =>
+            niche.includes(value)
+        );
+        this.showNicheArSuggestions = true;
+        this.cdr.detectChanges();
+    }
+
+    selectNicheAr(niche: string) {
+        this.editingProject.niche_Ar = niche;
+        this.showNicheArSuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onNicheArBlur() {
+        setTimeout(() => {
+            this.showNicheArSuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Company autocomplete methods
+    onCompanyInput(value: string) {
+        if (!value || value.trim() === '') {
+            this.filteredCompanySuggestions = this.companySuggestions;
+            this.showCompanySuggestions = true;
+            this.cdr.detectChanges();
+            return;
+        }
+        
+        this.filteredCompanySuggestions = this.companySuggestions.filter(company =>
+            company.toLowerCase().includes(value.toLowerCase())
+        );
+        this.showCompanySuggestions = true;
+        this.cdr.detectChanges();
+    }
+
+    selectCompany(company: string) {
+        this.editingProject.company = company;
+        this.showCompanySuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onCompanyBlur() {
+        setTimeout(() => {
+            this.showCompanySuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Company AR autocomplete methods
+    onCompanyArInput(value: string) {
+        if (!value || value.trim() === '') {
+            this.filteredCompanyArSuggestions = this.companyArSuggestions;
+            this.showCompanyArSuggestions = true;
+            this.cdr.detectChanges();
+            return;
+        }
+        
+        this.filteredCompanyArSuggestions = this.companyArSuggestions.filter(company =>
+            company.includes(value)
+        );
+        this.showCompanyArSuggestions = true;
+        this.cdr.detectChanges();
+    }
+
+    selectCompanyAr(company: string) {
+        this.editingProject.company_Ar = company;
+        this.showCompanyArSuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onCompanyArBlur() {
+        setTimeout(() => {
+            this.showCompanyArSuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Category management
+    addNewCategory() {
+        const name = this.newCategoryName?.trim();
+        if (!name) return;
+        
+        this.projectService.createCategory({ 
+            name: name, 
+            name_Ar: this.newCategoryNameAr?.trim() || undefined 
+        }).subscribe({
+            next: (category) => {
+                this.managedCategories.push(category);
+                this.managedCategories.sort((a, b) => a.name.localeCompare(b.name));
+                this.toast.success(`Category "${name}" added`);
+                this.newCategoryName = '';
+                this.newCategoryNameAr = '';
+                this.loadCategorySuggestions(); // Refresh suggestions
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                console.error('Failed to create category:', err);
+                this.toast.error('Failed to add category');
+            }
+        });
+    }
+
+    removeCategory(id: string) {
+        const category = this.managedCategories.find(c => c.id === id);
+        if (!category) return;
+        
+        this.projectService.deleteCategory(id).subscribe({
+            next: () => {
+                this.managedCategories = this.managedCategories.filter(c => c.id !== id);
+                this.toast.success(`Category "${category.name}" removed`);
+                this.loadCategorySuggestions(); // Refresh suggestions
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                console.error('Failed to delete category:', err);
+                this.toast.error('Failed to remove category');
+            }
+        });
+    }
+
+    // Niche management
+    addNewNiche() {
+        const name = this.newNicheName?.trim();
+        if (!name) return;
+        
+        this.projectService.createNiche({ 
+            name: name, 
+            name_Ar: this.newNicheNameAr?.trim() || undefined 
+        }).subscribe({
+            next: (niche) => {
+                this.managedNiches.push(niche);
+                this.managedNiches.sort((a, b) => a.name.localeCompare(b.name));
+                this.toast.success(`Niche "${name}" added`);
+                this.newNicheName = '';
+                this.newNicheNameAr = '';
+                this.loadNicheSuggestions(); // Refresh suggestions
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                console.error('Failed to create niche:', err);
+                this.toast.error('Failed to add niche');
+            }
+        });
+    }
+
+    removeNiche(id: string) {
+        const niche = this.managedNiches.find(n => n.id === id);
+        if (!niche) return;
+        
+        this.projectService.deleteNiche(id).subscribe({
+            next: () => {
+                this.managedNiches = this.managedNiches.filter(n => n.id !== id);
+                this.toast.success(`Niche "${niche.name}" removed`);
+                this.loadNicheSuggestions(); // Refresh suggestions
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                console.error('Failed to delete niche:', err);
+                this.toast.error('Failed to remove niche');
+            }
+        });
+    }
+
+    // Tag/Technology management
+    onTagInputChange(value: string) {
+        this.tagInput = value;
         
         if (!value || value.trim() === '') {
-            this.showTechSuggestions = false;
+            // Show all suggestions when field is empty
+            this.filteredTechSuggestions = this.techSuggestions.filter(tech => 
+                !this.selectedTags.includes(tech)
+            );
+            this.showTechSuggestions = true;
             this.cdr.detectChanges();
             return;
         }
 
-        // Get the last tag being typed (after the last comma)
-        const tags = value.split(',');
-        const lastTag = tags[tags.length - 1].trim();
-
-        if (!lastTag) {
-            this.showTechSuggestions = false;
-            this.cdr.detectChanges();
-            return;
-        }
-
-        // Filter suggestions based on last tag
+        // Filter suggestions based on input and exclude already selected
         this.filteredTechSuggestions = this.techSuggestions.filter(tech =>
-            tech.toLowerCase().includes(lastTag.toLowerCase()) &&
-            !value.toLowerCase().includes(tech.toLowerCase())
+            tech.toLowerCase().includes(value.toLowerCase()) &&
+            !this.selectedTags.includes(tech)
         );
 
         this.showTechSuggestions = this.filteredTechSuggestions.length > 0;
@@ -609,17 +581,55 @@ export class ProjectsGridComponent implements OnChanges {
     }
 
     selectTech(tech: string) {
-        const tags = (this.editingProject.tags || '').split(',').map(t => t.trim()).filter(t => t);
-        
-        // Remove the last incomplete tag and add the selected one
-        if (tags.length > 0) {
-            tags[tags.length - 1] = tech;
-        } else {
-            tags.push(tech);
+        // Check if tag already exists
+        if (this.selectedTags.includes(tech)) {
+            this.toast.warning(`"${tech}" is already added`);
+            return;
         }
-
-        this.editingProject.tags = tags.join(', ');
+        
+        // Add the selected tag
+        this.selectedTags.push(tech);
+        
+        // Update the editingProject.tags field
+        this.editingProject.tags = this.selectedTags.join(', ');
+        
+        // Clear input and hide suggestions
+        this.tagInput = '';
         this.showTechSuggestions = false;
+        
+        this.cdr.detectChanges();
+    }
+
+    addCustomTag() {
+        const tag = this.tagInput.trim();
+        if (!tag) return;
+        
+        // Check if tag already exists
+        if (this.selectedTags.includes(tag)) {
+            this.toast.warning(`"${tag}" is already added`);
+            this.tagInput = '';
+            return;
+        }
+        
+        // Add the custom tag
+        this.selectedTags.push(tag);
+        
+        // Update the editingProject.tags field
+        this.editingProject.tags = this.selectedTags.join(', ');
+        
+        // Clear input
+        this.tagInput = '';
+        this.showTechSuggestions = false;
+        
+        this.cdr.detectChanges();
+    }
+
+    removeTag(index: number) {
+        this.selectedTags.splice(index, 1);
+        
+        // Update the editingProject.tags field
+        this.editingProject.tags = this.selectedTags.join(', ');
+        
         this.cdr.detectChanges();
     }
 
@@ -789,17 +799,18 @@ export class ProjectsGridComponent implements OnChanges {
             title_Ar: this.editingProject.title_Ar,
             description: this.editingProject.description!,
             description_Ar: this.editingProject.description_Ar,
-            technologies: this.editingProject.technologies || '',
             category: this.editingProject.category || '',
             category_Ar: this.editingProject.category_Ar,
             niche: this.editingProject.niche,
             niche_Ar: this.editingProject.niche_Ar,
+            tags: this.selectedTags.join(', '),
             imageUrl: this.editingProject.imageUrl,
             gallery: this.galleryImages.length > 0 ? this.galleryImages : undefined,
             projectUrl: this.editingProject.projectUrl,
             gitHubUrl: this.editingProject.gitHubUrl,
             duration: this.editingProject.duration,
-            views: this.editingProject.views || 0
+            views: this.editingProject.views || 0,
+            isTrendy: this.editingProject.isTrendy || false
         };
 
         const request = this.isCreating

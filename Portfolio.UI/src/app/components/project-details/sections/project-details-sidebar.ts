@@ -47,8 +47,8 @@ import { environment } from '../../../../environments/environment';
                     </div>
                     <div class="space-y-1.5 flex-1 min-w-0">
                         <h4 class="text-white font-black text-xs uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-2">{{ related.title }}</h4>
-                        <div class="flex flex-wrap gap-1" *ngIf="related.technologies">
-                            <span *ngFor="let t of related.technologies.split(',').slice(0, 3)" class="text-[8px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
+                        <div class="flex flex-wrap gap-1" *ngIf="related.tags">
+                            <span *ngFor="let t of related.tags.split(',').slice(0, 3)" class="text-[8px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
                         </div>
                     </div>
                 </div>

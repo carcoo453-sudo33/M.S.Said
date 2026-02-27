@@ -85,4 +85,49 @@ export class ProjectService {
         return this.http.get(`${this.apiUrl}/projects/test-cors`);
     }
 
+    getTagSuggestions(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/projects/suggestions/tags`);
+    }
+
+    getCategorySuggestions(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/projects/suggestions/categories`);
+    }
+
+    getNicheSuggestions(): Observable<string[]> {
+        return this.http.get<string[]>(`${this.apiUrl}/projects/suggestions/niches`);
+    }
+
+    // Category Management
+    getCategories(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/categories`);
+    }
+
+    createCategory(category: { name: string; name_Ar?: string }): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/categories`, category);
+    }
+
+    updateCategory(id: string, category: { name: string; name_Ar?: string }): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/categories/${id}`, category);
+    }
+
+    deleteCategory(id: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/categories/${id}`);
+    }
+
+    // Niche Management
+    getNiches(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/niches`);
+    }
+
+    createNiche(niche: { name: string; name_Ar?: string }): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/niches`, niche);
+    }
+
+    updateNiche(id: string, niche: { name: string; name_Ar?: string }): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/niches/${id}`, niche);
+    }
+
+    deleteNiche(id: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/niches/${id}`);
+    }
 }

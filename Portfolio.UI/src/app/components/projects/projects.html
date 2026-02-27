@@ -74,6 +74,17 @@
                 (projectsUpdated)="onProjectsUpdated($event)">
             </app-projects-grid>
 
+            <!-- View All Projects Button -->
+            <div class="flex justify-center mt-16 mb-8 animate-fade-in-up" style="animation-delay: 0.4s">
+                <a routerLink="/projects/all"
+                    class="group relative px-10 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-red-600/20 overflow-hidden">
+                    <span class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+                    <span class="relative">{{ 'projects.viewAll' | translate }}</span>
+                    <span class="relative px-3 py-1 rounded-full bg-white/20 text-xs font-black">{{ totalProjectCount() }}</span>
+                    <lucide-icon [img]="ArrowRightIcon" class="relative w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
+                </a>
+            </div>
+
             <!-- Work History Section -->
             <app-projects-work-history [experiences]="experiences()" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
 
@@ -87,7 +98,7 @@
     </div>
 
     <!-- Bottom CTA - Full Width -->
-    <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="relative z-10">
+    <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="relative">
         <app-projects-bottom-cta></app-projects-bottom-cta>
     </div>
 </main>

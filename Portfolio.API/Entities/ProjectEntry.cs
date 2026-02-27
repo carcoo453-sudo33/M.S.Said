@@ -27,6 +27,9 @@ public class ProjectEntry : BaseEntity
 
     public string? Niche { get; set; } // e.g. "E-commerce"
     public string? Niche_Ar { get; set; }
+
+    public string? Company { get; set; } // e.g. "WE3DS", "Remote", "Self Work"
+    public string? Company_Ar { get; set; }
     
     public string? ImageUrl { get; set; }
     

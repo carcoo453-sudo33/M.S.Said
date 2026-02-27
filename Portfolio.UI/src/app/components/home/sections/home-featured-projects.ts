@@ -53,7 +53,7 @@ import { inject } from '@angular/core';
                     <div
                         class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
                         <div class="flex flex-wrap gap-1.5">
-                            <span *ngFor="let tech of (project.technologies || '').split(',')"
+                            <span *ngFor="let tech of (project.tags || '').split(',')"
                                 class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
                                 {{ tech.trim() }}
                             </span>
@@ -76,6 +76,15 @@ import { inject } from '@angular/core';
                     </a>
                 </div>
             </div>
+        </div>
+        
+        <!-- View All Projects Button -->
+        <div class="flex justify-center mt-10">
+            <a routerLink="/projects/all"
+                class="group inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-sm uppercase tracking-widest transition-all hover:shadow-xl hover:shadow-red-600/30 hover:scale-105">
+                {{ 'home.featuredProjects.viewAll' | translate }}
+                <lucide-icon [img]="ArrowRightIcon" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
+            </a>
         </div>
     </section>
   `

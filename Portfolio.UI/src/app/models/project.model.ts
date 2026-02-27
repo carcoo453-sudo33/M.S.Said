@@ -40,7 +40,7 @@ export interface ProjectSummary {
     title: string;
     slug: string;
     imageUrl?: string;
-    technologies?: string;
+    tags?: string;
     category?: string;
 }
 
@@ -51,13 +51,14 @@ export interface BaseProject {
     description_Ar?: string;
     summary?: string;
     summary_Ar?: string;
-    technologies: string;
     category: string;
     category_Ar?: string;
     tags?: string;
     tags_Ar?: string;
     niche?: string;
     niche_Ar?: string;
+    company?: string;
+    company_Ar?: string;
     imageUrl?: string;
     gallery?: string[];
     projectUrl?: string;

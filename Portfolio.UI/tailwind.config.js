@@ -77,8 +77,12 @@ module.exports = {
     },
   },
   plugins: [
-    plugin(function ({ addBase, addUtilities, addComponents }) {
+    plugin(function ({ addBase, addComponents, addUtilities }) {
+      // ============================================
+      // BASE STYLES - Global element styles
+      // ============================================
       addBase({
+        // Light Mode Base
         'html.light body': {
           backgroundColor: '#f4f4f5',
           color: '#18181b',
@@ -88,52 +92,123 @@ module.exports = {
           borderBottomColor: '#e4e4e7 !important',
           color: '#18181b',
         },
+        
+        // RTL Support
         '[dir="rtl"]': {
           fontFamily: "'Changa', 'Inter', sans-serif",
         },
-        /* Global Scrollbar */
+        
+        // Global Scrollbar Styles
         '::-webkit-scrollbar': {
           width: '6px',
           height: '6px',
         },
         '::-webkit-scrollbar-track': {
-          backgroundColor: 'theme("colors.zinc.100")',
+          backgroundColor: '#e4e4e7',
           borderRadius: '9999px',
-        },
-        'html.dark ::-webkit-scrollbar-track': {
-          backgroundColor: 'theme("colors.zinc.800")',
         },
         '::-webkit-scrollbar-thumb': {
-          backgroundColor: 'theme("colors.zinc.300")',
+          backgroundColor: '#a1a1aa',
           borderRadius: '9999px',
-          borderWidth: '2px',
-          borderColor: 'transparent',
+          border: '2px solid transparent',
           backgroundClip: 'content-box',
-          transitionProperty: 'color, background-color, border-color, text-decoration-color, fill, stroke',
-          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDuration: '150ms',
-        },
-        'html.dark ::-webkit-scrollbar-thumb': {
-          backgroundColor: 'theme("colors.zinc.600")',
+          transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
         },
         '::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: 'theme("colors.red.500")',
+          backgroundColor: '#ef4444',
+        },
+        
+        // Dark Mode Scrollbar
+        'html.dark ::-webkit-scrollbar-track': {
+          backgroundColor: '#27272a',
+        },
+        'html.dark ::-webkit-scrollbar-thumb': {
+          backgroundColor: '#52525b',
+        },
+        
+        // Dropdown Styles
+        'select': {
+          backgroundImage: 'none',
+          cursor: 'pointer',
+        },
+        'select option': {
+          padding: '12px 16px',
+          backgroundColor: '#ffffff',
+          color: '#18181b',
+          fontWeight: '400',
+          fontSize: '14px',
+          lineHeight: '1.5',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        },
+        'select option:hover': {
+          backgroundColor: '#3b82f6',
+          color: '#ffffff',
+          fontWeight: '500',
+        },
+        'select option:checked, select option:focus': {
+          backgroundColor: '#dc2626',
+          color: '#ffffff',
+          fontWeight: '600',
+        },
+        
+        // Dark Mode Dropdown
+        'html.dark select option': {
+          backgroundColor: '#27272a',
+          color: '#fafafa',
+        },
+        'html.dark select option:hover': {
+          backgroundColor: '#3b82f6',
+          color: '#ffffff',
+        },
+        'html.dark select option:checked, html.dark select option:focus': {
+          backgroundColor: '#dc2626',
+          color: '#ffffff',
+        },
+        
+        // Dropdown Scrollbar
+        'select::-webkit-scrollbar': {
+          width: '8px',
+        },
+        'select::-webkit-scrollbar-track': {
+          background: '#f4f4f5',
+          borderRadius: '4px',
+        },
+        'select::-webkit-scrollbar-thumb': {
+          background: '#dc2626',
+          borderRadius: '4px',
+        },
+        'select::-webkit-scrollbar-thumb:hover': {
+          background: '#991b1b',
+        },
+        
+        // Dark Mode Dropdown Scrollbar
+        'html.dark select::-webkit-scrollbar-track': {
+          background: '#27272a',
         },
       });
 
+      // ============================================
+      // COMPONENTS - Reusable component classes
+      // ============================================
       addComponents({
+        // Modal Components
         '.modal-overlay': {
           '@apply fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in': {},
         },
         '.modal-content': {
           '@apply relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter': {},
         },
+        
+        // Custom Scrollbar Component
         '.custom-scrollbar::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(248, 113, 113, 0.4)', // red-400/40
+          backgroundColor: 'rgba(248, 113, 113, 0.4)',
         },
         '.custom-scrollbar::-webkit-scrollbar-thumb:hover': {
-          backgroundColor: 'theme("colors.red.500")',
+          backgroundColor: '#ef4444',
         },
+        
+        // Notification Scrollbar Component
         '.notification-scrollbar::-webkit-scrollbar': {
           width: '6px',
         },
@@ -149,10 +224,16 @@ module.exports = {
         },
       });
 
+      // ============================================
+      // UTILITIES - Helper classes
+      // ============================================
       addUtilities({
+        // Background Utilities
         '.bg-grid-white': {
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40' fill='%23fff' fill-opacity='0.1'/%3E%3C/svg%3E")`,
         },
+        
+        // Skeleton Loading
         '.skeleton': {
           background: 'linear-gradient(90deg, rgba(39,39,42,0.4) 25%, rgba(63,63,70,0.5) 37%, rgba(39,39,42,0.4) 63%)',
           backgroundSize: '400% 100%',
@@ -162,7 +243,8 @@ module.exports = {
           background: 'linear-gradient(90deg, rgba(228, 228, 231, 0.6) 25%, rgba(212, 212, 216, 0.8) 37%, rgba(228, 228, 231, 0.6) 63%) !important',
           backgroundSize: '400% 100% !important',
         },
-        // Direct Light Mode Overrides for utility classes to replace the hardcoded CSS in styles.css
+        
+        // Light Mode Color Overrides
         'html.light .bg-zinc-950, html.light .bg-zinc-950\\/40, html.light .bg-zinc-950\\/80': {
           backgroundColor: '#ffffff !important',
         },

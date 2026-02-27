@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models';
@@ -7,7 +8,7 @@ import { NavbarComponent } from '../shared/navbar/navbar';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
-import { LucideAngularModule, Plus } from 'lucide-angular';
+import { LucideAngularModule, Plus, ArrowRight } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
 // Section Components
@@ -35,6 +36,7 @@ import { SharedErrorStateComponent } from '../shared/error-state/error-state';
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     TranslateModule,
     NavbarComponent,
     LucideAngularModule,
@@ -63,6 +65,7 @@ export class ProjectsComponent implements OnInit {
   public translationService = inject(TranslationService);
 
   PlusIcon = Plus;
+  ArrowRightIcon = ArrowRight;
 
   projects = signal<ProjectEntry[]>([]);
   experiences = signal<ExperienceEntry[]>([]);
@@ -147,15 +150,15 @@ export class ProjectsComponent implements OnInit {
     if (this.selectedFilter() === 'All') return this.projects();
 
     return this.projects().filter(p => {
-      const tech = p.technologies?.toLowerCase() || '';
+      const tags = p.tags?.toLowerCase() || '';
       const cat = p.category?.toLowerCase() || '';
       const filter = this.selectedFilter().toLowerCase();
 
       if (filter === 'full stack') return cat.includes('fullstack') || cat.includes('full-stack') || cat.includes('web');
-      if (filter === 'angular') return tech.includes('angular');
-      if (filter === 'net core') return tech.includes('.net') || tech.includes('core');
+      if (filter === 'angular') return tags.includes('angular');
+      if (filter === 'net core') return tags.includes('.net') || tags.includes('core');
 
-      return cat.includes(filter) || tech.includes(filter);
+      return cat.includes(filter) || tags.includes(filter);
     });
   }
 

@@ -44,7 +44,8 @@
       "trending": "Trending 🔥",
       "latest": "Latest ✨",
       "views": "Views",
-      "projectInsights": "Project Insights"
+      "projectInsights": "Project Insights",
+      "viewAll": "View All Projects"
     },
     "timeline": {
       "title": "Latest Experience",
@@ -146,6 +147,8 @@
     "title1": "Selected",
     "title2": "Works",
     "description": "Professional Portfolio & Case Studies",
+    "viewAll": "View All Projects",
+    "allPosts": "All Projects",
     "header": {
       "title1": "Selected",
       "title2": "Works",

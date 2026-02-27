@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Portfolio.API.Data;
 
 #nullable disable
 
-namespace Portfolio.API.Migrations
+namespace Portfolio.API.Data.Migrations
 {
     [DbContext(typeof(PortfolioDbContext))]
-    partial class PortfolioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260227180122_AddCategoriesAndNichesTables")]
+    partial class AddCategoriesAndNichesTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -444,33 +447,6 @@ namespace Portfolio.API.Migrations
                     b.ToTable("BlogPosts");
                 });
 
-            modelBuilder.Entity("Portfolio.API.Entities.CategoryEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_Ar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
             modelBuilder.Entity("Portfolio.API.Entities.ClientEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -656,33 +632,6 @@ namespace Portfolio.API.Migrations
                     b.ToTable("Experiences");
                 });
 
-            modelBuilder.Entity("Portfolio.API.Entities.NicheEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name_Ar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Niches");
-                });
-
             modelBuilder.Entity("Portfolio.API.Entities.NotificationEntry", b =>
                 {
                     b.Property<Guid>("Id")
@@ -845,12 +794,6 @@ namespace Portfolio.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category_Ar")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Company")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Company_Ar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
