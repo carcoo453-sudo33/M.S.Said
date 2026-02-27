@@ -28,6 +28,10 @@ builder.Services.AddCors(options =>
                 if (origin.EndsWith(".netlify.app") || origin == "https://m-said-portfolio.netlify.app")
                     return true;
                 
+                // Allow RunASP.net domain (API server)
+                if (origin == "https://m-protfolio.runasp.net")
+                    return true;
+                
                 return false;
             })
             .AllowAnyHeader()
