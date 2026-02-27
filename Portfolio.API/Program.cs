@@ -13,20 +13,14 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
-// CORS configuration - Allow specific origins
+// CORS configuration - Allow all origins
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins(
-                "https://m-said-portfolio.netlify.app",
-                "http://localhost:4200",
-                "http://localhost:5283"
-            )
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
-            .WithExposedHeaders("Content-Disposition", "Content-Type");
+            .AllowAnyMethod();
     });
 });
 
@@ -99,8 +93,7 @@ app.MapPost("/identity/login", async (SignInManager<IdentityUser> signInManager,
 app.MapControllers();
 
 // Map SignalR Hub - must be after UseCors
-app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications")
-    .RequireCors("AllowAngular");
+app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications");
 
 // Seeding logic
 using (var scope = app.Services.CreateScope())

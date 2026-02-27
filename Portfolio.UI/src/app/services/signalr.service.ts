@@ -16,8 +16,7 @@ export class SignalRService {
     
     const options: signalR.IHttpConnectionOptions = {
       skipNegotiation: false,
-      transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling,
-      withCredentials: true
+      transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling
     };
 
     // Only add token if it exists (for admin)

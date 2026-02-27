@@ -415,7 +415,7 @@
             <input [(ngModel)]="newCategoryNameAr" placeholder="الفئة (AR)" dir="rtl"
                 (keyup.enter)="addNewCategory()"
                 class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <button (click)="addNewCategory()" [disabled]="!newCategoryName?.trim()"
+            <button (click)="addNewCategory()" [disabled]="!newCategoryName.trim()"
                 class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
             </button>
@@ -469,7 +469,7 @@
             <input [(ngModel)]="newNicheNameAr" placeholder="التخصص (AR)" dir="rtl"
                 (keyup.enter)="addNewNiche()"
                 class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <button (click)="addNewNiche()" [disabled]="!newNicheName?.trim()"
+            <button (click)="addNewNiche()" [disabled]="!newNicheName.trim()"
                 class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
             </button>
