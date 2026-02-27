@@ -50,6 +50,8 @@ public class ProjectEntry : BaseEntity
     
     public bool IsFeatured { get; set; }
     
+    public bool IsTrendy { get; set; }
+    
     public int Views { get; set; }
 
     public int ReactionsCount { get; set; }

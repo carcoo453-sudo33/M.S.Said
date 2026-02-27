@@ -235,8 +235,8 @@ export class NotificationService {
     if (Notification.permission === 'granted') {
       new Notification(notification.title, {
         body: notification.message,
-        icon: '/assets/logo.png',
-        badge: '/assets/logo.png',
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
         tag: notification.id
       });
     } else if (Notification.permission !== 'denied') {
@@ -245,8 +245,8 @@ export class NotificationService {
         if (permission === 'granted') {
           new Notification(notification.title, {
             body: notification.message,
-            icon: '/assets/logo.png',
-            badge: '/assets/logo.png',
+            icon: '/favicon.ico',
+            badge: '/favicon.ico',
             tag: notification.id
           });
         }

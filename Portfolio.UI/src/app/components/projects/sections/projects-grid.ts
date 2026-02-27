@@ -52,6 +52,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                     class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
                 </div>
                 <img [src]="getFullImageUrl(project.imageUrl || '')"
+                    (error)="onImageError($event)"
                     class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
                 
                 <!-- Tech Stack Tags (shown on hover) -->
@@ -208,10 +209,45 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Uploa
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
+                    <div class="col-span-2 relative">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
+                            Tags (comma-separated)
+                            <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- Start typing for suggestions</span>
+                        </label>
+                        <input [(ngModel)]="editingProject.tags" 
+                            (input)="onTagsInput($any($event.target).value)"
+                            (focus)="onTagsInput(editingProject.tags || '')"
+                            (blur)="onTagsBlur()"
+                            placeholder="e.g. UI/UX, Backend, API Development"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        
+                        <!-- Technology Suggestions Dropdown -->
+                        <div *ngIf="showTechSuggestions && filteredTechSuggestions.length > 0"
+                            class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                            <button *ngFor="let tech of filteredTechSuggestions"
+                                (click)="selectTech(tech)"
+                                type="button"
+                                class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2">
+                                <span class="w-2 h-2 bg-red-600 rounded-full"></span>
+                                {{ tech }}
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Technologies (comma-separated) *</label>
                         <input [(ngModel)]="editingProject.technologies" placeholder="e.g. Angular, .NET Core, SQL Server"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <!-- Checkboxes Row -->
+                    <div class="col-span-2 flex items-center gap-6 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" [(ngModel)]="editingProject.isTrendy"
+                                class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-red-600 focus:ring-red-500 focus:ring-2">
+                            <span class="text-sm font-bold text-zinc-900 dark:text-white">Mark as Trendy</span>
+                            <span class="text-[10px] text-zinc-500">- Highlight this project as trending</span>
+                        </label>
                     </div>
 
                     <!-- Image Upload Section -->
@@ -365,7 +401,30 @@ export class ProjectsGridComponent implements OnChanges {
     galleryImages: string[] = [];
     
     // Category options
-    categories = ['E-Commerce', 'Healthcare', 'Portfolio', 'Productivity', 'Education', 'Finance', 'Social Media', 'Entertainment', 'Other'];
+    categories = ['Frontend', 'Backend', 'Fullstack'];
+    
+    // Niche options (what used to be categories)
+    nicheOptions = ['E-Commerce', 'Healthcare', 'Portfolio', 'Productivity', 'Education', 'Finance', 'Social Media', 'Entertainment', 'SaaS & Productivity', 'Real Estate', 'Travel & Tourism', 'Food & Beverage', 'Gaming', 'IoT & Smart Devices', 'Other'];
+    
+    // Technology suggestions for tags
+    techSuggestions = [
+        'Angular', 'React', 'Vue', 'TypeScript', 'JavaScript',
+        '.NET Core', 'ASP.NET', 'C#', 'Node.js', 'Express',
+        'SQL Server', 'PostgreSQL', 'MongoDB', 'MySQL', 'Redis',
+        'Azure', 'AWS', 'Docker', 'Kubernetes', 'CI/CD',
+        'Tailwind CSS', 'Bootstrap', 'Material UI', 'SASS', 'CSS3',
+        'REST API', 'GraphQL', 'SignalR', 'WebSockets', 'gRPC',
+        'Entity Framework', 'Dapper', 'Prisma', 'TypeORM',
+        'JWT', 'OAuth', 'Identity Server', 'Auth0',
+        'Git', 'GitHub Actions', 'Azure DevOps', 'Jenkins',
+        'Microservices', 'Clean Architecture', 'DDD', 'CQRS',
+        'RxJS', 'NgRx', 'Redux', 'MobX', 'Zustand',
+        'Jest', 'Vitest', 'Cypress', 'Playwright', 'xUnit',
+        'Webpack', 'Vite', 'Rollup', 'ESBuild'
+    ];
+    filteredTechSuggestions: string[] = [];
+    showTechSuggestions = false;
+    currentTagInput = '';
     
     // Niche suggestions
     nicheSuggestions: string[] = [];
@@ -402,11 +461,13 @@ export class ProjectsGridComponent implements OnChanges {
             technologies: '',
             category: '',
             niche: '',
+            tags: '',
             imageUrl: '',
             projectUrl: '',
             gitHubUrl: '',
             duration: new Date().getFullYear().toString(),
-            views: 0
+            views: 0,
+            isTrendy: false
         };
         this.galleryImages = [];
         this.isCreating = true;
@@ -481,16 +542,17 @@ export class ProjectsGridComponent implements OnChanges {
     }
 
     loadNicheSuggestions() {
-        // Extract unique niches from existing projects
-        const niches = this.projects
+        // Load both from existing projects and predefined options
+        const projectNiches = this.projects
             .map(p => p.niche)
             .filter((niche): niche is string => !!niche && niche.trim() !== '');
-        this.nicheSuggestions = [...new Set(niches)];
+        this.nicheSuggestions = [...new Set([...this.nicheOptions, ...projectNiches])];
     }
 
     onNicheInput(value: string) {
         if (!value || value.trim() === '') {
-            this.showNicheSuggestions = false;
+            this.filteredNicheSuggestions = this.nicheOptions;
+            this.showNicheSuggestions = true;
             this.cdr.detectChanges();
             return;
         }
@@ -498,7 +560,7 @@ export class ProjectsGridComponent implements OnChanges {
         this.filteredNicheSuggestions = this.nicheSuggestions.filter(niche =>
             niche.toLowerCase().includes(value.toLowerCase())
         );
-        this.showNicheSuggestions = this.filteredNicheSuggestions.length > 0;
+        this.showNicheSuggestions = true;
         this.cdr.detectChanges();
     }
 
@@ -509,9 +571,63 @@ export class ProjectsGridComponent implements OnChanges {
     }
 
     onNicheBlur() {
-        // Delay hiding to allow click events on suggestions to fire
+        // Delay to allow click on suggestion
         setTimeout(() => {
             this.showNicheSuggestions = false;
+            this.cdr.detectChanges();
+        }, 200);
+    }
+
+    // Tag/Technology suggestions
+    onTagsInput(value: string) {
+        this.currentTagInput = value;
+        
+        if (!value || value.trim() === '') {
+            this.showTechSuggestions = false;
+            this.cdr.detectChanges();
+            return;
+        }
+
+        // Get the last tag being typed (after the last comma)
+        const tags = value.split(',');
+        const lastTag = tags[tags.length - 1].trim();
+
+        if (!lastTag) {
+            this.showTechSuggestions = false;
+            this.cdr.detectChanges();
+            return;
+        }
+
+        // Filter suggestions based on last tag
+        this.filteredTechSuggestions = this.techSuggestions.filter(tech =>
+            tech.toLowerCase().includes(lastTag.toLowerCase()) &&
+            !value.toLowerCase().includes(tech.toLowerCase())
+        );
+
+        this.showTechSuggestions = this.filteredTechSuggestions.length > 0;
+        this.cdr.detectChanges();
+    }
+
+    selectTech(tech: string) {
+        const tags = (this.editingProject.tags || '').split(',').map(t => t.trim()).filter(t => t);
+        
+        // Remove the last incomplete tag and add the selected one
+        if (tags.length > 0) {
+            tags[tags.length - 1] = tech;
+        } else {
+            tags.push(tech);
+        }
+
+        this.editingProject.tags = tags.join(', ');
+        this.showTechSuggestions = false;
+        this.cdr.detectChanges();
+    }
+
+    onTagsBlur() {
+        // Delay to allow click on suggestion
+        setTimeout(() => {
+            this.showTechSuggestions = false;
+            this.cdr.detectChanges();
         }, 200);
     }
 
@@ -753,7 +869,7 @@ export class ProjectsGridComponent implements OnChanges {
     }
 
     getFullImageUrl(url: string): string {
-        if (!url) return '';
+        if (!url) return 'assets/project-placeholder.svg';
         
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
@@ -765,6 +881,11 @@ export class ProjectsGridComponent implements OnChanges {
         }
         
         return `${baseUrl}/${url}`;
+    }
+
+    onImageError(event: any) {
+        // Fallback to placeholder image when image fails to load
+        event.target.src = 'assets/project-placeholder.svg';
     }
 
     getProjectTitle(project: ProjectEntry): string {

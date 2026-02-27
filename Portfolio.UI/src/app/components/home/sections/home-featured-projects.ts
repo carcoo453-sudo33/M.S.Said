@@ -48,6 +48,7 @@ import { inject } from '@angular/core';
                         class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
                     </div>
                     <img [src]="getFullImageUrl(project.imageUrl || '')"
+                        (error)="onImageError($event)"
                         class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
                     <div
                         class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
@@ -116,5 +117,10 @@ export class HomeFeaturedProjectsComponent {
         }
         
         return `${baseUrl}/${url}`;
+    }
+
+    onImageError(event: any) {
+        // Fallback to placeholder image when image fails to load
+        event.target.src = 'assets/project-placeholder.svg';
     }
 }
