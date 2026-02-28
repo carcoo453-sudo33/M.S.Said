@@ -67,9 +67,6 @@ app.UseStaticFiles();
     });
 // }
 
-    app.UseHttpsRedirection();
-
-
 // Redirect root to Swagger UI
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
