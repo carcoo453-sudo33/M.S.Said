@@ -8,10 +8,10 @@ import { CommonModule } from '@angular/common';
     template: `
     <div class="animate-pulse space-y-6">
         <!-- Main Image -->
-        <div class="aspect-video bg-zinc-800 rounded-2xl w-full"></div>
+        <div class="aspect-video bg-zinc-800 rounded-xl w-full"></div>
 
         <!-- Thumbnail Gallery -->
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-4 gap-6">
             <div *ngFor="let _ of [].constructor(4)" 
                  class="aspect-video bg-zinc-800 rounded-lg"></div>
         </div>

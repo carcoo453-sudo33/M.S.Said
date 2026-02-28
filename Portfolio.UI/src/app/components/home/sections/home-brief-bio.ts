@@ -30,16 +30,16 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
             {{ translatedDescription }}
         </p>
 
-        <div class="grid grid-cols-3 gap-4 md:gap-8 max-w-xl">
-            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-red-600/20 transition-all group">
+        <div class="grid grid-cols-3 gap-6 md:gap-6 max-w-xl">
+            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
                 <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.yearsOfExperience }}+</div>
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.yearsExp' | translate }}</div>
             </div>
-            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-red-600/20 transition-all group">
+            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
                 <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.projectsCompleted }}</div>
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.projectsCompleted' | translate }}</div>
             </div>
-            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-red-600/20 transition-all group">
+            <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
                 <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.codeCommits }}k</div>
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.codeCommits' | translate }}</div>
             </div>
@@ -50,7 +50,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
             <!-- Modal Header -->
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.bio.editTitle' | translate }}</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -70,7 +70,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                     <textarea [ngModel]="editForm.description_Ar" (ngModelChange)="editForm.description_Ar = $event" rows="5" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                 </div>
-                <div class="grid grid-cols-3 gap-4 pb-4">
+                <div class="grid grid-cols-3 gap-6 pb-4">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.yearsLabel' | translate }}</label>
                         <input [(ngModel)]="editForm.yearsOfExperience" type="text"
@@ -90,7 +90,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
             </div>
 
             <!-- Modal Footer -->
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     {{ 'common.cancel' | translate }}

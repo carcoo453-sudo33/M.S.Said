@@ -24,7 +24,7 @@ import { environment } from '../../../../environments/environment';
                 <div *ngFor="let log of getFilteredChangelog()" class="relative ltr:pl-6 rtl:pr-6 space-y-2">
                     <div class="absolute ltr:left-[-4px] rtl:right-[-4px] top-1.5 w-2 h-2 rounded-full bg-red-600 shadow-lg shadow-red-600/40"></div>
                     <div class="text-[9px] font-bold text-red-600 tracking-widest uppercase">{{ log.date }}</div>
-                    <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/50 hover:bg-zinc-900 transition-all group">
+                    <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 transition-all group">
                         <h4 class="text-white font-black uppercase tracking-tight mb-1.5 text-xs group-hover:text-red-600 transition-colors">
                             {{ log.version }} {{ getChangelogTitle(log) }}</h4>
                         <p class="text-zinc-500 text-[11px] leading-relaxed font-medium">{{ getChangelogDescription(log) }}</p>

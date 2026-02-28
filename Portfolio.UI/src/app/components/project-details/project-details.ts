@@ -171,7 +171,10 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onProjectUpdate(updatedProject: ProjectEntry) {
-    this.project.set(updatedProject);
+    // Enrich the updated project data before setting it
+    const enriched = this.enrichProjectData(updatedProject);
+    this.project.set(enriched);
+    console.log('Project updated and enriched:', enriched);
   }
 
   onEditProject() {

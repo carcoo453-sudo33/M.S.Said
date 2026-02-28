@@ -26,7 +26,7 @@ import { ExperienceEntry } from '../../../models';
                 <div [ngClass]="{'md:text-right md:pr-20': i % 2 === 0, 'md:pl-20 md:order-last': i % 2 !== 0}"
                     class="pl-12 md:pl-0 w-full md:w-1/2">
                     <div
-                        class="bg-zinc-50/50 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-100 dark:border-zinc-800/50 p-10 md:p-14 rounded-[3.5rem] group-hover:border-red-600/30 transition-all duration-700 hover:shadow-2xl">
+                        class="bg-zinc-50/50 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-10 md:p-14 rounded-[3.5rem] group-hover:border-red-600/30 transition-all duration-700 hover:shadow-2xl">
                         <span
                             class="inline-block bg-red-600/5 px-4 py-2 rounded-xl text-red-600 text-[9px] font-black tracking-[0.3em] uppercase mb-6">{{item.duration}}</span>
                         <h3

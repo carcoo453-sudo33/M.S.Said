@@ -45,7 +45,7 @@ import { environment } from '../../../../environments/environment';
 
                 <!-- Connector Icon - Centered on Timeline (Always shows category icon) -->
                 <div
-                    class="absolute top-1/2 ltr:left-1/2 rtl:right-1/2 -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-2xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl"
+                    class="absolute top-1/2 ltr:left-1/2 rtl:right-1/2 -translate-y-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 z-20 flex items-center justify-center w-14 h-14 rounded-xl border-4 bg-white dark:bg-zinc-950 transition-all duration-500 shadow-2xl"
                     [ngClass]="{
                         'border-indigo-600 shadow-indigo-500/40 group-hover:shadow-indigo-500/70 group-hover:scale-110': item.category === 'Education',
                         'border-emerald-600 shadow-emerald-500/40 group-hover:shadow-emerald-500/70 group-hover:scale-110': item.category === 'Training',
@@ -77,7 +77,7 @@ import { environment } from '../../../../environments/environment';
 
                     <!-- Details Card -->
                     <div
-                        class="bg-white/90 dark:bg-zinc-900/70 p-6 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl"
+                        class="bg-white/90 dark:bg-zinc-900/70 p-6 rounded-xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl"
                         [ngClass]="{
                             'border-indigo-500/30 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/20': item.category === 'Education',
                             'border-emerald-500/30 group-hover:border-emerald-500/60 group-hover:shadow-emerald-500/20': item.category === 'Training',
@@ -128,7 +128,7 @@ import { environment } from '../../../../environments/environment';
                 <div class="w-[calc(50%-3.5rem)] flex flex-col justify-center">
                     
                     <!-- Image Card -->
-                    <div class="bg-white/90 dark:bg-zinc-900/70 rounded-2xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl overflow-hidden cursor-pointer"
+                    <div class="bg-white/90 dark:bg-zinc-900/70 rounded-xl border-2 transition-all duration-500 backdrop-blur-xl relative hover:shadow-2xl overflow-hidden cursor-pointer"
                         (click)="openLightbox(item.imageUrl || getDefaultImage(item.category))"
                         [ngClass]="{
                             'border-indigo-500/30 group-hover:border-indigo-500/60 group-hover:shadow-indigo-500/20': item.category === 'Education',
@@ -193,7 +193,7 @@ import { environment } from '../../../../environments/environment';
         <!-- Main Image Container -->
         <div class="relative w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-16" (click)="$event.stopPropagation()">
             <img [src]="getImageUrl(lightboxImage)" 
-                class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-scale-in"
+                class="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-scale-in"
                 [class.animate-slide-left]="slideDirection === 'left'"
                 [class.animate-slide-right]="slideDirection === 'right'">
         </div>
@@ -239,7 +239,7 @@ import { environment } from '../../../../environments/environment';
     <!-- Edit Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-2xl" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Manage Education</h3>
                 <div class="flex items-center gap-2">
                     <button (click)="addNewEntry()"
@@ -255,7 +255,7 @@ import { environment } from '../../../../environments/environment';
 
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 max-h-[70vh]">
                 <!-- Empty State for Edit Modal -->
-                <div *ngIf="editList.length === 0" class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/50">
+                <div *ngIf="editList.length === 0" class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50">
                     <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
                         <lucide-icon [img]="BookOpenIcon" class="w-8 h-8 text-zinc-400"></lucide-icon>
                     </div>
@@ -375,7 +375,7 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
                 <button (click)="saveEducation()" [disabled]="isSaving"
@@ -388,9 +388,9 @@ import { environment } from '../../../../environments/environment';
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteIndex !== null" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteIndex = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
+    <div *ngIf="deleteIndex !== null" class="modal-overlay">
+        <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
+            <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>

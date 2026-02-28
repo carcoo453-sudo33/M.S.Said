@@ -12,7 +12,7 @@ import { TranslationService } from '../../../services/translation.service';
     <div class="animate-fade-in-left h-full flex flex-col" style="animation-delay: 0.4s">
         <!-- Map Container -->
         <div
-            class="relative group rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl bg-[#E4D5C7] dark:bg-zinc-900/40 flex-1">
+            class="relative group rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-2xl bg-[#E4D5C7] dark:bg-zinc-900/40 flex-1">
             <!-- Sketch Overlay for high-fidelity parchment feel -->
             <div
                 class="absolute inset-0 bg-[#E4D5C7]/30 dark:bg-black/40 pointer-events-none z-10 mix-blend-multiply">
@@ -41,7 +41,7 @@ import { TranslationService } from '../../../services/translation.service';
         <!-- Discovery Card (Below Map) -->
         <div
             [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-            class="bg-zinc-50 dark:bg-zinc-900 backdrop-blur-xl p-6 lg:p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl mt-6">
+            class="bg-zinc-50 dark:bg-zinc-900 backdrop-blur-xl p-6 lg:p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xl mt-6">
             <div class="flex items-start justify-between mb-6">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
@@ -57,7 +57,7 @@ import { TranslationService } from '../../../services/translation.service';
                 <lucide-icon [img]="ZapIcon" class="w-5 h-5 text-red-600 animate-pulse"></lucide-icon>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+            <div class="grid grid-cols-2 gap-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
                 <div [class.text-right]="translationService.isRTL()" [class.text-left]="!translationService.isRTL()">
                     <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">{{ 'contact.map.baseCoordinate' | translate }}</p>
                     <p class="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase italic">{{ 'contact.map.location' | translate }}</p>

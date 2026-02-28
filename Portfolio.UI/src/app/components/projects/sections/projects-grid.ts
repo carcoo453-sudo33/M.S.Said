@@ -11,7 +11,8 @@ import { ToastService } from '../../../services/toast.service';
 import { TranslationHelperService } from '../../../services/translation-helper.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github, ArrowRight } from 'lucide-angular';
+import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, Image, Github, ArrowRight, Info, Link, Star, CheckCircle, Clock } from 'lucide-angular';
+import { KeyFeature, ChangelogItem } from '../../../models/project.model';
 
 @Component({
     selector: 'app-projects-grid',
@@ -45,6 +46,11 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     ImageIcon = Image;
     GithubIcon = Github;
     ArrowRightIcon = ArrowRight;
+    InfoIcon = Info;
+    LinkIcon = Link;
+    StarIcon = Star;
+    CheckCircleIcon = CheckCircle;
+    ClockIcon = Clock;
 
     showEditModal = false;
     isSaving = false;
@@ -58,6 +64,14 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     deleteProject: ProjectEntry | null = null;
     editingProject: Partial<ProjectEntry> = {};
     galleryImages: string[] = [];
+
+    // Key Features, Responsibilities, and Changelog
+    keyFeatures: KeyFeature[] = [];
+    responsibilities: string[] = [];
+    changelog: ChangelogItem[] = [];
+    newFeature: Partial<KeyFeature> = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+    newResponsibility = '';
+    newChangelogItem: Partial<ChangelogItem> = { version: '', date: '', title: '', title_Ar: '', description: '', description_Ar: '' };
 
     // Category options
     categories = ['Frontend', 'Backend', 'Fullstack'];
@@ -176,6 +190,12 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         this.galleryImages = project.gallery ? [...project.gallery] : [];
         this.selectedTags = project.tags ? project.tags.split(',').map(t => t.trim()).filter(t => t) : [];
         this.tagInput = '';
+        
+        // Populate Key Features, Responsibilities, and Changelog
+        this.keyFeatures = project.keyFeatures ? [...project.keyFeatures] : [];
+        this.responsibilities = project.responsibilities ? [...project.responsibilities] : [];
+        this.changelog = project.changelog ? [...project.changelog] : [];
+        
         this.isCreating = false;
         this.submitted = false;
         this.loadNicheSuggestions();
@@ -205,6 +225,15 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         this.galleryImages = [];
         this.selectedTags = [];
         this.tagInput = '';
+        
+        // Initialize Key Features, Responsibilities, and Changelog
+        this.keyFeatures = [];
+        this.responsibilities = [];
+        this.changelog = [];
+        this.newFeature = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+        this.newResponsibility = '';
+        this.newChangelogItem = { version: '', date: '', title: '', title_Ar: '', description: '', description_Ar: '' };
+        
         this.isCreating = true;
         this.submitted = false;
         this.importUrl = '';
@@ -234,11 +263,13 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
                     language: (importedData.language && importedData.language.trim()) || this.editingProject.language || '',
                     duration: (importedData.duration && importedData.duration.trim()) || this.editingProject.duration || '',
                     architecture: (importedData.architecture && importedData.architecture.trim()) || this.editingProject.architecture || '',
-                    status: (importedData.status && importedData.status.trim()) || this.editingProject.status || '',
-                    responsibilities: importedData.responsibilities && importedData.responsibilities.length > 0 ? importedData.responsibilities : this.editingProject.responsibilities || [],
-                    keyFeatures: importedData.keyFeatures && importedData.keyFeatures.length > 0 ? importedData.keyFeatures : this.editingProject.keyFeatures || [],
-                    changelog: importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.editingProject.changelog || []
+                    status: (importedData.status && importedData.status.trim()) || this.editingProject.status || ''
                 };
+
+                // Populate arrays
+                this.responsibilities = importedData.responsibilities && importedData.responsibilities.length > 0 ? importedData.responsibilities : this.responsibilities;
+                this.keyFeatures = importedData.keyFeatures && importedData.keyFeatures.length > 0 ? importedData.keyFeatures : this.keyFeatures;
+                this.changelog = importedData.changelog && importedData.changelog.length > 0 ? importedData.changelog : this.changelog;
 
                 console.log('Populated editingProject:', this.editingProject);
                 this.isImporting = false;
@@ -274,6 +305,15 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         this.galleryImages = [];
         this.selectedTags = [];
         this.tagInput = '';
+        
+        // Reset Key Features, Responsibilities, and Changelog
+        this.keyFeatures = [];
+        this.responsibilities = [];
+        this.changelog = [];
+        this.newFeature = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+        this.newResponsibility = '';
+        this.newChangelogItem = { version: '', date: '', title: '', title_Ar: '', description: '', description_Ar: '' };
+        
         this.showNicheSuggestions = false;
         this.showTechSuggestions = false;
     }
@@ -804,12 +844,24 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             category_Ar: this.editingProject.category_Ar,
             niche: this.editingProject.niche,
             niche_Ar: this.editingProject.niche_Ar,
+            company: this.editingProject.company,
+            company_Ar: this.editingProject.company_Ar,
             tags: this.selectedTags.join(', '),
             imageUrl: this.editingProject.imageUrl,
             gallery: this.galleryImages.length > 0 ? this.galleryImages : undefined,
             projectUrl: this.editingProject.projectUrl,
             gitHubUrl: this.editingProject.gitHubUrl,
             duration: this.editingProject.duration,
+            duration_Ar: this.editingProject.duration_Ar,
+            language: this.editingProject.language,
+            language_Ar: this.editingProject.language_Ar,
+            architecture: this.editingProject.architecture,
+            architecture_Ar: this.editingProject.architecture_Ar,
+            status: this.editingProject.status,
+            status_Ar: this.editingProject.status_Ar,
+            keyFeatures: this.keyFeatures.length > 0 ? this.keyFeatures : undefined,
+            responsibilities: this.responsibilities.length > 0 ? this.responsibilities : undefined,
+            changelog: this.changelog.length > 0 ? this.changelog : undefined,
             views: this.editingProject.views || 0,
             isFeatured: this.editingProject.isFeatured || false
         };
@@ -898,6 +950,89 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     onImageError(event: any) {
         // Fallback to placeholder image when image fails to load
         event.target.src = 'assets/project-placeholder.svg';
+    }
+
+    // Key Features Management
+    addKeyFeature() {
+        const title = this.newFeature.title?.trim();
+        const description = this.newFeature.description?.trim();
+
+        if (!title || !description) {
+            this.toast.warning('Please provide both title and description for the feature');
+            return;
+        }
+
+        this.keyFeatures.push({
+            icon: this.newFeature.icon || 'star',
+            title: title,
+            title_Ar: this.newFeature.title_Ar?.trim() || '',
+            description: description,
+            description_Ar: this.newFeature.description_Ar?.trim() || ''
+        });
+
+        // Reset form
+        this.newFeature = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+        this.cdr.detectChanges();
+        this.toast.success('Feature added');
+    }
+
+    removeKeyFeature(index: number) {
+        this.keyFeatures.splice(index, 1);
+        this.cdr.detectChanges();
+        this.toast.success('Feature removed');
+    }
+
+    // Responsibilities Management
+    addResponsibility() {
+        const resp = this.newResponsibility.trim();
+        if (!resp) {
+            this.toast.warning('Please enter a responsibility');
+            return;
+        }
+
+        this.responsibilities.push(resp);
+        this.newResponsibility = '';
+        this.cdr.detectChanges();
+        this.toast.success('Responsibility added');
+    }
+
+    removeResponsibility(index: number) {
+        this.responsibilities.splice(index, 1);
+        this.cdr.detectChanges();
+        this.toast.success('Responsibility removed');
+    }
+
+    // Changelog Management
+    addChangelogItem() {
+        const version = this.newChangelogItem.version?.trim();
+        const date = this.newChangelogItem.date?.trim();
+        const title = this.newChangelogItem.title?.trim();
+        const description = this.newChangelogItem.description?.trim();
+
+        if (!version || !date || !title || !description) {
+            this.toast.warning('Please fill in all required changelog fields (version, date, title, description)');
+            return;
+        }
+
+        this.changelog.push({
+            version: version,
+            date: date,
+            title: title,
+            title_Ar: this.newChangelogItem.title_Ar?.trim() || '',
+            description: description,
+            description_Ar: this.newChangelogItem.description_Ar?.trim() || ''
+        });
+
+        // Reset form
+        this.newChangelogItem = { version: '', date: '', title: '', title_Ar: '', description: '', description_Ar: '' };
+        this.cdr.detectChanges();
+        this.toast.success('Changelog entry added');
+    }
+
+    removeChangelogItem(index: number) {
+        this.changelog.splice(index, 1);
+        this.cdr.detectChanges();
+        this.toast.success('Changelog entry removed');
     }
 
     getProjectTitle(project: ProjectEntry): string {

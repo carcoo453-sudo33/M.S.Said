@@ -18,7 +18,7 @@ import { SignalRService } from '../../../services/signalr.service';
     template: `
     <aside class="md:sticky md:top-24 lg:sticky lg:top-24 h-fit animate-fade-in-left">
         <div
-            class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden transition-all hover:shadow-xl">
+            class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden transition-all hover:shadow-xl">
 
             <!-- Avatar Section -->
             <div class="p-8 pb-4 flex flex-col items-center relative">
@@ -31,7 +31,7 @@ import { SignalRService } from '../../../services/signalr.service';
                 <!-- Avatar -->
                 <div class="relative mb-4">
                     <img [src]="getAvatarUrl()" [alt]="bio?.name"
-                        class="w-40 h-40 rounded-3xl object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
+                        class="w-40 h-40 rounded-xl object-cover border-4 border-white dark:border-zinc-700 shadow-xl ring-2 ring-red-500/20">
                     <!-- Online Status Indicator -->
                     <span 
                         class="absolute bottom-2 right-2 w-5 h-5 border-[3px] border-white dark:border-zinc-700 rounded-full transition-all duration-300"
@@ -62,7 +62,7 @@ import { SignalRService } from '../../../services/signalr.service';
             </div>
 
             <!-- Divider -->
-            <div class="mx-6 border-t border-zinc-100 dark:border-zinc-800 my-4"></div>
+            <div class="mx-6 border-t border-zinc-200 dark:border-zinc-800 my-4"></div>
 
             <!-- Contact Info -->
             <div class="px-6 space-y-2 pb-6">
@@ -101,21 +101,21 @@ import { SignalRService } from '../../../services/signalr.service';
             </div>
 
             <!-- Footer Socials -->
-            <div class="bg-zinc-50/50 dark:bg-zinc-800/30 p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-center gap-3 flex-wrap">
+            <div class="bg-zinc-50/50 dark:bg-zinc-800/30 p-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-center gap-3 flex-wrap">
                 <a *ngIf="bio?.linkedInUrl" [href]="bio?.linkedInUrl" target="_blank" 
-                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:shadow-[0_0_20px_rgba(10,102,194,0.5)]">
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:shadow-[0_0_20px_rgba(10,102,194,0.5)]">
                     <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>
                 </a>
                 <a *ngIf="bio?.gitHubUrl" [href]="bio?.gitHubUrl" target="_blank" 
-                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#333] hover:border-[#333] hover:shadow-[0_0_20px_rgba(51,51,51,0.5)]">
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#333] hover:border-[#333] hover:shadow-[0_0_20px_rgba(51,51,51,0.5)]">
                     <lucide-icon [img]="GithubIcon" class="w-5 h-5"></lucide-icon>
                 </a>
                 <a *ngIf="bio?.twitterUrl" [href]="bio?.twitterUrl" target="_blank" 
-                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#000000] hover:border-[#000000] hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#000000] hover:border-[#000000] hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                     <lucide-icon [img]="TwitterIcon" class="w-5 h-5"></lucide-icon>
                 </a>
                 <a *ngIf="bio?.whatsAppUrl" [href]="getWhatsAppUrl()" target="_blank" 
-                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-100 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#25D366] hover:border-[#25D366] hover:shadow-[0_0_20px_rgba(37,211,102,0.5)]">
+                    class="w-12 h-12 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#25D366] hover:border-[#25D366] hover:shadow-[0_0_20px_rgba(37,211,102,0.5)]">
                     <lucide-icon [img]="MessageCircleIcon" class="w-5 h-5"></lucide-icon>
                 </a>
             </div>
@@ -134,7 +134,7 @@ import { SignalRService } from '../../../services/signalr.service';
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
             <!-- Modal Header -->
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Edit Profile</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -145,11 +145,11 @@ import { SignalRService } from '../../../services/signalr.service';
             <!-- Modal Body -->
             <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <!-- Avatar Upload -->
-                <div class="flex items-center gap-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
                     <div class="relative group">
                         <img [src]="avatarPreview || getAvatarUrl()" 
-                            class="w-20 h-20 rounded-3xl object-cover border-2 border-white dark:border-zinc-700 shadow-lg">
-                        <div *ngIf="isUploadingAvatar" class="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center">
+                            class="w-20 h-20 rounded-xl object-cover border-2 border-white dark:border-zinc-700 shadow-lg">
+                        <div *ngIf="isUploadingAvatar" class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
                             <div class="w-5 h-5 border-2 border-white border-t-transparent animate-spin rounded-full"></div>
                         </div>
                     </div>
@@ -207,7 +207,7 @@ import { SignalRService } from '../../../services/signalr.service';
                 </div>
 
                 <!-- Divider -->
-                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+                <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
                 <!-- Social Media URLs -->
                 <div>
@@ -257,7 +257,7 @@ import { SignalRService } from '../../../services/signalr.service';
                 </div>
 
                 <!-- Divider -->
-                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+                <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
                 <!-- URLs -->
                 <div>
@@ -265,7 +265,7 @@ import { SignalRService } from '../../../services/signalr.service';
                     <input [(ngModel)]="editForm.avatarUrl" type="text"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">LinkedIn URL</label>
                         <input [(ngModel)]="editForm.linkedInUrl" type="text"
@@ -277,7 +277,7 @@ import { SignalRService } from '../../../services/signalr.service';
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Twitter URL</label>
                         <input [(ngModel)]="editForm.twitterUrl" type="text"
@@ -303,10 +303,10 @@ import { SignalRService } from '../../../services/signalr.service';
                 </div>
 
                 <!-- Divider -->
-                <div class="border-t border-zinc-100 dark:border-zinc-800"></div>
+                <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
 
                 <!-- Stats -->
-                <div class="grid grid-cols-3 gap-4 pb-4">
+                <div class="grid grid-cols-3 gap-6 pb-4">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Yrs Exp.</label>
                         <input [(ngModel)]="editForm.yearsOfExperience" type="text"
@@ -326,7 +326,7 @@ import { SignalRService } from '../../../services/signalr.service';
             </div>
 
             <!-- Modal Footer -->
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     Cancel

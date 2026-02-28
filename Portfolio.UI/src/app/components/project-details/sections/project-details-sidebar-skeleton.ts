@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
     template: `
     <div class="space-y-8 animate-pulse">
         <!-- Changelog Section -->
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 space-y-6">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-8 space-y-6">
             <div class="h-6 bg-zinc-800 rounded w-32"></div>
             <div class="space-y-4">
                 <div *ngFor="let _ of [].constructor(3)" class="space-y-2">

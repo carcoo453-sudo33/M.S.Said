@@ -16,8 +16,8 @@ import { TranslationService } from '../../../services/translation.service';
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section class="mt-10 animate-fade-in-up" style="animation-delay: 0.6s">
-        <div class="flex items-center gap-4 mb-16 relative">
+    <section class="animate-fade-in-up" style="animation-delay: 0.6s">
+        <div class="flex items-center gap-4 mb-12 relative">
             <div class="w-1 h-12 bg-red-600 rounded-full"></div>
             <h2 class="text-4xl font-black dark:text-white text-zinc-900 tracking-tight uppercase italic">
                 {{ 'projects.references.title' | translate }}
@@ -31,9 +31,9 @@ import { TranslationService } from '../../../services/translation.service';
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div *ngFor="let testimonial of testimonials"
-                class="group bg-zinc-50 dark:bg-zinc-900/40 p-8 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 relative">
+                class="group bg-zinc-50 dark:bg-zinc-900/40 p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 hover:-translate-y-2 transition-all duration-500 relative">
                 
                 <!-- Admin Actions -->
                 <div *ngIf="auth.isLoggedIn()" class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -76,7 +76,7 @@ import { TranslationService } from '../../../services/translation.service';
     <!-- Edit/Create Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-2xl max-h-[90vh]" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Add Testimonial' : 'Edit Testimonial' }}</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -85,7 +85,7 @@ import { TranslationService } from '../../../services/translation.service';
             </div>
 
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
                         <input [(ngModel)]="editingTestimonial.name" placeholder="Full name"
@@ -166,7 +166,7 @@ import { TranslationService } from '../../../services/translation.service';
                 </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
                 <button (click)="saveTestimonial()" [disabled]="isSaving"
@@ -179,9 +179,9 @@ import { TranslationService } from '../../../services/translation.service';
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteTestimonial" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteTestimonial = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
+    <div *ngIf="deleteTestimonial" class="modal-overlay">
+        <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
+            <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>

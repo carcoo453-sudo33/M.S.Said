@@ -60,7 +60,7 @@ import { TranslationService } from '../../../services/translation.service';
                 </div>
             </div>
 
-            <div class="pt-10 border-t border-zinc-100 dark:border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="pt-10 border-t border-zinc-200 dark:border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-6">
                 <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest">
                     © 2024{{ currentYear > 2024 ? '-' + currentYear : '' }} {{ translationService.isRTL() ? 'مصطفى سمير سعيد. جميع الحقوق محفوظة' : 'Mostafa Samir Said. All rights reserved' }}
                 </p>

@@ -10,9 +10,9 @@ import { TranslationService } from '../../../services/translation.service';
     standalone: true,
     imports: [CommonModule, TranslateModule, LucideAngularModule],
     template: `
-    <section *ngIf="project" class=" mt-5 grid grid-cols-2 mb-5 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 animate-fade-in-up" style="animation-delay: 0.1s">
+    <section *ngIf="project" class=" mt-5 grid grid-cols-2 mb-5 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 animate-fade-in-up" style="animation-delay: 0.1s">
         <!-- Language -->
-        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl lg:rounded-2xl space-y-3 lg:space-y-4 hover:bg-zinc-900 hover:border-zinc-700 transition-all">
+        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="CodeIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
                 <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.language' | translate }}</span>
@@ -20,7 +20,7 @@ import { TranslationService } from '../../../services/translation.service';
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.language, project.language_Ar, 'multipleLanguages') }}</div>
         </div>
         <!-- Duration -->
-        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl lg:rounded-2xl space-y-3 lg:space-y-4 hover:bg-zinc-900 hover:border-zinc-700 transition-all">
+        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="ClockIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
                 <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.duration' | translate }}</span>
@@ -28,7 +28,7 @@ import { TranslationService } from '../../../services/translation.service';
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.duration, project.duration_Ar) }}</div>
         </div>
         <!-- Architecture -->
-        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl lg:rounded-2xl space-y-3 lg:space-y-4 hover:bg-zinc-900 hover:border-zinc-700 transition-all">
+        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="LayersIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
                 <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.architecture' | translate }}</span>
@@ -36,7 +36,7 @@ import { TranslationService } from '../../../services/translation.service';
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.architecture, project.architecture_Ar, 'scalableArchitecture') }}</div>
         </div>
         <!-- Status -->
-        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl lg:rounded-2xl space-y-3 lg:space-y-4 hover:bg-zinc-900 hover:border-zinc-700 transition-all">
+        <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="CheckIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
                 <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.status' | translate }}</span>

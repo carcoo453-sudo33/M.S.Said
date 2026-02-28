@@ -46,7 +46,7 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <!-- Card Footer -->
-        <div class="px-8 py-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div class="px-8 py-6 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
             <div class="flex items-center gap-6">
                 <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-16"></div>
                 <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-20"></div>

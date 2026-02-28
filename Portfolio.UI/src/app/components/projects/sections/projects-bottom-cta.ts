@@ -9,7 +9,7 @@ import { LucideAngularModule, ArrowRight, Sparkles } from 'lucide-angular';
     standalone: true,
     imports: [CommonModule, RouterLink, TranslateModule, LucideAngularModule],
     template: `
-    <section class="mt-10 relative overflow-hidden">
+    <section class="relative overflow-hidden py-16">
         <!-- Background effects -->
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-600/5 to-transparent"></div>
         <div class="absolute inset-0 opacity-[0.02]" 

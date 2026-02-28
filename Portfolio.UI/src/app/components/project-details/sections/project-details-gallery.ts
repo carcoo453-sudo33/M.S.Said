@@ -14,7 +14,7 @@ import { environment } from '../../../../environments/environment';
     <ng-container *ngIf="project">
         <!-- Featured Media Section with Vertical Reaction Icons -->
         <section class="space-y-6 lg:space-y-8 animate-fade-in-up" style="animation-delay: 0.2s">
-            <div class="relative group rounded-2xl lg:rounded-[2.5rem] overflow-hidden border border-zinc-900 bg-zinc-950 aspect-video shadow-2xl cursor-pointer"
+            <div class="relative group rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 aspect-video shadow-2xl cursor-pointer"
                 (click)="openLightbox(getCurrentImage())">
                 <img [src]="getFullImageUrl(getCurrentImage())" class="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105">
                 
@@ -124,7 +124,7 @@ import { environment } from '../../../../environments/environment';
             <!-- Main Image Container -->
             <div class="relative w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-16" (click)="$event.stopPropagation()">
                 <img [src]="getFullImageUrl(lightboxImage)" 
-                    class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-scale-in"
+                    class="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-scale-in"
                     [class.animate-slide-left]="slideDirection === 'left'"
                     [class.animate-slide-right]="slideDirection === 'right'">
             </div>
@@ -199,7 +199,11 @@ export class ProjectDetailsGalleryComponent {
         if (!this.project) return '';
         const currentLang = this.translationService.currentLang$();
         
-        // Use description field (same as projects listing page)
+        // Use summary field if available, fallback to description
+        const summary = currentLang === 'ar' && this.project.summary_Ar ? this.project.summary_Ar : (this.project.summary || '');
+        if (summary) return summary;
+        
+        // Fallback to description if summary is not available
         return currentLang === 'ar' && this.project.description_Ar ? this.project.description_Ar : (this.project.description || '');
     }
     

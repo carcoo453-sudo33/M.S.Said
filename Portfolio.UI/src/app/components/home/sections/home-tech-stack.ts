@@ -16,7 +16,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section class="animate-fade-in-up pt-12 border-t border-zinc-100 dark:border-zinc-900 relative">
+    <section class="animate-fade-in-up pt-12 border-t border-zinc-200 dark:border-zinc-900 relative">
         <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
             class="absolute top-4 right-0 w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:scale-110 hover:text-red-500 transition-all z-20">
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
@@ -24,7 +24,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         <p class="text-center text-[10px] font-black uppercase tracking-[0.6em] text-zinc-400 mb-10">{{ 'home.techStack.title' | translate }}</p>
         <div class="flex flex-wrap justify-center gap-6">
             <div *ngFor="let skill of translatedSkills"
-                class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
+                class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
                 <img *ngIf="isImageUrl(skill.icon)" [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
                 <lucide-icon *ngIf="!isImageUrl(skill.icon)" [img]="ImageIcon" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
                 <span class="text-[9px] font-bold uppercase tracking-wide text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{{ skill.name }}</span>
@@ -35,7 +35,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     <!-- Edit Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.techStack.manageTitle' | translate }}</h3>
                 <div class="flex items-center gap-2">
                     <button (click)="addNewSkill()" class="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-all">
@@ -63,11 +63,11 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                                 class="w-full px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         
-                        <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                        <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
                             <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-1">{{ 'home.techStack.skillIcon' | translate }}</span>
                             
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
+                                <div class="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
                                     <img *ngIf="isImageUrl(item.icon)" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
                                     <lucide-icon *ngIf="!isImageUrl(item.icon)" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
                                 </div>
@@ -90,7 +90,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                     </button>
                 </div>
             </div>
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()" class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">{{ 'common.cancel' | translate }}</button>
                 <button (click)="saveSkills()" [disabled]="isSaving"
                     class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
@@ -102,9 +102,9 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteIndex !== null" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteIndex = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
+    <div *ngIf="deleteIndex !== null" class="modal-overlay">
+        <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
+            <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>

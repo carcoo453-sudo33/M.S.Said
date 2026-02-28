@@ -26,7 +26,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div *ngFor="let service of translatedServices"
-                class="group bg-zinc-50 dark:bg-zinc-900/40 p-6 rounded-xl border border-zinc-100 dark:border-zinc-800/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-500">
+                class="group bg-zinc-50 dark:bg-zinc-900/40 p-6 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 hover:-translate-y-1 transition-all duration-500">
                 <div class="w-12 h-12 bg-white dark:bg-zinc-800 rounded-xl flex items-center justify-center mb-5 group-hover:bg-red-600 transition-all shadow-sm">
                     <lucide-icon [img]="getServiceIcon(service.icon)" class="w-5 h-5 text-red-600 group-hover:text-white transition-colors"></lucide-icon>
                 </div>
@@ -39,7 +39,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     <!-- Edit Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.services.manageTitle' | translate }}</h3>
                 <div class="flex items-center gap-2">
                     <button (click)="addNewService()"
@@ -82,7 +82,7 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
             </div>
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">{{ 'common.cancel' | translate }}</button>
                 <button (click)="saveServices()" [disabled]="isSaving"
@@ -95,9 +95,9 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteIndex !== null" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteIndex = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
+    <div *ngIf="deleteIndex !== null" class="modal-overlay">
+        <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
+            <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>

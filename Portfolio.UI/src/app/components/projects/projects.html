@@ -46,10 +46,10 @@
         </app-shared-empty-state>
 
         <!-- LOADED STATE -->
-        <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="space-y-16">
+        <div *ngIf="!isLoading() && !hasError() && projects().length > 0">
 
             <!-- Page Header -->
-            <div class="pt-24 pb-6">
+            <div class="pt-24 pb-16">
                 <app-shared-page-header [badge]="'projects.badge' | translate"
                     [title]="('projects.title1' | translate) + ' <span class=\'text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]\'>' + ('projects.title2' | translate) + '</span>'"
                     [description]="'projects.description' | translate">
@@ -66,63 +66,78 @@
             </div>
 
             <!-- Highlighted Projects -->
-            <div *ngIf="!isLoading() && highlightedProjects().length > 0"
-                class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up" style="animation-delay: 0.1s">
-                <div *ngFor="let highlight of highlightedProjects()"
-                    class="group relative rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-xl">
+            <div *ngIf="!isLoading() && highlightedProjects().length > 0" class="pb-16">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in-up" style="animation-delay: 0.1s">
+                    <div *ngFor="let highlight of highlightedProjects()"
+                        class="group relative rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:shadow-2xl hover:shadow-red-600/20 hover:-translate-y-2 transition-all duration-500 shadow-lg overflow-hidden">
 
-                    <!-- Glowing Border Effect -->
-                    <div class="absolute -inset-[2px] rounded-2xl bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                        [ngClass]="highlight.color"></div>
+                        <!-- Gradient Accent Bar -->
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                            [ngClass]="highlight.color"></div>
 
-                    <!-- Card Content -->
-                    <a [routerLink]="['/projects', highlight.project.slug]"
-                        class="block p-5 h-full relative z-10 bg-white dark:bg-zinc-900 rounded-2xl m-[1px] flex flex-col">
-                        <!-- Header -->
-                        <div class="flex items-center gap-3 mb-5">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br"
-                                [ngClass]="[highlight.color, highlight.shadow]">
-                                <lucide-icon [img]="highlight.icon" class="w-5 h-5 text-white"></lucide-icon>
+                        <!-- Card Content -->
+                        <a [routerLink]="['/projects', highlight.project.slug]"
+                            class="block p-6 h-full relative z-10 flex flex-col">
+                            
+                            <!-- Header with Icon Badge -->
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br shadow-lg group-hover:scale-110 transition-transform duration-500"
+                                        [ngClass]="[highlight.color, highlight.shadow]">
+                                        <lucide-icon [img]="highlight.icon" class="w-6 h-6 text-white"></lucide-icon>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-black text-xs tracking-widest uppercase text-red-600">
+                                            {{ highlight.labelKey | translate: { Default: highlight.label } }}
+                                        </h3>
+                                        <p class="text-[10px] text-zinc-400 font-medium mt-0.5">Featured Project</p>
+                                    </div>
+                                </div>
                             </div>
-                            <h3 class="font-black text-xs sm:text-sm tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r"
-                                [ngClass]="highlight.color">
-                                {{ highlight.labelKey | translate: { Default: highlight.label } }}
-                            </h3>
-                        </div>
 
-                        <!-- Project Info -->
-                        <div class="relative aspect-[16/9] rounded-xl overflow-hidden mb-5">
-                            <img *ngIf="highlight.project.imageUrl" [src]="getFullImageUrl(highlight.project.imageUrl)"
-                                (error)="onImageError($event)" [alt]="getTitle(highlight.project)"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            <div *ngIf="!highlight.project.imageUrl"
-                                class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400">
-                                <lucide-icon [img]="ImageIcon" class="w-10 h-10"></lucide-icon>
+                            <!-- Project Image -->
+                            <div class="relative aspect-[16/9] rounded-xl overflow-hidden mb-5 shadow-md">
+                                <img *ngIf="highlight.project.imageUrl" [src]="getFullImageUrl(highlight.project.imageUrl)"
+                                    (error)="onImageError($event)" [alt]="getTitle(highlight.project)"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <div *ngIf="!highlight.project.imageUrl"
+                                    class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400">
+                                    <lucide-icon [img]="ImageIcon" class="w-10 h-10"></lucide-icon>
+                                </div>
+                                <!-- Overlay on hover -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
-                        </div>
 
-                        <h4
-                            class="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-2 line-clamp-1 group-hover:text-red-500 transition-colors">
-                            {{ getTitle(highlight.project) }}
-                        </h4>
+                            <!-- Project Title -->
+                            <h4 class="text-xl font-black text-zinc-900 dark:text-zinc-50 mb-3 line-clamp-2 group-hover:text-red-600 transition-colors leading-tight">
+                                {{ getTitle(highlight.project) }}
+                            </h4>
 
-                        <p class="text-zinc-500 dark:text-zinc-400 text-sm line-clamp-2 mb-4">
-                            {{ getDescription(highlight.project) }}
-                        </p>
+                            <!-- Project Description -->
+                            <p class="text-zinc-600 dark:text-zinc-400 text-sm line-clamp-3 mb-5 leading-relaxed flex-1">
+                                {{ getDescription(highlight.project) }}
+                            </p>
 
-                        <!-- Stats -->
-                        <div
-                            class="flex items-center gap-4 text-xs font-medium text-zinc-500 dark:text-zinc-400 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 mt-auto">
-                            <div class="flex items-center gap-1.5" *ngIf="highlight.project.views !== undefined">
-                                <lucide-icon [img]="EyeIcon" class="w-4 h-4"></lucide-icon>
-                                <span>{{ highlight.project.views | number }}</span>
+                            <!-- Stats Footer -->
+                            <div class="flex items-center justify-between pt-5 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
+                                <div class="flex items-center gap-4 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                    <div class="flex items-center gap-1.5" *ngIf="highlight.project.views !== undefined">
+                                        <lucide-icon [img]="EyeIcon" class="w-4 h-4"></lucide-icon>
+                                        <span>{{ highlight.project.views | number }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5" *ngIf="highlight.project.createdAt">
+                                        <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+                                        <span>{{ highlight.project.createdAt | date:'MMM yyyy' }}</span>
+                                    </div>
+                                </div>
+                                <!-- View Arrow -->
+                                <div class="flex items-center gap-1 text-red-600 text-xs font-black uppercase tracking-wider opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                                    <span>View</span>
+                                    <lucide-icon [img]="ArrowRightIcon" class="w-4 h-4"></lucide-icon>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-1.5" *ngIf="highlight.project.createdAt">
-                                <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
-                                <span>{{ highlight.project.createdAt | date:'longDate' }}</span>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -132,7 +147,7 @@
             </app-projects-grid>
 
             <!-- View All Projects Button -->
-            <div class="flex justify-center mt-16 mb-8 animate-fade-in-up" style="animation-delay: 0.4s">
+            <div class="flex justify-center pb-16 animate-fade-in-up" style="animation-delay: 0.4s">
                 <a routerLink="/projects/all"
                     class="group relative px-10 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-red-600/20 overflow-hidden">
                     <span
@@ -146,22 +161,26 @@
             </div>
 
             <!-- Work History Section -->
-            <app-projects-work-history [experiences]="experiences()"
-                (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
+            <div class="py-16 border-t border-zinc-200 dark:border-zinc-800">
+                <app-projects-work-history [experiences]="experiences()"
+                    (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
+            </div>
 
             <!-- Brand Slider Section -->
             <app-projects-brand-slider [clients]="clients()"
                 (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
 
             <!-- References Section -->
-            <app-projects-references [testimonials]="testimonials()"
-                (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
+            <div class="py-16">
+                <app-projects-references [testimonials]="testimonials()"
+                    (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
+            </div>
 
         </div>
     </div>
 
     <!-- Bottom CTA - Full Width -->
-    <div *ngIf="!isLoading() && !hasError() && projects().length > 0" class="relative">
+    <div *ngIf="!isLoading() && !hasError() && projects().length > 0">
         <app-projects-bottom-cta></app-projects-bottom-cta>
     </div>
 </main>

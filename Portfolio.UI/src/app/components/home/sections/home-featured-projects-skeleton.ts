@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
         <!-- Projects Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div *ngFor="let _ of [].constructor(4)" 
-                 class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                 class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                 <!-- Image -->
                 <div class="aspect-video bg-zinc-200 dark:bg-zinc-800"></div>
                 

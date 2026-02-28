@@ -34,6 +34,22 @@ import { TranslationService } from '../../../services/translation.service';
                 </div>
             </div>
         </section>
+
+        <!-- Responsibilities -->
+        <section *ngIf="project.responsibilities && project.responsibilities.length > 0" class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-1 h-6 bg-red-600 rounded-full"></div>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.features.responsibilities' | translate }}</h2>
+            </div>
+
+            <div class="space-y-3">
+                <div *ngFor="let responsibility of project.responsibilities"
+                    class="flex items-start gap-3 bg-zinc-950 p-4 rounded-xl border border-zinc-900 hover:border-red-600/30 transition-all group">
+                    <div class="w-2 h-2 bg-red-600 rounded-full mt-1.5 shrink-0 group-hover:scale-150 transition-transform"></div>
+                    <p class="text-zinc-400 text-sm leading-relaxed font-medium flex-1">{{ responsibility }}</p>
+                </div>
+            </div>
+        </section>
     </div>
   `
 })

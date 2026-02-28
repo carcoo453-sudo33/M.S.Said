@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 animate-pulse space-y-6">
+    <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8 animate-pulse space-y-6">
         <!-- Title -->
         <div class="space-y-3">
             <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>

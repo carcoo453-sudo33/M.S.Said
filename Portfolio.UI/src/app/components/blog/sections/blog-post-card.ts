@@ -79,7 +79,7 @@ import { AuthService } from '../../../services/auth.service';
 
             <!-- Post Image (Large view for LinkedIn/Dev.to) -->
             <div *ngIf="post.imageUrl && post.socialType !== 'GitHub'"
-                class="rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-xl group/img">
+                class="rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-xl group/img">
                 <img [src]="post.imageUrl"
                     class="w-full h-auto object-cover group-hover/img:scale-105 transition-transform duration-[2000ms]">
             </div>
@@ -95,7 +95,7 @@ import { AuthService } from '../../../services/auth.service';
 
         <!-- Card Footer (Interactions) -->
         <div
-            class="px-8 py-6 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            class="px-8 py-6 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
             <div class="flex items-center gap-6">
                 <div *ngIf="post.likesCount !== undefined"
                     class="flex items-center gap-2 text-zinc-400 hover:text-red-600 transition-colors cursor-pointer group/stat">

@@ -30,7 +30,7 @@ import { inject } from '@angular/core';
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div *ngFor="let project of translatedProjects; let i = index"
-                class="group bg-zinc-50 dark:bg-zinc-900/40 rounded-2xl overflow-hidden border border-zinc-100 dark:border-zinc-800/50 shadow-sm hover:shadow-xl transition-all duration-500">
+                class="group bg-zinc-50 dark:bg-zinc-900/40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-red-600/10 hover:border-red-600 transition-all duration-500">
                 <div class="relative aspect-[16/9] overflow-hidden">
                     <!-- Badges -->
                     <div class="absolute top-4 left-4 z-30 flex gap-2">

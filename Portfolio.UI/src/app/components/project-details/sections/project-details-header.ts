@@ -39,9 +39,28 @@ import { ToastService } from '../../../services/toast.service';
         </div>
 
         <div class="space-y-4 lg:space-y-6 pr-32 lg:pr-0">
+            <!-- Category & Niche Badges -->
+            <div class="flex flex-wrap items-center gap-2 lg:gap-3">
+                <span *ngIf="getProjectCategory()" class="bg-red-600/10 border border-red-600/30 text-red-600 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest">
+                    {{ getProjectCategory() }}
+                </span>
+                <span *ngIf="getProjectNiche()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest">
+                    {{ getProjectNiche() }}
+                </span>
+                <span *ngIf="getProjectCompany()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    {{ getProjectCompany() }}
+                </span>
+            </div>
+            
             <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none dark:text-zinc-100 italic">
                 {{ getProjectTitle() }}
             </h1>
+            
+            <!-- Project Summary -->
+            <p *ngIf="getProjectSummary()" class="text-lg lg:text-xl text-zinc-400 leading-relaxed font-medium max-w-4xl">
+                {{ getProjectSummary() }}
+            </p>
         </div>
     </header>
   `
@@ -70,6 +89,30 @@ export class ProjectDetailsHeaderComponent {
             return parts[0];
         }
         return title;
+    }
+
+    getProjectSummary(): string {
+        if (!this.project) return '';
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && this.project.summary_Ar ? this.project.summary_Ar : (this.project.summary || '');
+    }
+
+    getProjectCategory(): string {
+        if (!this.project) return '';
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && this.project.category_Ar ? this.project.category_Ar : (this.project.category || '');
+    }
+
+    getProjectNiche(): string {
+        if (!this.project) return '';
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && this.project.niche_Ar ? this.project.niche_Ar : (this.project.niche || '');
+    }
+
+    getProjectCompany(): string {
+        if (!this.project) return '';
+        const currentLang = this.translationService.currentLang$();
+        return currentLang === 'ar' && this.project.company_Ar ? this.project.company_Ar : (this.project.company || '');
     }
 
     onEditClick() {

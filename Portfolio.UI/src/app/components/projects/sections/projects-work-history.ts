@@ -14,8 +14,8 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
     standalone: true,
     imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
     template: `
-    <section class="mt-10 animate-fade-in-up">
-        <div class="flex items-center gap-6 mb-20">
+    <section class="animate-fade-in-up">
+        <div class="flex items-center gap-6 mb-12">
             <div class="w-2 h-12 bg-red-600 rounded-full"></div>
             <h2 class="text-5xl font-black dark:text-white text-zinc-900 tracking-tighter uppercase italic">{{ 'projects.workHistory.title' | translate }}</h2>
             <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
@@ -65,7 +65,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
     <!-- Edit/Create Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-2xl max-h-[90vh]" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Add Experience' : 'Edit Experience' }}</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -74,7 +74,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
             </div>
 
             <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (EN) *</label>
                         <input [(ngModel)]="editingExperience.company" placeholder="Company name"
@@ -143,7 +143,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
                 </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
                 <button (click)="saveExperience()" [disabled]="isSaving"
@@ -156,9 +156,9 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteExperience" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="deleteExperience = null"></div>
-        <div class="relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm p-6 text-center animate-modal-enter">
+    <div *ngIf="deleteExperience" class="modal-overlay">
+        <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
+            <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>

@@ -7,10 +7,10 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <section class="max-w-7xl mx-auto px-6 pb-24 animate-pulse">
-        <div class="bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16">
+        <div class="bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16">
             <div class="max-w-3xl mx-auto text-center space-y-8">
                 <!-- Icon -->
-                <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 rounded-2xl mx-auto"></div>
+                <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 rounded-xl mx-auto"></div>
                 
                 <!-- Title -->
                 <div class="space-y-4">
@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common';
                 </div>
 
                 <!-- Stats -->
-                <div class="grid grid-cols-3 gap-8 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+                <div class="grid grid-cols-3 gap-6 pt-8 border-t border-zinc-200 dark:border-zinc-800">
                     <div *ngFor="let _ of [].constructor(3)" class="space-y-2">
                         <div class="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-16 mx-auto"></div>
                         <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-24 mx-auto"></div>

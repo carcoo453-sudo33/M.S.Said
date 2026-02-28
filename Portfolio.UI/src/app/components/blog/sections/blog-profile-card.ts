@@ -28,7 +28,7 @@ import { environment } from '../../../../environments/environment';
                 "{{ getDescriptionPreview() }}"
             </p>
 
-            <div class="flex justify-center gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-6">
+            <div class="flex justify-center gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-6">
                 <a [href]="bio?.linkedInUrl" target="_blank"
                     class="text-zinc-400 hover:text-red-600 transition-colors">
                     <lucide-icon [img]="LinkedinIcon" class="w-5 h-5"></lucide-icon>

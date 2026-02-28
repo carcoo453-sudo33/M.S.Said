@@ -1,5 +1,5 @@
 <nav
-    class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-100 dark:border-zinc-900 px-8 py-4 transition-all duration-500">
+    class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-900 px-8 py-4 transition-all duration-500">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <!-- Logo -->
         <a routerLink="/"
@@ -32,7 +32,7 @@
 
             <!-- Theme Toggle Button -->
             <button (click)="theme.toggle()"
-                class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 hover:border-red-600/50 transition-all hover:scale-110 active:scale-95"
+                class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 hover:border-red-600/50 transition-all hover:scale-110 active:scale-95"
                 [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
                 <lucide-icon *ngIf="theme.isDark()" [img]="MoonIcon"
                     class="w-4 h-4 text-zinc-400 hover:text-red-500 transition-all"></lucide-icon>
@@ -52,7 +52,7 @@
 
             <!-- Mobile Hamburger -->
             <button (click)="toggleMobile()"
-                class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-100 dark:border-zinc-800 hover:border-red-600/50 transition-all">
+                class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/50 transition-all">
                 <lucide-icon [img]="mobileMenuOpen ? XIcon : MenuIcon"
                     class="w-5 h-5 text-zinc-600 dark:text-zinc-400"></lucide-icon>
             </button>
@@ -61,7 +61,7 @@
 
     <!-- Mobile Menu -->
     <div *ngIf="mobileMenuOpen"
-        class="md:hidden mt-6 py-10 border-t border-zinc-100 dark:border-zinc-900 flex flex-col gap-8 items-center bg-white dark:bg-zinc-950 rounded-[2rem] shadow-2xl animate-fade-in-up">
+        class="md:hidden mt-6 py-10 border-t border-zinc-200 dark:border-zinc-900 flex flex-col gap-8 items-center bg-white dark:bg-zinc-950 rounded-[2rem] shadow-2xl animate-fade-in-up">
         
         <a routerLink="/" routerLinkActive="text-red-600" [routerLinkActiveOptions]="{exact: true}"
             (click)="toggleMobile()"

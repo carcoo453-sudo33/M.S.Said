@@ -7,9 +7,9 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <section class="animate-pulse">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div *ngFor="let _ of [].constructor(6)" 
-                 class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                 class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                 <!-- Image -->
                 <div class="aspect-video bg-zinc-200 dark:bg-zinc-800"></div>
                 

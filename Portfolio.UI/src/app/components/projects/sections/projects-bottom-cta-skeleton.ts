@@ -7,9 +7,9 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <section class="animate-pulse">
-        <div class="bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16 text-center space-y-8">
+        <div class="bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16 text-center space-y-8">
             <!-- Icon -->
-            <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 rounded-2xl mx-auto"></div>
+            <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 rounded-xl mx-auto"></div>
             
             <!-- Title -->
             <div class="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-96 mx-auto"></div>

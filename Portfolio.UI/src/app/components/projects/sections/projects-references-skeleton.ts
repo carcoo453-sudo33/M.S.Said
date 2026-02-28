@@ -14,9 +14,9 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <!-- Testimonials Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div *ngFor="let _ of [].constructor(3)" 
-                 class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-6">
+                 class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-6">
                 <!-- Quote Icon -->
                 <div class="w-12 h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl"></div>
                 

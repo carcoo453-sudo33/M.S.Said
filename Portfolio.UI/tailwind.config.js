@@ -93,6 +93,42 @@ module.exports = {
           color: '#18181b',
         },
         
+        // Light Mode Background Overrides (non-hover states only)
+        'html.light .bg-zinc-950:not(:hover)': {
+          backgroundColor: '#ffffff',
+        },
+        'html.light .bg-zinc-900:not(:hover)': {
+          backgroundColor: '#f4f4f5',
+        },
+        'html.light .bg-zinc-900\\/40:not(:hover)': {
+          backgroundColor: 'rgba(244, 244, 245, 0.4)',
+        },
+        'html.light .bg-zinc-900\\/50:not(:hover)': {
+          backgroundColor: 'rgba(244, 244, 245, 0.5)',
+        },
+        
+        // Light Mode Border Overrides (non-hover states only)
+        'html.light .border-zinc-900:not(:hover)': {
+          borderColor: '#d4d4d8',
+        },
+        'html.light .border-zinc-800:not(:hover):not(.hover\\:border-red-600)': {
+          borderColor: '#e4e4e7',
+        },
+        
+        // Light Mode Text Overrides
+        'html.light .text-zinc-400:not(:hover):not(.group-hover\\:text-red-600)': {
+          color: '#71717a',
+        },
+        'html.light .text-zinc-500:not(:hover)': {
+          color: '#71717a',
+        },
+        'html.light .text-zinc-600:not(:hover)': {
+          color: '#52525b',
+        },
+        'html.light .text-white:not(:hover):not(.group-hover\\:text-white)': {
+          color: '#18181b',
+        },
+        
         // RTL Support
         '[dir="rtl"]': {
           fontFamily: "'Changa', 'Inter', sans-serif",
@@ -197,7 +233,7 @@ module.exports = {
           '@apply fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in': {},
         },
         '.modal-content': {
-          '@apply relative bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter': {},
+          '@apply relative bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter': {},
         },
         
         // Custom Scrollbar Component
@@ -240,31 +276,8 @@ module.exports = {
           animation: 'skeleton-loading 1.4s ease infinite',
         },
         'html.light .skeleton': {
-          background: 'linear-gradient(90deg, rgba(228, 228, 231, 0.6) 25%, rgba(212, 212, 216, 0.8) 37%, rgba(228, 228, 231, 0.6) 63%) !important',
-          backgroundSize: '400% 100% !important',
-        },
-        
-        // Light Mode Color Overrides
-        'html.light .bg-zinc-950, html.light .bg-zinc-950\\/40, html.light .bg-zinc-950\\/80': {
-          backgroundColor: '#ffffff !important',
-        },
-        'html.light .bg-zinc-900, html.light .bg-zinc-900\\/40, html.light .bg-zinc-900\\/50, html.light .bg-zinc-900\\/60': {
-          backgroundColor: '#f4f4f5 !important',
-        },
-        'html.light .border-zinc-900, html.light .border-zinc-800': {
-          borderColor: '#d4d4d8 !important',
-        },
-        'html.light .text-zinc-400': {
-          color: '#52525b !important',
-        },
-        'html.light .text-zinc-500': {
-          color: '#71717a !important',
-        },
-        'html.light .text-zinc-600': {
-          color: '#52525b !important',
-        },
-        'html.light .text-white': {
-          color: '#18181b !important',
+          background: 'linear-gradient(90deg, rgba(228, 228, 231, 0.6) 25%, rgba(212, 212, 216, 0.8) 37%, rgba(228, 228, 231, 0.6) 63%)',
+          backgroundSize: '400% 100%',
         },
       });
     }),

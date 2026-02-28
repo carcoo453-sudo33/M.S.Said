@@ -226,6 +226,8 @@ public class ProjectsController : ControllerBase
             Tags_Ar = p.Tags_Ar,
             Niche = p.Niche,
             Niche_Ar = p.Niche_Ar,
+            Company = p.Company,
+            Company_Ar = p.Company_Ar,
             Duration = p.Duration,
             Duration_Ar = p.Duration_Ar,
             Language = p.Language,

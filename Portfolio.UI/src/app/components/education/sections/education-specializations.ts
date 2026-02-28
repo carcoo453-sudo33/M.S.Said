@@ -14,7 +14,7 @@ import { ToastService } from '../../../services/toast.service';
     imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule],
     template: `
     <div
-        class="mt-2 p-16 dark:bg-zinc-900/40 bg-zinc-50/50 backdrop-blur-xl rounded-3xl border border-zinc-100 dark:border-zinc-800 text-center animate-fade-in-up relative">
+        class="mt-2 p-16 dark:bg-zinc-900/40 bg-zinc-50/50 backdrop-blur-xl rounded-xl border border-zinc-200 dark:border-zinc-800 text-center animate-fade-in-up relative">
         
         <!-- Edit Button -->
         <button *ngIf="auth.isLoggedIn()" (click)="openEditModal()"
@@ -30,7 +30,7 @@ import { ToastService } from '../../../services/toast.service';
         <div class="flex flex-wrap justify-center gap-4">
             <span
                 *ngFor="let focus of getFocusItems()"
-                class="px-6 py-3 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-red-600 hover:border-red-600/30 transition-all shadow-sm">
+                class="px-6 py-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-red-600 hover:border-red-600/30 transition-all shadow-sm">
                 {{ focus }}
             </span>
         </div>
@@ -39,7 +39,7 @@ import { ToastService } from '../../../services/toast.service';
     <!-- Edit Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-2xl" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Manage Technical Focus</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -97,7 +97,7 @@ import { ToastService } from '../../../services/toast.service';
                 </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     Cancel

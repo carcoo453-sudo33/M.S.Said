@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <!-- Brand Logos Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             <div *ngFor="let _ of [].constructor(12)" 
                  class="aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-xl"></div>
         </div>

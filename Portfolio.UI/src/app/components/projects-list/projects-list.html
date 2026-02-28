@@ -32,7 +32,7 @@
                     class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400"></lucide-icon>
                 <input type="text" [value]="searchQuery()" (input)="onSearchChange($any($event.target).value)"
                     placeholder="Search projects by title, description, or tags..."
-                    class="w-full pl-12 pr-4 py-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400">
+                    class="w-full pl-12 pr-4 py-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400">
             </div>
 
             <!-- Filters Row -->
@@ -41,7 +41,7 @@
                 <!-- Category Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'category'">
                     <button type="button" (click)="toggleDropdown('category')" (blur)="onDropdownBlur('category')"
-                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
+                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedCategory() || 'All Categories' }}
                     </button>
                     <div
@@ -70,7 +70,7 @@
                 <!-- Niche Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'niche'">
                     <button type="button" (click)="toggleDropdown('niche')" (blur)="onDropdownBlur('niche')"
-                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
+                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedNiche() || 'All Niches' }}
                     </button>
                     <div
@@ -99,7 +99,7 @@
                 <!-- Company Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'company'">
                     <button type="button" (click)="toggleDropdown('company')" (blur)="onDropdownBlur('company')"
-                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
+                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedCompany() || 'All Companies' }}
                     </button>
                     <div
@@ -128,7 +128,7 @@
                 <!-- Tag Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'tag'">
                     <button type="button" (click)="toggleDropdown('tag')" (blur)="onDropdownBlur('tag')"
-                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
+                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedTag() || 'All Tags' }}
                     </button>
                     <div
@@ -156,7 +156,7 @@
                 <!-- Sort -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'sort'">
                     <button type="button" (click)="toggleDropdown('sort')" (blur)="onDropdownBlur('sort')"
-                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
+                        class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ getSortLabel() }}
                     </button>
                     <div
@@ -199,7 +199,7 @@
 
                 <!-- View Toggle -->
                 <button (click)="toggleViewMode()"
-                    class="px-4 py-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group">
+                    class="px-4 py-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group">
                     <lucide-icon [img]="viewMode() === 'grid' ? ListIcon : GridIcon"
                         class="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover:text-red-600 transition-colors"></lucide-icon>
                 </button>
@@ -244,7 +244,7 @@
         <div *ngIf="!isLoading() && viewMode() === 'grid' && paginatedProjects().length > 0"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 relative z-0">
             <a *ngFor="let project of paginatedProjects(); let i = index" [routerLink]="['/projects', project.slug]"
-                class="group bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 dark:hover:border-red-600 transition-all hover:shadow-xl hover:shadow-red-600/10 animate-scale-in"
+                class="group bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 transition-all duration-500 animate-scale-in"
                 [style.animation-delay]="(i * 0.1) + 's'">
 
                 <!-- Image -->
@@ -301,7 +301,7 @@
         <div *ngIf="!isLoading() && viewMode() === 'list' && paginatedProjects().length > 0"
             class="space-y-4 mb-12 relative z-0">
             <a *ngFor="let project of paginatedProjects(); let i = index" [routerLink]="['/projects', project.slug]"
-                class="group flex gap-6 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 dark:hover:border-red-600 transition-all hover:shadow-xl hover:shadow-red-600/10 p-6 animate-fade-in-up"
+                class="group flex gap-6 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 transition-all duration-500 p-6 animate-fade-in-up"
                 [style.animation-delay]="(i * 0.05) + 's'">
 
                 <!-- Image -->
@@ -364,7 +364,7 @@
 
             <!-- Previous -->
             <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1"
-                class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronLeftIcon" class="w-5 h-5"></lucide-icon>
             </button>
 
@@ -373,14 +373,14 @@
                 <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="goToPage(i + 1)"
                     [class.bg-red-600]="currentPage() === i + 1" [class.text-white]="currentPage() === i + 1"
                     [class.border-red-600]="currentPage() === i + 1"
-                    class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 font-medium transition-all">
+                    class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 font-medium transition-all">
                     {{ i + 1 }}
                 </button>
             </div>
 
             <!-- Next -->
             <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
-                class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5"></lucide-icon>
             </button>
         </div>

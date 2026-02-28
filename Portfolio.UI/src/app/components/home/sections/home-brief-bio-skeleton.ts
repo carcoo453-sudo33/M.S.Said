@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common';
         </div>
 
         <!-- Highlights -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8">
             <div *ngFor="let _ of [].constructor(4)" class="space-y-2">
                 <div class="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-lg w-16"></div>
                 <div class="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-24"></div>

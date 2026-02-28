@@ -32,7 +32,7 @@ import { ProjectService } from '../../../services/project.service';
         <div *ngIf="showShareModal" 
             class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-fade-in"
             (click)="closeShareModal()">
-            <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-8 max-w-md w-full space-y-6 animate-scale-in"
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-8 max-w-md w-full space-y-6 animate-scale-in"
                 (click)="$event.stopPropagation()">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">{{ 'projectDetails.interactions.shareProject' | translate }}</h3>
@@ -42,7 +42,7 @@ import { ProjectService } from '../../../services/project.service';
                     </button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-6">
                     <button (click)="shareToFacebook()" 
                         class="flex flex-col items-center gap-3 bg-zinc-900 hover:bg-blue-600 border border-zinc-800 hover:border-blue-600 rounded-xl p-6 transition-all group">
                         <lucide-icon [img]="FacebookIcon" class="w-8 h-8 text-blue-500 group-hover:text-white"></lucide-icon>

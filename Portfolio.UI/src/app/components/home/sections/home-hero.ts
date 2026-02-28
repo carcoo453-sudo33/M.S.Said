@@ -21,7 +21,7 @@ import { BioEntry } from '../../../models';
         </div>
 
         <div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-50 dark:bg-white/5 backdrop-blur-sm border border-zinc-100 dark:border-white/10 mb-8 animate-fade-in-up"
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-50 dark:bg-white/5 backdrop-blur-sm border border-zinc-200 dark:border-white/10 mb-8 animate-fade-in-up"
                 style="animation-delay: 0.1s">
                 <span class="relative flex h-2 w-2">
                     <span
@@ -53,7 +53,7 @@ import { BioEntry } from '../../../models';
                     <lucide-icon [img]="ArrowRightIcon" class="w-4 h-4"></lucide-icon>
                 </a>
                 <a routerLink="/contact"
-                    class="px-10 py-5 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-100 dark:border-zinc-800 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-zinc-50 transition-all">
+                    class="px-10 py-5 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-zinc-50 transition-all">
                     Get in Touch
                 </a>
             </div>

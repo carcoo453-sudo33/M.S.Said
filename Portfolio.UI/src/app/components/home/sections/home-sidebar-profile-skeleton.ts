@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <aside class="md:sticky md:top-24 animate-pulse">
-        <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8 space-y-8">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8 space-y-8">
             <!-- Avatar -->
             <div class="flex justify-center">
                 <div class="w-32 h-32 bg-zinc-200 dark:bg-zinc-800 rounded-full"></div>
@@ -32,7 +32,7 @@ import { CommonModule } from '@angular/common';
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-3 gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
                 <div *ngFor="let _ of [].constructor(3)" class="text-center space-y-2">
                     <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded w-12 mx-auto"></div>
                     <div class="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-16 mx-auto"></div>

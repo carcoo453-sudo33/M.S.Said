@@ -13,7 +13,7 @@ import { ToastService } from '../../../services/toast.service';
     template: `
     <!-- Edit Modal -->
     <div *ngIf="isEditing" class="fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/90 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-4xl my-8 animate-scale-in">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-xl w-full max-w-4xl my-8 animate-scale-in">
             <!-- Header -->
             <div class="flex items-center justify-between p-8 border-b border-zinc-800">
                 <h2 class="text-2xl font-black italic uppercase tracking-tighter text-white">
@@ -159,7 +159,7 @@ import { ToastService } from '../../../services/toast.service';
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 Image URL (optional)
@@ -184,7 +184,7 @@ import { ToastService } from '../../../services/toast.service';
                 <section class="space-y-6">
                     <h3 class="text-lg font-black uppercase text-red-600">Engagement Stats</h3>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 Likes
@@ -223,7 +223,7 @@ import { ToastService } from '../../../services/toast.service';
                 <section class="space-y-6">
                     <h3 class="text-lg font-black uppercase text-red-600">Additional Info</h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-[10px] font-black uppercase text-zinc-500 mb-2">
                                 <lucide-icon [img]="TagIcon" class="w-3 h-3 inline mr-1"></lucide-icon>

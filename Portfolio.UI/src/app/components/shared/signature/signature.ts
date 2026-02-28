@@ -29,12 +29,12 @@ import { TranslationService } from '../../../services/translation.service';
             <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
         </button>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16 items-center relative z-10">
             <!-- Image Column with Enhanced Animations -->
             <div class="lg:col-span-4 relative group mx-auto w-full max-w-xs lg:max-w-none animate-fade-in-up"
                  [ngClass]="isArabic() ? 'lg:order-2' : 'lg:order-1'">
                 <!-- Animated Background Shape -->
-                <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 to-purple-600/20 rounded-3xl lg:rounded-[3rem] transition-all duration-700 animate-pulse-slow"
+                <div class="absolute inset-0 bg-gradient-to-br from-red-600/20 to-purple-600/20 rounded-xl lg:rounded-[3rem] transition-all duration-700 animate-pulse-slow"
                      [ngClass]="isArabic() ? '-rotate-6 group-hover:-rotate-12 group-hover:scale-105' : 'rotate-6 group-hover:rotate-12 group-hover:scale-105'"></div>
                 
                 <!-- Floating Particles -->
@@ -44,7 +44,7 @@ import { TranslationService } from '../../../services/translation.service';
                 
                 <!-- Main Image -->
                 <img [src]="getAvatarUrl()" [alt]="bio.name"
-                    class="relative w-full aspect-square object-cover rounded-3xl lg:rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-[1.02]">
+                    class="relative w-full aspect-square object-cover rounded-xl lg:rounded-[3rem] border-4 border-white dark:border-zinc-800 shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-[1.02]">
                 
                 <!-- Badge with Animation -->
                 <div class="absolute -bottom-4 w-20 h-20 lg:w-24 lg:h-24 bg-zinc-950 rounded-full flex items-center justify-center border-4 border-white dark:border-zinc-800 shadow-xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"
@@ -113,7 +113,7 @@ import { TranslationService } from '../../../services/translation.service';
     <!-- Edit Modal -->
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
+            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Edit Signature Quote</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
@@ -176,7 +176,7 @@ import { TranslationService } from '../../../services/translation.service';
                 </div>
             </div>
 
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
+            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     Cancel

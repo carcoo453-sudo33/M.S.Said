@@ -69,7 +69,7 @@
                     </div>
 
                     <!-- Grid View Skeleton -->
-                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-8 auto-rows-fr items-stretch">
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-6 auto-rows-fr items-stretch">
                         <app-blog-post-card-skeleton *ngFor="let _ of [].constructor(4); let i = index" 
                             [delay]="(0.1 * i) + 's'"
                             class="flex">
@@ -89,7 +89,7 @@
                     </div>
 
                     <!-- Grid View -->
-                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-8 auto-rows-fr items-stretch">
+                    <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-7 lg:gap-6 auto-rows-fr items-stretch">
                         <app-blog-post-card *ngFor="let post of filteredPosts; let i = index" [post]="post"
                             [delay]="(0.1 * i) + 's'" (onNavigate)="navigateToPost($event)" (onEdit)="editPost($event)"
                             class="flex">

@@ -10,7 +10,7 @@ import { ToastService, Toast } from '../../services/toast.service';
     template: `
     <div class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
       <div *ngFor="let toast of toastService.toasts$()" 
-           class="pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-2xl border shadow-2xl min-w-[300px] max-w-md animate-fade-in-up"
+           class="pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-xl border shadow-2xl min-w-[300px] max-w-md animate-fade-in-up"
            [ngClass]="getToastClasses(toast)">
         
         <div class="shrink-0">

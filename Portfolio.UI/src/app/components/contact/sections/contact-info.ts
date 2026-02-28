@@ -10,11 +10,11 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
     template: `
     <div class="animate-fade-in-up">
         <!-- Contact Info - Horizontal Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
             <!-- Email -->
             <div class="flex flex-col items-center text-center group">
                 <div
-                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-100 dark:border-zinc-800 mb-6">
+                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
                     <lucide-icon [img]="MailIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-3">{{ 'contact.info.secureLink' | translate }}</p>
@@ -25,7 +25,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
             <!-- Phone -->
             <div class="flex flex-col items-center text-center group">
                 <div
-                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-100 dark:border-zinc-800 mb-6">
+                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
                     <lucide-icon [img]="PhoneIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-3">{{ 'contact.info.directChannel' | translate }}</p>
@@ -36,7 +36,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Github, Linkedin } from 'luci
             <!-- Location -->
             <div class="flex flex-col items-center text-center group">
                 <div
-                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-100 dark:border-zinc-800 mb-6">
+                    class="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-[2rem] flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all duration-700 shadow-sm border border-zinc-200 dark:border-zinc-800 mb-6">
                     <lucide-icon [img]="MapPinIcon" class="w-8 h-8"></lucide-icon>
                 </div>
                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-3">{{ 'contact.info.baseOfOperations' | translate }}</p>
