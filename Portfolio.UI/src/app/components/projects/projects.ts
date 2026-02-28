@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,11 +8,11 @@ import { NavbarComponent } from '../shared/navbar/navbar';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
-import { LucideAngularModule, Plus, ArrowRight } from 'lucide-angular';
+import { LucideAngularModule, Plus, ArrowRight, Eye, Star, Rocket, Clock, Image } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
+import { environment } from '../../../environments/environment';
 
 // Section Components
-import { ProjectsGridComponent } from './sections/projects-grid';
 import { ProjectsWorkHistoryComponent } from './sections/projects-work-history';
 import { ProjectsBrandSliderComponent } from './sections/projects-brand-slider';
 import { ProjectsReferencesComponent } from './sections/projects-references';
@@ -40,7 +40,6 @@ import { SharedErrorStateComponent } from '../shared/error-state/error-state';
     TranslateModule,
     NavbarComponent,
     LucideAngularModule,
-    ProjectsGridComponent,
     ProjectsWorkHistoryComponent,
     ProjectsBrandSliderComponent,
     ProjectsReferencesComponent,
@@ -66,6 +65,11 @@ export class ProjectsComponent implements OnInit {
 
   PlusIcon = Plus;
   ArrowRightIcon = ArrowRight;
+  EyeIcon = Eye;
+  StarIcon = Star;
+  RocketIcon = Rocket;
+  ClockIcon = Clock;
+  ImageIcon = Image;
 
   projects = signal<ProjectEntry[]>([]);
   experiences = signal<ExperienceEntry[]>([]);
@@ -76,6 +80,43 @@ export class ProjectsComponent implements OnInit {
   hasError = signal(false);
   selectedFilter = signal('All');
   triggerCreateProject = signal(false);
+
+  // Computed
+  highlightedProjects = computed(() => {
+    const projects = this.projects();
+    if (!projects || projects.length === 0) return [];
+
+    let mostVisited: ProjectEntry | null = null;
+    let featured: ProjectEntry | null = null;
+    let lastPublish: ProjectEntry | null = null;
+
+    // Sort projects by views descending
+    const byViews = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0));
+    mostVisited = byViews[0] || null;
+
+    // Sort projects by featured, preferring highest views or newest, excluding mostVisited
+    const featuredProjects = [...projects].filter(p => !!(p as any).isFeatured && p.id !== mostVisited?.id);
+    if (featuredProjects.length > 0) {
+      featured = featuredProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
+    } else {
+      // Fallback if no featured
+      featured = byViews.find(p => p.id !== mostVisited?.id) || null;
+    }
+
+    // Sort projects by latest, excluding mostVisited and featured
+    const byLatest = [...projects]
+      .filter(p => p.id !== mostVisited?.id && p.id !== featured?.id)
+      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    lastPublish = byLatest[0] || null;
+
+    const highlights = [
+      { type: 'most-visited', label: 'Highest Visits', project: mostVisited, icon: this.EyeIcon, color: 'from-blue-600 to-cyan-500', shadow: 'shadow-blue-500/20', labelKey: 'projects.highlights.mostVisited' },
+      { type: 'featured', label: 'Featured ✨', project: featured, icon: this.StarIcon, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20', labelKey: 'projects.highlights.featured' },
+      { type: 'last-publish', label: 'Latest Release', project: lastPublish, icon: this.RocketIcon, color: 'from-red-600 to-pink-500', shadow: 'shadow-red-500/20', labelKey: 'projects.highlights.latest' }
+    ];
+
+    return highlights.filter(h => h.project != null) as any[];
+  });
 
   filters = ['All', 'Full Stack', 'Angular', 'NET Core'];
 
@@ -96,10 +137,10 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadData() {
-    // Load featured projects (Latest, Most Viewed, Trending)
-    this.projectService.getFeaturedProjects().subscribe({
+    // Load all projects for highlight logic and grid
+    this.projectService.getProjects().subscribe({
       next: (data: ProjectEntry[]) => {
-        console.log('Featured projects loaded:', data.length);
+        console.log('Projects loaded:', data.length);
         this.projects.set(data);
         this.isLoading.set(false);
       },
@@ -141,25 +182,33 @@ export class ProjectsComponent implements OnInit {
   setFilter(filter: string) {
     this.selectedFilter.set(filter);
   }
-  
+
   onCreateProject() {
     this.triggerCreateProject.set(!this.triggerCreateProject());
   }
 
   get filteredProjects() {
-    if (this.selectedFilter() === 'All') return this.projects();
+    const highlights = this.highlightedProjects()
+      .map(h => h.project?.id)
+      .filter(id => !!id);
 
-    return this.projects().filter(p => {
-      const tags = p.tags?.toLowerCase() || '';
-      const cat = p.category?.toLowerCase() || '';
-      const filter = this.selectedFilter().toLowerCase();
+    let all = this.projects();
 
-      if (filter === 'full stack') return cat.includes('fullstack') || cat.includes('full-stack') || cat.includes('web');
-      if (filter === 'angular') return tags.includes('angular');
-      if (filter === 'net core') return tags.includes('.net') || tags.includes('core');
+    if (this.selectedFilter() !== 'All') {
+      all = all.filter(p => {
+        const tags = p.tags?.toLowerCase() || '';
+        const cat = p.category?.toLowerCase() || '';
+        const filter = this.selectedFilter().toLowerCase();
 
-      return cat.includes(filter) || tags.includes(filter);
-    });
+        if (filter === 'full stack') return cat.includes('fullstack') || cat.includes('full-stack') || cat.includes('web');
+        if (filter === 'angular') return tags.includes('angular');
+        if (filter === 'net core') return tags.includes('.net') || tags.includes('core');
+
+        return cat.includes(filter) || tags.includes(filter);
+      });
+    }
+
+    return all.filter(p => !highlights.includes(p.id));
   }
 
   onEditProject(project: ProjectEntry) {
@@ -174,12 +223,12 @@ export class ProjectsComponent implements OnInit {
 
   onDeleteProject(project: ProjectEntry) {
     if (!project.id) return;
-    
+
     if (!this.auth.isLoggedIn()) {
       this.toast.error('You must be logged in to delete projects. Please log in first');
       return;
     }
-    
+
     this.projectService.deleteProject(project.id).subscribe({
       next: () => {
         this.projects.set(this.projects().filter(p => p.id !== project.id));
@@ -210,12 +259,12 @@ export class ProjectsComponent implements OnInit {
 
   onDeleteExperience(experience: ExperienceEntry) {
     if (!experience.id) return;
-    
+
     if (!this.auth.isLoggedIn()) {
       this.toast.error('You must be logged in to delete experiences. Please log in first');
       return;
     }
-    
+
     this.profileService.deleteExperience(experience.id).subscribe({
       next: () => {
         this.experiences.set(this.experiences().filter(e => e.id !== experience.id));
@@ -263,12 +312,12 @@ export class ProjectsComponent implements OnInit {
 
   onDeleteClient(client: Client) {
     if (!client.id) return;
-    
+
     if (!this.auth.isLoggedIn()) {
       this.toast.error('You must be logged in to delete clients. Please log in first');
       return;
     }
-    
+
     this.profileService.deleteClient(client.id).subscribe({
       next: () => {
         this.clients.set(this.clients().filter(c => c.id !== client.id));
@@ -316,12 +365,12 @@ export class ProjectsComponent implements OnInit {
 
   onDeleteTestimonial(testimonial: Testimonial) {
     if (!testimonial.id) return;
-    
+
     if (!this.auth.isLoggedIn()) {
       this.toast.error('You must be logged in to delete testimonials. Please log in first');
       return;
     }
-    
+
     this.profileService.deleteTestimonial(testimonial.id).subscribe({
       next: () => {
         this.testimonials.set(this.testimonials().filter(t => t.id !== testimonial.id));
@@ -338,5 +387,33 @@ export class ProjectsComponent implements OnInit {
         }
       }
     });
+  }
+
+  getFullImageUrl(url: string): string {
+    if (!url) return 'assets/project-placeholder.svg';
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    if (url.startsWith('/')) {
+      return `${baseUrl}${url}`;
+    }
+
+    return `${baseUrl}/${url}`;
+  }
+
+  onImageError(event: any) {
+    // Fallback to placeholder image when image fails to load
+    event.target.src = 'assets/project-placeholder.svg';
+  }
+
+  getTitle(project: ProjectEntry | any): string {
+    return this.translationService.isRTL() && project.title_Ar ? project.title_Ar : project.title;
+  }
+
+  getDescription(project: ProjectEntry | any): string {
+    return this.translationService.isRTL() && project.description_Ar ? project.description_Ar : project.description;
   }
 }

@@ -89,7 +89,7 @@
             </div>
 
             <!-- Training Section -->
-            <div class="relative" *ngIf="trainingList.length > 0">
+            <div class="relative" *ngIf="trainingList.length > 0 || auth.isLoggedIn()">
                 <app-education-timeline [education]="trainingList" sectionCategory="Training" [limitItems]="1"
                     [layoutStartIndex]="trainingStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.trainingTitle' | translate"
@@ -99,7 +99,7 @@
             </div>
 
             <!-- Certification Section -->
-            <div class="relative" *ngIf="certificationList.length > 0">
+            <div class="relative" *ngIf="certificationList.length > 0 || auth.isLoggedIn()">
                 <app-education-timeline [education]="certificationList" sectionCategory="Certification" [limitItems]="1"
                     [layoutStartIndex]="certificationStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.certificationTitle' | translate"
@@ -110,7 +110,7 @@
             </div>
 
             <!-- Achievements Section -->
-            <div class="relative" *ngIf="achievementList.length > 0">
+            <div class="relative" *ngIf="achievementList.length > 0 || auth.isLoggedIn()">
                 <app-education-timeline [education]="achievementList" sectionCategory="Achievement" [limitItems]="1"
                     [layoutStartIndex]="achievementStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.achievementTitle' | translate"

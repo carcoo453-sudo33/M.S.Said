@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Router, RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { AuthService } from '../../services/auth.service';
 import { EducationEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
@@ -28,7 +29,6 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     imports: [
         CommonModule,
         TranslateModule,
-        RouterLink,
         NavbarComponent,
         LucideAngularModule,
         EducationTimelineComponent,
@@ -45,6 +45,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
 export class EducationComponent implements OnInit {
     private profileService = inject(ProfileService);
     private router = inject(Router);
+    public auth = inject(AuthService);
     public translationService = inject(TranslationService);
     allEducation = signal<EducationEntry[]>([]);
     bio = signal<BioEntry | null>(null);

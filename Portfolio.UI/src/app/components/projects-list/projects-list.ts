@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight, Eye, Star, Rocket, Clock, Image } from 'lucide-angular';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { TranslationService } from '../../services/translation.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-projects-list',
@@ -35,6 +36,11 @@ export class ProjectsListComponent implements OnInit {
   ListIcon = List;
   ChevronLeftIcon = ChevronLeft;
   ChevronRightIcon = ChevronRight;
+  EyeIcon = Eye;
+  StarIcon = Star;
+  RocketIcon = Rocket;
+  ClockIcon = Clock;
+  ImageIcon = Image;
 
   // Math for template
   Math = Math;
@@ -62,6 +68,42 @@ export class ProjectsListComponent implements OnInit {
   itemsPerPage = 6;
 
   // Computed
+  highlightedProjects = computed(() => {
+    const projects = this.allProjects();
+    if (!projects || projects.length === 0) return [];
+
+    let mostVisited: ProjectEntry | null = null;
+    let featured: ProjectEntry | null = null;
+    let lastPublish: ProjectEntry | null = null;
+
+    // Sort projects by views descending
+    const byViews = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0));
+    mostVisited = byViews[0] || null;
+
+    // Sort projects by featured, preferring highest views or newest, excluding mostVisited
+    const featuredProjects = [...projects].filter(p => !!(p as any).isFeatured && p.id !== mostVisited?.id);
+    if (featuredProjects.length > 0) {
+      featured = featuredProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
+    } else {
+      // Fallback if no featured
+      featured = byViews.find(p => p.id !== mostVisited?.id) || null;
+    }
+
+    // Sort projects by latest, excluding mostVisited and featured
+    const byLatest = [...projects]
+      .filter(p => p.id !== mostVisited?.id && p.id !== featured?.id)
+      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    lastPublish = byLatest[0] || null;
+
+    const highlights = [
+      { type: 'most-visited', label: 'Highest Visits', project: mostVisited, icon: this.EyeIcon, color: 'from-blue-600 to-cyan-500', shadow: 'shadow-blue-500/20', labelKey: 'projects.highlights.mostVisited' },
+      { type: 'featured', label: 'Featured ✨', project: featured, icon: this.StarIcon, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20', labelKey: 'projects.highlights.featured' },
+      { type: 'last-publish', label: 'Latest Release', project: lastPublish, icon: this.RocketIcon, color: 'from-red-600 to-pink-500', shadow: 'shadow-red-500/20', labelKey: 'projects.highlights.latest' }
+    ];
+
+    return highlights.filter(h => h.project != null) as any[];
+  });
+
   availableTags = computed(() => {
     const tags = new Set<string>();
     this.allProjects().forEach(project => {
@@ -289,5 +331,25 @@ export class ProjectsListComponent implements OnInit {
 
   isFeatured(project: ProjectEntry): boolean {
     return !!(project as any).isFeatured;
+  }
+
+  getFullImageUrl(url: string): string {
+    if (!url) return 'assets/project-placeholder.svg';
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    if (url.startsWith('/')) {
+      return `${baseUrl}${url}`;
+    }
+
+    return `${baseUrl}/${url}`;
+  }
+
+  onImageError(event: any) {
+    // Fallback to placeholder image when image fails to load
+    event.target.src = 'assets/project-placeholder.svg';
   }
 }

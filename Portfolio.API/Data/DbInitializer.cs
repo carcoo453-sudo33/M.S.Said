@@ -251,6 +251,16 @@ public static class DbInitializer
                     Description = "Professional certification in building RESTful APIs, authentication, and microservices architecture.",
                     Location = "Online",
                     Category = "Certification"
+                },
+                // Achievements
+                new EducationEntry
+                {
+                    Institution = "Top Tech Awards",
+                    Degree = "Outstanding Open Source Contributor",
+                    Duration = "2024",
+                    Description = "Recognized globally for significant contributions to the developer community and architecture thought-leadership.",
+                    Location = "International",
+                    Category = "Achievement"
                 }
             );
             await context.SaveChangesAsync();

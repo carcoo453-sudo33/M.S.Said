@@ -10,7 +10,8 @@
             <!-- Page Header -->
             <div class="pt-24 pb-6">
                 <div class="mb-2 text-center animate-fade-in-up">
-                    <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-8">
+                    <div
+                        class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-8">
                         <div class="h-3 w-32 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse"></div>
                     </div>
                     <div class="h-12 w-96 mx-auto bg-zinc-200 dark:bg-zinc-800 rounded mb-10 animate-pulse"></div>
@@ -40,8 +41,8 @@
         </app-shared-error-state>
 
         <!-- EMPTY STATE -->
-        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && projects().length === 0" [title]="'projects.emptyTitle' | translate"
-            [message]="'projects.emptyMessage' | translate">
+        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && projects().length === 0"
+            [title]="'projects.emptyTitle' | translate" [message]="'projects.emptyMessage' | translate">
         </app-shared-empty-state>
 
         <!-- LOADED STATE -->
@@ -49,16 +50,14 @@
 
             <!-- Page Header -->
             <div class="pt-24 pb-6">
-                <app-shared-page-header 
-                    [badge]="'projects.badge' | translate"
+                <app-shared-page-header [badge]="'projects.badge' | translate"
                     [title]="('projects.title1' | translate) + ' <span class=\'text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B7E] to-[#7000FF]\'>' + ('projects.title2' | translate) + '</span>'"
                     [description]="'projects.description' | translate">
                 </app-shared-page-header>
 
                 <!-- Admin Action -->
                 <div *ngIf="auth.isLoggedIn()" class="flex justify-center mt-8">
-                    <button 
-                        (click)="onCreateProject()"
+                    <button (click)="onCreateProject()"
                         class="px-8 py-3 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all shadow-xl">
                         <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
                         {{ 'projects.header.createProject' | translate }}
@@ -66,33 +65,92 @@
                 </div>
             </div>
 
-            <!-- Project Grid -->
-            <app-projects-grid 
-                [projects]="filteredProjects" 
-                [totalCount]="totalProjectCount()"
-                [triggerCreate]="triggerCreateProject()"
-                (projectsUpdated)="onProjectsUpdated($event)">
-            </app-projects-grid>
+            <!-- Highlighted Projects -->
+            <div *ngIf="!isLoading() && highlightedProjects().length > 0"
+                class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up" style="animation-delay: 0.1s">
+                <div *ngFor="let highlight of highlightedProjects()"
+                    class="group relative rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-xl">
+
+                    <!-- Glowing Border Effect -->
+                    <div class="absolute -inset-[2px] rounded-2xl bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                        [ngClass]="highlight.color"></div>
+
+                    <!-- Card Content -->
+                    <a [routerLink]="['/projects', highlight.project.slug]"
+                        class="block p-5 h-full relative z-10 bg-white dark:bg-zinc-900 rounded-2xl m-[1px] flex flex-col">
+                        <!-- Header -->
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br"
+                                [ngClass]="[highlight.color, highlight.shadow]">
+                                <lucide-icon [img]="highlight.icon" class="w-5 h-5 text-white"></lucide-icon>
+                            </div>
+                            <h3 class="font-black text-xs sm:text-sm tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r"
+                                [ngClass]="highlight.color">
+                                {{ highlight.labelKey | translate: { Default: highlight.label } }}
+                            </h3>
+                        </div>
+
+                        <!-- Project Info -->
+                        <div class="relative aspect-[16/9] rounded-xl overflow-hidden mb-5">
+                            <img *ngIf="highlight.project.imageUrl" [src]="getFullImageUrl(highlight.project.imageUrl)"
+                                (error)="onImageError($event)" [alt]="getTitle(highlight.project)"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div *ngIf="!highlight.project.imageUrl"
+                                class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400">
+                                <lucide-icon [img]="ImageIcon" class="w-10 h-10"></lucide-icon>
+                            </div>
+                        </div>
+
+                        <h4
+                            class="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-2 line-clamp-1 group-hover:text-red-500 transition-colors">
+                            {{ getTitle(highlight.project) }}
+                        </h4>
+
+                        <p class="text-zinc-500 dark:text-zinc-400 text-sm line-clamp-2 mb-4">
+                            {{ getDescription(highlight.project) }}
+                        </p>
+
+                        <!-- Stats -->
+                        <div
+                            class="flex items-center gap-4 text-xs font-medium text-zinc-500 dark:text-zinc-400 pt-4 border-t border-zinc-100 dark:border-zinc-800/50 mt-auto">
+                            <div class="flex items-center gap-1.5" *ngIf="highlight.project.views !== undefined">
+                                <lucide-icon [img]="EyeIcon" class="w-4 h-4"></lucide-icon>
+                                <span>{{ highlight.project.views | number }}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5" *ngIf="highlight.project.createdAt">
+                                <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+                                <span>{{ highlight.project.createdAt | date:'longDate' }}</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
             <!-- View All Projects Button -->
             <div class="flex justify-center mt-16 mb-8 animate-fade-in-up" style="animation-delay: 0.4s">
                 <a routerLink="/projects/all"
                     class="group relative px-10 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-red-600/20 overflow-hidden">
-                    <span class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+                    <span
+                        class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
                     <span class="relative">{{ 'projects.viewAll' | translate }}</span>
-                    <span class="relative px-3 py-1 rounded-full bg-white/20 text-xs font-black">{{ totalProjectCount() }}</span>
-                    <lucide-icon [img]="ArrowRightIcon" class="relative w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
+                    <span class="relative px-3 py-1 rounded-full bg-white/20 text-xs font-black">{{ totalProjectCount()
+                        }}</span>
+                    <lucide-icon [img]="ArrowRightIcon"
+                        class="relative w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
                 </a>
             </div>
 
             <!-- Work History Section -->
-            <app-projects-work-history [experiences]="experiences()" (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
+            <app-projects-work-history [experiences]="experiences()"
+                (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
 
             <!-- Brand Slider Section -->
-            <app-projects-brand-slider [clients]="clients()" (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
+            <app-projects-brand-slider [clients]="clients()"
+                (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
 
             <!-- References Section -->
-            <app-projects-references [testimonials]="testimonials()" (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
+            <app-projects-references [testimonials]="testimonials()"
+                (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
 
         </div>
     </div>

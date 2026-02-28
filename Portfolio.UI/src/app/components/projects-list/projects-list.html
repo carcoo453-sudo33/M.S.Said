@@ -7,64 +7,58 @@
 
         <!-- Page Header -->
         <div class="text-center mb-12 animate-fade-in-up">
-            <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-6">
+            <div
+                class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-red-600/5 dark:bg-red-600/10 border border-red-600/10 dark:border-red-600/20 mb-6">
                 <span class="text-red-600 dark:text-red-500 font-black text-xs uppercase tracking-widest">
                     {{ 'projects.badge' | translate }}
                 </span>
             </div>
             <h1 class="text-5xl md:text-6xl font-black mb-4 flex items-center justify-center gap-4">
                 <span>{{ 'projects.allPosts' | translate }}</span>
-                <span class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-red-600/10 dark:bg-red-600/20 border border-red-600/20 dark:border-red-600/30 text-red-600 dark:text-red-500 text-2xl font-black">
+                <span
+                    class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-red-600/10 dark:bg-red-600/20 border border-red-600/20 dark:border-red-600/30 text-red-600 dark:text-red-500 text-2xl font-black">
                     {{ filteredProjects().length }}
                 </span>
             </h1>
         </div>
 
+
         <!-- Search and Filters Bar -->
-        <div class="mb-8 space-y-4 animate-fade-in-up relative z-10" style="animation-delay: 0.1s">
-            
+        <div class="mb-8 space-y-4 animate-fade-in-up relative z-10" style="animation-delay: 0.2s">
+
             <!-- Search Bar -->
             <div class="relative">
-                <lucide-icon [img]="SearchIcon" 
+                <lucide-icon [img]="SearchIcon"
                     class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400"></lucide-icon>
-                <input 
-                    type="text"
-                    [value]="searchQuery()"
-                    (input)="onSearchChange($any($event.target).value)"
+                <input type="text" [value]="searchQuery()" (input)="onSearchChange($any($event.target).value)"
                     placeholder="Search projects by title, description, or tags..."
                     class="w-full pl-12 pr-4 py-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400">
             </div>
 
             <!-- Filters Row -->
             <div class="flex flex-wrap gap-3 relative">
-                
+
                 <!-- Category Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'category'">
-                    <button
-                        type="button"
-                        (click)="toggleDropdown('category')"
-                        (blur)="onDropdownBlur('category')"
+                    <button type="button" (click)="toggleDropdown('category')" (blur)="onDropdownBlur('category')"
                         class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedCategory() || 'All Categories' }}
                     </button>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
+                    <div
+                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <!-- Dropdown Menu -->
                     <div *ngIf="openDropdown() === 'category'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                        <button
-                            type="button"
-                            (mousedown)="onCategoryChange('')"
+                        <button type="button" (mousedown)="onCategoryChange('')"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             All Categories
                         </button>
-                        <button
-                            type="button"
-                            *ngFor="let cat of categories()"
-                            (mousedown)="onCategoryChange(cat.name)"
+                        <button type="button" *ngFor="let cat of categories()" (mousedown)="onCategoryChange(cat.name)"
                             [class.bg-red-600]="selectedCategory() === cat.name"
                             [class.text-white]="selectedCategory() === cat.name"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
@@ -75,31 +69,25 @@
 
                 <!-- Niche Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'niche'">
-                    <button
-                        type="button"
-                        (click)="toggleDropdown('niche')"
-                        (blur)="onDropdownBlur('niche')"
+                    <button type="button" (click)="toggleDropdown('niche')" (blur)="onDropdownBlur('niche')"
                         class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedNiche() || 'All Niches' }}
                     </button>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
+                    <div
+                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <!-- Dropdown Menu -->
                     <div *ngIf="openDropdown() === 'niche'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                        <button
-                            type="button"
-                            (mousedown)="onNicheChange('')"
+                        <button type="button" (mousedown)="onNicheChange('')"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             All Niches
                         </button>
-                        <button
-                            type="button"
-                            *ngFor="let niche of niches()"
-                            (mousedown)="onNicheChange(niche.name)"
+                        <button type="button" *ngFor="let niche of niches()" (mousedown)="onNicheChange(niche.name)"
                             [class.bg-red-600]="selectedNiche() === niche.name"
                             [class.text-white]="selectedNiche() === niche.name"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
@@ -110,32 +98,26 @@
 
                 <!-- Company Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'company'">
-                    <button
-                        type="button"
-                        (click)="toggleDropdown('company')"
-                        (blur)="onDropdownBlur('company')"
+                    <button type="button" (click)="toggleDropdown('company')" (blur)="onDropdownBlur('company')"
                         class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedCompany() || 'All Companies' }}
                     </button>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
+                    <div
+                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <!-- Dropdown Menu -->
                     <div *ngIf="openDropdown() === 'company'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                        <button
-                            type="button"
-                            (mousedown)="onCompanyChange('')"
+                        <button type="button" (mousedown)="onCompanyChange('')"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             All Companies
                         </button>
-                        <button
-                            type="button"
-                            *ngFor="let company of availableCompanies()"
-                            (mousedown)="onCompanyChange(company)"
-                            [class.bg-red-600]="selectedCompany() === company"
+                        <button type="button" *ngFor="let company of availableCompanies()"
+                            (mousedown)="onCompanyChange(company)" [class.bg-red-600]="selectedCompany() === company"
                             [class.text-white]="selectedCompany() === company"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             {{ company }}
@@ -145,33 +127,26 @@
 
                 <!-- Tag Filter -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'tag'">
-                    <button
-                        type="button"
-                        (click)="toggleDropdown('tag')"
-                        (blur)="onDropdownBlur('tag')"
+                    <button type="button" (click)="toggleDropdown('tag')" (blur)="onDropdownBlur('tag')"
                         class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ selectedTag() || 'All Tags' }}
                     </button>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
+                    <div
+                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <!-- Dropdown Menu -->
                     <div *ngIf="openDropdown() === 'tag'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                        <button
-                            type="button"
-                            (mousedown)="onTagChange('')"
+                        <button type="button" (mousedown)="onTagChange('')"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             All Tags
                         </button>
-                        <button
-                            type="button"
-                            *ngFor="let tag of availableTags()"
-                            (mousedown)="onTagChange(tag)"
-                            [class.bg-red-600]="selectedTag() === tag"
-                            [class.text-white]="selectedTag() === tag"
+                        <button type="button" *ngFor="let tag of availableTags()" (mousedown)="onTagChange(tag)"
+                            [class.bg-red-600]="selectedTag() === tag" [class.text-white]="selectedTag() === tag"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             {{ tag }}
                         </button>
@@ -180,57 +155,41 @@
 
                 <!-- Sort -->
                 <div class="relative" [class.z-[9999]]="openDropdown() === 'sort'">
-                    <button
-                        type="button"
-                        (click)="toggleDropdown('sort')"
-                        (blur)="onDropdownBlur('sort')"
+                    <button type="button" (click)="toggleDropdown('sort')" (blur)="onDropdownBlur('sort')"
                         class="appearance-none px-4 py-2.5 pr-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 focus:border-red-600 dark:focus:border-red-600 focus:ring-2 focus:ring-red-600/20 outline-none transition-all text-sm font-medium text-zinc-900 dark:text-zinc-50 cursor-pointer w-full text-left">
                         {{ getSortLabel() }}
                     </button>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
+                    <div
+                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </div>
                     <!-- Dropdown Menu -->
                     <div *ngIf="openDropdown() === 'sort'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                        <button
-                            type="button"
-                            (mousedown)="onSortChange('newest')"
-                            [class.bg-red-600]="sortBy() === 'newest'"
-                            [class.text-white]="sortBy() === 'newest'"
+                        <button type="button" (mousedown)="onSortChange('newest')"
+                            [class.bg-red-600]="sortBy() === 'newest'" [class.text-white]="sortBy() === 'newest'"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             Newest First
                         </button>
-                        <button
-                            type="button"
-                            (mousedown)="onSortChange('oldest')"
-                            [class.bg-red-600]="sortBy() === 'oldest'"
-                            [class.text-white]="sortBy() === 'oldest'"
+                        <button type="button" (mousedown)="onSortChange('oldest')"
+                            [class.bg-red-600]="sortBy() === 'oldest'" [class.text-white]="sortBy() === 'oldest'"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             Oldest First
                         </button>
-                        <button
-                            type="button"
-                            (mousedown)="onSortChange('views')"
-                            [class.bg-red-600]="sortBy() === 'views'"
-                            [class.text-white]="sortBy() === 'views'"
+                        <button type="button" (mousedown)="onSortChange('views')"
+                            [class.bg-red-600]="sortBy() === 'views'" [class.text-white]="sortBy() === 'views'"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             Most Viewed
                         </button>
-                        <button
-                            type="button"
-                            (mousedown)="onSortChange('az')"
-                            [class.bg-red-600]="sortBy() === 'az'"
+                        <button type="button" (mousedown)="onSortChange('az')" [class.bg-red-600]="sortBy() === 'az'"
                             [class.text-white]="sortBy() === 'az'"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             A-Z
                         </button>
-                        <button
-                            type="button"
-                            (mousedown)="onSortChange('za')"
-                            [class.bg-red-600]="sortBy() === 'za'"
+                        <button type="button" (mousedown)="onSortChange('za')" [class.bg-red-600]="sortBy() === 'za'"
                             [class.text-white]="sortBy() === 'za'"
                             class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
                             Z-A
@@ -239,15 +198,14 @@
                 </div>
 
                 <!-- View Toggle -->
-                <button 
-                    (click)="toggleViewMode()"
+                <button (click)="toggleViewMode()"
                     class="px-4 py-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group">
-                    <lucide-icon [img]="viewMode() === 'grid' ? ListIcon : GridIcon" 
+                    <lucide-icon [img]="viewMode() === 'grid' ? ListIcon : GridIcon"
                         class="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover:text-red-600 transition-colors"></lucide-icon>
                 </button>
 
                 <!-- Clear Filters -->
-                <button 
+                <button
                     *ngIf="searchQuery() || selectedCategory() || selectedNiche() || selectedCompany() || selectedTag()"
                     (click)="clearFilters()"
                     class="px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 transition-all">
@@ -258,7 +216,7 @@
 
         <!-- Loading State -->
         <div *ngIf="isLoading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div *ngFor="let i of [1,2,3,4,5,6]" 
+            <div *ngFor="let i of [1,2,3,4,5,6]"
                 class="bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                 <div class="aspect-video skeleton"></div>
                 <div class="p-6 space-y-3">
@@ -270,42 +228,38 @@
         </div>
 
         <!-- Empty State -->
-        <div *ngIf="!isLoading() && filteredProjects().length === 0" 
-            class="text-center py-20 animate-fade-in-up">
+        <div *ngIf="!isLoading() && filteredProjects().length === 0" class="text-center py-20 animate-fade-in-up">
             <div class="text-6xl mb-4">🔍</div>
             <h3 class="text-2xl font-black mb-2">No Projects Found</h3>
             <p class="text-zinc-600 dark:text-zinc-400 mb-6">
                 Try adjusting your filters or search query
             </p>
-            <button 
-                (click)="clearFilters()"
+            <button (click)="clearFilters()"
                 class="px-6 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-all">
                 Clear All Filters
             </button>
         </div>
 
         <!-- Grid View -->
-        <div *ngIf="!isLoading() && viewMode() === 'grid' && paginatedProjects().length > 0" 
+        <div *ngIf="!isLoading() && viewMode() === 'grid' && paginatedProjects().length > 0"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 relative z-0">
-            <a *ngFor="let project of paginatedProjects(); let i = index" 
-                [routerLink]="['/projects', project.slug]"
+            <a *ngFor="let project of paginatedProjects(); let i = index" [routerLink]="['/projects', project.slug]"
                 class="group bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 dark:hover:border-red-600 transition-all hover:shadow-xl hover:shadow-red-600/10 animate-scale-in"
                 [style.animation-delay]="(i * 0.1) + 's'">
-                
+
                 <!-- Image -->
                 <div class="aspect-video bg-zinc-200 dark:bg-zinc-800 overflow-hidden relative">
-                    <img *ngIf="project.imageUrl" 
-                        [src]="project.imageUrl" 
-                        [alt]="project.title"
+                    <img *ngIf="project.imageUrl" [src]="getFullImageUrl(project.imageUrl)"
+                        (error)="onImageError($event)" [alt]="project.title"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div *ngIf="!project.imageUrl" 
+                    <div *ngIf="!project.imageUrl"
                         class="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-4xl font-black">
                         {{ project.title.charAt(0) || '?' }}
                     </div>
-                    
+
                     <!-- Badges -->
                     <div class="absolute top-3 left-3 flex gap-2">
-                        <span *ngIf="isFeatured(project)" 
+                        <span *ngIf="isFeatured(project)"
                             class="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-black">
                             🔥Featured
                         </span>
@@ -320,7 +274,7 @@
                     <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-2">
                         {{ getDescription(project) }}
                     </p>
-                    
+
                     <!-- Meta -->
                     <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
                         <span *ngIf="project.category" class="font-medium">
@@ -334,7 +288,7 @@
 
                     <!-- Tags -->
                     <div *ngIf="project.tags" class="flex flex-wrap gap-2 mt-4">
-                        <span *ngFor="let tag of project.tags.split(',').slice(0, 3)" 
+                        <span *ngFor="let tag of project.tags.split(',').slice(0, 3)"
                             class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium">
                             {{ tag.trim() }}
                         </span>
@@ -344,27 +298,25 @@
         </div>
 
         <!-- List View -->
-        <div *ngIf="!isLoading() && viewMode() === 'list' && paginatedProjects().length > 0" 
+        <div *ngIf="!isLoading() && viewMode() === 'list' && paginatedProjects().length > 0"
             class="space-y-4 mb-12 relative z-0">
-            <a *ngFor="let project of paginatedProjects(); let i = index" 
-                [routerLink]="['/projects', project.slug]"
+            <a *ngFor="let project of paginatedProjects(); let i = index" [routerLink]="['/projects', project.slug]"
                 class="group flex gap-6 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden hover:border-red-600 dark:hover:border-red-600 transition-all hover:shadow-xl hover:shadow-red-600/10 p-6 animate-fade-in-up"
                 [style.animation-delay]="(i * 0.05) + 's'">
-                
+
                 <!-- Image -->
                 <div class="w-48 h-32 bg-zinc-200 dark:bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0 relative">
-                    <img *ngIf="project.imageUrl" 
-                        [src]="project.imageUrl" 
-                        [alt]="project.title"
+                    <img *ngIf="project.imageUrl" [src]="getFullImageUrl(project.imageUrl)"
+                        (error)="onImageError($event)" [alt]="project.title"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div *ngIf="!project.imageUrl" 
+                    <div *ngIf="!project.imageUrl"
                         class="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-3xl font-black">
                         {{ project.title.charAt(0) || '?' }}
                     </div>
-                    
+
                     <!-- Badges -->
                     <div class="absolute top-2 left-2 flex gap-1">
-                        <span *ngIf="isFeatured(project)" 
+                        <span *ngIf="isFeatured(project)"
                             class="px-2 py-0.5 rounded-full bg-red-600 text-white text-xs font-black">
                             Featured
                         </span>
@@ -379,7 +331,7 @@
                     <p class="text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-2">
                         {{ getDescription(project) }}
                     </p>
-                    
+
                     <!-- Meta -->
                     <div class="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-500 mb-3">
                         <span *ngIf="project.category" class="font-medium">
@@ -398,7 +350,7 @@
 
                     <!-- Tags -->
                     <div *ngIf="project.tags" class="flex flex-wrap gap-2">
-                        <span *ngFor="let tag of project.tags.split(',').slice(0, 5)" 
+                        <span *ngFor="let tag of project.tags.split(',').slice(0, 5)"
                             class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium">
                             {{ tag.trim() }}
                         </span>
@@ -408,24 +360,18 @@
         </div>
 
         <!-- Pagination -->
-        <div *ngIf="!isLoading() && totalPages() > 1" 
-            class="flex items-center justify-center gap-2 animate-fade-in-up">
-            
+        <div *ngIf="!isLoading() && totalPages() > 1" class="flex items-center justify-center gap-2 animate-fade-in-up">
+
             <!-- Previous -->
-            <button 
-                (click)="goToPage(currentPage() - 1)"
-                [disabled]="currentPage() === 1"
+            <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1"
                 class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronLeftIcon" class="w-5 h-5"></lucide-icon>
             </button>
 
             <!-- Page Numbers -->
             <div class="flex gap-2">
-                <button 
-                    *ngFor="let page of [].constructor(totalPages()); let i = index"
-                    (click)="goToPage(i + 1)"
-                    [class.bg-red-600]="currentPage() === i + 1"
-                    [class.text-white]="currentPage() === i + 1"
+                <button *ngFor="let page of [].constructor(totalPages()); let i = index" (click)="goToPage(i + 1)"
+                    [class.bg-red-600]="currentPage() === i + 1" [class.text-white]="currentPage() === i + 1"
                     [class.border-red-600]="currentPage() === i + 1"
                     class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 font-medium transition-all">
                     {{ i + 1 }}
@@ -433,18 +379,17 @@
             </div>
 
             <!-- Next -->
-            <button 
-                (click)="goToPage(currentPage() + 1)"
-                [disabled]="currentPage() === totalPages()"
+            <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
                 class="px-4 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 dark:hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5"></lucide-icon>
             </button>
         </div>
 
         <!-- Results Info -->
-        <div *ngIf="!isLoading() && paginatedProjects().length > 0" 
+        <div *ngIf="!isLoading() && paginatedProjects().length > 0"
             class="text-center mt-8 text-sm text-zinc-500 dark:text-zinc-500">
-            Showing {{ ((currentPage() - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage() * itemsPerPage, filteredProjects().length) }} of {{ filteredProjects().length }} projects
+            Showing {{ ((currentPage() - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage() * itemsPerPage,
+            filteredProjects().length) }} of {{ filteredProjects().length }} projects
         </div>
 
     </div>

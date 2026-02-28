@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { LucideAngularModule, GraduationCap, BookOpen, Award, MapPin, Edit3, X, Save, Plus, Trash2, AlertTriangle, Upload, ChevronLeft, ChevronRight } from 'lucide-angular';
@@ -14,7 +15,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
     selector: 'app-education-timeline',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule],
+    imports: [CommonModule, TranslateModule, LucideAngularModule, FormsModule],
     template: `
     <div class="relative">
         <!-- Edit Button (moved to flow to prevent overlapping absolute buttons) -->
@@ -28,6 +29,15 @@ import { environment } from '../../../../environments/environment';
 
         <div class="space-y-12 relative before:absolute before:top-0 before:bottom-0 before:ltr:left-1/2 before:rtl:right-1/2 before:ltr:-translate-x-1/2 before:rtl:translate-x-1/2 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800"
              [class.before:hidden]="continuousMode">
+             
+            <!-- Empty State Headline (Shows only when 0 items exist) -->
+            <div *ngIf="displayEducation().length === 0 && sectionTitle" class="w-full text-center py-8 relative z-10">
+                <div class="inline-block bg-white dark:bg-zinc-950 px-8 py-6 rounded-[2rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 shadow-sm relative z-20">
+                    <h2 class="text-2xl font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-600 drop-shadow-sm">{{ sectionTitle }}</h2>
+                    <p class="text-[10px] font-bold tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 uppercase">{{ 'education.emptyDesc' | translate }}</p>
+                </div>
+            </div>
+
             <div *ngFor="let item of displayEducation(); let i = index"
                 class="relative flex items-center justify-between group animate-fade-in-up"
                 [class.flex-row-reverse]="(i + layoutStartIndex) % 2 !== 0"

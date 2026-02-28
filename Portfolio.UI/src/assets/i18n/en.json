@@ -125,12 +125,20 @@
     "certificationDesc": "Professional certifications and credentials",
     "achievementTitle": "Achievements",
     "achievementDesc": "Awards, honors, and notable accomplishments",
+    "emptyDesc": "No entries added yet.",
     "hideDetails": "Hide Details",
     "showDetails": "Show Details",
     "hideList": "Hide List",
     "viewList": "View List",
     "errorTitle": "Information Link Severed",
     "retryText": "Re-Link Data",
+    "searchPlaceholder": "Search by degree, institution, or description...",
+    "showing": "Showing",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next",
+    "noResults": "No Records Found",
+    "noResultsDesc": "Try adjusting your search query or removing filters.",
     "emptyTitle": "Awaiting Batching",
     "emptyMessage": "Academic credentials and specialized training are being compiled for display.",
     "defaultQuote": "Education is the synthesis of inquiry and architecture. My academic foundation provides the rigorous framework through which I approach complex engineering challenges and innovative system design.",
@@ -138,6 +146,11 @@
     "technicalFocusDescription": "Continuous specialization in modern web development, cloud architecture, and enterprise system design."
   },
   "projects": {
+    "highlights": {
+      "mostVisited": "Highest Visits",
+      "featured": "Featured ✨",
+      "latest": "Latest Release"
+    },
     "viewCaseStudy": "View Case Study",
     "errorTitle": "Chronology Link Broken",
     "retryText": "Restore Sequence",
