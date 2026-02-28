@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight, Eye, Star, Rocket, Clock, Image } from 'lucide-angular';
 import { ProjectService } from '../../services/project.service';
@@ -28,6 +28,10 @@ import { environment } from '../../../environments/environment';
 export class ProjectsListComponent implements OnInit {
   private projectService = inject(ProjectService);
   public translationService = inject(TranslationService);
+  private route = inject(ActivatedRoute);
+
+  // Create project trigger (mirrors projects-grid interface)
+  triggerCreateProject = signal(false);
 
   // Icons
   SearchIcon = Search;
@@ -195,6 +199,13 @@ export class ProjectsListComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+
+    // Auto-open create modal if navigated with ?create=true
+    this.route.queryParams.subscribe(params => {
+      if (params['create'] === 'true') {
+        setTimeout(() => this.triggerCreateProject.set(!this.triggerCreateProject()), 500);
+      }
+    });
   }
 
   loadData() {

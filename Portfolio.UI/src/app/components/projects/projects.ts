@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models';
@@ -13,6 +13,7 @@ import { TranslationService } from '../../services/translation.service';
 import { environment } from '../../../environments/environment';
 
 // Section Components
+import { ProjectsGridComponent } from './sections/projects-grid';
 import { ProjectsWorkHistoryComponent } from './sections/projects-work-history';
 import { ProjectsBrandSliderComponent } from './sections/projects-brand-slider';
 import { ProjectsReferencesComponent } from './sections/projects-references';
@@ -40,6 +41,7 @@ import { SharedErrorStateComponent } from '../shared/error-state/error-state';
     TranslateModule,
     NavbarComponent,
     LucideAngularModule,
+    ProjectsGridComponent,
     ProjectsWorkHistoryComponent,
     ProjectsBrandSliderComponent,
     ProjectsReferencesComponent,
@@ -62,7 +64,7 @@ export class ProjectsComponent implements OnInit {
   public auth = inject(AuthService);
   private toast = inject(ToastService);
   public translationService = inject(TranslationService);
-
+  private router = inject(Router);
   PlusIcon = Plus;
   ArrowRightIcon = ArrowRight;
   EyeIcon = Eye;
@@ -216,9 +218,12 @@ export class ProjectsComponent implements OnInit {
     window.location.href = `/projects/${project.slug}`;
   }
 
-  onProjectsUpdated(updatedProjects: ProjectEntry[]) {
-    this.projects.set(updatedProjects);
-    console.log('Projects list updated:', this.projects().length);
+  onProjectsUpdated(_updatedProjects: ProjectEntry[]) {
+    // Reload from API to get fresh full list (the grid was initialized with [] so its emitted data is incomplete)
+    this.projectService.getProjects().subscribe({
+      next: (data) => this.projects.set(data),
+      error: (err) => console.error('Failed to refresh projects after create:', err)
+    });
   }
 
   onDeleteProject(project: ProjectEntry) {

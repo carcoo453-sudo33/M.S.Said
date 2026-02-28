@@ -30,6 +30,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     @Input() projects: ProjectEntry[] = [];
     @Input() totalCount: number = 0;
     @Input() triggerCreate: boolean = false;
+    @Input() hideGrid: boolean = false;
     @Output() edit = new EventEmitter<ProjectEntry>();
     @Output() delete = new EventEmitter<ProjectEntry>();
     @Output() projectsUpdated = new EventEmitter<ProjectEntry[]>();

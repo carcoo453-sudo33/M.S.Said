@@ -126,6 +126,11 @@
                 </div>
             </div>
 
+            <!-- Grid component kept for Create Project modal (renders no cards when projects=[]) -->
+            <app-projects-grid [projects]="[]" [totalCount]="totalProjectCount()" [hideGrid]="true"
+                [triggerCreate]="triggerCreateProject()" (projectsUpdated)="onProjectsUpdated($event)">
+            </app-projects-grid>
+
             <!-- View All Projects Button -->
             <div class="flex justify-center mt-16 mb-8 animate-fade-in-up" style="animation-delay: 0.4s">
                 <a routerLink="/projects/all"
