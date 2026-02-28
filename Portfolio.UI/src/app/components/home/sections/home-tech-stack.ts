@@ -25,8 +25,8 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         <div class="flex flex-wrap justify-center gap-6">
             <div *ngFor="let skill of translatedSkills"
                 class="w-20 h-20 bg-white dark:bg-zinc-900/40 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center justify-center group hover:border-red-600/30 hover:scale-105 transition-all cursor-pointer">
-                <img *ngIf="skill.icon" [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
-                <lucide-icon *ngIf="!skill.icon" [img]="ImageIcon" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
+                <img *ngIf="isImageUrl(skill.icon)" [src]="getFullUrl(skill.icon)" class="w-8 h-8 object-contain mb-1.5 filter grayscale group-hover:grayscale-0 transition-all opacity-40 group-hover:opacity-100">
+                <lucide-icon *ngIf="!isImageUrl(skill.icon)" [img]="ImageIcon" class="w-6 h-6 text-zinc-400 dark:text-zinc-600 group-hover:text-red-500 transition-colors mb-1.5"></lucide-icon>
                 <span class="text-[9px] font-bold uppercase tracking-wide text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{{ skill.name }}</span>
             </div>
         </div>
@@ -68,8 +68,8 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
                             
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
-                                    <img *ngIf="item.icon" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
-                                    <lucide-icon *ngIf="!item.icon" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
+                                    <img *ngIf="isImageUrl(item.icon)" [src]="getFullUrl(item.icon)" class="w-full h-full object-contain">
+                                    <lucide-icon *ngIf="!isImageUrl(item.icon)" [img]="ImageIcon" class="w-4 h-4 text-zinc-300"></lucide-icon>
                                 </div>
                                 <label class="flex-1 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-[10px] font-black uppercase tracking-widest cursor-pointer hover:border-red-500 hover:text-red-500 transition-all text-center">
                                     {{ uploadingIndex === i ? ('home.techStack.uploading' | translate) : (item.icon ? ('home.techStack.changeImage' | translate) : ('home.techStack.uploadImage' | translate)) }}
@@ -142,11 +142,16 @@ export class HomeTechStackComponent {
         return this.translationHelper.translateArray(this.skills, ['name']);
     }
 
+    isImageUrl(icon?: string): boolean {
+        if (!icon) return false;
+        return icon.includes('/') || icon.includes('.') || icon.startsWith('http');
+    }
+
     getFullUrl(path?: string): string {
         if (!path) return '';
-        if (path.startsWith('http')) return path;
+        if (path.startsWith('http') || path.startsWith('lucide-')) return path;
         const baseUrl = environment.apiUrl.replace('/api', '');
-        return `${baseUrl}${path}`;
+        return path.startsWith('/') ? `${baseUrl}${path}` : `${baseUrl}/${path}`;
     }
 
     openEditModal() {

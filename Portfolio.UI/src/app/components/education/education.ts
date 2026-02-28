@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { Router, RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { EducationEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
@@ -27,6 +28,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     imports: [
         CommonModule,
         TranslateModule,
+        RouterLink,
         NavbarComponent,
         LucideAngularModule,
         EducationTimelineComponent,
@@ -42,17 +44,12 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
 })
 export class EducationComponent implements OnInit {
     private profileService = inject(ProfileService);
+    private router = inject(Router);
     public translationService = inject(TranslationService);
     allEducation = signal<EducationEntry[]>([]);
     bio = signal<BioEntry | null>(null);
     isLoading = signal(true);
     hasError = signal(false);
-
-    // Toggle states
-    showEducation = signal(false);
-    showTraining = signal(false);
-    showCertification = signal(false);
-    showAchievement = signal(false);
 
     // Filtered lists
     get educationList(): EducationEntry[] {
@@ -71,6 +68,18 @@ export class EducationComponent implements OnInit {
         return this.allEducation().filter(e => e.category === 'Achievement');
     }
 
+    get trainingStartIndex(): number {
+        return this.educationList.length;
+    }
+
+    get certificationStartIndex(): number {
+        return this.educationList.length + (this.trainingList.length > 0 ? 1 : 0);
+    }
+
+    get achievementStartIndex(): number {
+        return this.educationList.length + (this.trainingList.length > 0 ? 1 : 0) + (this.certificationList.length > 0 ? 1 : 0);
+    }
+
     ngOnInit() {
         this.profileService.getBio().subscribe({
             next: (bio) => this.bio.set(bio),
@@ -85,7 +94,7 @@ export class EducationComponent implements OnInit {
         this.profileService.getEducation().subscribe({
             next: (data) => {
                 const categoryOrder: Record<string, number> = { 'Education': 1, 'Training': 2, 'Certification': 3, 'Achievement': 4 };
-                this.allEducation.set(data.sort((a, b) => 
+                this.allEducation.set(data.sort((a, b) =>
                     (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
                 ));
                 this.isLoading.set(false);
@@ -98,31 +107,17 @@ export class EducationComponent implements OnInit {
         });
     }
 
-    toggleSection(section: 'education' | 'training' | 'certification' | 'achievement') {
-        switch(section) {
-            case 'education':
-                this.showEducation.set(!this.showEducation());
-                break;
-            case 'training':
-                this.showTraining.set(!this.showTraining());
-                break;
-            case 'certification':
-                this.showCertification.set(!this.showCertification());
-                break;
-            case 'achievement':
-                this.showAchievement.set(!this.showAchievement());
-                break;
-        }
-    }
-
-    onEducationUpdated(updatedEducation: EducationEntry[]) {
-        const categoryOrder: Record<string, number> = { 'Education': 1, 'Training': 2, 'Certification': 3, 'Achievement': 4 };
-        this.allEducation.set(updatedEducation.sort((a, b) => 
-            (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
-        ));
+    onEducationUpdated(event: any) {
+        // Re-load the full guaranteed list from the backend to prevent array destructuring bugs
+        // when moving items between categories in the edit modal
+        this.loadEducation();
     }
 
     onBioUpdated(updatedBio: BioEntry) {
         this.bio.set(updatedBio);
+    }
+
+    navigateToList(category: string) {
+        this.router.navigate(['/education', category]);
     }
 }

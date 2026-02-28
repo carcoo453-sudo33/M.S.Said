@@ -16,7 +16,8 @@
         <!-- SKELETON STATE -->
         <div *ngIf="isLoading()" class="space-y-6 pb-16">
             <!-- Education Card Skeleton -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+            <div
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
                 <div class="flex items-center justify-between mb-6">
                     <div class="space-y-3">
                         <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
@@ -27,7 +28,8 @@
             </div>
 
             <!-- Training Card Skeleton -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+            <div
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
                 <div class="flex items-center justify-between mb-6">
                     <div class="space-y-3">
                         <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
@@ -38,7 +40,8 @@
             </div>
 
             <!-- Certification Card Skeleton -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+            <div
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
                 <div class="flex items-center justify-between mb-6">
                     <div class="space-y-3">
                         <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
@@ -49,7 +52,8 @@
             </div>
 
             <!-- Achievements Card Skeleton -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+            <div
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
                 <div class="flex items-center justify-between mb-6">
                     <div class="space-y-3">
                         <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
@@ -64,93 +68,65 @@
         <app-education-specializations-skeleton *ngIf="isLoading()"></app-education-specializations-skeleton>
 
         <!-- ERROR STATE -->
-        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'education.errorTitle' | translate" [retryText]="'education.retryText' | translate"
-            (retry)="ngOnInit()">
+        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'education.errorTitle' | translate"
+            [retryText]="'education.retryText' | translate" (retry)="ngOnInit()">
         </app-shared-error-state>
 
         <!-- EMPTY STATE -->
-        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && allEducation().length === 0" 
-            [title]="'education.emptyTitle' | translate"
-            [message]="'education.emptyMessage' | translate">
+        <app-shared-empty-state *ngIf="!isLoading() && !hasError() && allEducation().length === 0"
+            [title]="'education.emptyTitle' | translate" [message]="'education.emptyMessage' | translate">
         </app-shared-empty-state>
 
         <!-- CONTINUOUS TIMELINE -->
-        <div *ngIf="!isLoading() && !hasError() && allEducation().length > 0" class="space-y-6 pb-16">
-            <!-- Education Card -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.educationTitle' | translate }}</h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.educationDesc' | translate }}</p>
-                    </div>
-                    <button (click)="toggleSection('education')"
-                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
-                        {{ showEducation() ? ('education.hideDetails' | translate) : ('education.showDetails' | translate) }}
-                    </button>
-                </div>
-                <div *ngIf="showEducation()" class="mt-6">
-                    <app-education-timeline [education]="educationList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
-                </div>
+        <div *ngIf="!isLoading() && !hasError() && allEducation().length > 0"
+            class="pb-16 space-y-12 relative before:absolute before:top-0 before:bottom-0 before:ltr:left-1/2 before:rtl:right-1/2 before:ltr:-translate-x-1/2 before:rtl:translate-x-1/2 before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800">
+            <!-- Education Section -->
+            <div class="relative">
+                <app-education-timeline [education]="educationList" sectionCategory="Education" [continuousMode]="true"
+                    [sectionTitle]="'education.educationTitle' | translate"
+                    [sectionDesc]="'education.educationDesc' | translate"
+                    (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
             </div>
 
-            <!-- Training Card -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.trainingTitle' | translate }}</h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.trainingDesc' | translate }}</p>
-                    </div>
-                    <button (click)="toggleSection('training')"
-                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
-                        {{ showTraining() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
-                    </button>
-                </div>
-                <div *ngIf="showTraining()" class="mt-6">
-                    <app-education-timeline [education]="trainingList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
-                </div>
+            <!-- Training Section -->
+            <div class="relative" *ngIf="trainingList.length > 0">
+                <app-education-timeline [education]="trainingList" sectionCategory="Training" [limitItems]="1"
+                    [layoutStartIndex]="trainingStartIndex" [continuousMode]="true"
+                    [sectionTitle]="'education.trainingTitle' | translate"
+                    [sectionDesc]="'education.trainingDesc' | translate" [hasViewListBtn]="trainingList.length > 1"
+                    [viewListText]="'education.viewList' | translate" (viewListClicked)="navigateToList('training')"
+                    (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
             </div>
 
-            <!-- Certification Card -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.certificationTitle' | translate }}</h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.certificationDesc' | translate }}</p>
-                    </div>
-                    <button (click)="toggleSection('certification')"
-                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
-                        {{ showCertification() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
-                    </button>
-                </div>
-                <div *ngIf="showCertification()" class="mt-6">
-                    <app-education-timeline [education]="certificationList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
-                </div>
+            <!-- Certification Section -->
+            <div class="relative" *ngIf="certificationList.length > 0">
+                <app-education-timeline [education]="certificationList" sectionCategory="Certification" [limitItems]="1"
+                    [layoutStartIndex]="certificationStartIndex" [continuousMode]="true"
+                    [sectionTitle]="'education.certificationTitle' | translate"
+                    [sectionDesc]="'education.certificationDesc' | translate"
+                    [hasViewListBtn]="certificationList.length > 1" [viewListText]="'education.viewList' | translate"
+                    (viewListClicked)="navigateToList('certification')"
+                    (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
             </div>
 
-            <!-- Achievements Card -->
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">{{ 'education.achievementTitle' | translate }}</h2>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ 'education.achievementDesc' | translate }}</p>
-                    </div>
-                    <button (click)="toggleSection('achievement')"
-                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black uppercase transition-all">
-                        {{ showAchievement() ? ('education.hideList' | translate) : ('education.viewList' | translate) }}
-                    </button>
-                </div>
-                <div *ngIf="showAchievement()" class="mt-6">
-                    <app-education-timeline [education]="achievementList" (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
-                </div>
+            <!-- Achievements Section -->
+            <div class="relative" *ngIf="achievementList.length > 0">
+                <app-education-timeline [education]="achievementList" sectionCategory="Achievement" [limitItems]="1"
+                    [layoutStartIndex]="achievementStartIndex" [continuousMode]="true"
+                    [sectionTitle]="'education.achievementTitle' | translate"
+                    [sectionDesc]="'education.achievementDesc' | translate"
+                    [hasViewListBtn]="achievementList.length > 1" [viewListText]="'education.viewList' | translate"
+                    (viewListClicked)="navigateToList('achievement')"
+                    (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
             </div>
-        </div>
+        </div> <!-- end CONTINUOUS TIMELINE -->
 
         <!-- SPECIALIZATIONS -->
-        <app-education-specializations [bio]="bio() || undefined" (bioUpdated)="onBioUpdated($event)"></app-education-specializations>
+        <app-education-specializations [bio]="bio() || undefined"
+            (bioUpdated)="onBioUpdated($event)"></app-education-specializations>
 
         <!-- Strategic Signature Section -->
-        <app-shared-signature [bio]="bio()"
-            [quote]="bio()?.educationQuote || ('education.defaultQuote' | translate)"
+        <app-shared-signature [bio]="bio()" [quote]="bio()?.educationQuote || ('education.defaultQuote' | translate)"
             (bioUpdated)="onBioUpdated($event)">
         </app-shared-signature>
     </div>

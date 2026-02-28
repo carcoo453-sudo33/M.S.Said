@@ -1,0 +1,64 @@
+<app-navbar></app-navbar>
+
+<main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
+    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+        <!-- Page Header -->
+        <div class="pt-24 pb-6">
+            <app-shared-page-header [badge]="'education.badge' | translate" [title]="(categoryTitle() | translate)"
+                [description]="categoryDescription() | translate">
+            </app-shared-page-header>
+
+            <div class="mt-8 flex justify-center">
+                <button (click)="goBack()"
+                    class="flex items-center gap-2 px-6 py-2.5 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-xl text-sm font-bold tracking-wide transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6" />
+                    </svg>
+                    {{ 'Back' | translate }}
+                </button>
+            </div>
+        </div>
+
+        <!-- SKELETON STATE -->
+        <div *ngIf="isLoading()" class="space-y-6 pb-16">
+            <div *ngFor="let i of [1,2,3]"
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm animate-pulse">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="space-y-3">
+                        <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-48"></div>
+                        <div class="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-64"></div>
+                    </div>
+                    <div class="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-32"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERROR STATE -->
+        <app-shared-error-state *ngIf="!isLoading() && hasError()" [title]="'education.errorTitle' | translate"
+            [retryText]="'education.retryText' | translate" (retry)="ngOnInit()">
+        </app-shared-error-state>
+
+        <!-- FULL CONTINUOUS CATEGORY TIMELINE -->
+        <div *ngIf="!isLoading() && !hasError() && filteredEducation().length > 0" class="pb-16 mt-8">
+            <div class="relative flex justify-center w-full">
+                <!-- Timeline Component passed full Category array with NO limitItems -->
+                <app-education-timeline [education]="filteredEducation()"
+                    [sectionCategory]="filteredEducation()[0].category || 'Education'"
+                    (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
+            </div>
+        </div>
+
+        <!-- EMPTY STATE IF NONE-->
+        <div *ngIf="!isLoading() && !hasError() && filteredEducation().length === 0" class="py-24 text-center">
+            <p class="text-zinc-500 dark:text-zinc-400">No entries listed in this category yet.</p>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<app-shared-footer></app-shared-footer>

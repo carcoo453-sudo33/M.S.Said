@@ -9,6 +9,8 @@ import { BlogComponent } from './components/blog/blog';
 import { ContactComponent } from './components/contact/contact';
 import { NotFoundComponent } from './components/not-found/not-found';
 
+import { EducationCategoryList } from './components/education-category-list/education-category-list';
+
 export const routes: Routes = [
     { path: '', component: HomeComponent, title: 'Mostafa.Dev | Strategic Engineering' },
     { path: 'login', component: LoginComponent, title: 'System Access' },
@@ -16,6 +18,7 @@ export const routes: Routes = [
     { path: 'projects/all', component: ProjectsListComponent, title: 'All Projects | Complete Portfolio' }, // Must come before :slug
     { path: 'projects/:slug', component: ProjectDetailsComponent, title: 'Project Details' },
     { path: 'education', component: EducationComponent, title: 'Education | Technical Specialization' },
+    { path: 'education/:category', component: EducationCategoryList, title: 'Category Details' },
     { path: 'blog', component: BlogComponent, title: 'Social Feed | Digital Insights' },
     { path: 'contact', component: ContactComponent, title: 'Connection | Get in Touch' },
     { path: '404', component: NotFoundComponent, title: 'Space Not Found' },

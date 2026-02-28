@@ -287,12 +287,13 @@ public class ProjectsController : ControllerBase
         if (!projects.Any()) return Ok(new List<ProjectEntry>());
 
         // 1. Trending: Highest Views
-        var trending = projects.OrderByDescending(p => p.Views).First();
+        var trending = projects.OrderByDescending(p => p.Views).FirstOrDefault();
 
         // 2. Latest: Most recent (excluding trending)
-        var latest = projects.Where(p => p.Id != trending.Id).FirstOrDefault();
+        var latest = trending != null ? projects.Where(p => p.Id != trending.Id).FirstOrDefault() : null;
 
-        var featured = new List<ProjectEntry> { trending };
+        var featured = new List<ProjectEntry>();
+        if (trending != null) featured.Add(trending);
         if (latest != null) featured.Add(latest);
 
         return Ok(featured.Select(MapToDto));

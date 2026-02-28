@@ -26,14 +26,14 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     private translationHelper = inject(TranslationHelperService);
     private http = inject(HttpClient);
     private cdr = inject(ChangeDetectorRef);
-    
+
     @Input() projects: ProjectEntry[] = [];
     @Input() totalCount: number = 0;
     @Input() triggerCreate: boolean = false;
     @Output() edit = new EventEmitter<ProjectEntry>();
     @Output() delete = new EventEmitter<ProjectEntry>();
     @Output() projectsUpdated = new EventEmitter<ProjectEntry[]>();
-    
+
     EditIcon = Edit3;
     DeleteIcon = Trash2;
     XIcon = X;
@@ -57,13 +57,13 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     deleteProject: ProjectEntry | null = null;
     editingProject: Partial<ProjectEntry> = {};
     galleryImages: string[] = [];
-    
+
     // Category options
     categories = ['Frontend', 'Backend', 'Fullstack'];
-    
+
     // Niche options (what used to be categories)
     nicheOptions = ['E-Commerce', 'Healthcare', 'Portfolio', 'Productivity', 'Education', 'Finance', 'Social Media', 'Entertainment', 'SaaS & Productivity', 'Real Estate', 'Travel & Tourism', 'Food & Beverage', 'Gaming', 'IoT & Smart Devices', 'Other'];
-    
+
     // Technology suggestions for tags
     techSuggestions = [
         'Angular', 'React', 'Vue', 'TypeScript', 'JavaScript',
@@ -85,37 +85,37 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     currentTagInput = '';
     selectedTags: string[] = [];
     tagInput = '';
-    
+
     // Niche suggestions
     nicheSuggestions: string[] = [];
     filteredNicheSuggestions: string[] = [];
     showNicheSuggestions = false;
-    
+
     // Category suggestions
     categorySuggestions: string[] = [];
     filteredCategorySuggestions: string[] = [];
     showCategorySuggestions = false;
-    
+
     // Category AR suggestions
     categoryArSuggestions: string[] = [];
     filteredCategoryArSuggestions: string[] = [];
     showCategoryArSuggestions = false;
-    
+
     // Niche AR suggestions
     nicheArSuggestions: string[] = [];
     filteredNicheArSuggestions: string[] = [];
     showNicheArSuggestions = false;
-    
+
     // Company suggestions
     companySuggestions: string[] = ['WE3DS', 'Remote', 'Self Work', 'Freelance', 'Contract'];
     filteredCompanySuggestions: string[] = [];
     showCompanySuggestions = false;
-    
+
     // Company AR suggestions
     companyArSuggestions: string[] = ['WE3DS', 'عن بعد', 'عمل حر', 'مستقل', 'عقد'];
     filteredCompanyArSuggestions: string[] = [];
     showCompanyArSuggestions = false;
-    
+
     // Manager modals
     showCategoryManager = false;
     showNicheManager = false;
@@ -125,7 +125,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     newNicheNameAr = '';
     managedCategories: any[] = [];
     managedNiches: any[] = [];
-    
+
     ngOnChanges(changes: SimpleChanges) {
         if (changes['triggerCreate'] && !changes['triggerCreate'].firstChange) {
             this.openCreateModal();
@@ -199,7 +199,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             gitHubUrl: '',
             duration: new Date().getFullYear().toString(),
             views: 0,
-            isTrendy: false
+            isFeatured: false
         };
         this.galleryImages = [];
         this.selectedTags = [];
@@ -219,7 +219,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         this.projectService.importFromUrl(this.importUrl).subscribe({
             next: (importedData) => {
                 console.log('Successfully imported project data:', importedData);
-                
+
                 // Populate form with imported data (only if values are not empty)
                 this.editingProject = {
                     ...this.editingProject,
@@ -246,13 +246,13 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             },
             error: (err) => {
                 console.error('Failed to import from URL:', err);
-                
+
                 // Even on error, set the GitHub URL
                 this.editingProject.gitHubUrl = this.importUrl;
                 this.isImporting = false;
-                
+
                 let errorMessage = 'Could not automatically fetch project data. ';
-                
+
                 if (err.status === 401) {
                     errorMessage = 'Your session has expired. Please log in again.';
                 } else if (err.error?.message) {
@@ -260,7 +260,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
                 } else {
                     errorMessage += 'The URL has been set. Please fill in the remaining fields manually.';
                 }
-                
+
                 this.cdr.detectChanges();
                 this.toast.error(errorMessage);
             }
@@ -303,7 +303,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredNicheSuggestions = this.nicheSuggestions.filter(niche =>
             niche.toLowerCase().includes(value.toLowerCase())
         );
@@ -333,7 +333,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredCategorySuggestions = this.categories.filter(cat =>
             cat.toLowerCase().includes(value.toLowerCase())
         );
@@ -362,7 +362,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredCategoryArSuggestions = this.categoryArSuggestions.filter(cat =>
             cat.includes(value)
         );
@@ -391,7 +391,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredNicheArSuggestions = this.nicheArSuggestions.filter(niche =>
             niche.includes(value)
         );
@@ -420,7 +420,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredCompanySuggestions = this.companySuggestions.filter(company =>
             company.toLowerCase().includes(value.toLowerCase())
         );
@@ -449,7 +449,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.cdr.detectChanges();
             return;
         }
-        
+
         this.filteredCompanyArSuggestions = this.companyArSuggestions.filter(company =>
             company.includes(value)
         );
@@ -474,10 +474,10 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     addNewCategory() {
         const name = this.newCategoryName?.trim();
         if (!name) return;
-        
-        this.projectService.createCategory({ 
-            name: name, 
-            name_Ar: this.newCategoryNameAr?.trim() || undefined 
+
+        this.projectService.createCategory({
+            name: name,
+            name_Ar: this.newCategoryNameAr?.trim() || undefined
         }).subscribe({
             next: (category) => {
                 this.managedCategories.push(category);
@@ -498,7 +498,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     removeCategory(id: string) {
         const category = this.managedCategories.find(c => c.id === id);
         if (!category) return;
-        
+
         this.projectService.deleteCategory(id).subscribe({
             next: () => {
                 this.managedCategories = this.managedCategories.filter(c => c.id !== id);
@@ -517,10 +517,10 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     addNewNiche() {
         const name = this.newNicheName?.trim();
         if (!name) return;
-        
-        this.projectService.createNiche({ 
-            name: name, 
-            name_Ar: this.newNicheNameAr?.trim() || undefined 
+
+        this.projectService.createNiche({
+            name: name,
+            name_Ar: this.newNicheNameAr?.trim() || undefined
         }).subscribe({
             next: (niche) => {
                 this.managedNiches.push(niche);
@@ -541,7 +541,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     removeNiche(id: string) {
         const niche = this.managedNiches.find(n => n.id === id);
         if (!niche) return;
-        
+
         this.projectService.deleteNiche(id).subscribe({
             next: () => {
                 this.managedNiches = this.managedNiches.filter(n => n.id !== id);
@@ -559,10 +559,10 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
     // Tag/Technology management
     onTagInputChange(value: string) {
         this.tagInput = value;
-        
+
         if (!value || value.trim() === '') {
             // Show all suggestions when field is empty
-            this.filteredTechSuggestions = this.techSuggestions.filter(tech => 
+            this.filteredTechSuggestions = this.techSuggestions.filter(tech =>
                 !this.selectedTags.includes(tech)
             );
             this.showTechSuggestions = true;
@@ -586,50 +586,50 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             this.toast.warning(`"${tech}" is already added`);
             return;
         }
-        
+
         // Add the selected tag
         this.selectedTags.push(tech);
-        
+
         // Update the editingProject.tags field
         this.editingProject.tags = this.selectedTags.join(', ');
-        
+
         // Clear input and hide suggestions
         this.tagInput = '';
         this.showTechSuggestions = false;
-        
+
         this.cdr.detectChanges();
     }
 
     addCustomTag() {
         const tag = this.tagInput.trim();
         if (!tag) return;
-        
+
         // Check if tag already exists
         if (this.selectedTags.includes(tag)) {
             this.toast.warning(`"${tag}" is already added`);
             this.tagInput = '';
             return;
         }
-        
+
         // Add the custom tag
         this.selectedTags.push(tag);
-        
+
         // Update the editingProject.tags field
         this.editingProject.tags = this.selectedTags.join(', ');
-        
+
         // Clear input
         this.tagInput = '';
         this.showTechSuggestions = false;
-        
+
         this.cdr.detectChanges();
     }
 
     removeTag(index: number) {
         this.selectedTags.splice(index, 1);
-        
+
         // Update the editingProject.tags field
         this.editingProject.tags = this.selectedTags.join(', ');
-        
+
         this.cdr.detectChanges();
     }
 
@@ -652,7 +652,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         }
 
         const files = Array.from(input.files);
-        
+
         // Validate total number of images (max 10)
         if (this.galleryImages.length + files.length > 10) {
             this.toast.error('Maximum 10 gallery images allowed');
@@ -688,7 +688,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
                     next: (response) => {
                         this.galleryImages.push(response.url);
                         uploadedCount++;
-                        
+
                         if (uploadedCount === totalFiles) {
                             this.isUploadingGallery = false;
                             this.cdr.detectChanges();
@@ -698,12 +698,12 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
                     error: (err) => {
                         uploadedCount++;
                         console.error('Gallery Upload Error:', err);
-                        
+
                         if (uploadedCount === totalFiles) {
                             this.isUploadingGallery = false;
                             this.cdr.detectChanges();
                         }
-                        
+
                         if (err.status === 401) {
                             this.toast.error('Authentication failed. Please log in again.');
                             this.auth.logout();
@@ -726,7 +726,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
         if (!input.files || input.files.length === 0) return;
 
         const file = input.files[0];
-        
+
         // Validate file type
         if (!file.type.startsWith('image/')) {
             this.toast.error('Please select an image file');
@@ -765,7 +765,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
                     this.isUploading = false;
                     this.cdr.detectChanges();
                     console.error('Image Upload Error:', err);
-                    
+
                     if (err.status === 401) {
                         this.toast.error('Authentication failed. Please log in again.');
                         this.auth.logout();
@@ -783,8 +783,8 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
 
     saveProject() {
         this.submitted = true;
-        
-        if (!this.editingProject.title || !this.editingProject.title.trim() || 
+
+        if (!this.editingProject.title || !this.editingProject.title.trim() ||
             !this.editingProject.description || !this.editingProject.description.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
@@ -810,7 +810,7 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
             gitHubUrl: this.editingProject.gitHubUrl,
             duration: this.editingProject.duration,
             views: this.editingProject.views || 0,
-            isTrendy: this.editingProject.isTrendy || false
+            isFeatured: this.editingProject.isFeatured || false
         };
 
         const request = this.isCreating
@@ -881,16 +881,16 @@ export class ProjectsGridComponent implements OnChanges, OnInit {
 
     getFullImageUrl(url: string): string {
         if (!url) return 'assets/project-placeholder.svg';
-        
+
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
         }
-        
+
         const baseUrl = environment.apiUrl.replace('/api', '');
         if (url.startsWith('/')) {
             return `${baseUrl}${url}`;
         }
-        
+
         return `${baseUrl}/${url}`;
     }
 

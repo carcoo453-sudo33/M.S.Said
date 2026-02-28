@@ -13,14 +13,15 @@ builder.Services.AddDbContext<PortfolioDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<PortfolioDbContext>();
 
-// CORS configuration - Allow all origins
+// CORS configuration - Allow all origins securely for SignalR
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.SetIsOriginAllowed(_ => true) // This acts like a wildcard but returns the specific origin
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials(); // Required for SignalR negotiation
     });
 });
 
@@ -49,23 +50,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Add middleware to handle OPTIONS requests explicitly for CORS preflight
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-        context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH";
-        context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept, X-Requested-With";
-        context.Response.Headers["Access-Control-Max-Age"] = "86400";
-        context.Response.StatusCode = 200;
-        await context.Response.CompleteAsync();
-        return;
-    }
-    await next();
-});
 
-// CORS MUST be at the very top - before any other middleware
+
+// Setup Routing before CORS so MapHub and MapControllers origins are matched for preflight
+app.UseRouting();
+
+// CORS MUST be immediately after routing
 app.UseCors("AllowAngular");
 
 // Serve static files from wwwroot (includes uploads folder)
@@ -112,7 +102,12 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<PortfolioDbContext>();
-        context.Database.Migrate();
+        
+        // Only run migrations automatically in development to avoid missing file errors during seeding in production
+        if (app.Environment.IsDevelopment())
+        {
+            context.Database.Migrate();
+        }
         
         // Add RepliesJson column if it doesn't exist
         try
@@ -132,6 +127,47 @@ using (var scope = app.Services.CreateScope())
         catch (Exception colEx)
         {
             Console.WriteLine($"Column creation warning (may already exist): {colEx.Message}");
+        }
+
+
+        // Add Views column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'Views'
+                )
+                BEGIN
+                    ALTER TABLE Projects ADD Views INT NOT NULL DEFAULT 0;
+                END
+            ");
+            Console.WriteLine("Views column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (Views): {colEx.Message}");
+        }
+
+        // Add IsFeatured column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'IsFeatured'
+                )
+                BEGIN
+                    ALTER TABLE Projects ADD IsFeatured BIT NOT NULL DEFAULT 0;
+                END
+            ");
+            Console.WriteLine("IsFeatured column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (IsFeatured): {colEx.Message}");
         }
         
         await DbInitializer.Initialize(services);

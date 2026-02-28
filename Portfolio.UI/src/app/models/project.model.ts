@@ -83,7 +83,7 @@ export interface BaseProject {
 export interface ProjectEntry extends BaseProject {
     id: string;
     slug: string;
-    isTrendy?: boolean;
+    isFeatured?: boolean;
     relatedProjects?: ProjectSummary[];
     createdAt?: Date;
     updatedAt?: Date;
@@ -93,5 +93,4 @@ export interface ProjectDto extends BaseProject {
     id?: string;
     order: number;
     isFeatured: boolean;
-    isTrendy: boolean;
 }

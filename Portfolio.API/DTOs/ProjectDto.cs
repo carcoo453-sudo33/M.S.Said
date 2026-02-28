@@ -43,7 +43,6 @@ public class ProjectDto
     public int Views { get; set; }
     public int Order { get; set; }
     public bool IsFeatured { get; set; }
-    public bool IsTrendy { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<ProjectSummaryDto> RelatedProjects { get; set; } = new();
 }

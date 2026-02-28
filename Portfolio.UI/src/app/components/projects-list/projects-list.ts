@@ -43,12 +43,12 @@ export class ProjectsListComponent implements OnInit {
   allProjects = signal<ProjectEntry[]>([]);
   categories = signal<any[]>([]);
   niches = signal<any[]>([]);
-  
+
   // UI State
   isLoading = signal(true);
   viewMode = signal<'grid' | 'list'>('grid');
   openDropdown = signal<string | null>(null);
-  
+
   // Filters
   searchQuery = signal('');
   selectedCategory = signal('');
@@ -56,7 +56,7 @@ export class ProjectsListComponent implements OnInit {
   selectedCompany = signal('');
   selectedTag = signal('');
   sortBy = signal('newest');
-  
+
   // Pagination
   currentPage = signal(1);
   itemsPerPage = 6;
@@ -84,11 +84,11 @@ export class ProjectsListComponent implements OnInit {
 
   filteredProjects = computed(() => {
     let projects = [...this.allProjects()];
-    
+
     // Search filter
     const query = this.searchQuery().toLowerCase();
     if (query) {
-      projects = projects.filter(p => 
+      projects = projects.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         (p as any).titleAr?.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
@@ -114,7 +114,7 @@ export class ProjectsListComponent implements OnInit {
 
     // Tag filter
     if (this.selectedTag()) {
-      projects = projects.filter(p => 
+      projects = projects.filter(p =>
         p.tags?.split(',').map(t => t.trim()).includes(this.selectedTag())
       );
     }
@@ -147,7 +147,7 @@ export class ProjectsListComponent implements OnInit {
     return this.filteredProjects().slice(start, end);
   });
 
-  totalPages = computed(() => 
+  totalPages = computed(() =>
     Math.ceil(this.filteredProjects().length / this.itemsPerPage)
   );
 
@@ -258,40 +258,36 @@ export class ProjectsListComponent implements OnInit {
 
   // Helper methods for template to access index signature properties
   getTitle(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).titleAr 
-      ? (project as any).titleAr 
+    return this.translationService.isRTL() && (project as any).titleAr
+      ? (project as any).titleAr
       : project.title || '';
   }
 
   getDescription(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).descriptionAr 
-      ? (project as any).descriptionAr 
+    return this.translationService.isRTL() && (project as any).descriptionAr
+      ? (project as any).descriptionAr
       : project.description || '';
   }
 
   getCategory(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).categoryAr 
-      ? (project as any).categoryAr 
+    return this.translationService.isRTL() && (project as any).categoryAr
+      ? (project as any).categoryAr
       : project.category || '';
   }
 
   getNiche(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).nicheAr 
-      ? (project as any).nicheAr 
+    return this.translationService.isRTL() && (project as any).nicheAr
+      ? (project as any).nicheAr
       : project.niche || '';
   }
 
   getCompany(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).companyAr 
-      ? (project as any).companyAr 
+    return this.translationService.isRTL() && (project as any).companyAr
+      ? (project as any).companyAr
       : project.company || '';
   }
 
   isFeatured(project: ProjectEntry): boolean {
     return !!(project as any).isFeatured;
-  }
-
-  isTrendy(project: ProjectEntry): boolean {
-    return !!(project as any).isTrendy;
   }
 }
