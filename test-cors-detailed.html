@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detailed CORS Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e1e1e; color: #fff; }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #2196f3; }
+        pre { background: #2d2d2d; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 CORS Diagnostic Tool</h1>
+    <p>Testing: <strong>https://m-protfolio.runasp.net/api</strong></p>
+    
+    <button onclick="testCORS()">1. Test CORS (GET Request)</button>
+    <button onclick="testOPTIONS()">2. Test OPTIONS (Preflight)</button>
+    <button onclick="testFromNetlify()">3. Simulate Netlify Origin</button>
+    <button onclick="clearResults()">Clear</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'https://m-protfolio.runasp.net/api/bio';
+        const resultsDiv = document.getElementById('results');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${timestamp}] ${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        async function testCORS() {
+            log('🧪 Testing CORS with GET request...', 'info');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`✅ Response Status: ${response.status} ${response.statusText}`, 'success');
+                
+                // Check CORS headers
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+                if (corsHeader) {
+                    log(`✅ CORS Header Found: ${corsHeader}`, 'success');
+                } else {
+                    log(`❌ CORS Header Missing! This is the problem!`, 'error');
+                }
+                
+                // List all headers
+                log('📋 Response Headers:', 'info');
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                log(`<pre>${JSON.stringify(headers, null, 2)}</pre>`, 'info');
+                
+                const data = await response.json();
+                log(`✅ Data received: ${data.name}`, 'success');
+                
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`, 'error');
+                log(`This means: The browser blocked the request (CORS issue)`, 'error');
+            }
+        }
+
+        async function testOPTIONS() {
+            log('🧪 Testing OPTIONS (CORS Preflight)...', 'info');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'content-type',
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                log(`✅ OPTIONS Response: ${response.status} ${response.statusText}`, 'success');
+                
+                const allowOrigin = response.headers.get('Access-Control-Allow-Origin');
+                const allowMethods = response.headers.get('Access-Control-Allow-Methods');
+                const allowHeaders = response.headers.get('Access-Control-Allow-Headers');
+                
+                if (allowOrigin) {
+                    log(`✅ Allow-Origin: ${allowOrigin}`, 'success');
+                } else {
+                    log(`❌ Allow-Origin header MISSING!`, 'error');
+                }
+                
+                if (allowMethods) {
+                    log(`✅ Allow-Methods: ${allowMethods}`, 'success');
+                } else {
+                    log(`⚠️ Allow-Methods header missing`, 'warning');
+                }
+                
+                if (allowHeaders) {
+                    log(`✅ Allow-Headers: ${allowHeaders}`, 'success');
+                } else {
+                    log(`⚠️ Allow-Headers header missing`, 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ OPTIONS Request Failed: ${error.message}`, 'error');
+                log(`❌ This is the CORS problem! OPTIONS preflight is failing!`, 'error');
+            }
+        }
+
+        async function testFromNetlify() {
+            log('🧪 Simulating request from Netlify origin...', 'info');
+            log('Note: This test runs from current origin, but shows what Netlify would see', 'warning');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': 'https://m-said-portfolio.netlify.app'
+                    }
+                });
+                
+                log(`Response: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+                if (corsHeader === '*' || corsHeader === 'https://m-said-portfolio.netlify.app') {
+                    log(`✅ CORS would work from Netlify!`, 'success');
+                } else if (corsHeader) {
+                    log(`⚠️ CORS header present but value is: ${corsHeader}`, 'warning');
+                } else {
+                    log(`❌ No CORS header - Netlify requests will fail!`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Request failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run tests on load
+        window.onload = () => {
+            log('🚀 Page loaded. Click buttons to run tests.', 'info');
+            log('', 'info');
+            log('💡 DIAGNOSIS GUIDE:', 'warning');
+            log('- If OPTIONS fails → API needs OPTIONS handler (not deployed yet)', 'warning');
+            log('- If CORS header missing → API needs UseCors middleware (not deployed yet)', 'warning');
+            log('- If both work here but fail on Netlify → Check Netlify deployment', 'warning');
+        };
+    </script>
+</body>
+</html>
