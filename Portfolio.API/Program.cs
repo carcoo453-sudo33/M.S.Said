@@ -49,23 +49,36 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// CORS MUST be at the very top to handle preflight and redirects correctly
+// Add middleware to handle OPTIONS requests explicitly for CORS preflight
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+        context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With");
+        context.Response.Headers.Add("Access-Control-Max-Age", "86400");
+        context.Response.StatusCode = 200;
+        await context.Response.CompleteAsync();
+        return;
+    }
+    await next();
+});
+
+// CORS MUST be at the very top - before any other middleware
 app.UseCors("AllowAngular");
 
 // Serve static files from wwwroot (includes uploads folder)
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
-        options.RoutePrefix = "swagger";
-    });
-// }
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
+    options.RoutePrefix = "swagger";
+});
 
 // Redirect root to Swagger UI
 app.MapGet("/", () => Results.Redirect("/swagger"));
@@ -85,12 +98,12 @@ app.MapPost("/identity/login", async (SignInManager<IdentityUser> signInManager,
     }
     
     return Results.Empty;
-}).AllowAnonymous();
+}).AllowAnonymous().RequireCors("AllowAngular");
 
-app.MapControllers();
+app.MapControllers().RequireCors("AllowAngular");
 
 // Map SignalR Hub - must be after UseCors
-app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications");
+app.MapHub<Portfolio.API.Hubs.NotificationHub>("/hubs/notifications").RequireCors("AllowAngular");
 
 // Seeding logic
 using (var scope = app.Services.CreateScope())
