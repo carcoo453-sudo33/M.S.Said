@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "ng-lazyload-image": "^9.1.3"
+  }
+}

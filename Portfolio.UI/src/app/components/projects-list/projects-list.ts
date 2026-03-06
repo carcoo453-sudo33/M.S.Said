@@ -9,7 +9,13 @@ import { ProjectEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { TranslationService } from '../../services/translation.service';
-import { environment } from '../../../environments/environment';
+import { ImageUtilsService } from '../../services/image-utils.service';
+import { InputComponent } from '../../ui/input';
+import { ButtonComponent } from '../../ui/button';
+import { CardComponent, CardContentComponent } from '../../ui/card';
+import { BadgeComponent } from '../../ui/badge';
+import { SelectComponent } from '../../ui/select';
+import { OptimizedImageComponent } from '../shared/optimized-image/optimized-image';
 
 @Component({
   selector: 'app-projects-list',
@@ -21,7 +27,14 @@ import { environment } from '../../../environments/environment';
     TranslateModule,
     LucideAngularModule,
     NavbarComponent,
-    SharedFooterComponent
+    SharedFooterComponent,
+    InputComponent,
+    ButtonComponent,
+    CardComponent,
+    CardContentComponent,
+    BadgeComponent,
+    SelectComponent,
+    OptimizedImageComponent
   ],
   templateUrl: './projects-list.html'
 })
@@ -29,6 +42,7 @@ export class ProjectsListComponent implements OnInit {
   private projectService = inject(ProjectService);
   public translationService = inject(TranslationService);
   private route = inject(ActivatedRoute);
+  private imageUtils = inject(ImageUtilsService);
 
   // Create project trigger (mirrors projects-grid interface)
   triggerCreateProject = signal(false);
@@ -345,22 +359,6 @@ export class ProjectsListComponent implements OnInit {
   }
 
   getFullImageUrl(url: string): string {
-    if (!url) return 'assets/project-placeholder.svg';
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    const baseUrl = environment.apiUrl.replace('/api', '');
-    if (url.startsWith('/')) {
-      return `${baseUrl}${url}`;
-    }
-
-    return `${baseUrl}/${url}`;
-  }
-
-  onImageError(event: any) {
-    // Fallback to placeholder image when image fails to load
-    event.target.src = 'assets/project-placeholder.svg';
+    return this.imageUtils.getFullImageUrl(url);
   }
 }

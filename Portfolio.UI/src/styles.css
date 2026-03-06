@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Import UI Component Variables */
+@import './app/ui/ui-variables.css';

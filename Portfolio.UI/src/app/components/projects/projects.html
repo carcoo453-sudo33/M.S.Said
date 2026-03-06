@@ -57,19 +57,18 @@
 
                 <!-- Admin Action -->
                 <div *ngIf="auth.isLoggedIn()" class="flex justify-center mt-8">
-                    <button (click)="onCreateProject()"
-                        class="px-8 py-3 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all shadow-xl">
-                        <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
+                    <ui-button (onClick)="onCreateProject()" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                        <lucide-icon [img]="PlusIcon" class="w-4 h-4 mr-2"></lucide-icon>
                         {{ 'projects.header.createProject' | translate }}
-                    </button>
+                    </ui-button>
                 </div>
             </div>
 
             <!-- Highlighted Projects -->
             <div *ngIf="!isLoading() && highlightedProjects().length > 0" class="pb-16">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in-up" style="animation-delay: 0.1s">
-                    <div *ngFor="let highlight of highlightedProjects()"
-                        class="group relative rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:shadow-2xl hover:shadow-red-600/20 hover:-translate-y-2 transition-all duration-500 shadow-lg overflow-hidden">
+                    <ui-card *ngFor="let highlight of highlightedProjects()"
+                        class="group relative hover:border-red-600 hover:shadow-2xl hover:shadow-red-600/20 hover:-translate-y-2 transition-all duration-500 shadow-lg overflow-hidden">
 
                         <!-- Gradient Accent Bar -->
                         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -97,9 +96,13 @@
 
                             <!-- Project Image -->
                             <div class="relative aspect-[16/9] rounded-xl overflow-hidden mb-5 shadow-md">
-                                <img *ngIf="highlight.project.imageUrl" [src]="getFullImageUrl(highlight.project.imageUrl)"
-                                    (error)="onImageError($event)" [alt]="getTitle(highlight.project)"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <app-optimized-image 
+                                    *ngIf="highlight.project.imageUrl" 
+                                    [src]="getFullImageUrl(highlight.project.imageUrl)"
+                                    [alt]="getTitle(highlight.project)"
+                                    className="w-full h-full group-hover:scale-110 transition-transform duration-700"
+                                    objectFit="cover">
+                                </app-optimized-image>
                                 <div *ngIf="!highlight.project.imageUrl"
                                     class="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-400">
                                     <lucide-icon [img]="ImageIcon" class="w-10 h-10"></lucide-icon>
@@ -121,14 +124,14 @@
                             <!-- Stats Footer -->
                             <div class="flex items-center justify-between pt-5 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
                                 <div class="flex items-center gap-4 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                                    <div class="flex items-center gap-1.5" *ngIf="highlight.project.views !== undefined">
+                                    <ui-badge variant="secondary" *ngIf="highlight.project.views !== undefined" class="flex items-center gap-1.5">
                                         <lucide-icon [img]="EyeIcon" class="w-4 h-4"></lucide-icon>
                                         <span>{{ highlight.project.views | number }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5" *ngIf="highlight.project.createdAt">
+                                    </ui-badge>
+                                    <ui-badge variant="secondary" *ngIf="highlight.project.createdAt" class="flex items-center gap-1.5">
                                         <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
                                         <span>{{ highlight.project.createdAt | date:'MMM yyyy' }}</span>
-                                    </div>
+                                    </ui-badge>
                                 </div>
                                 <!-- View Arrow -->
                                 <div class="flex items-center gap-1 text-red-600 text-xs font-black uppercase tracking-wider opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
@@ -137,7 +140,7 @@
                                 </div>
                             </div>
                         </a>
-                    </div>
+                    </ui-card>
                 </div>
             </div>
 
@@ -148,16 +151,17 @@
 
             <!-- View All Projects Button -->
             <div class="flex justify-center pb-16 animate-fade-in-up" style="animation-delay: 0.4s">
-                <a routerLink="/projects/all"
-                    class="group relative px-10 py-4 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-red-600/20 overflow-hidden">
-                    <span
-                        class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+                <ui-button 
+                    routerLink="/projects/all"
+                    class="group relative px-10 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-red-600/20 overflow-hidden">
+                    <span class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
                     <span class="relative">{{ 'projects.viewAll' | translate }}</span>
-                    <span class="relative px-3 py-1 rounded-full bg-white/20 text-xs font-black">{{ totalProjectCount()
-                        }}</span>
+                    <ui-badge variant="secondary" class="relative ml-3 bg-white/20 text-xs font-black">
+                        {{ totalProjectCount() }}
+                    </ui-badge>
                     <lucide-icon [img]="ArrowRightIcon"
-                        class="relative w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
-                </a>
+                        class="relative w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform"></lucide-icon>
+                </ui-button>
             </div>
 
             <!-- Work History Section -->

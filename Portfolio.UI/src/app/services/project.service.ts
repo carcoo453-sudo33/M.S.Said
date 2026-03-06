@@ -97,6 +97,10 @@ export class ProjectService {
         return this.http.get<string[]>(`${this.apiUrl}/projects/suggestions/niches`);
     }
 
+    getCompanySuggestions(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/suggestions/companies`);
+    }
+
     // Category Management
     getCategories(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/categories`);

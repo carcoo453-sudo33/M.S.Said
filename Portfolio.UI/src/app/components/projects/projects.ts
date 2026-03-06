@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { LucideAngularModule, Plus, ArrowRight, Eye, Star, Rocket, Clock, Image } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
-import { environment } from '../../../environments/environment';
+import { ImageUtilsService } from '../../services/image-utils.service';
 
 // Section Components
 import { ProjectsGridComponent } from './sections/projects-grid';
@@ -31,6 +31,12 @@ import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
 import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
+
+// UI Components
+import { ButtonComponent } from '../../ui/button';
+import { CardComponent, CardContentComponent } from '../../ui/card';
+import { BadgeComponent } from '../../ui/badge';
+import { OptimizedImageComponent } from '../shared/optimized-image/optimized-image';
 
 @Component({
   selector: 'app-projects',
@@ -54,7 +60,12 @@ import { SharedErrorStateComponent } from '../shared/error-state/error-state';
     SharedFooterComponent,
     SharedPageHeaderComponent,
     SharedErrorStateComponent,
-    SharedEmptyStateComponent
+    SharedEmptyStateComponent,
+    ButtonComponent,
+    CardComponent,
+    CardContentComponent,
+    BadgeComponent,
+    OptimizedImageComponent
   ],
   templateUrl: './projects.html'
 })
@@ -65,6 +76,7 @@ export class ProjectsComponent implements OnInit {
   private toast = inject(ToastService);
   public translationService = inject(TranslationService);
   private router = inject(Router);
+  private imageUtils = inject(ImageUtilsService);
   PlusIcon = Plus;
   ArrowRightIcon = ArrowRight;
   EyeIcon = Eye;
@@ -395,23 +407,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   getFullImageUrl(url: string): string {
-    if (!url) return 'assets/project-placeholder.svg';
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    const baseUrl = environment.apiUrl.replace('/api', '');
-    if (url.startsWith('/')) {
-      return `${baseUrl}${url}`;
-    }
-
-    return `${baseUrl}/${url}`;
-  }
-
-  onImageError(event: any) {
-    // Fallback to placeholder image when image fails to load
-    event.target.src = 'assets/project-placeholder.svg';
+    return this.imageUtils.getFullImageUrl(url);
   }
 
   getTitle(project: ProjectEntry | any): string {

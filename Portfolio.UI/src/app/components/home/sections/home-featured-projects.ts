@@ -4,8 +4,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { ProjectEntry } from '../../../models';
-import { environment } from '../../../../environments/environment';
 import { TranslationHelperService } from '../../../services/translation-helper.service';
+import { ImageUtilsService } from '../../../services/image-utils.service';
 import { inject } from '@angular/core';
 
 @Component({
@@ -91,6 +91,7 @@ import { inject } from '@angular/core';
 })
 export class HomeFeaturedProjectsComponent {
     public translationHelper = inject(TranslationHelperService);
+    private imageUtils = inject(ImageUtilsService);
     
     @Input() projects: ProjectEntry[] = [];
     ArrowRightIcon = ArrowRight;
@@ -114,22 +115,10 @@ export class HomeFeaturedProjectsComponent {
     }
 
     getFullImageUrl(url?: string): string {
-        if (!url) return 'assets/project-placeholder.svg';
-        
-        if (url.startsWith('http://') || url.startsWith('https://')) {
-            return url;
-        }
-        
-        const baseUrl = environment.apiUrl.replace('/api', '');
-        if (url.startsWith('/')) {
-            return `${baseUrl}${url}`;
-        }
-        
-        return `${baseUrl}/${url}`;
+        return this.imageUtils.getFullImageUrl(url);
     }
 
     onImageError(event: any) {
-        // Fallback to placeholder image when image fails to load
-        event.target.src = 'assets/project-placeholder.svg';
+        this.imageUtils.onImageError(event);
     }
 }

@@ -33,6 +33,11 @@ import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 import { SharedSignatureComponent } from '../shared/signature/signature';
 
+// UI Components
+import { ButtonComponent } from '../../ui/button';
+import { CardComponent, CardContentComponent } from '../../ui/card';
+import { BadgeComponent } from '../../ui/badge';
+
 @Component({
   selector: 'app-project-details',
   standalone: true,
@@ -56,7 +61,11 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ProjectDetailsInteractionsSkeletonComponent,
     SharedFooterComponent,
     SharedErrorStateComponent,
-    SharedSignatureComponent
+    SharedSignatureComponent,
+    ButtonComponent,
+    CardComponent,
+    CardContentComponent,
+    BadgeComponent
   ],
   templateUrl: './project-details.html'
 })

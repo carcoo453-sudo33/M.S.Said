@@ -46,25 +46,25 @@ import { ProjectService } from '../../../services/project.service';
                     <button (click)="shareToFacebook()" 
                         class="flex flex-col items-center gap-3 bg-zinc-900 hover:bg-blue-600 border border-zinc-800 hover:border-blue-600 rounded-xl p-6 transition-all group">
                         <lucide-icon [img]="FacebookIcon" class="w-8 h-8 text-blue-500 group-hover:text-white"></lucide-icon>
-                        <span class="text-xs font-black uppercase text-zinc-400 group-hover:text-white">Facebook</span>
+                        <span class="text-sm font-black uppercase text-zinc-400 group-hover:text-white">Facebook</span>
                     </button>
 
                     <button (click)="shareToTwitter()" 
                         class="flex flex-col items-center gap-3 bg-zinc-900 hover:bg-sky-500 border border-zinc-800 hover:border-sky-500 rounded-xl p-6 transition-all group">
                         <lucide-icon [img]="TwitterIcon" class="w-8 h-8 text-sky-400 group-hover:text-white"></lucide-icon>
-                        <span class="text-xs font-black uppercase text-zinc-400 group-hover:text-white">Twitter</span>
+                        <span class="text-sm font-black uppercase text-zinc-400 group-hover:text-white">Twitter</span>
                     </button>
 
                     <button (click)="shareToLinkedIn()" 
                         class="flex flex-col items-center gap-3 bg-zinc-900 hover:bg-blue-700 border border-zinc-800 hover:border-blue-700 rounded-xl p-6 transition-all group">
                         <lucide-icon [img]="LinkedinIcon" class="w-8 h-8 text-blue-600 group-hover:text-white"></lucide-icon>
-                        <span class="text-xs font-black uppercase text-zinc-400 group-hover:text-white">LinkedIn</span>
+                        <span class="text-sm font-black uppercase text-zinc-400 group-hover:text-white">LinkedIn</span>
                     </button>
 
                     <button (click)="shareToWhatsApp()" 
                         class="flex flex-col items-center gap-3 bg-zinc-900 hover:bg-green-600 border border-zinc-800 hover:border-green-600 rounded-xl p-6 transition-all group">
                         <lucide-icon [img]="MessageCircleIcon" class="w-8 h-8 text-green-500 group-hover:text-white"></lucide-icon>
-                        <span class="text-xs font-black uppercase text-zinc-400 group-hover:text-white">WhatsApp</span>
+                        <span class="text-sm font-black uppercase text-zinc-400 group-hover:text-white">WhatsApp</span>
                     </button>
                 </div>
 
@@ -73,7 +73,7 @@ import { ProjectService } from '../../../services/project.service';
                         <input readonly [value]="shareUrl" 
                             class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-400 text-sm">
                         <button (click)="copyLink()" 
-                            class="bg-white text-black px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-red-600 hover:text-white transition-all">
+                            class="bg-white text-black px-6 py-3 rounded-xl font-black text-sm uppercase hover:bg-red-600 hover:text-white transition-all">
                             <lucide-icon [img]="LinkIcon" class="w-4 h-4"></lucide-icon>
                         </button>
                     </div>
@@ -146,7 +146,7 @@ import { ProjectService } from '../../../services/project.service';
                 <img [src]="userAvatar" class="w-14 h-14 rounded-xl object-cover shrink-0 grayscale">
                 <div class="flex-1 space-y-4">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-black text-zinc-400">{{ 'projectDetails.interactions.commentingAs' | translate }} <span class="text-white">{{ userName }}</span></span>
+                        <span class="text-sm font-black text-zinc-400">{{ 'projectDetails.interactions.commentingAs' | translate }} <span class="text-white">{{ userName }}</span></span>
                         <button 
                             (click)="changeUser()"
                             class="text-[10px] font-black uppercase text-zinc-600 hover:text-red-600 transition-colors">
@@ -242,8 +242,8 @@ import { ProjectService } from '../../../services/project.service';
                                 <img [src]="reply.avatarUrl" class="w-10 h-10 rounded-lg object-cover shrink-0 grayscale hover:grayscale-0 transition-all">
                                 <div class="flex-1 space-y-2">
                                     <div class="flex items-center gap-3">
-                                        <h5 class="font-black text-zinc-200 text-xs italic uppercase">{{ reply.author }}</h5>
-                                        <span class="text-[9px] text-zinc-600 font-bold">{{ reply.date }}</span>
+                                        <h5 class="font-black text-zinc-200 text-sm italic uppercase">{{ reply.author }}</h5>
+                                        <span class="text-[10px] text-zinc-600 font-bold">{{ reply.date }}</span>
                                     </div>
                                     <p class="text-zinc-400 text-sm leading-relaxed font-medium">{{ reply.content }}</p>
                                 </div>

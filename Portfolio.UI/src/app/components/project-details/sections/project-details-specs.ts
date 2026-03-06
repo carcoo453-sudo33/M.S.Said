@@ -15,7 +15,7 @@ import { TranslationService } from '../../../services/translation.service';
         <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="CodeIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.language' | translate }}</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.language' | translate }}</span>
             </div>
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.language, project.language_Ar, 'multipleLanguages') }}</div>
         </div>
@@ -23,7 +23,7 @@ import { TranslationService } from '../../../services/translation.service';
         <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="ClockIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.duration' | translate }}</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.duration' | translate }}</span>
             </div>
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.duration, project.duration_Ar) }}</div>
         </div>
@@ -31,7 +31,7 @@ import { TranslationService } from '../../../services/translation.service';
         <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="LayersIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.architecture' | translate }}</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.architecture' | translate }}</span>
             </div>
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-white truncate">{{ getTranslatedValue(project.architecture, project.architecture_Ar, 'scalableArchitecture') }}</div>
         </div>
@@ -39,7 +39,7 @@ import { TranslationService } from '../../../services/translation.service';
         <div class="bg-zinc-900/40 border border-zinc-800 p-4 lg:p-6 rounded-xl space-y-3 lg:space-y-4 hover:border-red-600 hover:bg-zinc-900 transition-all duration-500">
             <div class="flex items-center gap-2 lg:gap-3 text-red-600">
                 <lucide-icon [img]="CheckIcon" class="w-4 h-4 lg:w-5 lg:h-5"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.status' | translate }}</span>
+                <span class="text-[10px] font-black uppercase tracking-widest">{{ 'projectDetails.specs.status' | translate }}</span>
             </div>
             <div class="text-sm lg:text-lg xl:text-xl font-black italic uppercase text-green-500">{{ getTranslatedValue(project.status, project.status_Ar, 'active') }}</div>
         </div>

@@ -23,11 +23,11 @@ import { environment } from '../../../../environments/environment';
                 <div class="absolute ltr:left-0 rtl:right-0 top-3 bottom-0 w-[1px] bg-zinc-900"></div>
                 <div *ngFor="let log of getFilteredChangelog()" class="relative ltr:pl-6 rtl:pr-6 space-y-2">
                     <div class="absolute ltr:left-[-4px] rtl:right-[-4px] top-1.5 w-2 h-2 rounded-full bg-red-600 shadow-lg shadow-red-600/40"></div>
-                    <div class="text-[9px] font-bold text-red-600 tracking-widest uppercase">{{ log.date }}</div>
+                    <div class="text-[10px] font-bold text-red-600 tracking-widest uppercase">{{ log.date }}</div>
                     <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 transition-all group">
-                        <h4 class="text-white font-black uppercase tracking-tight mb-1.5 text-xs group-hover:text-red-600 transition-colors">
+                        <h4 class="text-white font-black uppercase tracking-tight mb-1.5 text-sm group-hover:text-red-600 transition-colors">
                             {{ log.version }} {{ getChangelogTitle(log) }}</h4>
-                        <p class="text-zinc-500 text-[11px] leading-relaxed font-medium">{{ getChangelogDescription(log) }}</p>
+                        <p class="text-zinc-500 text-sm leading-relaxed font-medium">{{ getChangelogDescription(log) }}</p>
                     </div>
                 </div>
             </div>
@@ -46,9 +46,9 @@ import { environment } from '../../../../environments/environment';
                         <img [src]="getFullImageUrl(related.imageUrl)" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
                     </div>
                     <div class="space-y-1.5 flex-1 min-w-0">
-                        <h4 class="text-white font-black text-xs uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-2">{{ related.title }}</h4>
+                        <h4 class="text-white font-black text-sm uppercase tracking-tight group-hover:text-red-600 transition-colors line-clamp-2">{{ related.title }}</h4>
                         <div class="flex flex-wrap gap-1" *ngIf="related.tags">
-                            <span *ngFor="let t of related.tags.split(',').slice(0, 3)" class="text-[8px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
+                            <span *ngFor="let t of related.tags.split(',').slice(0, 3)" class="text-[10px] font-bold text-zinc-600 uppercase">{{ t.trim() }}</span>
                         </div>
                     </div>
                 </div>

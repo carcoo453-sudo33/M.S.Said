@@ -10,6 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
+import { ImageUtilsService } from '../../../services/image-utils.service';
 
 @Component({
     selector: 'app-projects-references',
@@ -205,6 +206,7 @@ export class ProjectsReferencesComponent {
     private toast = inject(ToastService);
     private http = inject(HttpClient);
     private translationService = inject(TranslationService);
+    private imageUtils = inject(ImageUtilsService);
 
     @Input() testimonials: Testimonial[] = [];
     @Output() testimonialsUpdated = new EventEmitter<Testimonial[]>();
@@ -422,21 +424,10 @@ export class ProjectsReferencesComponent {
         }
 
         getFullImageUrl(url: string): string {
-            if (!url) return '';
-
-            if (url.startsWith('http://') || url.startsWith('https://')) {
-                return url;
-            }
-
-            if (url.startsWith('/')) {
-                return `${environment.apiUrl.replace('/api', '')}${url}`;
-            }
-
-            return `${environment.apiUrl.replace('/api', '')}/${url}`;
+            return this.imageUtils.getFullImageUrl(url);
         }
 
         onImageError(event: Event) {
-            const img = event.target as HTMLImageElement;
-            img.style.display = 'none';
+            this.imageUtils.onImageErrorHide(event);
         }
     }

@@ -8,6 +8,7 @@ import { EducationComponent } from './components/education/education';
 import { BlogComponent } from './components/blog/blog';
 import { ContactComponent } from './components/contact/contact';
 import { NotFoundComponent } from './components/not-found/not-found';
+import { UIDemoComponent } from './components/ui-demo/ui-demo';
 
 import { EducationCategoryList } from './components/education-category-list/education-category-list';
 
@@ -21,6 +22,7 @@ export const routes: Routes = [
     { path: 'education/:category', component: EducationCategoryList, title: 'Category Details' },
     { path: 'blog', component: BlogComponent, title: 'Social Feed | Digital Insights' },
     { path: 'contact', component: ContactComponent, title: 'Connection | Get in Touch' },
+    { path: 'ui-demo', component: UIDemoComponent, title: 'UI Components Demo' },
     { path: '404', component: NotFoundComponent, title: 'Space Not Found' },
     { path: '**', component: NotFoundComponent, title: 'Space Not Found' },
 ];

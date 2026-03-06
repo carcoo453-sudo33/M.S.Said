@@ -1,14 +1,16 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './components/shared/toast.component';
+import { PerformanceMonitorComponent } from './components/shared/performance-monitor/performance-monitor';
 import { SignalRService } from './services/signalr.service';
 import { NotificationService } from './services/notification.service';
 import { AuthService } from './services/auth.service';
+import { PerformanceService } from './services/performance.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastComponent],
+  imports: [RouterOutlet, ToastComponent, PerformanceMonitorComponent],
   templateUrl: './app.html'
 })
 export class App implements OnInit {
@@ -16,6 +18,7 @@ export class App implements OnInit {
   private signalRService = inject(SignalRService);
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
+  private performanceService = inject(PerformanceService);
 
   ngOnInit() {
     // Start SignalR connection when app loads
@@ -26,5 +29,15 @@ export class App implements OnInit {
       this.notificationService.loadStats();
       this.notificationService.reconnect();
     }
+
+    // Initialize performance monitoring
+    this.initializePerformanceMonitoring();
+  }
+
+  private initializePerformanceMonitoring() {
+    // Log performance metrics after initial load
+    setTimeout(() => {
+      this.performanceService.logMetrics();
+    }, 3000);
   }
 }

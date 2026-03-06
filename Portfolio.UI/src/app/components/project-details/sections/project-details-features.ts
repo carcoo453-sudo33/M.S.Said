@@ -29,7 +29,7 @@ import { TranslationService } from '../../../services/translation.service';
                     </div>
                     <div class="space-y-2">
                         <h3 class="text-sm font-black tracking-tight uppercase text-zinc-300">{{ getFeatureTitle(feature) }}</h3>
-                        <p class="text-zinc-500 text-xs leading-relaxed font-medium">{{ getFeatureDescription(feature) }}</p>
+                        <p class="text-zinc-500 text-sm leading-relaxed font-medium">{{ getFeatureDescription(feature) }}</p>
                     </div>
                 </div>
             </div>

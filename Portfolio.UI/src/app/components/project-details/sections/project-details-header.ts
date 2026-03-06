@@ -15,7 +15,7 @@ import { ToastService } from '../../../services/toast.service';
     template: `
     <!-- Breadcrumbs -->
     <div class="mb-8 lg:mb-10 animate-fade-in">
-        <nav class="flex items-center gap-2 lg:gap-3 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] lg:tracking-[0.3em] text-zinc-500">
+        <nav class="flex items-center gap-2 lg:gap-3 text-[10px] font-black uppercase tracking-[0.2em] lg:tracking-[0.3em] text-zinc-500">
             <a routerLink="/projects" class="hover:text-red-500 transition-colors">{{ 'projectDetails.breadcrumb' | translate }}</a>
             <span class="text-zinc-700">/</span>
             <span class="text-white truncate">{{ project?.title }}</span>
@@ -29,31 +29,31 @@ import { ToastService } from '../../../services/toast.service';
             <button (click)="onEditClick()"
                 class="flex items-center gap-2 bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-white transition-all group">
                 <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:scale-110 transition-transform"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase">{{ 'projectDetails.edit' | translate }}</span>
+                <span class="text-[10px] font-black uppercase">{{ 'projectDetails.edit' | translate }}</span>
             </button>
             <button (click)="onDeleteClick()"
                 class="flex items-center gap-2 bg-zinc-900 hover:bg-red-600 border border-zinc-800 hover:border-red-600 px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-white transition-all group">
                 <lucide-icon [img]="DeleteIcon" class="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:scale-110 transition-transform"></lucide-icon>
-                <span class="text-[9px] lg:text-[10px] font-black uppercase">{{ 'projectDetails.delete' | translate }}</span>
+                <span class="text-[10px] font-black uppercase">{{ 'projectDetails.delete' | translate }}</span>
             </button>
         </div>
 
         <div class="space-y-4 lg:space-y-6 pr-32 lg:pr-0">
             <!-- Category & Niche Badges -->
             <div class="flex flex-wrap items-center gap-2 lg:gap-3">
-                <span *ngIf="getProjectCategory()" class="bg-red-600/10 border border-red-600/30 text-red-600 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest">
+                <span *ngIf="getProjectCategory()" class="bg-red-600/10 border border-red-600/30 text-red-600 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest">
                     {{ getProjectCategory() }}
                 </span>
-                <span *ngIf="getProjectNiche()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest">
+                <span *ngIf="getProjectNiche()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest">
                     {{ getProjectNiche() }}
                 </span>
-                <span *ngIf="getProjectCompany()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                <span *ngIf="getProjectCompany()" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                     {{ getProjectCompany() }}
                 </span>
             </div>
             
-            <h1 class="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none dark:text-zinc-100 italic">
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-none dark:text-zinc-100 italic">
                 {{ getProjectTitle() }}
             </h1>
             

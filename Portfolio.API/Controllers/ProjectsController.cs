@@ -27,6 +27,9 @@ public class ProjectsController : ControllerBase
     {
         var projects = await _unitOfWork.Repository<ProjectEntry>()
             .Query()
+            .Include(p => p.KeyFeatures)
+            .Include(p => p.Changelog)
+            .Include(p => p.Comments)
             .OrderBy(p => p.Order)
             .ToListAsync();
             
@@ -95,7 +98,8 @@ public class ProjectsController : ControllerBase
         if (dto.KeyFeatures != null)
             entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList();
             
-        // ... other sub-collections can be added similarly
+        if (dto.Changelog != null)
+            entry.Changelog = dto.Changelog.Select(c => new Entities.ProjectChangelogItem { Date = c.Date, Version = c.Version, Title = c.Title, Title_Ar = c.Title_Ar, Description = c.Description, Description_Ar = c.Description_Ar }).ToList();
 
         await _unitOfWork.Repository<ProjectEntry>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
@@ -282,9 +286,13 @@ public class ProjectsController : ControllerBase
     [HttpGet("featured")]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetFeaturedProjects()
     {
-        var projects = (await _unitOfWork.Repository<ProjectEntry>().GetAllAsync())
+        var projects = await _unitOfWork.Repository<ProjectEntry>()
+            .Query()
+            .Include(p => p.KeyFeatures)
+            .Include(p => p.Changelog)
+            .Include(p => p.Comments)
             .OrderByDescending(p => p.CreatedAt)
-            .ToList();
+            .ToListAsync();
 
         if (!projects.Any()) return Ok(new List<ProjectEntry>());
 
@@ -601,65 +609,90 @@ public class ProjectsController : ControllerBase
                 }
             }
 
-            // Fetch images from screenshots folder
+            // Fetch images from screenshots folder (try multiple common folder names)
             Console.WriteLine($"[ImportFromGitHub] Fetching screenshots folder...");
-            var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/screenshots";
-            var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
-            Console.WriteLine($"[ImportFromGitHub] Screenshots response: {screenshotsResponse.StatusCode}");
-            
             string? mainImageUrl = null;
             var galleryImageUrls = new List<string>();
             
-            if (screenshotsResponse.IsSuccessStatusCode)
+            var screenshotFolders = new[] { "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media" };
+            
+            foreach (var folderName in screenshotFolders)
             {
-                var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
-                if (screenshotsData != null && screenshotsData.Any())
+                var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folderName}";
+                var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
+                Console.WriteLine($"[ImportFromGitHub] {folderName} response: {screenshotsResponse.StatusCode}");
+                
+                if (screenshotsResponse.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"[ImportFromGitHub] Found {screenshotsData.Count} items in screenshots folder");
-                    
-                    // Filter only image files
-                    var imageFiles = screenshotsData
-                        .Where(f => f.Type == "file" && 
-                               (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
-                        .ToList();
-                    
-                    Console.WriteLine($"[ImportFromGitHub] Found {imageFiles.Count} image files");
-                    
-                    // Find main.png for main image
-                    var mainImage = imageFiles.FirstOrDefault(f => 
-                        f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
-                        f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
-                        f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
-                    
-                    if (mainImage != null)
+                    var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
+                    if (screenshotsData != null && screenshotsData.Any())
                     {
-                        mainImageUrl = mainImage.DownloadUrl;
-                        Console.WriteLine($"[ImportFromGitHub] Found main image: {mainImage.Name}");
+                        Console.WriteLine($"[ImportFromGitHub] Found {screenshotsData.Count} items in {folderName} folder");
+                        
+                        // Filter only image files
+                        var imageFiles = screenshotsData
+                            .Where(f => f.Type == "file" && 
+                                   (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+                        
+                        Console.WriteLine($"[ImportFromGitHub] Found {imageFiles.Count} image files in {folderName}");
+                        
+                        if (imageFiles.Any())
+                        {
+                            // Find main image (prioritize main.*, screenshot.*, demo.*, preview.*)
+                            var mainImage = imageFiles.FirstOrDefault(f => 
+                                f.Name.StartsWith("main.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("screenshot.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("demo.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("preview.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
+                            
+                            if (mainImage != null)
+                            {
+                                mainImageUrl = mainImage.DownloadUrl;
+                                Console.WriteLine($"[ImportFromGitHub] Found main image: {mainImage.Name}");
+                            }
+                            else if (imageFiles.Any())
+                            {
+                                // Use first image as main if no main image found
+                                mainImageUrl = imageFiles.First().DownloadUrl;
+                                Console.WriteLine($"[ImportFromGitHub] Using first image as main: {imageFiles.First().Name}");
+                            }
+                            
+                            // Add other images to gallery (excluding the main image)
+                            var additionalImages = imageFiles
+                                .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
+                                .Take(10 - galleryImageUrls.Count) // Don't exceed 10 total gallery images
+                                .Select(f => f.DownloadUrl!)
+                                .ToList();
+                            
+                            galleryImageUrls.AddRange(additionalImages);
+                            Console.WriteLine($"[ImportFromGitHub] Added {additionalImages.Count} images to gallery");
+                            
+                            // If we found images, break out of the loop
+                            if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any())
+                            {
+                                Console.WriteLine($"[ImportFromGitHub] Found images in {folderName}, stopping search");
+                                break;
+                            }
+                        }
                     }
-                    else if (imageFiles.Any())
-                    {
-                        // Use first image as main if no main.png found
-                        mainImageUrl = imageFiles.First().DownloadUrl;
-                        Console.WriteLine($"[ImportFromGitHub] Using first image as main: {imageFiles.First().Name}");
-                    }
-                    
-                    // Add other images to gallery (excluding the main image)
-                    galleryImageUrls = imageFiles
-                        .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
-                        .Take(10) // Limit to 10 gallery images
-                        .Select(f => f.DownloadUrl!)
-                        .ToList();
-                    
-                    Console.WriteLine($"[ImportFromGitHub] Gallery images count: {galleryImageUrls.Count}");
                 }
+            }
+            
+            if (string.IsNullOrEmpty(mainImageUrl) && !galleryImageUrls.Any())
+            {
+                Console.WriteLine($"[ImportFromGitHub] No images found in any screenshot folders");
             }
             else
             {
-                Console.WriteLine($"[ImportFromGitHub] Screenshots folder not found or inaccessible");
+                Console.WriteLine($"[ImportFromGitHub] Final result - Main image: {!string.IsNullOrEmpty(mainImageUrl)}, Gallery images: {galleryImageUrls.Count}");
             }
 
             // Now update the database with fetched data
@@ -996,6 +1029,73 @@ public class ProjectsController : ControllerBase
                 repoData = await repoResponse.Content.ReadFromJsonAsync<GitHubRepository>();
             }
 
+            // Fetch images from screenshots folder (try multiple common folder names)
+            string? mainImageUrl = null;
+            var galleryImageUrls = new List<string>();
+            
+            var screenshotFolders = new[] { "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media" };
+            
+            foreach (var folderName in screenshotFolders)
+            {
+                var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folderName}";
+                var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
+                
+                if (screenshotsResponse.IsSuccessStatusCode)
+                {
+                    var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
+                    if (screenshotsData != null && screenshotsData.Any())
+                    {
+                        // Filter only image files
+                        var imageFiles = screenshotsData
+                            .Where(f => f.Type == "file" && 
+                                   (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
+                                    f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
+                            .ToList();
+                        
+                        if (imageFiles.Any())
+                        {
+                            // Find main image (prioritize main.*, screenshot.*, demo.*, preview.*)
+                            var mainImage = imageFiles.FirstOrDefault(f => 
+                                f.Name.StartsWith("main.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("screenshot.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("demo.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.StartsWith("preview.", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
+                            
+                            if (mainImage != null)
+                            {
+                                mainImageUrl = mainImage.DownloadUrl;
+                            }
+                            else if (imageFiles.Any())
+                            {
+                                // Use first image as main if no main image found
+                                mainImageUrl = imageFiles.First().DownloadUrl;
+                            }
+                            
+                            // Add other images to gallery (excluding the main image)
+                            var additionalImages = imageFiles
+                                .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
+                                .Take(10 - galleryImageUrls.Count) // Don't exceed 10 total gallery images
+                                .Select(f => f.DownloadUrl!)
+                                .ToList();
+                            
+                            galleryImageUrls.AddRange(additionalImages);
+                            
+                            // If we found images, break out of the loop
+                            if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any())
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             // Build DTO with imported data
             var dto = new ProjectDto
             {
@@ -1011,6 +1111,8 @@ public class ProjectsController : ControllerBase
                 Status = "Active",
                 Category = repoData?.Language ?? "Web Development",
                 Tags = repoData?.Topics != null && repoData.Topics.Any() ? string.Join(", ", repoData.Topics) : "",
+                ImageUrl = mainImageUrl, // Set main image from screenshots
+                Gallery = galleryImageUrls, // Set gallery images from screenshots
                 Responsibilities = responsibilities.Take(10).ToList(),
                 KeyFeatures = features.Take(8).Select(f => new KeyFeatureDto
                 {
@@ -1077,6 +1179,21 @@ public class ProjectsController : ControllerBase
             .ToList();
         
         return Ok(niches);
+    }
+
+    [HttpGet("suggestions/companies")]
+    public async Task<ActionResult<List<object>>> GetCompanySuggestions()
+    {
+        var projects = await _unitOfWork.Repository<ProjectEntry>().GetAllAsync();
+        var companies = projects
+            .Where(p => !string.IsNullOrEmpty(p.Company))
+            .Select(p => new { name = p.Company, name_Ar = p.Company_Ar })
+            .GroupBy(c => c.name)
+            .Select(g => new { name = g.Key, name_Ar = g.FirstOrDefault(x => !string.IsNullOrEmpty(x.name_Ar))?.name_Ar })
+            .OrderBy(c => c.name)
+            .ToList<object>();
+        
+        return Ok(companies);
     }
 
 }

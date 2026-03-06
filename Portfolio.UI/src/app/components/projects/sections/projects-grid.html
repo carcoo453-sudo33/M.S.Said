@@ -1,769 +1,108 @@
 <!-- Projects Grid -->
 <section *ngIf="!hideGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up"
     style="animation-delay: 0.2s">
-    <div *ngFor="let project of projects; let i = index" [routerLink]="['/projects', project.slug]"
-        class="group cursor-pointer bg-zinc-50 dark:bg-zinc-900/40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-red-600/10 hover:border-red-600 transition-all duration-500 relative flex flex-col">
-
-        <!-- Admin Actions -->
-        <div *ngIf="auth.isLoggedIn()" class="absolute top-4 left-4 z-30 flex gap-2">
-            <button (click)="onEdit($event, project)"
-                class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-500 border border-white/10 transition-all">
-                <lucide-icon [img]="EditIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-            <button (click)="onDelete($event, project)"
-                class="w-10 h-10 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-600 border border-white/10 transition-all">
-                <lucide-icon [img]="DeleteIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-        </div>
-
-        <!-- Year Badge -->
-        <div class="absolute top-4 right-4 z-20">
-            <span
-                class="bg-black/80 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-black text-red-600 border border-white/10 uppercase tracking-widest">
-                {{ (project.duration || '2024').split('-')[0] }}
-            </span>
-        </div>
-
-        <!-- Image Section -->
-        <div class="relative aspect-[16/9] overflow-hidden">
-            <div
-                class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-500">
-            </div>
-            <img [src]="getFullImageUrl(project.imageUrl || '')" (error)="onImageError($event)"
-                class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
-
-            <!-- Tech Stack Tags (shown on hover) -->
-            <div
-                class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
-                <div class="flex flex-wrap gap-1.5">
-                    <ng-container *ngFor="let tag of (project.tags || '').split(',')">
-                        <span *ngIf="tag.trim()"
-                            class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
-                            {{ tag.trim() }}
-                        </span>
-                    </ng-container>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Section -->
-        <div class="p-5 flex-1 flex flex-col">
-            <div class="flex items-center justify-between mb-2">
-                <h3
-                    class="text-base font-black dark:text-white text-zinc-900 group-hover:text-red-600 transition-colors">
-                    {{ getProjectTitle(project) }}
-                </h3>
-                <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ project.views || 0 }} {{
-                    'home.featuredProjects.views' | translate }}</span>
-            </div>
-
-            <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">
-                {{ getProjectNiche(project) }}
-            </p>
-
-            <p class="text-zinc-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                {{ getProjectDescription(project) }}
-            </p>
-
-            <a [routerLink]="['/projects', project.slug]"
-                class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-600 hover:gap-3 transition-all">
-                {{ 'home.featuredProjects.projectInsights' | translate }}
-                <lucide-icon [img]="ArrowRightIcon" class="w-3.5 h-3.5"></lucide-icon>
-            </a>
-        </div>
-    </div>
+    <app-project-card 
+        *ngFor="let project of projects" 
+        [project]="project"
+        (edit)="onEdit($event)"
+        (delete)="onDelete($event)">
+    </app-project-card>
 </section>
+
 <!-- Edit/Create Modal -->
-<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
-    <div class="modal-content max-w-4xl" (click)="$event.stopPropagation()">
-        <!-- Header -->
-        <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
-            <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Create Project' : 'Edit
-                Project' }}</h3>
-            <button (click)="closeEditModal()"
-                class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
-                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-        </div>
+<ui-dialog-content 
+    [open]="showEditModal" 
+    (openChange)="showEditModal = $event"
+    class="max-w-4xl">
+    
+    <ui-dialog-header>
+        <ui-dialog-title>{{ isCreating ? 'Create Project' : 'Edit Project' }}</ui-dialog-title>
+    </ui-dialog-header>
 
-        <!-- Content -->
-        <div class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
-            <!-- Import from GitHub Section (only for new projects) -->
-            <div *ngIf="isCreating"
-                class="bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 space-y-3">
-                <div class="flex items-center gap-2">
-                    <lucide-icon [img]="GithubIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                    <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white">Import from GitHub</h4>
-                </div>
-                <p class="text-[10px] text-zinc-500">Paste a GitHub repository URL to automatically populate project
-                    details</p>
-                <div class="flex gap-2">
-                    <input type="url" [(ngModel)]="importUrl" name="importUrl"
-                        placeholder="https://github.com/owner/repo"
-                        class="flex-1 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                    <button (click)="importFromUrl()" [disabled]="isImporting || !importUrl"
-                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        {{ isImporting ? 'Importing...' : 'Import' }}
-                    </button>
-                </div>
-                <p class="text-[9px] text-zinc-600">Features, changelog, and repository info will be imported
-                    automatically</p>
-            </div>
+    <!-- Content -->
+    <div class="space-y-6 overflow-y-auto custom-scrollbar flex-1 max-h-[70vh]">
+        <!-- Import Manager (for creating new projects) -->
+        <app-project-import-manager 
+            *ngIf="isCreating"
+            [(editingProject)]="editingProject"
+            [(isImporting)]="isImporting"
+            [(importUrl)]="importUrl"
+            (responsibilitiesImported)="responsibilities = $event"
+            (keyFeaturesImported)="keyFeatures = $event"
+            (changelogImported)="changelog = $event">
+        </app-project-import-manager>
 
-            <div class="grid grid-cols-2 gap-6">
-                <!-- Title EN -->
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)
-                        *</label>
-                    <input [(ngModel)]="editingProject.title" placeholder="Project title"
-                        [class]="submitted && editingProject.title && !editingProject.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
-                        class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                    <p *ngIf="submitted && editingProject.title && !editingProject.title.trim()"
-                        class="text-red-500 text-[10px] font-bold mt-1.5">Title is required</p>
-                </div>
+        <!-- Basic Fields -->
+        <app-project-form-basic 
+            [project]="editingProject" 
+            [submitted]="submitted">
+        </app-project-form-basic>
 
-                <!-- Title AR -->
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title
-                        (AR)</label>
-                    <input [(ngModel)]="editingProject.title_Ar" placeholder="عنوان المشروع" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                </div>
+        <!-- Categories & Niches -->
+        <app-project-form-categories 
+            [project]="editingProject"
+            (manageCategoriesClick)="showCategoryManager = true"
+            (manageNichesClick)="showNicheManager = true">
+        </app-project-form-categories>
 
-                <!-- Description EN -->
-                <div class="col-span-2">
-                    <label
-                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description
-                        (EN) *</label>
-                    <textarea [(ngModel)]="editingProject.description" placeholder="Project description" rows="3"
-                        [class]="submitted && editingProject.description && !editingProject.description.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
-                        class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
-                    <p *ngIf="submitted && editingProject.description && !editingProject.description.trim()"
-                        class="text-red-500 text-[10px] font-bold mt-1.5">Description is required</p>
-                </div>
+        <!-- Tags -->
+        <app-project-form-tags 
+            [(selectedTags)]="selectedTags">
+        </app-project-form-tags>
 
-                <!-- Description AR -->
-                <div class="col-span-2">
-                    <label
-                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description
-                        (AR)</label>
-                    <textarea [(ngModel)]="editingProject.description_Ar" placeholder="وصف المشروع" rows="3" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                </div>
+        <!-- Images -->
+        <app-project-form-images 
+            [imageUrl]="editingProject.imageUrl"
+            (imageUrlChange)="editingProject.imageUrl = $event"
+            [(galleryImages)]="galleryImages">
+        </app-project-form-images>
 
-                <!-- Category EN -->
-                <div class="relative">
-                    <label
-                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 flex items-center justify-between">
-                        <span>Category (EN) *</span>
-                        <button type="button" (click)="showCategoryManager = true"
-                            class="text-[9px] text-red-600 hover:text-red-700 font-bold uppercase">
-                            Manage
-                        </button>
-                    </label>
-                    <input [(ngModel)]="editingProject.category" (input)="onCategoryInput($any($event.target).value)"
-                        (focus)="onCategoryInput(editingProject.category || '')" (blur)="onCategoryBlur()"
-                        placeholder="e.g. Frontend, Backend, Fullstack"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+        <!-- Features, Responsibilities, and Changelog -->
+        <app-project-features-manager
+            [(keyFeatures)]="keyFeatures"
+            [(responsibilities)]="responsibilities"
+            [(changelog)]="changelog">
+        </app-project-features-manager>
 
-                    <!-- Category Suggestions Dropdown -->
-                    <div *ngIf="showCategorySuggestions && filteredCategorySuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredCategorySuggestions"
-                            (click)="selectCategory(suggestion)" type="button"
-                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Category AR -->
-                <div class="relative">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Category
-                        (AR)</label>
-                    <input [(ngModel)]="editingProject.category_Ar"
-                        (input)="onCategoryArInput($any($event.target).value)"
-                        (focus)="onCategoryArInput(editingProject.category_Ar || '')" (blur)="onCategoryArBlur()"
-                        placeholder="الفئة" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                    <!-- Category AR Suggestions Dropdown -->
-                    <div *ngIf="showCategoryArSuggestions && filteredCategoryArSuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredCategoryArSuggestions"
-                            (click)="selectCategoryAr(suggestion)" type="button"
-                            class="w-full px-4 py-2 text-right text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
-                            dir="rtl">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Niche EN -->
-                <div class="relative">
-                    <label
-                        class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 flex items-center justify-between">
-                        <span>Niche (EN)</span>
-                        <button type="button" (click)="showNicheManager = true"
-                            class="text-[9px] text-red-600 hover:text-red-700 font-bold uppercase">
-                            Manage
-                        </button>
-                    </label>
-                    <input [(ngModel)]="editingProject.niche" (input)="onNicheInput($any($event.target).value)"
-                        (focus)="onNicheInput(editingProject.niche || '')" (blur)="onNicheBlur()"
-                        placeholder="e.g. SaaS & Productivity"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                    <!-- Niche Suggestions Dropdown -->
-                    <div *ngIf="showNicheSuggestions && filteredNicheSuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredNicheSuggestions" (click)="selectNiche(suggestion)"
-                            type="button"
-                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Niche AR -->
-                <div class="relative">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Niche
-                        (AR)</label>
-                    <input [(ngModel)]="editingProject.niche_Ar" (input)="onNicheArInput($any($event.target).value)"
-                        (focus)="onNicheArInput(editingProject.niche_Ar || '')" (blur)="onNicheArBlur()"
-                        placeholder="التخصص" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                    <!-- Niche AR Suggestions Dropdown -->
-                    <div *ngIf="showNicheArSuggestions && filteredNicheArSuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredNicheArSuggestions"
-                            (click)="selectNicheAr(suggestion)" type="button"
-                            class="w-full px-4 py-2 text-right text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
-                            dir="rtl">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Company EN -->
-                <div class="relative">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (EN)</label>
-                    <input [(ngModel)]="editingProject.company" (input)="onCompanyInput($any($event.target).value)"
-                        (focus)="onCompanyInput(editingProject.company || '')" (blur)="onCompanyBlur()"
-                        placeholder="e.g. WE3DS, Remote, Self Work"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                    <!-- Company Suggestions Dropdown -->
-                    <div *ngIf="showCompanySuggestions && filteredCompanySuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredCompanySuggestions"
-                            (click)="selectCompany(suggestion)" type="button"
-                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Company AR -->
-                <div class="relative">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (AR)</label>
-                    <input [(ngModel)]="editingProject.company_Ar" (input)="onCompanyArInput($any($event.target).value)"
-                        (focus)="onCompanyArInput(editingProject.company_Ar || '')" (blur)="onCompanyArBlur()"
-                        placeholder="الشركة" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                    <!-- Company AR Suggestions Dropdown -->
-                    <div *ngIf="showCompanyArSuggestions && filteredCompanyArSuggestions.length > 0"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                        <button *ngFor="let suggestion of filteredCompanyArSuggestions"
-                            (click)="selectCompanyAr(suggestion)" type="button"
-                            class="w-full px-4 py-2 text-right text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
-                            dir="rtl">
-                            {{ suggestion }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tags -->
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                        Tags / Technologies
-                        <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- Click to add from
-                            suggestions</span>
-                    </label>
-
-                    <!-- Selected Tags Display -->
-                    <div class="flex flex-wrap gap-2 mb-2" *ngIf="selectedTags.length > 0">
-                        <span *ngFor="let tag of selectedTags; let i = index"
-                            class="inline-flex items-center gap-1.5 bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
-                            {{ tag }}
-                            <button (click)="removeTag(i)" type="button"
-                                class="hover:bg-red-700 rounded-full p-0.5 transition-colors">
-                                <lucide-icon [img]="XIcon" class="w-3 h-3"></lucide-icon>
-                            </button>
-                        </span>
-                    </div>
-
-                    <!-- Tag Input with Suggestions -->
-                    <div class="relative">
-                        <input [(ngModel)]="tagInput" (input)="onTagInputChange($any($event.target).value)"
-                            (focus)="showTechSuggestions = true; onTagInputChange(tagInput)" (blur)="onTagsBlur()"
-                            (keyup.enter)="addCustomTag()" placeholder="Type to search or add custom tag..."
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-
-                        <!-- Technology Suggestions Dropdown -->
-                        <div *ngIf="showTechSuggestions && filteredTechSuggestions.length > 0"
-                            class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                            <button *ngFor="let tech of filteredTechSuggestions" (click)="selectTech(tech)"
-                                type="button"
-                                class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                                <span class="w-2 h-2 bg-red-600 rounded-full"></span>
-                                {{ tech }}
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-[9px] text-zinc-500 mt-1.5">Press Enter to add custom tag or select from suggestions
-                    </p>
-                </div>
-
-                <!-- Project Metadata Section -->
-                <div class="col-span-2 mt-4 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
-                    <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                        <lucide-icon [img]="InfoIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                        Project Metadata
-                    </h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- Language EN -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Language (EN)</label>
-                            <input [(ngModel)]="editingProject.language" placeholder="e.g. TypeScript, C#"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Language AR -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Language (AR)</label>
-                            <input [(ngModel)]="editingProject.language_Ar" placeholder="اللغة" dir="rtl"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Duration EN -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Duration (EN)</label>
-                            <input [(ngModel)]="editingProject.duration" placeholder="e.g. 2024 or 2024-2025"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Duration AR -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Duration (AR)</label>
-                            <input [(ngModel)]="editingProject.duration_Ar" placeholder="المدة" dir="rtl"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Architecture EN -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Architecture (EN)</label>
-                            <input [(ngModel)]="editingProject.architecture" placeholder="e.g. Microservices, Monolithic"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Architecture AR -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Architecture (AR)</label>
-                            <input [(ngModel)]="editingProject.architecture_Ar" placeholder="البنية المعمارية" dir="rtl"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Status EN -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Status (EN)</label>
-                            <input [(ngModel)]="editingProject.status" placeholder="e.g. Completed, In Progress"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-
-                        <!-- Status AR -->
-                        <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Status (AR)</label>
-                            <input [(ngModel)]="editingProject.status_Ar" placeholder="الحالة" dir="rtl"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- URLs Section -->
-                <div>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project
-                        URL</label>
-                    <input [(ngModel)]="editingProject.projectUrl" placeholder="https://..."
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                </div>
-
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">GitHub
-                        URL</label>
-                    <input [(ngModel)]="editingProject.gitHubUrl" placeholder="https://github.com/..."
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                </div>
-
-                <!-- Image Upload -->
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project
-                        Image</label>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <input [(ngModel)]="editingProject.imageUrl" placeholder="Image URL or upload below"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        </div>
-                        <label [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
-                            class="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all cursor-pointer flex items-center gap-2">
-                            <lucide-icon [img]="UploadIcon" class="w-4 h-4"></lucide-icon>
-                            <span class="text-[10px] font-black uppercase tracking-widest">{{ isUploading ?
-                                'Uploading...' : 'Upload' }}</span>
-                            <input type="file" accept="image/*" (change)="onImageFileSelected($event)" class="hidden">
-                        </label>
-                    </div>
-                    <!-- Image Preview -->
-                    <div *ngIf="editingProject.imageUrl"
-                        class="mt-3 relative w-full h-40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                        <img [src]="getFullImageUrl(editingProject.imageUrl)" alt="Preview"
-                            class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
-                            <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-white"></lucide-icon>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gallery Upload Section -->
-                <div class="col-span-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                        Gallery Images (Max 10)
-                        <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- For project details
-                            page</span>
-                    </label>
-                    <label [class.opacity-50]="isUploadingGallery" [class.pointer-events-none]="isUploadingGallery"
-                        class="w-full px-4 py-8 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 bg-zinc-50 dark:bg-zinc-800/50">
-                        <lucide-icon [img]="UploadIcon" class="w-6 h-6 text-zinc-400"></lucide-icon>
-                        <span class="text-sm text-zinc-600 dark:text-zinc-400">
-                            {{ isUploadingGallery ? 'Uploading images...' : 'Click to upload or drag and drop' }}
-                        </span>
-                        <span class="text-[10px] text-zinc-400">PNG, JPG, GIF up to 5MB each</span>
-                        <input type="file" accept="image/*" multiple (change)="onGalleryFilesSelected($event)"
-                            class="hidden">
-                    </label>
-
-                    <!-- Gallery Preview Grid -->
-                    <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
-                        <div *ngFor="let img of galleryImages; let i = index"
-                            class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                            <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}"
-                                class="w-full h-full object-cover">
-                            <button (click)="removeGalleryImage(i)" type="button"
-                                class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
-                            </button>
-                            <div
-                                class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
-                                <span class="text-[8px] text-white font-bold">{{ i + 1 }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <p *ngIf="galleryImages.length > 0" class="text-[10px] text-zinc-400 mt-2">
-                        {{ galleryImages.length }} / 10 images uploaded
-                    </p>
-                </div>
-
-                <!-- Key Features Section -->
-                <div class="col-span-2 mt-4">
-                    <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
-                        <lucide-icon [img]="StarIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                        Key Features
-                    </h4>
-                    
-                    <!-- Feature List -->
-                    <div class="space-y-2 mb-3" *ngIf="keyFeatures.length > 0">
-                        <div *ngFor="let feature of keyFeatures; let i = index"
-                            class="flex items-start gap-2 p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                            <div class="flex-1">
-                                <p class="text-sm font-bold text-zinc-900 dark:text-white">{{ feature.title }}</p>
-                                <p *ngIf="feature.title_Ar" class="text-sm text-zinc-600 dark:text-zinc-400" dir="rtl">{{ feature.title_Ar }}</p>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">{{ feature.description }}</p>
-                                <p *ngIf="feature.description_Ar" class="text-xs text-zinc-500 dark:text-zinc-500 mt-1" dir="rtl">{{ feature.description_Ar }}</p>
-                            </div>
-                            <button (click)="removeKeyFeature(i)" type="button"
-                                class="text-red-600 hover:text-red-700">
-                                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Add Feature Form -->
-                    <div class="space-y-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                        <input [(ngModel)]="newFeature.title" placeholder="Feature title (EN)"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <input [(ngModel)]="newFeature.title_Ar" placeholder="عنوان الميزة (AR)" dir="rtl"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <textarea [(ngModel)]="newFeature.description" placeholder="Feature description (EN)" rows="2"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none"></textarea>
-                        <textarea [(ngModel)]="newFeature.description_Ar" placeholder="وصف الميزة (AR)" rows="2" dir="rtl"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none"></textarea>
-                        <button (click)="addKeyFeature()" type="button"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors">
-                            Add Feature
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Responsibilities Section -->
-                <div class="col-span-2 mt-4">
-                    <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
-                        <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                        Responsibilities
-                    </h4>
-                    
-                    <!-- Responsibilities List -->
-                    <div class="space-y-2 mb-3" *ngIf="responsibilities.length > 0">
-                        <div *ngFor="let resp of responsibilities; let i = index"
-                            class="flex items-center gap-2 p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                            <span class="flex-1 text-sm text-zinc-900 dark:text-white">{{ resp }}</span>
-                            <button (click)="removeResponsibility(i)" type="button"
-                                class="text-red-600 hover:text-red-700">
-                                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Add Responsibility Form -->
-                    <div class="flex gap-2">
-                        <input [(ngModel)]="newResponsibility" placeholder="Add responsibility..." (keyup.enter)="addResponsibility()"
-                            class="flex-1 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <button (click)="addResponsibility()" type="button"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors">
-                            Add
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Changelog Section -->
-                <div class="col-span-2 mt-4">
-                    <h4 class="text-xs font-black uppercase text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
-                        <lucide-icon [img]="ClockIcon" class="w-4 h-4 text-red-600"></lucide-icon>
-                        Changelog
-                    </h4>
-                    
-                    <!-- Changelog List -->
-                    <div class="space-y-2 mb-3" *ngIf="changelog.length > 0">
-                        <div *ngFor="let item of changelog; let i = index"
-                            class="flex items-start gap-2 p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold text-red-600">{{ item.version }}</span>
-                                    <span class="text-xs text-zinc-500">{{ item.date }}</span>
-                                </div>
-                                <p class="text-sm font-bold text-zinc-900 dark:text-white">{{ item.title }}</p>
-                                <p *ngIf="item.title_Ar" class="text-sm text-zinc-600 dark:text-zinc-400" dir="rtl">{{ item.title_Ar }}</p>
-                                <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1">{{ item.description }}</p>
-                                <p *ngIf="item.description_Ar" class="text-xs text-zinc-500 dark:text-zinc-500 mt-1" dir="rtl">{{ item.description_Ar }}</p>
-                            </div>
-                            <button (click)="removeChangelogItem(i)" type="button"
-                                class="text-red-600 hover:text-red-700">
-                                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Add Changelog Form -->
-                    <div class="space-y-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input [(ngModel)]="newChangelogItem.version" placeholder="Version (e.g. v1.0.0)"
-                                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                            <input [(ngModel)]="newChangelogItem.date" type="date"
-                                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        </div>
-                        <input [(ngModel)]="newChangelogItem.title" placeholder="Change title (EN)"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <input [(ngModel)]="newChangelogItem.title_Ar" placeholder="عنوان التغيير (AR)" dir="rtl"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-                        <textarea [(ngModel)]="newChangelogItem.description" placeholder="Change description (EN)" rows="2"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none"></textarea>
-                        <textarea [(ngModel)]="newChangelogItem.description_Ar" placeholder="وصف التغيير (AR)" rows="2" dir="rtl"
-                            class="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none"></textarea>
-                        <button (click)="addChangelogItem()" type="button"
-                            class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors">
-                            Add Changelog Entry
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Checkboxes -->
-                <div class="col-span-2 flex items-center gap-6 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" [(ngModel)]="editingProject.isFeatured"
-                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-red-600 focus:ring-red-500 focus:ring-2">
-                        <span class="text-sm font-bold text-zinc-900 dark:text-white">Mark as Featured</span>
-                        <span class="text-[10px] text-zinc-500">- Highlight this project as featured</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div
-            class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
-            <button (click)="closeEditModal()"
-                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
-            <button (click)="saveProject()" [disabled]="isSaving"
-                class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
-                <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
-                {{ isSaving ? 'Saving...' : 'Save' }}
-            </button>
-        </div>
+        <!-- Project Settings -->
+        <ui-card class="p-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" [(ngModel)]="editingProject.isFeatured"
+                    class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-red-600 focus:ring-red-500 focus:ring-2">
+                <span class="text-sm font-bold text-zinc-900 dark:text-white">Mark as Featured</span>
+                <span class="text-[10px] text-zinc-500">- Highlight this project as featured</span>
+            </label>
+        </ui-card>
     </div>
-</div>
+
+    <!-- Footer -->
+    <ui-dialog-footer>
+        <ui-button variant="outline" (onClick)="closeEditModal()">
+            Cancel
+        </ui-button>
+        <ui-button (onClick)="saveProject()" [disabled]="isSaving">
+            <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5 mr-2"></lucide-icon>
+            {{ isSaving ? 'Saving...' : 'Save' }}
+        </ui-button>
+    </ui-dialog-footer>
+</ui-dialog-content>
 
 <!-- Delete Confirmation Modal -->
-<div *ngIf="deleteProject" class="modal-overlay" (click)="deleteProject = null">
-    <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
-        <div class="p-6 text-center">
-        <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
-        </div>
-        <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Project?</h4>
-        <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete <strong
-                class="text-zinc-900 dark:text-white">{{ deleteProject.title }}</strong>?</p>
-        <div class="flex items-center justify-center gap-3">
-            <button (click)="deleteProject = null"
-                class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
-            <button (click)="executeDelete()" [disabled]="isDeleting"
-                class="px-6 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50">
-                {{ isDeleting ? 'Deleting...' : 'Delete' }}
-            </button>
-        </div>
-    </div>
-</div>
+<app-project-delete-modal 
+    [project]="deleteProject"
+    [isDeleting]="isDeleting"
+    (confirm)="executeDelete()"
+    (cancel)="deleteProject = null">
+</app-project-delete-modal>
 
 <!-- Category Manager Modal -->
-<div *ngIf="showCategoryManager" class="modal-overlay" (click)="showCategoryManager = false">
-    <div class="modal-content max-w-3xl" (click)="$event.stopPropagation()">
-        <div class="p-6">
-        <h4 class="text-base font-black dark:text-white text-zinc-900 mb-4">Manage Categories</h4>
-
-        <!-- Add New Category -->
-        <div class="grid grid-cols-[1fr_1fr_auto] gap-2 mb-4">
-            <input [(ngModel)]="newCategoryName" placeholder="Category (EN)" (keyup.enter)="addNewCategory()"
-                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <input [(ngModel)]="newCategoryNameAr" placeholder="الفئة (AR)" dir="rtl" (keyup.enter)="addNewCategory()"
-                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <button (click)="addNewCategory()" [disabled]="!newCategoryName.trim()"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-        </div>
-
-        <!-- Category Table -->
-        <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden mb-4">
-            <table class="w-full">
-                <thead class="bg-zinc-100 dark:bg-zinc-800">
-                    <tr>
-                        <th
-                            class="px-4 py-2 text-left text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400">
-                            English</th>
-                        <th
-                            class="px-4 py-2 text-right text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400">
-                            العربية</th>
-                        <th
-                            class="px-4 py-2 text-center text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400 w-20">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <tr *ngFor="let category of managedCategories" class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                        <td class="px-4 py-2 text-sm text-zinc-900 dark:text-white">{{ category.name }}</td>
-                        <td class="px-4 py-2 text-sm text-zinc-900 dark:text-white text-right" dir="rtl">{{
-                            category.name_Ar || '-' }}</td>
-                        <td class="px-4 py-2 text-center">
-                            <button (click)="removeCategory(category.id)"
-                                class="text-red-600 hover:text-red-700 transition-colors">
-                                <lucide-icon [img]="DeleteIcon" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr *ngIf="managedCategories.length === 0">
-                        <td colspan="3" class="px-4 py-8 text-center text-sm text-zinc-500">No categories yet. Add one
-                            above.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <button (click)="showCategoryManager = false"
-            class="w-full px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">
-            Close
-        </button>
-    </div>
-</div>
+<app-project-category-manager
+    *ngIf="showCategoryManager"
+    (categoriesUpdated)="showCategoryManager = false">
+</app-project-category-manager>
 
 <!-- Niche Manager Modal -->
-<div *ngIf="showNicheManager" class="modal-overlay" (click)="showNicheManager = false">
-    <div class="modal-content max-w-3xl" (click)="$event.stopPropagation()">
-        <div class="p-6">
-        <h4 class="text-base font-black dark:text-white text-zinc-900 mb-4">Manage Niches</h4>
-
-        <!-- Add New Niche -->
-        <div class="grid grid-cols-[1fr_1fr_auto] gap-2 mb-4">
-            <input [(ngModel)]="newNicheName" placeholder="Niche (EN)" (keyup.enter)="addNewNiche()"
-                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <input [(ngModel)]="newNicheNameAr" placeholder="التخصص (AR)" dir="rtl" (keyup.enter)="addNewNiche()"
-                class="px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30">
-            <button (click)="addNewNiche()" [disabled]="!newNicheName.trim()"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-        </div>
-
-        <!-- Niche Table -->
-        <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden mb-4">
-            <table class="w-full">
-                <thead class="bg-zinc-100 dark:bg-zinc-800">
-                    <tr>
-                        <th
-                            class="px-4 py-2 text-left text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400">
-                            English</th>
-                        <th
-                            class="px-4 py-2 text-right text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400">
-                            العربية</th>
-                        <th
-                            class="px-4 py-2 text-center text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400 w-20">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <tr *ngFor="let niche of managedNiches" class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                        <td class="px-4 py-2 text-sm text-zinc-900 dark:text-white">{{ niche.name }}</td>
-                        <td class="px-4 py-2 text-sm text-zinc-900 dark:text-white text-right" dir="rtl">{{
-                            niche.name_Ar || '-' }}</td>
-                        <td class="px-4 py-2 text-center">
-                            <button (click)="removeNiche(niche.id)"
-                                class="text-red-600 hover:text-red-700 transition-colors">
-                                <lucide-icon [img]="DeleteIcon" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr *ngIf="managedNiches.length === 0">
-                        <td colspan="3" class="px-4 py-8 text-center text-sm text-zinc-500">No niches yet. Add one
-                            above.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <button (click)="showNicheManager = false"
-            class="w-full px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">
-            Close
-        </button>
-    </div>
-</div>
+<app-project-niche-manager
+    *ngIf="showNicheManager"
+    (nichesUpdated)="showNicheManager = false">
+</app-project-niche-manager>
