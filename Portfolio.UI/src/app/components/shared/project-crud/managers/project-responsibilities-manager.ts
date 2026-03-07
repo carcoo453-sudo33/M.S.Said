@@ -14,8 +14,6 @@ type ResponsibilityItem = string | { text: string; text_Ar?: string };
     imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule],
     template: `
         <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Responsibilities</h3>
-            
             <!-- Add New Responsibility -->
             <div class="flex gap-2">
                 <input 

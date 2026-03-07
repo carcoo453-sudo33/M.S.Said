@@ -46,6 +46,7 @@ import {
     ProjectNicheManagerComponent
   ],
   template: `
+    <!-- Main Modal -->
     <div *ngIf="isOpen()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="close()">
       <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
         
@@ -104,7 +105,8 @@ import {
           <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
             <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Tags</h3>
             <app-project-form-tags 
-              [(selectedTags)]="selectedTags">
+              [(selectedTags)]="selectedTags"
+              [techSuggestions]="getTagSuggestions()">
             </app-project-form-tags>
           </div>
 
@@ -141,38 +143,6 @@ import {
             </app-project-changelog-manager>
           </div>
 
-          <!-- Category Management (Collapsible) -->
-          <div *ngIf="showCategoryManager()" class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border-2 border-red-200 dark:border-red-800">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Category Management</h3>
-              <button 
-                (click)="onCategoryManagerClosed()"
-                class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
-                <lucide-icon [img]="XIcon" class="w-5 h-5"></lucide-icon>
-              </button>
-            </div>
-            <app-project-category-manager 
-              [managedCategories]="managedCategories"
-              (categoriesUpdated)="onCategoriesUpdated()">
-            </app-project-category-manager>
-          </div>
-
-          <!-- Niche Management (Collapsible) -->
-          <div *ngIf="showNicheManager()" class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Niche Management</h3>
-              <button 
-                (click)="onNicheManagerClosed()"
-                class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
-                <lucide-icon [img]="XIcon" class="w-5 h-5"></lucide-icon>
-              </button>
-            </div>
-            <app-project-niche-manager 
-              [managedNiches]="managedNiches"
-              (nichesUpdated)="onNichesUpdated()">
-            </app-project-niche-manager>
-          </div>
-
         </div>
 
         <!-- Footer -->
@@ -190,6 +160,56 @@ import {
             <lucide-icon [img]="isSaving() ? LoaderIcon : SaveIcon" class="w-4 h-4" [class.animate-spin]="isSaving()"></lucide-icon>
             {{ isSaving() ? 'Saving...' : (isCreating ? 'Create Project' : 'Save Changes') }}
           </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Category Management Overlay Modal -->
+    <div *ngIf="showCategoryManager()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" (click)="onCategoryManagerClosed()">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
+          <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Manage Categories</h2>
+          <button 
+            (click)="onCategoryManagerClosed()"
+            class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+            <lucide-icon [img]="XIcon" class="w-5 h-5 text-zinc-500"></lucide-icon>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+          <app-project-category-manager 
+            [managedCategories]="managedCategories"
+            (categoriesUpdated)="onCategoriesUpdated()">
+          </app-project-category-manager>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Niche Management Overlay Modal -->
+    <div *ngIf="showNicheManager()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" (click)="onNicheManagerClosed()">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
+          <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Manage Niches</h2>
+          <button 
+            (click)="onNicheManagerClosed()"
+            class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+            <lucide-icon [img]="XIcon" class="w-5 h-5 text-zinc-500"></lucide-icon>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+          <app-project-niche-manager 
+            [managedNiches]="managedNiches"
+            (nichesUpdated)="onNichesUpdated()">
+          </app-project-niche-manager>
         </div>
 
       </div>
@@ -231,6 +251,7 @@ export class ProjectCrudModalComponent implements OnChanges {
   changelog: any[] = [];
   managedCategories: any[] = [];
   managedNiches: any[] = [];
+  tagSuggestions: string[] = [];
 
   get isCreating(): boolean {
     return this.mode === 'create';
@@ -242,6 +263,7 @@ export class ProjectCrudModalComponent implements OnChanges {
     if (this.open) {
       this.initializeForm();
       this.loadCategoriesAndNiches();
+      this.loadTagSuggestions();
     }
   }
 
@@ -290,6 +312,19 @@ export class ProjectCrudModalComponent implements OnChanges {
       error: (err) => {
         console.error('Failed to load niches:', err);
         this.managedNiches = [];
+      }
+    });
+  }
+
+  private loadTagSuggestions() {
+    this.projectService.getTagSuggestions().subscribe({
+      next: (tags) => {
+        this.tagSuggestions = tags;
+        console.log('Tag suggestions loaded:', tags);
+      },
+      error: (err) => {
+        console.error('Failed to load tag suggestions:', err);
+        this.tagSuggestions = [];
       }
     });
   }
@@ -409,5 +444,9 @@ export class ProjectCrudModalComponent implements OnChanges {
 
   getNicheArSuggestions(): string[] {
     return this.managedNiches.map(niche => niche.name_Ar).filter(name => name);
+  }
+
+  getTagSuggestions(): string[] {
+    return this.tagSuggestions;
   }
 }

@@ -12,8 +12,6 @@ import { ToastService } from '../../../../services/toast.service';
     template: `
         <!-- Category Management Section -->
         <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Category Management</h3>
-            
             <!-- Add New Category -->
             <div class="flex gap-2">
                 <input 

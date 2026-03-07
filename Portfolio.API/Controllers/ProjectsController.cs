@@ -819,11 +819,8 @@ public class ProjectsController : ControllerBase
         {
             var trimmed = line.Trim();
 
-            // Detect Features section
-            if (trimmed.Contains("## Features", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## Key Features", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## ✨ Features", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("### Features", StringComparison.OrdinalIgnoreCase))
+            // Enhanced Features section detection (more flexible patterns)
+            if (IsFeaturesSectionHeader(trimmed))
             {
                 Console.WriteLine($"[ExtractFeatures] Found Features section: {trimmed}");
                 inFeaturesSection = true;
@@ -831,11 +828,8 @@ public class ProjectsController : ControllerBase
                 continue;
             }
 
-            // Detect Responsibilities/Tasks section
-            if (trimmed.Contains("## Responsibilities", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## Tasks", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("## What I Did", StringComparison.OrdinalIgnoreCase) ||
-                trimmed.Contains("### Responsibilities", StringComparison.OrdinalIgnoreCase))
+            // Enhanced Responsibilities section detection (more flexible patterns)
+            if (IsResponsibilitiesSectionHeader(trimmed))
             {
                 Console.WriteLine($"[ExtractFeatures] Found Responsibilities section: {trimmed}");
                 inResponsibilitiesSection = true;
@@ -844,10 +838,7 @@ public class ProjectsController : ControllerBase
             }
 
             // Stop at next major section (but not subsections)
-            if (trimmed.StartsWith("## ") && 
-                !trimmed.Contains("Feature", StringComparison.OrdinalIgnoreCase) &&
-                !trimmed.Contains("Responsibilit", StringComparison.OrdinalIgnoreCase) &&
-                !trimmed.Contains("Task", StringComparison.OrdinalIgnoreCase))
+            if (trimmed.StartsWith("## ") && !IsFeaturesSectionHeader(trimmed) && !IsResponsibilitiesSectionHeader(trimmed))
             {
                 if (inFeaturesSection || inResponsibilitiesSection)
                 {
@@ -857,46 +848,43 @@ public class ProjectsController : ControllerBase
                 }
             }
 
-            // Extract bullet points (support -, *, +, and numbered lists)
+            // Extract bullet points and other list formats
             if (inFeaturesSection || inResponsibilitiesSection)
             {
-                var isBullet = trimmed.StartsWith("- ") || trimmed.StartsWith("* ") || trimmed.StartsWith("+ ");
-                var isNumbered = System.Text.RegularExpressions.Regex.IsMatch(trimmed, @"^\d+\.\s");
+                var extractedText = ExtractListItem(trimmed);
                 
-                if (isBullet || isNumbered)
+                if (!string.IsNullOrEmpty(extractedText))
                 {
-                    var text = isBullet ? trimmed.Substring(2).Trim() : 
-                               System.Text.RegularExpressions.Regex.Replace(trimmed, @"^\d+\.\s", "").Trim();
-                    
-                    // Remove markdown formatting
-                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\*\*(.*?)\*\*", "$1"); // Bold
-                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\*(.*?)\*", "$1"); // Italic
-                    text = System.Text.RegularExpressions.Regex.Replace(text, @"`(.*?)`", "$1"); // Code
-                    text = System.Text.RegularExpressions.Regex.Replace(text, @"\[(.*?)\]\(.*?\)", "$1"); // Links
-                    
                     if (inFeaturesSection)
                     {
-                        featuresList.Add(text);
-                        Console.WriteLine($"[ExtractFeatures] Added feature: {text.Substring(0, Math.Min(50, text.Length))}...");
+                        featuresList.Add(extractedText);
+                        Console.WriteLine($"[ExtractFeatures] Added feature: {extractedText.Substring(0, Math.Min(50, extractedText.Length))}...");
                     }
                     else if (inResponsibilitiesSection)
                     {
-                        respList.Add(text);
-                        Console.WriteLine($"[ExtractFeatures] Added responsibility: {text.Substring(0, Math.Min(50, text.Length))}...");
+                        respList.Add(extractedText);
+                        Console.WriteLine($"[ExtractFeatures] Added responsibility: {extractedText.Substring(0, Math.Min(50, extractedText.Length))}...");
                     }
                 }
             }
+        }
+
+        // If no explicit sections found, try to extract from general content
+        if (featuresList.Count == 0 && respList.Count == 0)
+        {
+            Console.WriteLine("[ExtractFeatures] No explicit sections found, trying general extraction...");
+            ExtractFromGeneralContent(readme, out featuresList, out respList);
         }
 
         Console.WriteLine($"[ExtractFeatures] Total features found: {featuresList.Count}");
         Console.WriteLine($"[ExtractFeatures] Total responsibilities found: {respList.Count}");
 
         // Convert features to structured format
-        var icons = new[] { "Layers", "Rocket", "Monitor", "Code", "Zap", "Shield", "Database", "Globe" };
-        for (int i = 0; i < Math.Min(featuresList.Count, 8); i++)
+        var icons = new[] { "Layers", "Rocket", "Monitor", "Code", "Zap", "Shield", "Database", "Globe", "Star", "Settings" };
+        for (int i = 0; i < Math.Min(featuresList.Count, 10); i++)
         {
             var feature = featuresList[i];
-            var parts = feature.Split(new[] { ':', '-', '–' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            var parts = feature.Split(new[] { ':', '-', '–', '—' }, 2, StringSplitOptions.RemoveEmptyEntries);
             var title = parts.Length > 1 ? parts[0].Trim() : (feature.Length > 50 ? feature.Substring(0, 50) : feature);
             var description = parts.Length > 1 ? parts[1].Trim() : feature;
             description = description.Length > 200 ? description.Substring(0, 200) + "..." : description;
@@ -905,12 +893,133 @@ public class ProjectsController : ControllerBase
         }
 
         // Convert responsibilities
-        responsibilities = respList.Take(10)
+        responsibilities = respList.Take(15)
             .Select(r => r.Length > 150 ? r.Substring(0, 150) + "..." : r)
             .ToList();
             
         Console.WriteLine($"[ExtractFeatures] Final features count: {features.Count}");
         Console.WriteLine($"[ExtractFeatures] Final responsibilities count: {responsibilities.Count}");
+    }
+
+    private bool IsFeaturesSectionHeader(string line)
+    {
+        var lowerLine = line.ToLower();
+        return lowerLine.Contains("feature") ||
+               lowerLine.Contains("functionality") ||
+               lowerLine.Contains("capabilities") ||
+               lowerLine.Contains("what it does") ||
+               lowerLine.Contains("highlights") ||
+               lowerLine.Contains("key points") ||
+               lowerLine.Contains("main features") ||
+               lowerLine.Contains("core features") ||
+               lowerLine.Contains("✨") ||
+               lowerLine.Contains("🚀") ||
+               lowerLine.Contains("⭐");
+    }
+
+    private bool IsResponsibilitiesSectionHeader(string line)
+    {
+        var lowerLine = line.ToLower();
+        return lowerLine.Contains("responsibilit") ||
+               lowerLine.Contains("task") ||
+               lowerLine.Contains("what i did") ||
+               lowerLine.Contains("my role") ||
+               lowerLine.Contains("contributions") ||
+               lowerLine.Contains("work done") ||
+               lowerLine.Contains("implementation") ||
+               lowerLine.Contains("development") ||
+               lowerLine.Contains("built") ||
+               lowerLine.Contains("created");
+    }
+
+    private string ExtractListItem(string line)
+    {
+        var trimmed = line.Trim();
+        
+        // Check for various list formats
+        var patterns = new[]
+        {
+            @"^[-*+]\s+(.+)$",           // - item, * item, + item
+            @"^\d+\.\s+(.+)$",           // 1. item
+            @"^[a-zA-Z]\.\s+(.+)$",      // a. item, A. item
+            @"^[ivxlcdm]+\.\s+(.+)$",    // i. item, ii. item (roman numerals)
+            @"^✓\s+(.+)$",               // ✓ item
+            @"^✅\s+(.+)$",              // ✅ item
+            @"^🔸\s+(.+)$",              // 🔸 item
+            @"^🔹\s+(.+)$",              // 🔹 item
+            @"^▪\s+(.+)$",               // ▪ item
+            @"^▫\s+(.+)$",               // ▫ item
+            @"^→\s+(.+)$",               // → item
+            @"^•\s+(.+)$"                // • item
+        };
+
+        foreach (var pattern in patterns)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(trimmed, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                var text = match.Groups[1].Value.Trim();
+                return CleanMarkdownText(text);
+            }
+        }
+
+        return string.Empty;
+    }
+
+    private void ExtractFromGeneralContent(string readme, out List<string> features, out List<string> responsibilities)
+    {
+        features = new List<string>();
+        responsibilities = new List<string>();
+        
+        var lines = readme.Split('\n');
+        
+        foreach (var line in lines)
+        {
+            var trimmed = line.Trim();
+            var extractedText = ExtractListItem(trimmed);
+            
+            if (!string.IsNullOrEmpty(extractedText))
+            {
+                // Classify as feature or responsibility based on content
+                if (IsLikelyFeature(extractedText))
+                {
+                    features.Add(extractedText);
+                }
+                else if (IsLikelyResponsibility(extractedText))
+                {
+                    responsibilities.Add(extractedText);
+                }
+            }
+        }
+        
+        Console.WriteLine($"[ExtractFeatures] General extraction - Features: {features.Count}, Responsibilities: {responsibilities.Count}");
+    }
+
+    private bool IsLikelyFeature(string text)
+    {
+        var lowerText = text.ToLower();
+        var featureKeywords = new[] { "support", "provide", "include", "feature", "allow", "enable", "offer", "has", "with", "using", "built-in", "integrated", "responsive", "real-time", "automatic", "secure", "fast", "optimized" };
+        return featureKeywords.Any(keyword => lowerText.Contains(keyword));
+    }
+
+    private bool IsLikelyResponsibility(string text)
+    {
+        var lowerText = text.ToLower();
+        var responsibilityKeywords = new[] { "develop", "implement", "create", "build", "design", "wrote", "coded", "added", "integrated", "configured", "deployed", "maintained", "optimized", "fixed", "improved", "enhanced" };
+        return responsibilityKeywords.Any(keyword => lowerText.Contains(keyword));
+    }
+
+    private string CleanMarkdownText(string text)
+    {
+        // Remove markdown formatting
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\*\*(.*?)\*\*", "$1"); // Bold
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\*(.*?)\*", "$1"); // Italic
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"`(.*?)`", "$1"); // Code
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\[(.*?)\]\(.*?\)", "$1"); // Links
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"#{1,6}\s*", ""); // Headers
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"~~(.*?)~~", "$1"); // Strikethrough
+        
+        return text.Trim();
     }
 
     private (string owner, string repo) ParseGitHubUrl(string url)
@@ -927,6 +1036,99 @@ public class ProjectsController : ControllerBase
         }
         catch { }
         return (string.Empty, string.Empty);
+    }
+
+    private bool IsImageFile(string fileName)
+    {
+        var imageExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp", ".tiff", ".ico" };
+        return imageExtensions.Any(ext => fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private bool IsMainImageFile(string fileName)
+    {
+        var mainImageNames = new[] { "main", "screenshot", "demo", "preview", "hero", "banner", "cover", "thumbnail", "app", "home" };
+        var lowerFileName = fileName.ToLower();
+        return mainImageNames.Any(name => lowerFileName.StartsWith(name + ".") || lowerFileName.Contains(name));
+    }
+
+    private List<string> ExtractTagsFromReadme(string readme)
+    {
+        var tags = new List<string>();
+        var commonTechTerms = new[]
+        {
+            "react", "angular", "vue", "javascript", "typescript", "node", "express", "mongodb", "mysql", "postgresql",
+            "python", "django", "flask", "java", "spring", "kotlin", "swift", "flutter", "dart", "go", "rust",
+            "docker", "kubernetes", "aws", "azure", "gcp", "firebase", "netlify", "vercel", "heroku",
+            "html", "css", "sass", "scss", "tailwind", "bootstrap", "material-ui", "chakra", "styled-components",
+            "redux", "mobx", "vuex", "graphql", "rest", "api", "microservices", "serverless", "lambda",
+            "webpack", "vite", "rollup", "babel", "eslint", "prettier", "jest", "cypress", "testing",
+            "git", "github", "gitlab", "ci/cd", "jenkins", "github-actions", "travis", "circleci"
+        };
+
+        var readmeLower = readme.ToLower();
+        
+        foreach (var term in commonTechTerms)
+        {
+            if (readmeLower.Contains(term))
+            {
+                tags.Add(term);
+            }
+        }
+
+        return tags.Distinct().ToList();
+    }
+
+    private string DetermineCategory(string? primaryLanguage, List<string> tags)
+    {
+        var language = primaryLanguage?.ToLower() ?? "";
+        var allTags = string.Join(" ", tags).ToLower();
+
+        // Web Development
+        if (language.Contains("javascript") || language.Contains("typescript") || language.Contains("html") || language.Contains("css") ||
+            allTags.Contains("react") || allTags.Contains("angular") || allTags.Contains("vue") || allTags.Contains("web") || allTags.Contains("frontend"))
+        {
+            return "Web Development";
+        }
+
+        // Mobile Development
+        if (language.Contains("swift") || language.Contains("kotlin") || language.Contains("dart") ||
+            allTags.Contains("flutter") || allTags.Contains("react-native") || allTags.Contains("ios") || allTags.Contains("android") || allTags.Contains("mobile"))
+        {
+            return "Mobile Development";
+        }
+
+        // Backend Development
+        if (language.Contains("java") || language.Contains("python") || language.Contains("go") || language.Contains("rust") || language.Contains("c#") ||
+            allTags.Contains("api") || allTags.Contains("backend") || allTags.Contains("server") || allTags.Contains("microservices"))
+        {
+            return "Backend Development";
+        }
+
+        // Data Science
+        if (language.Contains("python") || language.Contains("r") || language.Contains("jupyter") ||
+            allTags.Contains("machine-learning") || allTags.Contains("data-science") || allTags.Contains("ai") || allTags.Contains("analytics"))
+        {
+            return "Data Science";
+        }
+
+        // DevOps
+        if (allTags.Contains("docker") || allTags.Contains("kubernetes") || allTags.Contains("aws") || allTags.Contains("azure") ||
+            allTags.Contains("devops") || allTags.Contains("ci/cd") || allTags.Contains("infrastructure"))
+        {
+            return "DevOps";
+        }
+
+        // Default based on primary language
+        return language switch
+        {
+            var l when l.Contains("javascript") || l.Contains("typescript") => "Frontend Development",
+            var l when l.Contains("python") => "Backend Development",
+            var l when l.Contains("java") => "Enterprise Development",
+            var l when l.Contains("c#") => ".NET Development",
+            var l when l.Contains("php") => "Web Development",
+            var l when l.Contains("ruby") => "Web Development",
+            _ => "Software Development"
+        };
     }
 
     [HttpPost("{projectId}/react")]
@@ -1033,7 +1235,11 @@ public class ProjectsController : ControllerBase
             string? mainImageUrl = null;
             var galleryImageUrls = new List<string>();
             
-            var screenshotFolders = new[] { "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media" };
+            var screenshotFolders = new[] { 
+                "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media", 
+                "public/images", "src/assets", "assets/images", "static/images", "img", 
+                "docs/assets", "preview", "demo", ".github/images", "resources", "pics" 
+            };
             
             foreach (var folderName in screenshotFolders)
             {
@@ -1045,46 +1251,34 @@ public class ProjectsController : ControllerBase
                     var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
                     if (screenshotsData != null && screenshotsData.Any())
                     {
-                        // Filter only image files
+                        // Filter only image files (more comprehensive list)
                         var imageFiles = screenshotsData
-                            .Where(f => f.Type == "file" && 
-                                   (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
+                            .Where(f => f.Type == "file" && IsImageFile(f.Name))
                             .ToList();
                         
                         if (imageFiles.Any())
                         {
+                            Console.WriteLine($"[ImageExtraction] Found {imageFiles.Count} images in {folderName}");
+                            
                             // Find main image (prioritize main.*, screenshot.*, demo.*, preview.*)
                             var mainImage = imageFiles.FirstOrDefault(f => 
-                                f.Name.StartsWith("main.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("screenshot.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("demo.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("preview.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
+                                IsMainImageFile(f.Name)) ?? imageFiles.First();
                             
-                            if (mainImage != null)
+                            if (mainImage != null && !string.IsNullOrEmpty(mainImage.DownloadUrl))
                             {
                                 mainImageUrl = mainImage.DownloadUrl;
-                            }
-                            else if (imageFiles.Any())
-                            {
-                                // Use first image as main if no main image found
-                                mainImageUrl = imageFiles.First().DownloadUrl;
+                                Console.WriteLine($"[ImageExtraction] Set main image: {mainImage.Name}");
                             }
                             
                             // Add other images to gallery (excluding the main image)
                             var additionalImages = imageFiles
                                 .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
-                                .Take(10 - galleryImageUrls.Count) // Don't exceed 10 total gallery images
+                                .Take(15 - galleryImageUrls.Count) // Allow up to 15 gallery images
                                 .Select(f => f.DownloadUrl!)
                                 .ToList();
                             
                             galleryImageUrls.AddRange(additionalImages);
+                            Console.WriteLine($"[ImageExtraction] Added {additionalImages.Count} gallery images");
                             
                             // If we found images, break out of the loop
                             if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any())
@@ -1095,6 +1289,72 @@ public class ProjectsController : ControllerBase
                     }
                 }
             }
+
+            // Enhanced tag extraction from GitHub topics, languages, and README
+            var tags = new List<string>();
+            
+            // Add GitHub topics
+            if (repoData?.Topics != null && repoData.Topics.Any())
+            {
+                tags.AddRange(repoData.Topics);
+                Console.WriteLine($"[TagExtraction] Added {repoData.Topics.Count} topics: {string.Join(", ", repoData.Topics)}");
+            }
+            
+            // Add primary language
+            if (!string.IsNullOrEmpty(repoData?.Language))
+            {
+                tags.Add(repoData.Language);
+                Console.WriteLine($"[TagExtraction] Added primary language: {repoData.Language}");
+            }
+            
+            // Try to get languages from GitHub API
+            var languagesUrl = $"https://api.github.com/repos/{owner}/{repo}/languages";
+            var languagesResponse = await httpClient.GetAsync(languagesUrl);
+            
+            if (languagesResponse.IsSuccessStatusCode)
+            {
+                var languagesData = await languagesResponse.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+                if (languagesData != null && languagesData.Any())
+                {
+                    // Add top 5 languages by usage
+                    var topLanguages = languagesData
+                        .OrderByDescending(l => l.Value)
+                        .Take(5)
+                        .Select(l => l.Key)
+                        .Where(lang => !tags.Contains(lang, StringComparer.OrdinalIgnoreCase));
+                    
+                    tags.AddRange(topLanguages);
+                    Console.WriteLine($"[TagExtraction] Added languages: {string.Join(", ", topLanguages)}");
+                }
+            }
+            
+            // Extract additional tags from README content
+            if (readmeResponse.IsSuccessStatusCode)
+            {
+                var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
+                if (readmeDataResponse?.Content != null)
+                {
+                    var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
+                    var readmeTags = ExtractTagsFromReadme(readmeContent);
+                    
+                    foreach (var tag in readmeTags.Where(t => !tags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                    {
+                        tags.Add(tag);
+                    }
+                    
+                    Console.WriteLine($"[TagExtraction] Added README tags: {string.Join(", ", readmeTags)}");
+                }
+            }
+            
+            // Clean and deduplicate tags
+            var finalTags = tags
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(20) // Limit to 20 tags
+                .ToList();
+                
+            Console.WriteLine($"[TagExtraction] Final tags ({finalTags.Count}): {string.Join(", ", finalTags)}");
 
             // Build DTO with imported data
             var dto = new ProjectDto
@@ -1109,12 +1369,12 @@ public class ProjectsController : ControllerBase
                 Duration = DateTime.UtcNow.Year.ToString(),
                 Architecture = "Scalable Architecture",
                 Status = "Active",
-                Category = repoData?.Language ?? "Web Development",
-                Tags = repoData?.Topics != null && repoData.Topics.Any() ? string.Join(", ", repoData.Topics) : "",
+                Category = DetermineCategory(repoData?.Language, finalTags),
+                Tags = string.Join(", ", finalTags),
                 ImageUrl = mainImageUrl, // Set main image from screenshots
                 Gallery = galleryImageUrls, // Set gallery images from screenshots
-                Responsibilities = responsibilities.Take(10).ToList(),
-                KeyFeatures = features.Take(8).Select(f => new KeyFeatureDto
+                Responsibilities = responsibilities.Take(15).ToList(),
+                KeyFeatures = features.Take(10).Select(f => new KeyFeatureDto
                 {
                     Icon = f.icon,
                     Title = f.title,
@@ -1128,6 +1388,8 @@ public class ProjectsController : ControllerBase
                     Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? ""
                 }).ToList()
             };
+
+            Console.WriteLine($"[ImportResult] Final DTO - Features: {dto.KeyFeatures.Count}, Responsibilities: {dto.Responsibilities.Count}, Tags: {dto.Tags}, Images: Main={!string.IsNullOrEmpty(dto.ImageUrl)}, Gallery={dto.Gallery.Count}");
 
             return Ok(dto);
         }

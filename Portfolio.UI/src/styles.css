@@ -80,3 +80,501 @@ a {
 a:hover {
   color: hsl(var(--primary) / 0.8);
 }
+
+/* ============================================
+   FORM INPUT STYLES
+   ============================================ */
+
+/* Date Input Styling */
+input[type="date"] {
+  position: relative;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+/* Calendar picker icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: hsl(var(--muted));
+}
+
+/* Dark mode calendar picker */
+@media (prefers-color-scheme: dark) {
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
+/* Firefox date input styling */
+input[type="date"]::-moz-focus-inner {
+  border: 0;
+}
+
+/* Time Input Styling */
+input[type="time"] {
+  position: relative;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="time"]:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+/* Time picker icon styling */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: hsl(var(--muted));
+}
+
+/* Dark mode time picker */
+@media (prefers-color-scheme: dark) {
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
+/* Number Input Styling */
+input[type="number"] {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ============================================
+   UTILITY CLASSES FOR FORM INPUTS
+   ============================================ */
+
+/* Standard form input class */
+.form-input {
+  @apply w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all;
+}
+
+/* Date input specific class */
+.form-date-input {
+  @apply form-input;
+}
+
+.form-date-input::-webkit-calendar-picker-indicator {
+  @apply cursor-pointer;
+  filter: brightness(0) saturate(100%) invert(0.5);
+}
+
+.dark .form-date-input::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(1);
+}
+
+/* Time input specific class */
+.form-time-input {
+  @apply form-input;
+}
+
+.form-time-input::-webkit-calendar-picker-indicator {
+  @apply cursor-pointer;
+  filter: brightness(0) saturate(100%) invert(0.5);
+}
+
+.dark .form-time-input::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(1);
+}
+/* ============================================
+   CALENDAR POPUP STYLING
+   ============================================ */
+
+/* Calendar popup container */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+/* Calendar dropdown styling for WebKit browsers */
+::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Dark mode calendar icon */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-calendar-picker-indicator {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+  }
+}
+
+/* Force dark mode calendar icon for dark class */
+.dark ::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+}
+
+/* ============================================
+   BROWSER-SPECIFIC CALENDAR STYLING
+   ============================================ */
+
+/* Chrome/Safari Calendar Popup */
+::-webkit-datetime-edit {
+  color: hsl(var(--foreground));
+  background: transparent;
+}
+
+::-webkit-datetime-edit-fields-wrapper {
+  background: transparent;
+}
+
+::-webkit-datetime-edit-text {
+  color: hsl(var(--muted-foreground));
+  padding: 0 0.25rem;
+}
+
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-year-field {
+  color: hsl(var(--foreground));
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+::-webkit-datetime-edit-month-field:focus,
+::-webkit-datetime-edit-day-field:focus,
+::-webkit-datetime-edit-year-field:focus {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border-radius: 0.25rem;
+}
+
+/* Calendar popup panel styling (limited browser support) */
+::-webkit-calendar-picker-indicator:hover {
+  background-color: hsl(var(--accent) / 0.1);
+  border-radius: 0.25rem;
+}
+
+/* ============================================
+   CUSTOM CALENDAR DROPDOWN STYLES
+   ============================================ */
+
+/* These styles target the actual calendar popup when it appears */
+/* Note: Browser calendar popups have limited styling capabilities */
+
+/* Firefox date input styling */
+input[type="date"]::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+input[type="date"]::-moz-focus-outer {
+  border: 0;
+}
+
+/* Edge/IE date input styling */
+input[type="date"]::-ms-clear {
+  display: none;
+}
+
+input[type="date"]::-ms-reveal {
+  display: none;
+}
+
+/* ============================================
+   ENHANCED DATE INPUT STYLING
+   ============================================ */
+
+/* Better date input appearance */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  color: hsl(var(--foreground));
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  position: relative;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type="date"]:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  outline: none;
+}
+
+input[type="date"]:hover {
+  border-color: hsl(var(--border-hover, var(--border)));
+}
+
+/* Date input placeholder styling */
+input[type="date"]:invalid {
+  color: hsl(var(--muted-foreground));
+}
+
+input[type="date"]:valid {
+  color: hsl(var(--foreground));
+}
+
+/* ============================================
+   CALENDAR POPUP OVERRIDE ATTEMPTS
+   ============================================ */
+
+/* These styles attempt to style the calendar popup */
+/* Browser support is limited, but provides some improvements */
+
+/* Webkit calendar popup background */
+::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Custom calendar styling for supported browsers */
+@supports selector(::-webkit-calendar-picker-indicator) {
+  input[type="date"] {
+    position: relative;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    font-size: 1rem;
+    height: 1.25rem;
+    opacity: 0.7;
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    transition: opacity 0.2s ease;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   FALLBACK CALENDAR STYLING
+   ============================================ */
+
+/* For browsers that don't support advanced calendar styling */
+input[type="date"] {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem 1rem;
+}
+
+.dark input[type="date"] {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239ca3af'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+}
+/* ============================================
+   BROWSER CALENDAR POPUP OVERRIDES
+   ============================================ */
+
+/* Attempt to style the calendar popup (limited browser support) */
+/* These styles may not work in all browsers due to security restrictions */
+
+/* Global calendar popup styling attempts */
+*::-webkit-calendar-picker-indicator {
+  filter: none !important;
+  background: transparent !important;
+}
+
+/* Dark theme calendar popup attempts */
+@media (prefers-color-scheme: dark) {
+  /* Attempt to style calendar popup elements */
+  input[type="date"] {
+    color-scheme: dark;
+  }
+}
+
+.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Force dark color scheme for date inputs */
+input[type="date"] {
+  color-scheme: light dark;
+}
+
+.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+/* ============================================
+   ENHANCED FORM INPUT CONSISTENCY
+   ============================================ */
+
+/* Ensure all form inputs have consistent styling */
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem 1rem;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+}
+
+.form-input:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+textarea:focus,
+select:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  outline: none;
+}
+
+/* Dark mode form inputs */
+.dark .form-input,
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="datetime-local"],
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+/* Placeholder styling */
+.form-input::placeholder,
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="number"]::placeholder,
+input[type="date"]::placeholder,
+input[type="time"]::placeholder,
+input[type="datetime-local"]::placeholder,
+textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
+}
+
+/* ============================================
+   UTILITY CLASSES FOR CALENDAR STYLING
+   ============================================ */
+
+/* Calendar input utility class */
+.calendar-input {
+  position: relative;
+}
+
+.calendar-input input[type="date"] {
+  padding-right: 2.5rem;
+}
+
+.calendar-input::after {
+  content: '';
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.dark .calendar-input::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239ca3af'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+}
+}

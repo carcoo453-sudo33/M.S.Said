@@ -31,7 +31,6 @@ import { SharedEmptyStateComponent } from '../shared/empty-state/empty-state';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 
 // UI Components
-import { OptimizedImageComponent } from '../shared/optimized-image/optimized-image';
 import { ProjectCardComponent } from '../shared/project-card/project-card';
 
 // Centralized CRUD
@@ -61,7 +60,6 @@ import { ProjectCrudService } from '../shared/project-crud/project-crud.service'
     SharedPageHeaderComponent,
     SharedErrorStateComponent,
     SharedEmptyStateComponent,
-    OptimizedImageComponent,
     ProjectCardComponent,
     ProjectCrudModalComponent,
     ProjectDeleteModalComponent

@@ -12,8 +12,6 @@ import { ChangelogItem } from '../../../../models/project.model';
     imports: [CommonModule, FormsModule, TranslateModule, LucideAngularModule],
     template: `
         <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Changelog</h3>
-            
             <!-- Add New Changelog Item -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg">
                 <input 
@@ -24,7 +22,7 @@ import { ChangelogItem } from '../../../../models/project.model';
                 <input 
                     [(ngModel)]="newChangelogItem.date"
                     type="date"
-                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800  dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all"
+                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                 />
                 <input 
                     [(ngModel)]="newChangelogItem.title"

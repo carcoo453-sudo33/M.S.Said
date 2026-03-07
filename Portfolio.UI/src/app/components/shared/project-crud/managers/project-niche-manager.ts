@@ -12,8 +12,6 @@ import { ToastService } from '../../../../services/toast.service';
     template: `
         <!-- Niche Management Section -->
         <div class="space-y-4">
-            <h3 class="text-lg font-semibold">Niche Management</h3>
-            
             <!-- Add New Niche -->
             <div class="flex gap-2">
                 <input 
