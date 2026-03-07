@@ -1,25 +1,25 @@
 <nav
-    class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-900 px-8 py-4 transition-all duration-500">
+    class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border px-8 py-4 transition-all duration-500">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <!-- Logo -->
         <a routerLink="/"
-            class="text-xl font-black tracking-tighter hover:text-red-600 transition-all flex items-center gap-1 text-zinc-900 dark:text-white group">
+            class="text-xl font-black tracking-tighter hover:text-primary transition-all flex items-center gap-1 text-foreground group">
             <div
-                class="bg-red-600 text-white w-7 h-7 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20 text-xs order-first">
+                class="bg-primary text-primary-foreground w-7 h-7 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 text-xs order-first">
                 M</div>
-            Mostafa<span class="text-red-600">.Dev</span>
+            Mostafa<span class="text-primary">.Dev</span>
         </a>
 
         <!-- Desktop Nav -->
         <div class="hidden md:flex items-center gap-8">
-            <a routerLink="/" routerLinkActive="text-red-600" [routerLinkActiveOptions]="{exact: true}"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.home' | translate }}</a>
-            <a routerLink="/education" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.education' | translate }}</a>
-            <a routerLink="/projects" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.projects' | translate }}</a>
-            <a routerLink="/blog" routerLinkActive="text-red-600"
-                class="text-[11px] font-bold uppercase tracking-wide text-zinc-500 hover:text-red-600 transition-all">{{ 'nav.blog' | translate }}</a>
+            <a routerLink="/" routerLinkActive="text-primary" [routerLinkActiveOptions]="{exact: true}"
+                class="text-[11px] font-bold uppercase tracking-wide text-muted-foreground hover:text-primary transition-all">{{ 'nav.home' | translate }}</a>
+            <a routerLink="/education" routerLinkActive="text-primary"
+                class="text-[11px] font-bold uppercase tracking-wide text-muted-foreground hover:text-primary transition-all">{{ 'nav.education' | translate }}</a>
+            <a routerLink="/projects" routerLinkActive="text-primary"
+                class="text-[11px] font-bold uppercase tracking-wide text-muted-foreground hover:text-primary transition-all">{{ 'nav.projects' | translate }}</a>
+            <a routerLink="/blog" routerLinkActive="text-primary"
+                class="text-[11px] font-bold uppercase tracking-wide text-muted-foreground hover:text-primary transition-all">{{ 'nav.blog' | translate }}</a>
         </div>
 
         <!-- Right side actions -->

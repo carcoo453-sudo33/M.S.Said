@@ -2,11 +2,13 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { Client } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
+import { handleAuthError } from '../../../utils/error-handler.util';
 import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload } from 'lucide-angular';
 
 @Component({
@@ -134,6 +136,7 @@ export class ProjectsBrandSliderComponent {
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
     private http = inject(HttpClient);
+    private router = inject(Router);
 
     @Input() clients: Client[] = [];
     @Output() clientsUpdated = new EventEmitter<Client[]>();
@@ -241,9 +244,7 @@ export class ProjectsBrandSliderComponent {
                 this.isDeleting = false;
                 this.deleteClient = null;
                 if (err.status === 401) {
-                    this.toast.error('Authentication failed. Please log in again.');
-                    this.auth.logout();
-                    window.location.href = '/login';
+                    handleAuthError(err, this.toast, this.auth, this.router);
                 } else {
                     this.toast.error('Failed to delete client');
                 }

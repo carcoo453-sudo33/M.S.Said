@@ -98,13 +98,24 @@
     </div>
 
     <!-- Management Component -->
-    <app-project-details-manage 
+    <!-- Centralized Project CRUD Modal -->
+    <app-project-crud-modal
         *ngIf="project()"
-        [project]="project()" 
-        [canEdit]="isAuthenticated()"
-        [triggerEdit]="triggerEditModal()"
-        (onUpdate)="onProjectUpdate($event)">
-    </app-project-details-manage>
+        [project]="project()"
+        [open]="showEditModal()"
+        mode="edit"
+        (projectSaved)="onProjectSaved($event)"
+        (modalClosed)="onModalClosed()">
+    </app-project-crud-modal>
+
+    <!-- Delete Modal -->
+    <app-project-delete-modal
+        *ngIf="project()"
+        [isOpen]="showDeleteModal()"
+        [project]="project()!"
+        (projectDeleted)="onProjectDeleted($event)"
+        (modalClosed)="onModalClosed()">
+    </app-project-delete-modal>
 </main>
 
 <app-shared-footer></app-shared-footer>

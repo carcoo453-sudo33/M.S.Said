@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { LucideAngularModule, Quote, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, User } from 'lucide-angular';
 import { Testimonial } from '../../../models';
@@ -11,6 +12,7 @@ import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 import { ImageUtilsService } from '../../../services/image-utils.service';
+import { handleAuthError } from '../../../utils/error-handler.util';
 
 @Component({
     selector: 'app-projects-references',
@@ -207,6 +209,7 @@ export class ProjectsReferencesComponent {
     private http = inject(HttpClient);
     private translationService = inject(TranslationService);
     private imageUtils = inject(ImageUtilsService);
+    private router = inject(Router);
 
     @Input() testimonials: Testimonial[] = [];
     @Output() testimonialsUpdated = new EventEmitter<Testimonial[]>();
@@ -412,9 +415,7 @@ export class ProjectsReferencesComponent {
                     this.isDeleting = false;
                     this.deleteTestimonial = null;
                     if (err.status === 401) {
-                        this.toast.error('Authentication failed. Please log in again.');
-                        this.auth.logout();
-                        window.location.href = '/login';
+                        handleAuthError(err, this.toast, this.auth, this.router);
                     } else {
                         this.toast.error('Failed to delete testimonial');
                     }

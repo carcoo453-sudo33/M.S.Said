@@ -78,7 +78,7 @@ export class PerformanceMonitorComponent implements OnInit, OnDestroy {
     this.isDevelopment = typeof window !== 'undefined' && 
                        window.location.hostname === 'localhost';
     
-    this.showMonitor = this.featureFlags.enablePerformanceMonitoring && this.isDevelopment;
+    this.showMonitor = this.featureFlags['enablePerformanceMonitoring'] && this.isDevelopment;
 
     if (this.showMonitor) {
       // Update metrics every 5 seconds

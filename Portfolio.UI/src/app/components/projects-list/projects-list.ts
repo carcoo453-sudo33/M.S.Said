@@ -3,19 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight, Eye, Star, Rocket, Clock, Image } from 'lucide-angular';
+import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight, Eye, Star, Rocket, Clock, Image, Plus } from 'lucide-angular';
 import { ProjectService } from '../../services/project.service';
 import { ProjectEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { TranslationService } from '../../services/translation.service';
 import { ImageUtilsService } from '../../services/image-utils.service';
-import { InputComponent } from '../../ui/input';
-import { ButtonComponent } from '../../ui/button';
-import { CardComponent, CardContentComponent } from '../../ui/card';
-import { BadgeComponent } from '../../ui/badge';
-import { SelectComponent } from '../../ui/select';
-import { OptimizedImageComponent } from '../shared/optimized-image/optimized-image';
+import { AuthService } from '../../services/auth.service';
+
+// Centralized CRUD
+import { ProjectCrudModalComponent } from '../shared/project-crud/project-crud-modal';
+import { ProjectDeleteModalComponent } from '../shared/project-crud/components/project-delete-modal';
+import { ProjectCardComponent } from '../shared/project-card/project-card';
+import { ProjectCrudService } from '../shared/project-crud/project-crud.service';
 
 @Component({
   selector: 'app-projects-list',
@@ -28,24 +29,26 @@ import { OptimizedImageComponent } from '../shared/optimized-image/optimized-ima
     LucideAngularModule,
     NavbarComponent,
     SharedFooterComponent,
-    InputComponent,
-    ButtonComponent,
-    CardComponent,
-    CardContentComponent,
-    BadgeComponent,
-    SelectComponent,
-    OptimizedImageComponent
+    ProjectCrudModalComponent,
+    ProjectDeleteModalComponent,
+    ProjectCardComponent
   ],
   templateUrl: './projects-list.html'
 })
 export class ProjectsListComponent implements OnInit {
   private projectService = inject(ProjectService);
+  private crudService = inject(ProjectCrudService);
   public translationService = inject(TranslationService);
   private route = inject(ActivatedRoute);
   private imageUtils = inject(ImageUtilsService);
+  public auth = inject(AuthService);
 
-  // Create project trigger (mirrors projects-grid interface)
-  triggerCreateProject = signal(false);
+  // Create project modal state
+  showCreateModal = signal(false);
+  showEditModal = signal(false);
+  showDeleteModal = signal(false);
+  editingProject = signal<ProjectEntry | null>(null);
+  deletingProject = signal<ProjectEntry | null>(null);
 
   // Icons
   SearchIcon = Search;
@@ -59,6 +62,7 @@ export class ProjectsListComponent implements OnInit {
   RocketIcon = Rocket;
   ClockIcon = Clock;
   ImageIcon = Image;
+  PlusIcon = Plus;
 
   // Math for template
   Math = Math;
@@ -217,7 +221,7 @@ export class ProjectsListComponent implements OnInit {
     // Auto-open create modal if navigated with ?create=true
     this.route.queryParams.subscribe(params => {
       if (params['create'] === 'true') {
-        setTimeout(() => this.triggerCreateProject.set(!this.triggerCreateProject()), 500);
+        setTimeout(() => this.showCreateModal.set(true), 500);
       }
     });
   }
@@ -361,4 +365,56 @@ export class ProjectsListComponent implements OnInit {
   getFullImageUrl(url: string): string {
     return this.imageUtils.getFullImageUrl(url);
   }
+
+    onImageError(event: Event): void {
+      const img = event.target as HTMLImageElement;
+      img.style.display = 'none';
+    }
+
+    // Centralized CRUD methods
+    onCreateProject() {
+      this.showCreateModal.set(true);
+    }
+
+    onProjectSaved(project: ProjectEntry) {
+      // Add to projects list if it's a new project, or update existing
+      const existingIndex = this.allProjects().findIndex(p => p.id === project.id);
+      if (existingIndex === -1) {
+        this.allProjects.set([...this.allProjects(), project]);
+      } else {
+        const updated = [...this.allProjects()];
+        updated[existingIndex] = project;
+        this.allProjects.set(updated);
+      }
+      this.showCreateModal.set(false);
+      this.showEditModal.set(false);
+      this.editingProject.set(null);
+    }
+
+    onModalClosed() {
+      this.showCreateModal.set(false);
+      this.showEditModal.set(false);
+      this.showDeleteModal.set(false);
+      this.editingProject.set(null);
+      this.deletingProject.set(null);
+    }
+
+    // Project card actions
+    onEditProject(project: ProjectEntry) {
+      this.editingProject.set(project);
+      this.showEditModal.set(true);
+    }
+
+    onDeleteProject(project: ProjectEntry) {
+      this.deletingProject.set(project);
+      this.showDeleteModal.set(true);
+    }
+
+    onProjectDeleted(project: ProjectEntry) {
+      // Remove from local state
+      const updatedProjects = this.allProjects().filter(p => p.id !== project.id);
+      this.allProjects.set(updatedProjects);
+      this.showDeleteModal.set(false);
+      this.deletingProject.set(null);
+    }
 }

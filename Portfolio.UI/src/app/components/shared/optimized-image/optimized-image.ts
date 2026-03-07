@@ -1,11 +1,10 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LazyLoadImageModule } from 'ng-lazyload-image';
 
 @Component({
   selector: 'app-optimized-image',
   standalone: true,
-  imports: [CommonModule, LazyLoadImageModule],
+  imports: [CommonModule],
   template: `
     <div [class]="containerClasses">
       <!-- Loading Skeleton -->
@@ -15,11 +14,9 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
         [attr.aria-label]="'Loading ' + alt">
       </div>
 
-      <!-- Optimized Image with ng-lazyload-image -->
+      <!-- Optimized Image with native lazy loading -->
       <img
-        [lazyLoad]="src"
-        [defaultImage]="placeholderSrc"
-        [errorImage]="errorSrc"
+        [src]="imageSrc()"
         [alt]="alt"
         [class]="imageClasses"
         [style.object-fit]="objectFit"
@@ -29,11 +26,8 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
         [attr.fetchpriority]="priority"
         [sizes]="sizes"
         [srcset]="srcset"
-        [offset]="lazyLoadOffset"
-        [scrollContainer]="scrollContainer"
-        [customObserver]="customObserver"
-        (onLoad)="onImageLoad($event)"
-        (onError)="onImageError($event)" />
+        (load)="onImageLoad($event)"
+        (error)="onImageError($event)" />
 
       <!-- Error State -->
       <div 
@@ -79,11 +73,6 @@ export class OptimizedImageComponent {
   @Input() srcset = '';
   @Input() showSkeleton = true;
   @Input() showErrorState = true;
-  
-  // ng-lazyload-image specific options
-  @Input() lazyLoadOffset = 50;
-  @Input() scrollContainer?: HTMLElement;
-  @Input() customObserver?: IntersectionObserver;
 
   @Output() imageLoad = new EventEmitter<Event>();
   @Output() imageError = new EventEmitter<Event>();
@@ -93,6 +82,17 @@ export class OptimizedImageComponent {
 
   isLoading = computed(() => this._isLoading() && this.showSkeleton);
   hasError = computed(() => this._hasError() && this.showErrorState);
+  
+  // Computed image source - uses placeholder until loaded
+  imageSrc = computed(() => {
+    if (this._isLoading() && this.placeholderSrc) {
+      return this.placeholderSrc;
+    }
+    if (this._hasError() && this.errorSrc) {
+      return this.errorSrc;
+    }
+    return this.src;
+  });
 
   get containerClasses(): string {
     return `relative overflow-hidden ${this.className}`;

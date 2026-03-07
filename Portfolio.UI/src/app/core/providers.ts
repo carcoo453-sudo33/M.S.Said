@@ -153,7 +153,7 @@ export function providePerformanceMonitoring(): Provider[] {
         const performanceService = inject(PerformanceService);
         const featureFlags = inject(FEATURE_FLAGS);
         
-        if (featureFlags.enablePerformanceMonitoring) {
+        if (featureFlags['enablePerformanceMonitoring']) {
           // Initialize performance monitoring
           setTimeout(() => {
             performanceService.logMetrics();

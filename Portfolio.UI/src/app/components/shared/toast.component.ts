@@ -1,66 +1,196 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, CheckCircle, AlertTriangle, AlertCircle, Info, X } from 'lucide-angular';
-import { ToastService, Toast } from '../../services/toast.service';
+import { LucideAngularModule, CheckCircle, XCircle, AlertTriangle, Info, X, Loader } from 'lucide-angular';
+import { ToastService, Toast, ToastType } from '../../services/toast.service';
 
 @Component({
     selector: 'app-toast',
     standalone: true,
     imports: [CommonModule, LucideAngularModule],
     template: `
-    <div class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
-      <div *ngFor="let toast of toastService.toasts$()" 
-           class="pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-xl border shadow-2xl min-w-[300px] max-w-md animate-fade-in-up"
-           [ngClass]="getToastClasses(toast)">
-        
-        <div class="shrink-0">
-          <lucide-icon [img]="getIcon(toast)" class="w-5 h-5"></lucide-icon>
-        </div>
+        <!-- Toast Container - Sonner Style -->
+        <div class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+            <div 
+                *ngFor="let toast of toasts; let i = index; trackBy: trackByToast"
+                [class]="getToastClasses(toast, i)"
+                [style.transform]="getToastTransform(i)"
+                [style.z-index]="100 - i"
+                class="pointer-events-auto">
+                
+                <!-- Toast Content -->
+                <div class="flex items-start gap-3 p-4">
+                    <!-- Icon -->
+                    <div [class]="getIconClasses(toast.type)">
+                        <lucide-icon 
+                            [img]="getIcon(toast.type)" 
+                            class="w-5 h-5"
+                            [class.animate-spin]="isLoading(toast)">
+                        </lucide-icon>
+                    </div>
 
-        <div class="flex-1 text-sm font-bold tracking-tight">
-          {{ toast.message }}
-        </div>
+                    <!-- Message and Action -->
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-zinc-900 dark:text-white leading-5">
+                            {{ toast.message }}
+                        </p>
+                        
+                        <!-- Action Button -->
+                        <button 
+                            *ngIf="toast.action"
+                            type="button"
+                            class="mt-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                            (click)="executeAction(toast)">
+                            {{ toast.action.label }}
+                        </button>
+                    </div>
 
-        <button (click)="toastService.remove(toast.id)" 
-                class="shrink-0 p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
-          <lucide-icon [img]="XIcon" class="w-3.5 h-3.5 opacity-50"></lucide-icon>
-        </button>
-      </div>
-    </div>
-  `,
+                    <!-- Close Button -->
+                    <button
+                        *ngIf="toast.dismissible !== false"
+                        type="button"
+                        class="flex-shrink-0 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                        (click)="closeToast(toast.id)"
+                        aria-label="Close notification">
+                        <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
+                </div>
+
+                <!-- Progress Bar (only for non-persistent toasts) -->
+                <div 
+                    *ngIf="!toast.persistent && toast.duration && !isLoading(toast)"
+                    class="h-1 bg-zinc-200 dark:bg-zinc-700 rounded-b-xl overflow-hidden">
+                    <div 
+                        [class]="getProgressBarClasses(toast.type)"
+                        [style.animation-duration]="toast.duration + 'ms'"
+                        class="h-full animate-toast-progress origin-left">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
     styles: [`
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(1rem) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    .animate-fade-in-up {
-      animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-  `]
+        @keyframes toast-enter {
+            from {
+                opacity: 0;
+                transform: translateX(100%) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes toast-progress {
+            from {
+                transform: scaleX(1);
+            }
+            to {
+                transform: scaleX(0);
+            }
+        }
+
+        .animate-toast-enter {
+            animation: toast-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .animate-toast-progress {
+            animation: toast-progress linear;
+        }
+    `]
 })
 export class ToastComponent {
-    public toastService = inject(ToastService);
+    private toastService = inject(ToastService);
+    toasts: Toast[] = [];
+
+    // Icons - Using non-deprecated versions
+    CheckCircleIcon = CheckCircle;
+    XCircleIcon = XCircle;
+    AlertTriangleIcon = AlertTriangle;
+    InfoIcon = Info;
+    LoaderIcon = Loader;
     XIcon = X;
 
-    getIcon(toast: Toast) {
-        switch (toast.type) {
-            case 'success': return CheckCircle;
-            case 'error': return AlertCircle;
-            case 'warning': return AlertTriangle;
-            case 'info': return Info;
+    constructor() {
+        // Use effect to watch signal changes
+        effect(() => {
+            this.toasts = this.toastService.toasts$();
+        });
+    }
+
+    trackByToast(index: number, toast: Toast): number {
+        return toast.id;
+    }
+
+    closeToast(id: number): void {
+        this.toastService.remove(id);
+    }
+
+    executeAction(toast: Toast): void {
+        if (toast.action) {
+            toast.action.onClick();
+            this.closeToast(toast.id);
         }
     }
 
-    getToastClasses(toast: Toast) {
-        switch (toast.type) {
-            case 'success':
-                return 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-400';
-            case 'error':
-                return 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-400';
-            case 'warning':
-                return 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-400';
-            case 'info':
-                return 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-800 dark:text-blue-400';
-        }
+    isLoading(toast: Toast): boolean {
+        return toast.message.toLowerCase().includes('loading') || 
+               toast.message.toLowerCase().includes('saving') ||
+               toast.persistent === true && toast.dismissible === false;
+    }
+
+    getIcon(type: ToastType): any {
+        const icons = {
+            success: this.CheckCircleIcon,
+            error: this.XCircleIcon,
+            warning: this.AlertTriangleIcon,
+            info: this.InfoIcon
+        };
+        return icons[type];
+    }
+
+    getToastClasses(toast: Toast, index: number): string {
+        const baseClasses = 'relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg backdrop-blur-sm transition-all duration-300 animate-toast-enter';
+        
+        const typeClasses = {
+            success: 'border-l-4 border-l-green-500',
+            error: 'border-l-4 border-l-red-500',
+            warning: 'border-l-4 border-l-yellow-500',
+            info: 'border-l-4 border-l-blue-500'
+        };
+
+        // Add stacking effect like Sonner
+        const stackingClasses = index > 0 ? 'scale-95 opacity-90' : '';
+
+        return `${baseClasses} ${typeClasses[toast.type]} ${stackingClasses}`.trim();
+    }
+
+    getToastTransform(index: number): string {
+        // Create stacking effect - each toast is slightly offset
+        const offset = index * 4;
+        return `translateY(-${offset}px)`;
+    }
+
+    getIconClasses(type: ToastType): string {
+        const baseClasses = 'flex-shrink-0 rounded-full p-1';
+        
+        const typeClasses = {
+            success: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400',
+            error: 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400',
+            warning: 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400',
+            info: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400'
+        };
+
+        return `${baseClasses} ${typeClasses[type]}`.trim();
+    }
+
+    getProgressBarClasses(type: ToastType): string {
+        const typeClasses = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        return typeClasses[type];
     }
 }

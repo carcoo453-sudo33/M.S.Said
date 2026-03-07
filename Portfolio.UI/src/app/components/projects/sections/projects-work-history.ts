@@ -7,6 +7,8 @@ import { AuthService } from '../../../services/auth.service';
 import { ProfileService } from '../../../services/profile.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
+import { Router } from '@angular/router';
+import { handleAuthError } from '../../../utils/error-handler.util';
 import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from 'lucide-angular';
 
 @Component({
@@ -181,6 +183,7 @@ export class ProjectsWorkHistoryComponent {
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
     private translationService = inject(TranslationService);
+    private router = inject(Router);
 
     @Input() experiences: ExperienceEntry[] = [];
     @Output() experiencesUpdated = new EventEmitter<ExperienceEntry[]>();
@@ -335,9 +338,7 @@ export class ProjectsWorkHistoryComponent {
                 this.isDeleting = false;
                 this.deleteExperience = null;
                 if (err.status === 401) {
-                    this.toast.error('Authentication failed. Please log in again.');
-                    this.auth.logout();
-                    window.location.href = '/login';
+                    handleAuthError(err, this.toast, this.auth, this.router);
                 } else {
                     this.toast.error('Failed to delete experience');
                 }

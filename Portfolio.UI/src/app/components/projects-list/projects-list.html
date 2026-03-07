@@ -20,6 +20,16 @@
                     {{ filteredProjects().length }}
                 </span>
             </h1>
+            
+            <!-- Create Project Button (Admin Only) -->
+            <div *ngIf="auth.isLoggedIn()" class="mt-6">
+                <button 
+                    (click)="onCreateProject()" 
+                    class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20">
+                    <lucide-icon [img]="PlusIcon" class="w-5 h-5 mr-2"></lucide-icon>
+                    {{ 'projects.create.title' | translate }}
+                </button>
+            </div>
         </div>
 
 
@@ -30,13 +40,12 @@
             <div class="relative">
                 <lucide-icon [img]="SearchIcon"
                     class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400"></lucide-icon>
-                <ui-input 
+                <input 
                     type="text" 
                     [value]="searchQuery()" 
                     (input)="onSearchChange($any($event.target).value)"
                     placeholder="Search projects by title, description, or tags..."
-                    className="w-full pl-12 pr-4 py-4">
-                </ui-input>
+                    class="w-full pl-12 pr-4 py-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all">
             </div>
 
             <!-- Filters Row -->
@@ -59,13 +68,13 @@
                     <div *ngIf="openDropdown() === 'category'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                         <button type="button" (mousedown)="onCategoryChange('')"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             All Categories
                         </button>
                         <button type="button" *ngFor="let cat of categories()" (mousedown)="onCategoryChange(cat.name)"
                             [class.bg-red-600]="selectedCategory() === cat.name"
                             [class.text-white]="selectedCategory() === cat.name"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             {{ translationService.isRTL() && cat.name_Ar ? cat.name_Ar : cat.name }}
                         </button>
                     </div>
@@ -88,13 +97,13 @@
                     <div *ngIf="openDropdown() === 'niche'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                         <button type="button" (mousedown)="onNicheChange('')"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             All Niches
                         </button>
                         <button type="button" *ngFor="let niche of niches()" (mousedown)="onNicheChange(niche.name)"
                             [class.bg-red-600]="selectedNiche() === niche.name"
                             [class.text-white]="selectedNiche() === niche.name"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             {{ translationService.isRTL() && niche.name_Ar ? niche.name_Ar : niche.name }}
                         </button>
                     </div>
@@ -117,13 +126,13 @@
                     <div *ngIf="openDropdown() === 'company'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                         <button type="button" (mousedown)="onCompanyChange('')"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             All Companies
                         </button>
                         <button type="button" *ngFor="let company of availableCompanies()"
                             (mousedown)="onCompanyChange(company)" [class.bg-red-600]="selectedCompany() === company"
                             [class.text-white]="selectedCompany() === company"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             {{ company }}
                         </button>
                     </div>
@@ -146,12 +155,12 @@
                     <div *ngIf="openDropdown() === 'tag'"
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                         <button type="button" (mousedown)="onTagChange('')"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             All Tags
                         </button>
                         <button type="button" *ngFor="let tag of availableTags()" (mousedown)="onTagChange(tag)"
                             [class.bg-red-600]="selectedTag() === tag" [class.text-white]="selectedTag() === tag"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             {{ tag }}
                         </button>
                     </div>
@@ -175,49 +184,47 @@
                         class="absolute z-[9999] w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                         <button type="button" (mousedown)="onSortChange('newest')"
                             [class.bg-red-600]="sortBy() === 'newest'" [class.text-white]="sortBy() === 'newest'"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             Newest First
                         </button>
                         <button type="button" (mousedown)="onSortChange('oldest')"
                             [class.bg-red-600]="sortBy() === 'oldest'" [class.text-white]="sortBy() === 'oldest'"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             Oldest First
                         </button>
                         <button type="button" (mousedown)="onSortChange('views')"
                             [class.bg-red-600]="sortBy() === 'views'" [class.text-white]="sortBy() === 'views'"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             Most Viewed
                         </button>
                         <button type="button" (mousedown)="onSortChange('az')" [class.bg-red-600]="sortBy() === 'az'"
                             [class.text-white]="sortBy() === 'az'"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             A-Z
                         </button>
                         <button type="button" (mousedown)="onSortChange('za')" [class.bg-red-600]="sortBy() === 'za'"
                             [class.text-white]="sortBy() === 'za'"
-                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-blue-500 hover:text-white transition-colors">
+                            class="w-full px-4 py-2.5 text-left text-sm text-zinc-900 dark:text-white hover:bg-red-500 hover:text-white transition-colors">
                             Z-A
                         </button>
                     </div>
                 </div>
 
                 <!-- View Toggle -->
-                <ui-button 
-                    variant="outline"
-                    size="icon"
-                    (onClick)="toggleViewMode()"
-                    class="px-4 py-2.5 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group">
+                <button 
+                    (click)="toggleViewMode()"
+                    class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all group">
                     <lucide-icon [img]="viewMode() === 'grid' ? ListIcon : GridIcon"
                         class="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover:text-red-600 transition-colors"></lucide-icon>
-                </ui-button>
+                </button>
 
                 <!-- Clear Filters -->
-                <ui-button
+                <button
                     *ngIf="searchQuery() || selectedCategory() || selectedNiche() || selectedCompany() || selectedTag()"
-                    (onClick)="clearFilters()"
-                    class="px-4 py-2.5 bg-red-600 text-white text-sm font-medium hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 transition-all">
+                    (click)="clearFilters()"
+                    class="px-4 py-2.5 bg-red-600 text-white text-sm font-medium hover:bg-red-700 hover:shadow-lg hover:shadow-red-600/20 transition-all rounded-xl">
                     Clear Filters
-                </ui-button>
+                </button>
             </div>
         </div>
 
@@ -250,62 +257,21 @@
         <!-- Grid View -->
         <div *ngIf="!isLoading() && viewMode() === 'grid' && paginatedProjects().length > 0"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 relative z-0">
-            <ui-card *ngFor="let project of paginatedProjects(); let i = index" 
-                [routerLink]="['/projects', project.slug]"
-                class="group hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 transition-all duration-500 animate-scale-in cursor-pointer"
-                [style.animation-delay]="(i * 0.1) + 's'">
-
-                <!-- Image -->
-                <div class="aspect-video bg-zinc-200 dark:bg-zinc-800 overflow-hidden relative">
-                    <app-optimized-image 
-                        *ngIf="project.imageUrl" 
-                        [src]="getFullImageUrl(project.imageUrl)"
-                        [alt]="project.title"
-                        className="w-full h-full group-hover:scale-110 transition-transform duration-500"
-                        objectFit="cover">
-                    </app-optimized-image>
-                    <div *ngIf="!project.imageUrl"
-                        class="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-600 text-4xl font-black">
-                        {{ project.title.charAt(0) || '?' }}
-                    </div>
-
-                    <!-- Badges -->
-                    <div class="absolute top-3 left-3 flex gap-2">
-                        <ui-badge *ngIf="isFeatured(project)" variant="destructive" class="bg-red-600 text-white text-xs font-black">
-                            🔥Featured
-                        </ui-badge>
-                    </div>
-                </div>
-
-                <!-- Content -->
-                <ui-card-content class="p-6">
-                    <h3 class="text-xl font-black mb-2 group-hover:text-red-600 transition-colors line-clamp-2">
-                        {{ getTitle(project) }}
-                    </h3>
-                    <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4 line-clamp-2">
-                        {{ getDescription(project) }}
-                    </p>
-
-                    <!-- Meta -->
-                    <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500">
-                        <ui-badge *ngIf="project.category" variant="secondary" class="font-medium">
-                            {{ getCategory(project) }}
-                        </ui-badge>
-                        <ui-badge *ngIf="project.views" variant="outline" class="flex items-center gap-1">
-                            <span>👁️</span>
-                            {{ project.views }}
-                        </ui-badge>
-                    </div>
-
-                    <!-- Tags -->
-                    <div *ngIf="project.tags" class="flex flex-wrap gap-2 mt-4">
-                        <ui-badge *ngFor="let tag of project.tags.split(',').slice(0, 3)" variant="secondary"
-                            class="text-xs">
-                            {{ tag.trim() }}
-                        </ui-badge>
-                    </div>
-                </ui-card-content>
-            </ui-card>
+            <app-project-card 
+                *ngFor="let project of paginatedProjects(); let i = index"
+                [project]="project"
+                [allProjects]="allProjects()"
+                [showAdminActions]="auth.isLoggedIn()"
+                [showTrendingBadge]="true"
+                [showLatestBadge]="true"
+                [showFeaturedBadge]="true"
+                [showYearBadge]="true"
+                [showNiche]="true"
+                (edit)="onEditProject($event)"
+                (delete)="onDeleteProject($event)"
+                [style.animation-delay]="(i * 0.1) + 's'"
+                class="animate-scale-in">
+            </app-project-card>
         </div>
 
         <!-- List View -->
@@ -374,34 +340,31 @@
         <div *ngIf="!isLoading() && totalPages() > 1" class="flex items-center justify-center gap-2 animate-fade-in-up">
 
             <!-- Previous -->
-            <ui-button 
-                variant="outline"
-                (onClick)="goToPage(currentPage() - 1)" 
+            <button 
+                (click)="goToPage(currentPage() - 1)" 
                 [disabled]="currentPage() === 1"
-                class="px-4 py-2 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronLeftIcon" class="w-5 h-5"></lucide-icon>
-            </ui-button>
+            </button>
 
             <!-- Page Numbers -->
             <div class="flex gap-2">
-                <ui-button 
+                <button 
                     *ngFor="let page of [].constructor(totalPages()); let i = index" 
-                    (onClick)="goToPage(i + 1)"
-                    [variant]="currentPage() === i + 1 ? 'default' : 'outline'"
-                    [className]="currentPage() === i + 1 ? 'bg-red-600 text-white border-red-600' : 'hover:border-red-600'"
-                    class="w-10 h-10 font-medium transition-all">
+                    (click)="goToPage(i + 1)"
+                    [class]="currentPage() === i + 1 ? 'bg-red-600 text-white border-red-600' : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-red-600'"
+                    class="inline-flex items-center justify-center w-10 h-10 font-medium transition-all rounded-xl border">
                     {{ i + 1 }}
-                </ui-button>
+                </button>
             </div>
 
             <!-- Next -->
-            <ui-button 
-                variant="outline"
-                (onClick)="goToPage(currentPage() + 1)" 
+            <button 
+                (click)="goToPage(currentPage() + 1)" 
                 [disabled]="currentPage() === totalPages()"
-                class="px-4 py-2 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                class="inline-flex items-center justify-center px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <lucide-icon [img]="ChevronRightIcon" class="w-5 h-5"></lucide-icon>
-            </ui-button>
+            </button>
         </div>
 
         <!-- Results Info -->
@@ -413,5 +376,28 @@
 
     </div>
 </main>
+
+<!-- Centralized Project CRUD Modals -->
+<app-project-crud-modal
+    [open]="showCreateModal()"
+    mode="create"
+    (projectSaved)="onProjectSaved($event)"
+    (modalClosed)="onModalClosed()">
+</app-project-crud-modal>
+
+<app-project-crud-modal
+    [open]="showEditModal()"
+    [project]="editingProject()"
+    mode="edit"
+    (projectSaved)="onProjectSaved($event)"
+    (modalClosed)="onModalClosed()">
+</app-project-crud-modal>
+
+<app-project-delete-modal
+    [isOpen]="showDeleteModal()"
+    [project]="deletingProject()"
+    (projectDeleted)="onProjectDeleted($event)"
+    (modalClosed)="onModalClosed()">
+</app-project-delete-modal>
 
 <app-shared-footer></app-shared-footer>

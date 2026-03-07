@@ -73,7 +73,7 @@ import { ProjectService } from '../../../services/project.service';
                         <input readonly [value]="shareUrl" 
                             class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-400 text-sm">
                         <button (click)="copyLink()" 
-                            class="bg-white text-black px-6 py-3 rounded-xl font-black text-sm uppercase hover:bg-red-600 hover:text-white transition-all">
+                            class="bg-white dark:bg-zinc-100 text-black px-6 py-3 rounded-xl font-black text-sm uppercase hover:bg-red-600 hover:text-white transition-all">
                             <lucide-icon [img]="LinkIcon" class="w-4 h-4"></lucide-icon>
                         </button>
                     </div>
@@ -135,7 +135,7 @@ import { ProjectService } from '../../../services/project.service';
                         [disabled]="!tempUserName || !tempGender"
                         [class.opacity-50]="!tempUserName || !tempGender"
                         [class.cursor-not-allowed]="!tempUserName || !tempGender"
-                        class="bg-white text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white disabled:hover:text-black">
+                        class="bg-white dark:bg-zinc-100 text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white dark:disabled:hover:bg-zinc-100 disabled:hover:text-black">
                         {{ 'projectDetails.interactions.continue' | translate }}
                     </button>
                 </div>
@@ -167,7 +167,7 @@ import { ProjectService } from '../../../services/project.service';
                             [disabled]="!commentText.trim() || isPosting"
                             [class.opacity-50]="!commentText.trim() || isPosting"
                             [class.cursor-not-allowed]="!commentText.trim() || isPosting"
-                            class="bg-white text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white disabled:hover:text-black">
+                            class="bg-white dark:bg-zinc-100 text-black px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg disabled:hover:bg-white dark:disabled:hover:bg-zinc-100 disabled:hover:text-black">
                             {{ isPosting ? ('projectDetails.interactions.posting' | translate) : ('projectDetails.interactions.postComment' | translate) }}
                         </button>
                     </div>
@@ -228,7 +228,7 @@ import { ProjectService } from '../../../services/project.service';
                                             [disabled]="!replyText.trim() || isPostingReply"
                                             [class.opacity-50]="!replyText.trim() || isPostingReply"
                                             [class.cursor-not-allowed]="!replyText.trim() || isPostingReply"
-                                            class="bg-white text-black px-6 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition-all disabled:hover:bg-white disabled:hover:text-black">
+                                            class="bg-white dark:bg-zinc-100 text-black px-6 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition-all disabled:hover:bg-white dark:disabled:hover:bg-zinc-100 disabled:hover:text-black">
                                             {{ isPostingReply ? ('projectDetails.interactions.posting' | translate) : ('projectDetails.interactions.postReply' | translate) }}
                                         </button>
                                     </div>

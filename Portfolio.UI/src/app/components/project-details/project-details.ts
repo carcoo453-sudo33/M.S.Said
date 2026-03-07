@@ -18,7 +18,6 @@ import { ProjectDetailsGalleryComponent } from './sections/project-details-galle
 import { ProjectDetailsFeaturesComponent } from './sections/project-details-features';
 import { ProjectDetailsInteractionsComponent } from './sections/project-details-interactions';
 import { ProjectDetailsSidebarComponent } from './sections/project-details-sidebar';
-import { ProjectDetailsManageComponent } from './sections/project-details-manage';
 
 // Skeleton Components
 import { ProjectDetailsHeaderSkeletonComponent } from './sections/project-details-header-skeleton';
@@ -28,15 +27,17 @@ import { ProjectDetailsFeaturesSkeletonComponent } from './sections/project-deta
 import { ProjectDetailsSidebarSkeletonComponent } from './sections/project-details-sidebar-skeleton';
 import { ProjectDetailsInteractionsSkeletonComponent } from './sections/project-details-interactions-skeleton';
 
+// Centralized CRUD
+import { ProjectCrudModalComponent } from '../shared/project-crud/project-crud-modal';
+import { ProjectDeleteModalComponent } from '../shared/project-crud/components/project-delete-modal';
+import { ProjectCrudService } from '../shared/project-crud/project-crud.service';
+
 // Shared Global Components
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { SharedErrorStateComponent } from '../shared/error-state/error-state';
 import { SharedSignatureComponent } from '../shared/signature/signature';
 
 // UI Components
-import { ButtonComponent } from '../../ui/button';
-import { CardComponent, CardContentComponent } from '../../ui/card';
-import { BadgeComponent } from '../../ui/badge';
 
 @Component({
   selector: 'app-project-details',
@@ -52,7 +53,6 @@ import { BadgeComponent } from '../../ui/badge';
     ProjectDetailsFeaturesComponent,
     ProjectDetailsInteractionsComponent,
     ProjectDetailsSidebarComponent,
-    ProjectDetailsManageComponent,
     ProjectDetailsHeaderSkeletonComponent,
     ProjectDetailsGallerySkeletonComponent,
     ProjectDetailsSpecsSkeletonComponent,
@@ -62,10 +62,8 @@ import { BadgeComponent } from '../../ui/badge';
     SharedFooterComponent,
     SharedErrorStateComponent,
     SharedSignatureComponent,
-    ButtonComponent,
-    CardComponent,
-    CardContentComponent,
-    BadgeComponent
+    ProjectCrudModalComponent,
+    ProjectDeleteModalComponent
   ],
   templateUrl: './project-details.html'
 })
@@ -75,6 +73,7 @@ export class ProjectDetailsComponent implements OnInit {
   private projectService = inject(ProjectService);
   private profileService = inject(ProfileService);
   private authService = inject(AuthService);
+  private crudService = inject(ProjectCrudService);
   private toast = inject(ToastService);
   public translationService = inject(TranslationService);
 
@@ -83,7 +82,8 @@ export class ProjectDetailsComponent implements OnInit {
   isLoading = signal(true);
   hasError = signal(false);
   isAuthenticated = signal(false);
-  triggerEditModal = signal(false);
+  showEditModal = signal(false);
+  showDeleteModal = signal(false);
   triggerShareModal = signal(false);
 
   ngOnInit() {
@@ -187,35 +187,25 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onEditProject() {
-    // Trigger the management modal
-    this.triggerEditModal.set(true);
-    setTimeout(() => this.triggerEditModal.set(false), 100);
+    this.showEditModal.set(true);
+  }
+
+  onProjectSaved(updatedProject: ProjectEntry) {
+    this.project.set(updatedProject);
+    this.showEditModal.set(false);
+  }
+
+  onModalClosed() {
+    this.showEditModal.set(false);
+    this.showDeleteModal.set(false);
   }
 
   onDeleteProject() {
-    const currentProject = this.project();
-    if (!currentProject || !currentProject.id) return;
-    
-    if (!this.authService.isLoggedIn()) {
-      this.toast.error('You must be logged in to delete projects');
-      return;
-    }
+    this.showDeleteModal.set(true);
+  }
 
-    this.projectService.deleteProject(currentProject.id).subscribe({
-      next: () => {
-        console.log('Project deleted successfully');
-        this.router.navigate(['/projects']);
-      },
-      error: (err) => {
-        console.error('Failed to delete project:', err);
-        if (err.status === 401) {
-          this.toast.error('Authentication failed. Please log in again');
-          this.authService.logout();
-          this.router.navigate(['/login']);
-        } else {
-          this.toast.error('Failed to delete project. Please try again');
-        }
-      }
-    });
+  onProjectDeleted(project: ProjectEntry) {
+    this.showDeleteModal.set(false);
+    this.router.navigate(['/projects']);
   }
 }

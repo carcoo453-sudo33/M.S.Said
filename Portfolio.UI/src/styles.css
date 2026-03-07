@@ -1,6 +1,82 @@
+/* ============================================
+   OPTIMIZED CENTRALIZED STYLING SYSTEM
+   ============================================ */
+
+/* Import CSS Variables */
+@import './styles/variables.css';
+
+/* Tailwind Base Styles */
 @tailwind base;
+
+/* Tailwind Components */
 @tailwind components;
+
+/* Tailwind Utilities */
 @tailwind utilities;
 
-/* Import UI Component Variables */
-@import './app/ui/ui-variables.css';
+/* ============================================
+   ESSENTIAL GLOBAL STYLES
+   ============================================ */
+
+/* Base element styles */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+  transition: background-color var(--duration-normal), color var(--duration-normal);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
+/* Selection Styles */
+::selection {
+  background-color: hsl(var(--primary) / 0.3);
+  color: hsl(var(--primary-foreground));
+}
+
+/* Focus Styles */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* ============================================
+   ESSENTIAL COMPONENT BASE STYLES
+   ============================================ */
+
+/* Button Base */
+button {
+  transition: background-color var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+/* Input Base */
+input, textarea, select {
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  border-radius: calc(var(--radius) - 2px);
+  transition: border-color var(--duration-fast);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: hsl(var(--primary));
+  outline: none;
+}
+
+/* Link Base */
+a {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+a:hover {
+  color: hsl(var(--primary) / 0.8);
+}

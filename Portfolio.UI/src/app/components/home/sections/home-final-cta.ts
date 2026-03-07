@@ -52,14 +52,14 @@ import { BioEntry } from '../../../models';
                         </svg>
                         {{ 'home.cta.button2' | translate }}
                     </span>
-                    <div class="absolute inset-0 bg-zinc-100 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute inset-0 bg-zinc-100 dark:bg-zinc-800/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
             </div>
             
             <!-- Decorative line -->
             <div class="mt-16 flex items-center justify-center gap-4 opacity-30">
                 <div class="h-px w-20 bg-gradient-to-r from-transparent to-white"></div>
-                <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                <div class="w-2 h-2 rounded-full bg-white dark:bg-zinc-400 animate-pulse"></div>
                 <div class="h-px w-20 bg-gradient-to-l from-transparent to-white"></div>
             </div>
         </div>

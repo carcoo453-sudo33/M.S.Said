@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, inject, HostListener } from '@a
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Play, Rocket, Github, Heart, Share2, Eye, MessageCircle, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
-import { ProjectService } from '../../../services/project.service';
 import { TranslationService } from '../../../services/translation.service';
 import { environment } from '../../../../environments/environment';
 
@@ -170,7 +169,6 @@ import { environment } from '../../../../environments/environment';
   `
 })
 export class ProjectDetailsGalleryComponent {
-    private projectService = inject(ProjectService);
     private translationService = inject(TranslationService);
     
     @Input() project?: ProjectEntry;
