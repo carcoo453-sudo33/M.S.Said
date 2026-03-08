@@ -292,7 +292,8 @@
     },
     "features": {
       "keyFeatures": "الميزات الرئيسية",
-      "responsibilities": "المسؤوليات"
+      "responsibilities": "المسؤوليات",
+      "moreFeatures": "ميزات إضافية"
     },
     "sidebar": {
       "changelog": "سجل التغييرات",

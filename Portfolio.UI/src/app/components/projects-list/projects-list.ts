@@ -11,6 +11,7 @@ import { SharedFooterComponent } from '../shared/footer/footer';
 import { TranslationService } from '../../services/translation.service';
 import { ImageUtilsService } from '../../services/image-utils.service';
 import { AuthService } from '../../services/auth.service';
+import { TranslationHelperService } from '../../services/translation-helper.service';
 
 // Centralized CRUD
 import { ProjectCrudModalComponent } from '../shared/project-crud/project-crud-modal';
@@ -39,6 +40,7 @@ export class ProjectsListComponent implements OnInit {
   private projectService = inject(ProjectService);
   private crudService = inject(ProjectCrudService);
   public translationService = inject(TranslationService);
+  private translationHelper = inject(TranslationHelperService);
   private route = inject(ActivatedRoute);
   private imageUtils = inject(ImageUtilsService);
   public auth = inject(AuthService);
@@ -92,38 +94,15 @@ export class ProjectsListComponent implements OnInit {
   // Computed
   highlightedProjects = computed(() => {
     const projects = this.allProjects();
-    if (!projects || projects.length === 0) return [];
+    const highlights = this.projectService.getProjectHighlights(projects);
+    if (highlights.length === 0) return [];
 
-    let mostVisited: ProjectEntry | null = null;
-    let featured: ProjectEntry | null = null;
-    let lastPublish: ProjectEntry | null = null;
+    const result = [];
+    if (highlights[0]) result.push({ type: 'most-visited', project: highlights[0], icon: this.EyeIcon, color: 'from-blue-600 to-cyan-500', shadow: 'shadow-blue-500/20', labelKey: 'projects.highlights.mostVisited' });
+    if (highlights[1]) result.push({ type: 'featured', project: highlights[1], icon: this.StarIcon, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20', labelKey: 'projects.highlights.featured' });
+    if (highlights[2]) result.push({ type: 'last-publish', project: highlights[2], icon: this.RocketIcon, color: 'from-red-600 to-pink-500', shadow: 'shadow-red-500/20', labelKey: 'projects.highlights.latest' });
 
-    // Sort projects by views descending
-    const byViews = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0));
-    mostVisited = byViews[0] || null;
-
-    // Sort projects by featured, preferring highest views or newest, excluding mostVisited
-    const featuredProjects = [...projects].filter(p => !!(p as any).isFeatured && p.id !== mostVisited?.id);
-    if (featuredProjects.length > 0) {
-      featured = featuredProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
-    } else {
-      // Fallback if no featured
-      featured = byViews.find(p => p.id !== mostVisited?.id) || null;
-    }
-
-    // Sort projects by latest, excluding mostVisited and featured
-    const byLatest = [...projects]
-      .filter(p => p.id !== mostVisited?.id && p.id !== featured?.id)
-      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-    lastPublish = byLatest[0] || null;
-
-    const highlights = [
-      { type: 'most-visited', label: 'Highest Visits', project: mostVisited, icon: this.EyeIcon, color: 'from-blue-600 to-cyan-500', shadow: 'shadow-blue-500/20', labelKey: 'projects.highlights.mostVisited' },
-      { type: 'featured', label: 'Featured ✨', project: featured, icon: this.StarIcon, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/20', labelKey: 'projects.highlights.featured' },
-      { type: 'last-publish', label: 'Latest Release', project: lastPublish, icon: this.RocketIcon, color: 'from-red-600 to-pink-500', shadow: 'shadow-red-500/20', labelKey: 'projects.highlights.latest' }
-    ];
-
-    return highlights.filter(h => h.project != null) as any[];
+    return result;
   });
 
   availableTags = computed(() => {
@@ -327,94 +306,84 @@ export class ProjectsListComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  // Helper methods for template to access index signature properties
+  // Helper methods for template to use TranslationHelperService
   getTitle(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).titleAr
-      ? (project as any).titleAr
-      : project.title || '';
+    return this.translationHelper.getTranslatedField(project, 'title');
   }
 
   getDescription(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).descriptionAr
-      ? (project as any).descriptionAr
-      : project.description || '';
+    return this.translationHelper.getTranslatedField(project, 'description');
   }
 
   getCategory(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).categoryAr
-      ? (project as any).categoryAr
-      : project.category || '';
+    return this.translationHelper.getTranslatedField(project, 'category');
   }
 
   getNiche(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).nicheAr
-      ? (project as any).nicheAr
-      : project.niche || '';
+    return this.translationHelper.getTranslatedField(project, 'niche');
   }
 
   getCompany(project: ProjectEntry): string {
-    return this.translationService.isRTL() && (project as any).companyAr
-      ? (project as any).companyAr
-      : project.company || '';
+    return this.translationHelper.getTranslatedField(project, 'company');
   }
 
   isFeatured(project: ProjectEntry): boolean {
-    return !!(project as any).isFeatured;
+    return !!project.isFeatured;
   }
 
   getFullImageUrl(url: string): string {
     return this.imageUtils.getFullImageUrl(url);
   }
 
-    onImageError(event: Event): void {
-      const img = event.target as HTMLImageElement;
-      img.style.display = 'none';
-    }
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
 
-    // Centralized CRUD methods
-    onCreateProject() {
-      this.showCreateModal.set(true);
-    }
+  // Centralized CRUD methods
+  onCreateProject() {
+    this.showCreateModal.set(true);
+  }
 
-    onProjectSaved(project: ProjectEntry) {
-      // Add to projects list if it's a new project, or update existing
-      const existingIndex = this.allProjects().findIndex(p => p.id === project.id);
-      if (existingIndex === -1) {
-        this.allProjects.set([...this.allProjects(), project]);
-      } else {
-        const updated = [...this.allProjects()];
-        updated[existingIndex] = project;
-        this.allProjects.set(updated);
-      }
-      this.showCreateModal.set(false);
-      this.showEditModal.set(false);
-      this.editingProject.set(null);
+  onProjectSaved(project: ProjectEntry) {
+    // Add to projects list if it's a new project, or update existing
+    const existingIndex = this.allProjects().findIndex(p => p.id === project.id);
+    if (existingIndex === -1) {
+      this.allProjects.set([...this.allProjects(), project]);
+    } else {
+      const updated = [...this.allProjects()];
+      updated[existingIndex] = project;
+      this.allProjects.set(updated);
     }
+    this.showCreateModal.set(false);
+    this.showEditModal.set(false);
+    this.editingProject.set(null);
+  }
 
-    onModalClosed() {
-      this.showCreateModal.set(false);
-      this.showEditModal.set(false);
-      this.showDeleteModal.set(false);
-      this.editingProject.set(null);
-      this.deletingProject.set(null);
-    }
+  onModalClosed() {
+    this.showCreateModal.set(false);
+    this.showEditModal.set(false);
+    this.showDeleteModal.set(false);
+    this.editingProject.set(null);
+    this.deletingProject.set(null);
+  }
 
-    // Project card actions
-    onEditProject(project: ProjectEntry) {
-      this.editingProject.set(project);
-      this.showEditModal.set(true);
-    }
+  // Project card actions
+  onEditProject(project: ProjectEntry) {
+    this.editingProject.set(project);
+    this.showEditModal.set(true);
+  }
 
-    onDeleteProject(project: ProjectEntry) {
-      this.deletingProject.set(project);
-      this.showDeleteModal.set(true);
-    }
+  onDeleteProject(project: ProjectEntry) {
+    this.deletingProject.set(project);
+    this.showDeleteModal.set(true);
+  }
 
-    onProjectDeleted(project: ProjectEntry) {
-      // Remove from local state
-      const updatedProjects = this.allProjects().filter(p => p.id !== project.id);
-      this.allProjects.set(updatedProjects);
-      this.showDeleteModal.set(false);
-      this.deletingProject.set(null);
-    }
+  onProjectDeleted(project: ProjectEntry) {
+    // Remove from local state
+    const updatedProjects = this.allProjects().filter(p => p.id !== project.id);
+    this.allProjects.set(updatedProjects);
+    this.showDeleteModal.set(false);
+    this.deletingProject.set(null);
+  }
 }

@@ -13,64 +13,69 @@ import { environment } from '../../../../../environments/environment';
     standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
     template: `
-        <!-- Image Upload -->
-        <div class="col-span-2">
-            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project Image</label>
-            <div class="flex gap-3">
-                <div class="flex-1">
-                    <input [ngModel]="imageUrl || ''" (ngModelChange)="imageUrlChange.emit($event)" placeholder="Image URL or upload below"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                </div>
-                <label [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
-                    class="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all cursor-pointer flex items-center gap-2">
-                    <lucide-icon [img]="UploadIcon" class="w-4 h-4"></lucide-icon>
-                    <span class="text-[10px] font-black uppercase tracking-widest">{{ isUploading ? 'Uploading...' : 'Upload' }}</span>
-                    <input type="file" accept="image/*" (change)="onImageFileSelected($event)" class="hidden">
-                </label>
-            </div>
-            <!-- Image Preview -->
-            <div *ngIf="imageUrl"
-                class="mt-3 relative w-full h-40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                <img [src]="getFullImageUrl(imageUrl)" alt="Preview" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
-                    <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-white"></lucide-icon>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gallery Upload Section -->
-        <div class="col-span-2">
-            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                Gallery Images (Max 10)
-                <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- For project details page</span>
-            </label>
-            <label [class.opacity-50]="isUploadingGallery" [class.pointer-events-none]="isUploadingGallery"
-                class="w-full px-4 py-8 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 bg-zinc-50 dark:bg-zinc-800/50">
-                <lucide-icon [img]="UploadIcon" class="w-6 h-6 text-zinc-400"></lucide-icon>
-                <span class="text-sm text-zinc-600 dark:text-zinc-400">
-                    {{ isUploadingGallery ? 'Uploading images...' : 'Click to upload or drag and drop' }}
-                </span>
-                <span class="text-[10px] text-zinc-400">PNG, JPG, GIF up to 5MB each</span>
-                <input type="file" accept="image/*" multiple (change)="onGalleryFilesSelected($event)" class="hidden">
-            </label>
-
-            <!-- Gallery Preview Grid -->
-            <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
-                <div *ngFor="let img of galleryImages; let i = index"
-                    class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                    <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
-                    <button (click)="removeGalleryImage(i)" type="button"
-                        class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
-                    </button>
-                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
-                        <span class="text-[8px] text-white font-bold">{{ i + 1 }}</span>
+        <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
+            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Images</h3>
+            <div class="space-y-6">
+                <!-- Image Upload -->
+                <div class="col-span-2">
+                    <label for="project-image-url-form" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Project Image</label>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <input id="project-image-url-form" name="project-image-url-form" [ngModel]="imageUrl || ''" (ngModelChange)="imageUrlChange.emit($event)" placeholder="Image URL or upload below"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
+                        <label for="project-image-upload-form" [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
+                            class="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all cursor-pointer flex items-center gap-2">
+                            <lucide-icon [img]="UploadIcon" class="w-4 h-4"></lucide-icon>
+                            <span class="text-[10px] font-black uppercase tracking-widest">{{ isUploading ? 'Uploading...' : 'Upload' }}</span>
+                            <input id="project-image-upload-form" name="project-image-upload-form" type="file" accept="image/*" (change)="onImageFileSelected($event)" class="hidden">
+                        </label>
+                    </div>
+                    <!-- Image Preview -->
+                    <div *ngIf="imageUrl"
+                        class="mt-3 relative w-full h-40 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                        <img [src]="getFullImageUrl(imageUrl)" alt="Preview" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-3">
+                            <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-white"></lucide-icon>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Gallery Upload Section -->
+                <div class="col-span-2">
+                    <label for="gallery-images-upload-form" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
+                        Gallery Images (Max 10)
+                        <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- For project details page</span>
+                    </label>
+                    <label for="gallery-images-upload-form" [class.opacity-50]="isUploadingGallery" [class.pointer-events-none]="isUploadingGallery"
+                        class="w-full px-4 py-8 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 bg-white dark:bg-zinc-800/50">
+                        <lucide-icon [img]="UploadIcon" class="w-6 h-6 text-zinc-400"></lucide-icon>
+                        <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                            {{ isUploadingGallery ? 'Uploading images...' : 'Click to upload or drag and drop' }}
+                        </span>
+                        <span class="text-[10px] text-zinc-400">PNG, JPG, GIF up to 5MB each</span>
+                        <input id="gallery-images-upload-form" name="gallery-images-upload-form" type="file" accept="image/*" multiple (change)="onGalleryFilesSelected($event)" class="hidden">
+                    </label>
+
+                    <!-- Gallery Preview Grid -->
+                    <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
+                        <div *ngFor="let img of galleryImages; let i = index"
+                            class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                            <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
+                            <button (click)="removeGalleryImage(i)" type="button"
+                                class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
+                            </button>
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
+                                <span class="text-[8px] text-white font-bold">{{ i + 1 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p *ngIf="galleryImages.length > 0" class="text-[10px] text-zinc-400 mt-2">
+                        {{ galleryImages.length }} / 10 images uploaded
+                    </p>
+                </div>
             </div>
-            <p *ngIf="galleryImages.length > 0" class="text-[10px] text-zinc-400 mt-2">
-                {{ galleryImages.length }} / 10 images uploaded
-            </p>
         </div>
     `
 })

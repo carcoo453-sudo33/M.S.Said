@@ -60,6 +60,12 @@ public class ProjectsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ProjectDto>> CreateProject(ProjectDto dto)
     {
+        Console.WriteLine($"[CreateProject] Request: {JsonSerializer.Serialize(dto)}");
+        if (string.IsNullOrWhiteSpace(dto.Title))
+        {
+            return BadRequest(new { message = "Project Title is required" });
+        }
+
         var entry = new ProjectEntry
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
@@ -84,22 +90,43 @@ public class ProjectsController : ControllerBase
             Duration = dto.Duration,
             Language = dto.Language,
             Architecture = dto.Architecture,
-            Status = dto.Status,
+            Status = dto.Status ?? "Active",
             Order = dto.Order,
             IsFeatured = dto.IsFeatured,
             Views = dto.Views,
             ReactionsCount = dto.ReactionsCount,
-            Slug = dto.Title.ToLower().Replace(" ", "-"),
-            GalleryJson = JsonSerializer.Serialize(dto.Gallery),
-            ResponsibilitiesJson = JsonSerializer.Serialize(dto.Responsibilities)
+            Slug = !string.IsNullOrWhiteSpace(dto.Slug) ? dto.Slug : dto.Title.ToLower().Replace(" ", "-").Replace("/", "-"),
+            GalleryJson = JsonSerializer.Serialize(dto.Gallery ?? new List<string>()),
+            ResponsibilitiesJson = JsonSerializer.Serialize(dto.Responsibilities ?? new List<ResponsibilityDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
         };
 
         // Map sub-collections if provided
-        if (dto.KeyFeatures != null)
-            entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList();
+        if (dto.KeyFeatures != null && dto.KeyFeatures.Any())
+        {
+            Console.WriteLine($"[CreateProject] Adding {dto.KeyFeatures.Count} Features");
+            entry.KeyFeatures = dto.KeyFeatures.Select(f => new Entities.ProjectKeyFeature 
+            { 
+                Icon = f.Icon ?? "Layers", 
+                Title = f.Title ?? "Feature", 
+                Title_Ar = f.Title_Ar, 
+                Description = f.Description ?? "", 
+                Description_Ar = f.Description_Ar 
+            }).ToList();
+        }
             
-        if (dto.Changelog != null)
-            entry.Changelog = dto.Changelog.Select(c => new Entities.ProjectChangelogItem { Date = c.Date, Version = c.Version, Title = c.Title, Title_Ar = c.Title_Ar, Description = c.Description, Description_Ar = c.Description_Ar }).ToList();
+        if (dto.Changelog != null && dto.Changelog.Any())
+        {
+            Console.WriteLine($"[CreateProject] Adding {dto.Changelog.Count} Changelog Items");
+            entry.Changelog = dto.Changelog.Select(c => new Entities.ProjectChangelogItem 
+            { 
+                Date = c.Date ?? DateTime.UtcNow.ToString("MMM dd, yyyy"), 
+                Version = c.Version ?? "1.0.0", 
+                Title = c.Title ?? "Version Update", 
+                Title_Ar = c.Title_Ar, 
+                Description = c.Description ?? "", 
+                Description_Ar = c.Description_Ar 
+            }).ToList();
+        }
 
         await _unitOfWork.Repository<ProjectEntry>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
@@ -110,6 +137,11 @@ public class ProjectsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProject(Guid id, ProjectDto dto)
     {
+        Console.WriteLine($"[UpdateProject] ID: {id}");
+        Console.WriteLine($"[UpdateProject] dto.Responsibilities: {(dto.Responsibilities != null ? dto.Responsibilities.Count.ToString() : "NULL")}");
+        Console.WriteLine($"[UpdateProject] dto.Changelog: {(dto.Changelog != null ? dto.Changelog.Count.ToString() : "NULL")}");
+        Console.WriteLine($"[UpdateProject] dto.KeyFeatures: {(dto.KeyFeatures != null ? dto.KeyFeatures.Count.ToString() : "NULL")}");
+
         var repository = _unitOfWork.Repository<ProjectEntry>();
         var project = await repository.Query()
             .Include(p => p.KeyFeatures)
@@ -119,9 +151,9 @@ public class ProjectsController : ControllerBase
         
         if (project == null) return NotFound();
 
-        project.Title = dto.Title;
+        project.Title = dto.Title ?? project.Title;
         project.Title_Ar = dto.Title_Ar;
-        project.Description = dto.Description;
+        project.Description = dto.Description ?? project.Description;
         project.Description_Ar = dto.Description_Ar;
         project.Summary = dto.Summary;
         project.Summary_Ar = dto.Summary_Ar;
@@ -138,12 +170,12 @@ public class ProjectsController : ControllerBase
         project.Company = dto.Company;
         project.Company_Ar = dto.Company_Ar;
         project.Duration = dto.Duration;
-        project.Duration_Ar = dto.Duration_Ar;
+        project.Duration_Ar = dto.Duration_Ar; // Ensure this exists on DTO
         project.Language = dto.Language;
         project.Language_Ar = dto.Language_Ar;
         project.Architecture = dto.Architecture;
         project.Architecture_Ar = dto.Architecture_Ar;
-        project.Status = dto.Status;
+        project.Status = dto.Status ?? project.Status;
         project.Status_Ar = dto.Status_Ar;
         project.Order = dto.Order;
         project.IsFeatured = dto.IsFeatured;
@@ -151,58 +183,68 @@ public class ProjectsController : ControllerBase
         project.ReactionsCount = dto.ReactionsCount;
         project.UpdatedAt = DateTime.UtcNow;
         
-        project.GalleryJson = JsonSerializer.Serialize(dto.Gallery);
-        project.ResponsibilitiesJson = JsonSerializer.Serialize(dto.Responsibilities);
+        project.GalleryJson = JsonSerializer.Serialize(dto.Gallery ?? new List<string>());
+        project.ResponsibilitiesJson = JsonSerializer.Serialize(dto.Responsibilities ?? new List<ResponsibilityDto>(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
         // Update KeyFeatures - Remove existing and add new
         var featureRepo = _unitOfWork.Repository<Entities.ProjectKeyFeature>();
-        var existingFeatures = await featureRepo.Query()
-            .Where(f => f.ProjectEntryId == id)
-            .ToListAsync();
+        var existingFeatures = project.KeyFeatures.ToList();
         foreach (var feature in existingFeatures)
         {
             featureRepo.Delete(feature);
         }
+        project.KeyFeatures.Clear();
         
-        foreach (var f in dto.KeyFeatures)
+        if (dto.KeyFeatures != null && dto.KeyFeatures.Any())
         {
-            await featureRepo.AddAsync(new Entities.ProjectKeyFeature 
-            { 
-                Icon = f.Icon, 
-                Title = f.Title,
-                Title_Ar = f.Title_Ar,
-                Description = f.Description,
-                Description_Ar = f.Description_Ar,
-                ProjectEntryId = project.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            });
+            Console.WriteLine($"[UpdateProject] Updating {dto.KeyFeatures.Count} Features");
+            foreach (var f in dto.KeyFeatures)
+            {
+                var newFeature = new Entities.ProjectKeyFeature 
+                { 
+                    Icon = f.Icon ?? "Layers", 
+                    Title = f.Title ?? "Feature",
+                    Title_Ar = f.Title_Ar,
+                    Description = f.Description ?? "",
+                    Description_Ar = f.Description_Ar,
+                    ProjectEntryId = project.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await featureRepo.AddAsync(newFeature);
+                project.KeyFeatures.Add(newFeature);
+            }
         }
 
         // Update Changelog - Remove existing and add new
         var changelogRepo = _unitOfWork.Repository<Entities.ProjectChangelogItem>();
-        var existingChangelog = await changelogRepo.Query()
-            .Where(c => c.ProjectEntryId == id)
-            .ToListAsync();
+        var existingChangelog = project.Changelog.ToList();
         foreach (var item in existingChangelog)
         {
             changelogRepo.Delete(item);
         }
+        project.Changelog.Clear();
         
-        foreach (var c in dto.Changelog)
+        if (dto.Changelog != null && dto.Changelog.Any())
         {
-            await changelogRepo.AddAsync(new Entities.ProjectChangelogItem
+            Console.WriteLine($"[UpdateProject] Updating {dto.Changelog.Count} Changelog Items");
+            foreach (var c in dto.Changelog)
             {
-                Date = c.Date,
-                Version = c.Version,
-                Title = c.Title,
-                Title_Ar = c.Title_Ar,
-                Description = c.Description,
-                Description_Ar = c.Description_Ar,
-                ProjectEntryId = project.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            });
+                var newItem = new Entities.ProjectChangelogItem
+                {
+                    Date = c.Date ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
+                    Version = c.Version ?? "1.0.0",
+                    Title = c.Title ?? "Version Update",
+                    Title_Ar = c.Title_Ar,
+                    Description = c.Description ?? "",
+                    Description_Ar = c.Description_Ar,
+                    ProjectEntryId = project.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await changelogRepo.AddAsync(newItem);
+                project.Changelog.Add(newItem);
+            }
         }
 
         await _unitOfWork.CompleteAsync();
@@ -246,7 +288,7 @@ public class ProjectsController : ControllerBase
             ReactionsCount = p.ReactionsCount,
             CreatedAt = p.CreatedAt,
             Gallery = !string.IsNullOrEmpty(p.GalleryJson) ? JsonSerializer.Deserialize<List<string>>(p.GalleryJson) ?? new() : new(),
-            Responsibilities = !string.IsNullOrEmpty(p.ResponsibilitiesJson) ? JsonSerializer.Deserialize<List<string>>(p.ResponsibilitiesJson) ?? new() : new(),
+            Responsibilities = SafeDeserializeResponsibilities(p.ResponsibilitiesJson),
             KeyFeatures = p.KeyFeatures?.Select(f => new KeyFeatureDto { Icon = f.Icon, Title = f.Title, Title_Ar = f.Title_Ar, Description = f.Description, Description_Ar = f.Description_Ar }).ToList() ?? new(),
             Changelog = p.Changelog?.Select(c => new ChangelogItemDto { Date = c.Date, Version = c.Version, Title = c.Title, Title_Ar = c.Title_Ar, Description = c.Description, Description_Ar = c.Description_Ar }).ToList() ?? new(),
             Comments = p.Comments?.Select(c => new CommentDto 
@@ -261,6 +303,36 @@ public class ProjectsController : ControllerBase
             }).ToList() ?? new(),
             RelatedProjects = GetRelatedProjects(p.Id, p.Category).Result
         };
+    }
+
+    private List<ResponsibilityDto> SafeDeserializeResponsibilities(string? json)
+    {
+        if (string.IsNullOrEmpty(json)) return new List<ResponsibilityDto>();
+        
+        var options = new JsonSerializerOptions 
+        { 
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true 
+        };
+
+        try
+        {
+            // Try to deserialize as new format (List of objects)
+            return JsonSerializer.Deserialize<List<ResponsibilityDto>>(json, options) ?? new List<ResponsibilityDto>();
+        }
+        catch
+        {
+            try
+            {
+                // Fallback to legacy string format ["step1", "step2"]
+                var strings = JsonSerializer.Deserialize<List<string>>(json, options) ?? new List<string>();
+                return strings.Select(s => new ResponsibilityDto { Text = s }).ToList();
+            }
+            catch
+            {
+                return new List<ResponsibilityDto>();
+            }
+        }
     }
 
     private async Task<List<ProjectSummaryDto>> GetRelatedProjects(Guid currentId, string? category)
@@ -518,287 +590,6 @@ public class ProjectsController : ControllerBase
         }
     }
 
-    [HttpPost("{projectId}/import-from-github")]
-    public async Task<ActionResult<ProjectDto>> ImportFromGitHub(Guid projectId, [FromBody] GitHubImportRequest request)
-    {
-        try
-        {
-            Console.WriteLine($"[ImportFromGitHub] ===== ENDPOINT HIT =====");
-            Console.WriteLine($"[ImportFromGitHub] Starting import for project {projectId}");
-            Console.WriteLine($"[ImportFromGitHub] Request object is null: {request == null}");
-            Console.WriteLine($"[ImportFromGitHub] GitHub URL: {request?.GitHubUrl ?? "NULL"}");
-
-            if (request == null || string.IsNullOrEmpty(request.GitHubUrl))
-            {
-                Console.WriteLine($"[ImportFromGitHub] Request or GitHub URL is null/empty");
-                return BadRequest(new { message = "GitHub URL is required" });
-            }
-
-            // Parse GitHub URL to extract owner and repo
-            var (owner, repo) = ParseGitHubUrl(request.GitHubUrl);
-            Console.WriteLine($"[ImportFromGitHub] Parsed - Owner: {owner}, Repo: {repo}");
-            
-            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(repo))
-            {
-                Console.WriteLine($"[ImportFromGitHub] Invalid GitHub URL format");
-                return BadRequest(new { message = "Invalid GitHub URL format. Use: https://github.com/owner/repo" });
-            }
-
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Portfolio-App");
-            if (!string.IsNullOrEmpty(request.GitHubToken))
-            {
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.GitHubToken}");
-            }
-
-            // Fetch data from GitHub
-            var features = new List<(string icon, string title, string description)>();
-            var responsibilities = new List<string>();
-            var releases = new List<GitHubRelease>();
-            GitHubRepository? repoData = null;
-
-            Console.WriteLine($"[ImportFromGitHub] Fetching README...");
-            var readmeUrl = $"https://api.github.com/repos/{owner}/{repo}/readme";
-            var readmeResponse = await httpClient.GetAsync(readmeUrl);
-            Console.WriteLine($"[ImportFromGitHub] README response: {readmeResponse.StatusCode}");
-            
-            if (readmeResponse.IsSuccessStatusCode)
-            {
-                var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
-                if (readmeDataResponse?.Content != null)
-                {
-                    var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
-                    Console.WriteLine($"[ImportFromGitHub] README content length: {readmeContent.Length}");
-                    ExtractFeaturesAndResponsibilitiesFromReadme(readmeContent, out features, out responsibilities);
-                    
-                    // If no features found, try to extract from description
-                    if (!features.Any() && repoData?.Description != null)
-                    {
-                        Console.WriteLine($"[ImportFromGitHub] No features in README, using repo description");
-                        features.Add(("Layers", "Project Overview", repoData.Description));
-                    }
-                }
-            }
-
-            Console.WriteLine($"[ImportFromGitHub] Fetching releases...");
-            var releasesUrl = $"https://api.github.com/repos/{owner}/{repo}/releases";
-            var releasesResponse = await httpClient.GetAsync(releasesUrl);
-            Console.WriteLine($"[ImportFromGitHub] Releases response: {releasesResponse.StatusCode}");
-            
-            if (releasesResponse.IsSuccessStatusCode)
-            {
-                var releasesData = await releasesResponse.Content.ReadFromJsonAsync<List<GitHubRelease>>();
-                if (releasesData != null)
-                {
-                    releases = releasesData;
-                    Console.WriteLine($"[ImportFromGitHub] Found {releases.Count} releases");
-                }
-            }
-
-            Console.WriteLine($"[ImportFromGitHub] Fetching repository stats...");
-            var repoUrl = $"https://api.github.com/repos/{owner}/{repo}";
-            var repoResponse = await httpClient.GetAsync(repoUrl);
-            Console.WriteLine($"[ImportFromGitHub] Repo response: {repoResponse.StatusCode}");
-            
-            if (repoResponse.IsSuccessStatusCode)
-            {
-                repoData = await repoResponse.Content.ReadFromJsonAsync<GitHubRepository>();
-                if (repoData != null)
-                {
-                    Console.WriteLine($"[ImportFromGitHub] Stars: {repoData.StargazersCount}, Forks: {repoData.ForksCount}");
-                }
-            }
-
-            // Fetch images from screenshots folder (try multiple common folder names)
-            Console.WriteLine($"[ImportFromGitHub] Fetching screenshots folder...");
-            string? mainImageUrl = null;
-            var galleryImageUrls = new List<string>();
-            
-            var screenshotFolders = new[] { "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media" };
-            
-            foreach (var folderName in screenshotFolders)
-            {
-                var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folderName}";
-                var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
-                Console.WriteLine($"[ImportFromGitHub] {folderName} response: {screenshotsResponse.StatusCode}");
-                
-                if (screenshotsResponse.IsSuccessStatusCode)
-                {
-                    var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
-                    if (screenshotsData != null && screenshotsData.Any())
-                    {
-                        Console.WriteLine($"[ImportFromGitHub] Found {screenshotsData.Count} items in {folderName} folder");
-                        
-                        // Filter only image files
-                        var imageFiles = screenshotsData
-                            .Where(f => f.Type == "file" && 
-                                   (f.Name.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".gif", StringComparison.OrdinalIgnoreCase) ||
-                                    f.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)))
-                            .ToList();
-                        
-                        Console.WriteLine($"[ImportFromGitHub] Found {imageFiles.Count} image files in {folderName}");
-                        
-                        if (imageFiles.Any())
-                        {
-                            // Find main image (prioritize main.*, screenshot.*, demo.*, preview.*)
-                            var mainImage = imageFiles.FirstOrDefault(f => 
-                                f.Name.StartsWith("main.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("screenshot.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("demo.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.StartsWith("preview.", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.png", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                f.Name.Equals("main.jpeg", StringComparison.OrdinalIgnoreCase));
-                            
-                            if (mainImage != null)
-                            {
-                                mainImageUrl = mainImage.DownloadUrl;
-                                Console.WriteLine($"[ImportFromGitHub] Found main image: {mainImage.Name}");
-                            }
-                            else if (imageFiles.Any())
-                            {
-                                // Use first image as main if no main image found
-                                mainImageUrl = imageFiles.First().DownloadUrl;
-                                Console.WriteLine($"[ImportFromGitHub] Using first image as main: {imageFiles.First().Name}");
-                            }
-                            
-                            // Add other images to gallery (excluding the main image)
-                            var additionalImages = imageFiles
-                                .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
-                                .Take(10 - galleryImageUrls.Count) // Don't exceed 10 total gallery images
-                                .Select(f => f.DownloadUrl!)
-                                .ToList();
-                            
-                            galleryImageUrls.AddRange(additionalImages);
-                            Console.WriteLine($"[ImportFromGitHub] Added {additionalImages.Count} images to gallery");
-                            
-                            // If we found images, break out of the loop
-                            if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any())
-                            {
-                                Console.WriteLine($"[ImportFromGitHub] Found images in {folderName}, stopping search");
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (string.IsNullOrEmpty(mainImageUrl) && !galleryImageUrls.Any())
-            {
-                Console.WriteLine($"[ImportFromGitHub] No images found in any screenshot folders");
-            }
-            else
-            {
-                Console.WriteLine($"[ImportFromGitHub] Final result - Main image: {!string.IsNullOrEmpty(mainImageUrl)}, Gallery images: {galleryImageUrls.Count}");
-            }
-
-            // Now update the database with fetched data
-            var repository = _unitOfWork.Repository<ProjectEntry>();
-            var project = await repository.GetByIdAsync(projectId);
-            
-            if (project == null)
-            {
-                Console.WriteLine($"[ImportFromGitHub] Project not found: {projectId}");
-                return NotFound(new { message = "Project not found" });
-            }
-
-            // Update language if available
-            if (repoData != null && !string.IsNullOrEmpty(repoData.Language))
-            {
-                project.Language = repoData.Language;
-            }
-
-            // Update main image if found
-            if (!string.IsNullOrEmpty(mainImageUrl))
-            {
-                project.ImageUrl = mainImageUrl;
-                Console.WriteLine($"[ImportFromGitHub] Set main image URL");
-            }
-
-            // Update gallery images if found
-            if (galleryImageUrls.Any())
-            {
-                project.GalleryJson = JsonSerializer.Serialize(galleryImageUrls);
-                Console.WriteLine($"[ImportFromGitHub] Set gallery with {galleryImageUrls.Count} images");
-            }
-
-            // Update responsibilities JSON
-            if (responsibilities.Any())
-            {
-                project.ResponsibilitiesJson = JsonSerializer.Serialize(responsibilities.Take(10).ToList());
-            }
-
-            project.UpdatedAt = DateTime.UtcNow;
-            
-            // Save project changes first
-            await _unitOfWork.CompleteAsync();
-            Console.WriteLine($"[ImportFromGitHub] Project updated");
-
-            // Add features if any
-            if (features.Any())
-            {
-                var featureRepo = _unitOfWork.Repository<Entities.ProjectKeyFeature>();
-                foreach (var (icon, title, description) in features.Take(8))
-                {
-                    await featureRepo.AddAsync(new Entities.ProjectKeyFeature
-                    {
-                        Icon = icon,
-                        Title = title,
-                        Description = description,
-                        ProjectEntryId = projectId,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    });
-                }
-                await _unitOfWork.CompleteAsync();
-                Console.WriteLine($"[ImportFromGitHub] Added {features.Count} features");
-            }
-
-            // Add changelog if any and project doesn't have changelog
-            var changelogRepo = _unitOfWork.Repository<Entities.ProjectChangelogItem>();
-            var existingChangelog = await changelogRepo.Query()
-                .Where(c => c.ProjectEntryId == projectId && !c.IsDeleted)
-                .CountAsync();
-                
-            if (releases.Any() && existingChangelog == 0)
-            {
-                foreach (var release in releases.Take(10))
-                {
-                    await changelogRepo.AddAsync(new Entities.ProjectChangelogItem
-                    {
-                        Date = release.PublishedAt?.ToString("MMM dd, yyyy") ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
-                        Version = release.TagName ?? "v1.0.0",
-                        Title = release.Name ?? release.TagName ?? "Release",
-                        Description = release.Body?.Length > 200 ? release.Body.Substring(0, 200) + "..." : release.Body ?? "",
-                        ProjectEntryId = projectId,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    });
-                }
-                await _unitOfWork.CompleteAsync();
-                Console.WriteLine($"[ImportFromGitHub] Added {releases.Count} changelog items");
-            }
-
-            // Fetch the updated project with all includes
-            var updatedProject = await repository.Query()
-                .Include(p => p.KeyFeatures)
-                .Include(p => p.Changelog)
-                .Include(p => p.Comments)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
-
-            Console.WriteLine($"[ImportFromGitHub] Import completed successfully");
-            return Ok(MapToDto(updatedProject!));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[ImportFromGitHub] ERROR: {ex.Message}");
-            Console.WriteLine($"[ImportFromGitHub] Stack trace: {ex.StackTrace}");
-            return BadRequest(new { message = "Failed to import from GitHub", error = ex.Message, details = ex.ToString() });
-        }
-    }
 
     private void ExtractFeaturesAndResponsibilitiesFromReadme(string readme, 
         out List<(string icon, string title, string description)> features, 
@@ -1163,240 +954,283 @@ public class ProjectsController : ControllerBase
         return Ok(new { status = "healthy", timestamp = DateTime.UtcNow, version = "1.0" });
     }
 
-    [Authorize]
+    // [Authorize] // Temporarily disabled for development
     [HttpPost("import-from-url")]
     public async Task<ActionResult<ProjectDto>> ImportFromUrl([FromBody] GitHubImportRequest request)
     {
         try
         {
-            if (request == null || string.IsNullOrEmpty(request.GitHubUrl))
+            var url = request.Url ?? request.GitHubUrl;
+            Console.WriteLine($"[ImportFromUrl] ===== STARTING NEW IMPORT =====");
+            Console.WriteLine($"[ImportFromUrl] URL: {url ?? "NULL"}");
+
+            if (string.IsNullOrWhiteSpace(url))
             {
                 return BadRequest(new { message = "GitHub URL is required" });
             }
 
-            // Parse GitHub URL to extract owner and repo
-            var (owner, repo) = ParseGitHubUrl(request.GitHubUrl);
-            
-            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(repo))
-            {
-                return BadRequest(new { message = "Invalid GitHub URL format. Use: https://github.com/owner/repo" });
-            }
-
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Portfolio-App");
-            if (!string.IsNullOrEmpty(request.GitHubToken))
-            {
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.GitHubToken}");
-            }
-
-            // Fetch data from GitHub
-            var features = new List<(string icon, string title, string description)>();
-            var responsibilities = new List<string>();
-            var releases = new List<GitHubRelease>();
-            GitHubRepository? repoData = null;
-
-            // Fetch README
-            var readmeUrl = $"https://api.github.com/repos/{owner}/{repo}/readme";
-            var readmeResponse = await httpClient.GetAsync(readmeUrl);
-            
-            if (readmeResponse.IsSuccessStatusCode)
-            {
-                var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
-                if (readmeDataResponse?.Content != null)
-                {
-                    var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
-                    ExtractFeaturesAndResponsibilitiesFromReadme(readmeContent, out features, out responsibilities);
-                }
-            }
-
-            // Fetch releases
-            var releasesUrl = $"https://api.github.com/repos/{owner}/{repo}/releases";
-            var releasesResponse = await httpClient.GetAsync(releasesUrl);
-            
-            if (releasesResponse.IsSuccessStatusCode)
-            {
-                var releasesData = await releasesResponse.Content.ReadFromJsonAsync<List<GitHubRelease>>();
-                if (releasesData != null)
-                {
-                    releases = releasesData;
-                }
-            }
-
-            // Fetch repository stats
-            var repoUrl = $"https://api.github.com/repos/{owner}/{repo}";
-            var repoResponse = await httpClient.GetAsync(repoUrl);
-            
-            if (repoResponse.IsSuccessStatusCode)
-            {
-                repoData = await repoResponse.Content.ReadFromJsonAsync<GitHubRepository>();
-            }
-
-            // Fetch images from screenshots folder (try multiple common folder names)
-            string? mainImageUrl = null;
-            var galleryImageUrls = new List<string>();
-            
-            var screenshotFolders = new[] { 
-                "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media", 
-                "public/images", "src/assets", "assets/images", "static/images", "img", 
-                "docs/assets", "preview", "demo", ".github/images", "resources", "pics" 
-            };
-            
-            foreach (var folderName in screenshotFolders)
-            {
-                var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folderName}";
-                var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
-                
-                if (screenshotsResponse.IsSuccessStatusCode)
-                {
-                    var screenshotsData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
-                    if (screenshotsData != null && screenshotsData.Any())
-                    {
-                        // Filter only image files (more comprehensive list)
-                        var imageFiles = screenshotsData
-                            .Where(f => f.Type == "file" && IsImageFile(f.Name))
-                            .ToList();
-                        
-                        if (imageFiles.Any())
-                        {
-                            Console.WriteLine($"[ImageExtraction] Found {imageFiles.Count} images in {folderName}");
-                            
-                            // Find main image (prioritize main.*, screenshot.*, demo.*, preview.*)
-                            var mainImage = imageFiles.FirstOrDefault(f => 
-                                IsMainImageFile(f.Name)) ?? imageFiles.First();
-                            
-                            if (mainImage != null && !string.IsNullOrEmpty(mainImage.DownloadUrl))
-                            {
-                                mainImageUrl = mainImage.DownloadUrl;
-                                Console.WriteLine($"[ImageExtraction] Set main image: {mainImage.Name}");
-                            }
-                            
-                            // Add other images to gallery (excluding the main image)
-                            var additionalImages = imageFiles
-                                .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
-                                .Take(15 - galleryImageUrls.Count) // Allow up to 15 gallery images
-                                .Select(f => f.DownloadUrl!)
-                                .ToList();
-                            
-                            galleryImageUrls.AddRange(additionalImages);
-                            Console.WriteLine($"[ImageExtraction] Added {additionalImages.Count} gallery images");
-                            
-                            // If we found images, break out of the loop
-                            if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any())
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Enhanced tag extraction from GitHub topics, languages, and README
-            var tags = new List<string>();
-            
-            // Add GitHub topics
-            if (repoData?.Topics != null && repoData.Topics.Any())
-            {
-                tags.AddRange(repoData.Topics);
-                Console.WriteLine($"[TagExtraction] Added {repoData.Topics.Count} topics: {string.Join(", ", repoData.Topics)}");
-            }
-            
-            // Add primary language
-            if (!string.IsNullOrEmpty(repoData?.Language))
-            {
-                tags.Add(repoData.Language);
-                Console.WriteLine($"[TagExtraction] Added primary language: {repoData.Language}");
-            }
-            
-            // Try to get languages from GitHub API
-            var languagesUrl = $"https://api.github.com/repos/{owner}/{repo}/languages";
-            var languagesResponse = await httpClient.GetAsync(languagesUrl);
-            
-            if (languagesResponse.IsSuccessStatusCode)
-            {
-                var languagesData = await languagesResponse.Content.ReadFromJsonAsync<Dictionary<string, int>>();
-                if (languagesData != null && languagesData.Any())
-                {
-                    // Add top 5 languages by usage
-                    var topLanguages = languagesData
-                        .OrderByDescending(l => l.Value)
-                        .Take(5)
-                        .Select(l => l.Key)
-                        .Where(lang => !tags.Contains(lang, StringComparer.OrdinalIgnoreCase));
-                    
-                    tags.AddRange(topLanguages);
-                    Console.WriteLine($"[TagExtraction] Added languages: {string.Join(", ", topLanguages)}");
-                }
-            }
-            
-            // Extract additional tags from README content
-            if (readmeResponse.IsSuccessStatusCode)
-            {
-                var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
-                if (readmeDataResponse?.Content != null)
-                {
-                    var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
-                    var readmeTags = ExtractTagsFromReadme(readmeContent);
-                    
-                    foreach (var tag in readmeTags.Where(t => !tags.Contains(t, StringComparer.OrdinalIgnoreCase)))
-                    {
-                        tags.Add(tag);
-                    }
-                    
-                    Console.WriteLine($"[TagExtraction] Added README tags: {string.Join(", ", readmeTags)}");
-                }
-            }
-            
-            // Clean and deduplicate tags
-            var finalTags = tags
-                .Where(t => !string.IsNullOrWhiteSpace(t))
-                .Select(t => t.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Take(20) // Limit to 20 tags
-                .ToList();
-                
-            Console.WriteLine($"[TagExtraction] Final tags ({finalTags.Count}): {string.Join(", ", finalTags)}");
-
-            // Build DTO with imported data
-            var dto = new ProjectDto
-            {
-                Id = Guid.Empty,
-                Title = repoData?.Name?.Replace("-", " ").Replace("_", " ") ?? repo.Replace("-", " ").Replace("_", " "),
-                Description = repoData?.Description ?? "",
-                Summary = repoData?.Description ?? "",
-                GitHubUrl = request.GitHubUrl,
-                ProjectUrl = repoData?.Homepage ?? "",
-                Language = repoData?.Language ?? "Multiple Languages",
-                Duration = DateTime.UtcNow.Year.ToString(),
-                Architecture = "Scalable Architecture",
-                Status = "Active",
-                Category = DetermineCategory(repoData?.Language, finalTags),
-                Tags = string.Join(", ", finalTags),
-                ImageUrl = mainImageUrl, // Set main image from screenshots
-                Gallery = galleryImageUrls, // Set gallery images from screenshots
-                Responsibilities = responsibilities.Take(15).ToList(),
-                KeyFeatures = features.Take(10).Select(f => new KeyFeatureDto
-                {
-                    Icon = f.icon,
-                    Title = f.title,
-                    Description = f.description
-                }).ToList(),
-                Changelog = releases.Take(10).Select(r => new ChangelogItemDto
-                {
-                    Date = r.PublishedAt?.ToString("MMM dd, yyyy") ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
-                    Version = r.TagName ?? "v1.0.0",
-                    Title = r.Name ?? r.TagName ?? "Release",
-                    Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? ""
-                }).ToList()
-            };
-
-            Console.WriteLine($"[ImportResult] Final DTO - Features: {dto.KeyFeatures.Count}, Responsibilities: {dto.Responsibilities.Count}, Tags: {dto.Tags}, Images: Main={!string.IsNullOrEmpty(dto.ImageUrl)}, Gallery={dto.Gallery.Count}");
-
-            return Ok(dto);
+            return await ExecuteGitHubImport(null, url, request.GitHubToken);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = $"Failed to import from GitHub: {ex.Message}" });
+            Console.WriteLine($"[ImportFromUrl] EXCEPTION: {ex.Message}");
+            return StatusCode(500, new { message = $"Failed to import: {ex.Message}", details = ex.ToString() });
         }
+    }
+
+    // [Authorize] // Temporarily disabled for development
+    [HttpPost("{projectId}/import-from-github")]
+    public async Task<ActionResult<ProjectDto>> SyncWithGitHub(Guid projectId, [FromBody] GitHubImportRequest request)
+    {
+        try
+        {
+            var url = request.Url ?? request.GitHubUrl;
+            Console.WriteLine($"[SyncWithGitHub] ===== STARTING SYNC =====");
+            Console.WriteLine($"[SyncWithGitHub] Project ID: {projectId}");
+            Console.WriteLine($"[SyncWithGitHub] URL: {url ?? "NULL"}");
+
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return BadRequest(new { message = "GitHub URL is required" });
+            }
+
+            return await ExecuteGitHubImport(projectId, url, request.GitHubToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[SyncWithGitHub] EXCEPTION: {ex.Message}");
+            return StatusCode(500, new { message = $"Failed to sync: {ex.Message}", details = ex.ToString() });
+        }
+    }
+
+    private async Task<ActionResult<ProjectDto>> ExecuteGitHubImport(Guid? projectId, string githubUrl, string? token)
+    {
+        // Parse GitHub URL to extract owner and repo
+        var (owner, repo) = ParseGitHubUrl(githubUrl);
+        
+        if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(repo))
+        {
+            return BadRequest(new { message = "Invalid GitHub URL format. Use: https://github.com/owner/repo" });
+        }
+
+        using var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Add("User-Agent", "Portfolio-App");
+        if (!string.IsNullOrEmpty(token))
+        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+        }
+
+        // Fetch data from GitHub
+        var featuresContent = new List<(string icon, string title, string description)>();
+        var responsibilitiesList = new List<string>();
+        var releasesData = new List<GitHubRelease>();
+        GitHubRepository? repoData = null;
+
+        // Fetch README
+        var readmeUrl = $"https://api.github.com/repos/{owner}/{repo}/readme";
+        var readmeResponse = await httpClient.GetAsync(readmeUrl);
+        
+        if (readmeResponse.IsSuccessStatusCode)
+        {
+            var readmeDataResponse = await readmeResponse.Content.ReadFromJsonAsync<GitHubReadmeResponse>();
+            if (readmeDataResponse?.Content != null)
+            {
+                var readmeContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(readmeDataResponse.Content));
+                ExtractFeaturesAndResponsibilitiesFromReadme(readmeContent, out featuresContent, out responsibilitiesList);
+            }
+        }
+
+        // Fetch releases
+        var releasesUrl = $"https://api.github.com/repos/{owner}/{repo}/releases";
+        var releasesResponse = await httpClient.GetAsync(releasesUrl);
+        
+        if (releasesResponse.IsSuccessStatusCode)
+        {
+            var releasesList = await releasesResponse.Content.ReadFromJsonAsync<List<GitHubRelease>>();
+            if (releasesList != null)
+            {
+                releasesData = releasesList;
+            }
+        }
+
+        // Fetch repository stats
+        var repoStatsUrl = $"https://api.github.com/repos/{owner}/{repo}";
+        var repoStatsResponse = await httpClient.GetAsync(repoStatsUrl);
+        
+        if (repoStatsResponse.IsSuccessStatusCode)
+        {
+            repoData = await repoStatsResponse.Content.ReadFromJsonAsync<GitHubRepository>();
+        }
+
+        // Fetch images from screenshots folder
+        string? mainImageUrl = null;
+        var galleryImageUrls = new List<string>();
+        
+        var screenshotFolders = new[] { 
+            "screenshots", "images", "assets", "docs/images", "docs/screenshots", "media", 
+            "public/images", "src/assets", "assets/images", "static/images", "img", 
+            "docs/assets", "preview", "demo", ".github/images", "resources", "pics" 
+        };
+        
+        foreach (var folderName in screenshotFolders)
+        {
+            var screenshotsUrl = $"https://api.github.com/repos/{owner}/{repo}/contents/{folderName}";
+            var screenshotsResponse = await httpClient.GetAsync(screenshotsUrl);
+            
+            if (screenshotsResponse.IsSuccessStatusCode)
+            {
+                var screenshotsFolderData = await screenshotsResponse.Content.ReadFromJsonAsync<List<GitHubContentItem>>();
+                if (screenshotsFolderData != null && screenshotsFolderData.Any())
+                {
+                    var imageFiles = screenshotsFolderData.Where(f => f.Type == "file" && IsImageFile(f.Name)).ToList();
+                    
+                    if (imageFiles.Any())
+                    {
+                        var mainImage = imageFiles.FirstOrDefault(f => IsMainImageFile(f.Name)) ?? imageFiles.First();
+                        if (mainImage != null && !string.IsNullOrEmpty(mainImage.DownloadUrl))
+                        {
+                            mainImageUrl = mainImage.DownloadUrl;
+                        }
+                        
+                        var additionalImages = imageFiles
+                            .Where(f => f.DownloadUrl != mainImageUrl && !string.IsNullOrEmpty(f.DownloadUrl))
+                            .Take(15 - galleryImageUrls.Count)
+                            .Select(f => f.DownloadUrl!)
+                            .ToList();
+                        
+                        galleryImageUrls.AddRange(additionalImages);
+                        if (!string.IsNullOrEmpty(mainImageUrl) || galleryImageUrls.Any()) break;
+                    }
+                }
+            }
+        }
+
+        // Tag extraction
+        var tagsList = new List<string>();
+        if (repoData?.Topics != null) tagsList.AddRange(repoData.Topics);
+        if (!string.IsNullOrEmpty(repoData?.Language)) tagsList.Add(repoData.Language);
+        
+        var languagesUrl = $"https://api.github.com/repos/{owner}/{repo}/languages";
+        var languagesResponse = await httpClient.GetAsync(languagesUrl);
+        if (languagesResponse.IsSuccessStatusCode)
+        {
+            var langData = await languagesResponse.Content.ReadFromJsonAsync<Dictionary<string, int>>();
+            if (langData != null) tagsList.AddRange(langData.OrderByDescending(l => l.Value).Take(5).Select(l => l.Key));
+        }
+
+        var finalTags = tagsList.Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => t.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList();
+
+        // Construct DTO
+        var dto = new ProjectDto
+        {
+            Id = projectId ?? Guid.Empty,
+            Title = repoData?.Name?.Replace("-", " ").Replace("_", " ") ?? repo.Replace("-", " ").Replace("_", " "),
+            Description = repoData?.Description ?? "",
+            Summary = repoData?.Description ?? "",
+            GitHubUrl = githubUrl,
+            ProjectUrl = repoData?.Homepage ?? "",
+            Language = repoData?.Language ?? "Multiple Languages",
+            Duration = DateTime.UtcNow.Year.ToString(),
+            Architecture = "Scalable Architecture",
+            Status = "Active",
+            Category = DetermineCategory(repoData?.Language, finalTags),
+            Tags = string.Join(", ", finalTags),
+            ImageUrl = mainImageUrl,
+            Gallery = galleryImageUrls,
+            Responsibilities = responsibilitiesList.Take(15).Select(r => new ResponsibilityDto { Text = r }).ToList(),
+            KeyFeatures = featuresContent.Take(10).Select(f => new KeyFeatureDto { Icon = f.icon, Title = f.title, Description = f.description }).ToList(),
+            Changelog = releasesData.Take(10).Select(r => new ChangelogItemDto
+            {
+                Date = r.PublishedAt?.ToString("MMM dd, yyyy") ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
+                Version = r.TagName ?? "v1.0.0",
+                Title = r.Name ?? r.TagName ?? "Release",
+                Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? ""
+            }).ToList()
+        };
+
+        // If we have an existing project ID, update it in the database
+        if (projectId.HasValue && projectId.Value != Guid.Empty)
+        {
+            var project = await _unitOfWork.Repository<ProjectEntry>().Query()
+                .Include(p => p.KeyFeatures)
+                .Include(p => p.Changelog)
+                .FirstOrDefaultAsync(p => p.Id == projectId.Value);
+            if (project != null)
+            {
+                if (repoData != null && !string.IsNullOrEmpty(repoData.Language)) project.Language = repoData.Language;
+                if (!string.IsNullOrEmpty(mainImageUrl)) project.ImageUrl = mainImageUrl;
+                if (galleryImageUrls.Any()) project.GalleryJson = JsonSerializer.Serialize(galleryImageUrls);
+                
+                // Save responsibilities as objects for consistency
+                if (responsibilitiesList.Any()) 
+                {
+                    var respDtos = responsibilitiesList.Take(15).Select(r => new ResponsibilityDto { Text = r }).ToList();
+                    project.ResponsibilitiesJson = JsonSerializer.Serialize(respDtos, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                }
+                
+                project.UpdatedAt = DateTime.UtcNow;
+                await _unitOfWork.CompleteAsync();
+
+                // Update features - Clear existing first to avoid duplication
+                var featureRepo = _unitOfWork.Repository<Entities.ProjectKeyFeature>();
+                var existingFeatures = project.KeyFeatures.ToList();
+                foreach (var f in existingFeatures)
+                {
+                    featureRepo.Delete(f);
+                }
+                project.KeyFeatures.Clear();
+
+                if (featuresContent.Any())
+                {
+                    foreach (var f in featuresContent.Take(10))
+                    {
+                        var newFeature = new Entities.ProjectKeyFeature 
+                        { 
+                            Icon = f.icon, Title = f.title, Description = f.description, 
+                            ProjectEntryId = projectId.Value, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow 
+                        };
+                        await featureRepo.AddAsync(newFeature);
+                        project.KeyFeatures.Add(newFeature);
+                    }
+                }
+
+                // Update Changelog - Clear existing first and add new releases
+                var changelogRepo = _unitOfWork.Repository<Entities.ProjectChangelogItem>();
+                var existingChangelog = project.Changelog.ToList();
+                foreach (var c in existingChangelog)
+                {
+                    changelogRepo.Delete(c);
+                }
+                project.Changelog.Clear();
+
+                if (releasesData.Any())
+                {
+                    foreach (var r in releasesData.Take(10))
+                    {
+                        var newItem = new Entities.ProjectChangelogItem
+                        {
+                            Date = r.PublishedAt?.ToString("MMM dd, yyyy") ?? DateTime.UtcNow.ToString("MMM dd, yyyy"),
+                            Version = r.TagName ?? "v1.0.0",
+                            Title = r.Name ?? r.TagName ?? "Release",
+                            Description = r.Body?.Length > 200 ? r.Body.Substring(0, 200) + "..." : r.Body ?? "",
+                            ProjectEntryId = projectId.Value,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+                        await changelogRepo.AddAsync(newItem);
+                        project.Changelog.Add(newItem);
+                    }
+                }
+
+                await _unitOfWork.CompleteAsync();
+                
+                // Fetch updated
+                var updated = await repository.Query().Include(p => p.KeyFeatures).Include(p => p.Changelog).FirstOrDefaultAsync(p => p.Id == projectId.Value);
+                return Ok(MapToDto(updated!));
+            }
+        }
+
+        return Ok(dto);
     }
 
     [HttpGet("suggestions/tags")]

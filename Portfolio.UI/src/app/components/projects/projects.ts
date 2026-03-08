@@ -91,34 +91,7 @@ export class ProjectsComponent implements OnInit {
 
   // Computed
   highlightedProjects = computed(() => {
-    const projects = this.projects();
-    if (!projects || projects.length === 0) return [];
-
-    let mostVisited: ProjectEntry | null = null;
-    let featured: ProjectEntry | null = null;
-    let lastPublish: ProjectEntry | null = null;
-
-    // Sort projects by views descending
-    const byViews = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0));
-    mostVisited = byViews[0] || null;
-
-    // Sort projects by featured, preferring highest views or newest, excluding mostVisited
-    const featuredProjects = [...projects].filter(p => !!(p as any).isFeatured && p.id !== mostVisited?.id);
-    if (featuredProjects.length > 0) {
-      featured = featuredProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
-    } else {
-      // Fallback if no featured
-      featured = byViews.find(p => p.id !== mostVisited?.id) || null;
-    }
-
-    // Sort projects by latest, excluding mostVisited and featured
-    const byLatest = [...projects]
-      .filter(p => p.id !== mostVisited?.id && p.id !== featured?.id)
-      .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
-    lastPublish = byLatest[0] || null;
-
-    // Return just the projects, the centralized card component handles the display
-    return [mostVisited, featured, lastPublish].filter(p => p != null) as ProjectEntry[];
+    return this.projectService.getProjectHighlights(this.projects());
   });
 
   ngOnInit() {

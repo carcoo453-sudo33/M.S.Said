@@ -6,9 +6,9 @@ namespace Portfolio.API.DTOs;
 public class ProjectDto
 {
     public Guid Id { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public string? Title { get; set; }
     public string? Title_Ar { get; set; }
-    public string Slug { get; set; } = string.Empty;
+    public string? Slug { get; set; }
     public string? Description { get; set; }
     public string? Description_Ar { get; set; }
     public string? Summary { get; set; }
@@ -36,7 +36,7 @@ public class ProjectDto
     
     public List<KeyFeatureDto> KeyFeatures { get; set; } = new();
     public List<ChangelogItemDto> Changelog { get; set; } = new();
-    public List<string> Responsibilities { get; set; } = new();
+    public List<ResponsibilityDto> Responsibilities { get; set; } = new();
     public List<CommentDto> Comments { get; set; } = new();
     
     public int ReactionsCount { get; set; }
@@ -59,21 +59,50 @@ public class ProjectSummaryDto
 
 public class KeyFeatureDto
 {
-    public string Icon { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("icon")]
+    public string? Icon { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("title")]
+    public string? Title { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("title_Ar")]
     public string? Title_Ar { get; set; }
-    public string Description { get; set; } = string.Empty;
+
+    [System.Text.Json.Serialization.JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("description_Ar")]
     public string? Description_Ar { get; set; }
 }
 
 public class ChangelogItemDto
 {
-    public string Date { get; set; } = string.Empty;
-    public string Version { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("date")]
+    public string? Date { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("version")]
+    public string? Version { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("title")]
+    public string? Title { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("title_Ar")]
     public string? Title_Ar { get; set; }
-    public string Description { get; set; } = string.Empty;
+
+    [System.Text.Json.Serialization.JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("description_Ar")]
     public string? Description_Ar { get; set; }
+}
+
+public class ResponsibilityDto
+{
+    [System.Text.Json.Serialization.JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("text_Ar")]
+    public string? Text_Ar { get; set; }
 }
 
 public class CommentDto
@@ -112,7 +141,13 @@ public class CreateReplyDto
 
 public class GitHubImportRequest
 {
-    public string GitHubUrl { get; set; } = string.Empty;
+    [System.Text.Json.Serialization.JsonPropertyName("gitHubUrl")]
+    public string? GitHubUrl { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("url")]
+    public string? Url { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("gitHubToken")]
     public string? GitHubToken { get; set; }
 }
 

@@ -14,7 +14,7 @@ import { environment } from '../../../../environments/environment';
     <aside class="md:sticky md:top-0 lg:sticky lg:top-0 h-fit">
         <div *ngIf="project" class="space-y-8 lg:space-y-10 mt-8 lg:mt-10">
         <!-- Changelog -->
-        <section class="space-y-6">
+        <section *ngIf="getFilteredChangelog().length > 0" class="space-y-6">
             <div class="flex items-center gap-3">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
                 <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.changelog' | translate }}</h2>
@@ -34,7 +34,7 @@ import { environment } from '../../../../environments/environment';
         </section>
 
         <!-- Related Projects -->
-        <section class="space-y-6">
+        <section *ngIf="project.relatedProjects && project.relatedProjects.length > 0" class="space-y-6">
             <div class="flex items-center gap-3">
                 <div class="w-1 h-6 bg-red-600 rounded-full"></div>
                 <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.related' | translate }}</h2>
@@ -64,42 +64,46 @@ export class ProjectDetailsSidebarComponent {
 
     getFilteredChangelog(): ChangelogItem[] {
         if (!this.project?.changelog) return [];
-        
-        const currentLang = this.translationService.currentLang$();
-        
-        // Filter changelog items that have content in the current language
+
+        // Filter out items that have no version AND no title in any language
         return this.project.changelog.filter(log => {
-            if (currentLang === 'ar') {
-                // For Arabic, show only if Arabic title exists and has content
-                return log.title_Ar && log.title_Ar.trim().length > 0;
-            } else {
-                // For English, show only if English title exists and has content
-                return log.title && log.title.trim().length > 0;
-            }
+            return (log.version && log.version.trim().length > 0) ||
+                (log.title && log.title.trim().length > 0) ||
+                (log.title_Ar && log.title_Ar.trim().length > 0);
         });
     }
 
     getChangelogTitle(log: ChangelogItem): string {
         const currentLang = this.translationService.currentLang$();
-        return currentLang === 'ar' && log.title_Ar ? log.title_Ar : log.title;
+
+        if (currentLang === 'ar') {
+            return (log.title_Ar && log.title_Ar.trim().length > 0) ? log.title_Ar : (log.title || '');
+        } else {
+            return (log.title && log.title.trim().length > 0) ? log.title : (log.title_Ar || '');
+        }
     }
 
     getChangelogDescription(log: ChangelogItem): string {
         const currentLang = this.translationService.currentLang$();
-        return currentLang === 'ar' && log.description_Ar ? log.description_Ar : log.description;
+
+        if (currentLang === 'ar') {
+            return (log.description_Ar && log.description_Ar.trim().length > 0) ? log.description_Ar : (log.description || '');
+        } else {
+            return (log.description && log.description.trim().length > 0) ? log.description : (log.description_Ar || '');
+        }
     }
 
     getFullImageUrl(imageUrl: string | undefined): string {
         if (!imageUrl) return '';
-        
+
         // If it's already a full URL (starts with http:// or https://), return as is
         if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
             return imageUrl;
         }
-        
+
         // If it starts with /, remove it to avoid double slashes
         const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-        
+
         // Construct full URL using the API base URL
         return `${environment.apiBaseUrl}/${cleanPath}`;
     }

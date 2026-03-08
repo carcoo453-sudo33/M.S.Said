@@ -292,7 +292,8 @@
     },
     "features": {
       "keyFeatures": "Key Features",
-      "responsibilities": "Responsibilities"
+      "responsibilities": "Responsibilities",
+      "moreFeatures": "More Features"
     },
     "sidebar": {
       "changelog": "Changelog",

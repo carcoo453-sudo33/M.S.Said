@@ -103,16 +103,12 @@ export class ProjectDetailsComponent implements OnInit {
   loadProject() {
     const slug = this.route.snapshot.paramMap.get('slug');
     console.log('Loading project with slug:', slug);
-    
+
     if (slug) {
       this.projectService.getProject(slug).subscribe({
         next: (data) => {
           console.log('Project loaded from API:', data);
-          console.log('Project ID from API:', data.id);
-          const enriched = this.enrichProjectData(data);
-          this.project.set(enriched);
-          console.log('Enriched project:', enriched);
-          console.log('Final project ID:', enriched.id);
+          this.project.set(data);
           // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
           setTimeout(() => {
             this.isLoading.set(false);
@@ -133,26 +129,6 @@ export class ProjectDetailsComponent implements OnInit {
         this.hasError.set(true);
       }, 0);
     }
-  }
-
-  enrichProjectData(project: ProjectEntry): ProjectEntry {
-    return {
-      ...project,
-      summary: project.summary || '',
-      gallery: project.gallery?.length ? project.gallery : [project.imageUrl || ''],
-      duration: project.duration || '',
-      language: project.language || '',
-      architecture: project.architecture || '',
-      status: project.status || '',
-      keyFeatures: project.keyFeatures?.length ? project.keyFeatures : [],
-      changelog: project.changelog?.length ? project.changelog : [],
-      responsibilities: project.responsibilities?.length ? project.responsibilities : [],
-      relatedProjects: project.relatedProjects || [],
-      comments: project.comments?.length ? project.comments : [],
-      reactionsCount: project.reactionsCount || 0,
-      projectUrl: project.projectUrl || '',
-      gitHubUrl: project.gitHubUrl || ''
-    };
   }
 
   onReact() {
@@ -180,10 +156,8 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onProjectUpdate(updatedProject: ProjectEntry) {
-    // Enrich the updated project data before setting it
-    const enriched = this.enrichProjectData(updatedProject);
-    this.project.set(enriched);
-    console.log('Project updated and enriched:', enriched);
+    this.project.set(updatedProject);
+    console.log('Project updated:', updatedProject);
   }
 
   onEditProject() {
@@ -191,7 +165,21 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   onProjectSaved(updatedProject: ProjectEntry) {
-    this.project.set(updatedProject);
+    // Re-fetch from server to get the fully normalized data with all collections populated
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (slug) {
+      this.projectService.getProject(slug).subscribe({
+        next: (freshProject) => {
+          this.project.set(freshProject);
+        },
+        error: () => {
+          // Fallback to the returned project if reload fails
+          this.project.set(this.projectService.normalizeProject(updatedProject));
+        }
+      });
+    } else {
+      this.project.set(this.projectService.normalizeProject(updatedProject));
+    }
     this.showEditModal.set(false);
   }
 

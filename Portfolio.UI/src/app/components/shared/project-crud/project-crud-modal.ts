@@ -3,27 +3,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, X, Save, Loader } from 'lucide-angular';
-import { ProjectEntry } from '../../../models';
+import { ProjectEntry, Responsibility } from '../../../models';
 import { ProjectCrudService, ProjectFormData } from './project-crud.service';
 import { ProjectService } from '../../../services/project.service';
 import { AuthService } from '../../../services/auth.service';
 
 // Import all the existing form components
-import { 
+import {
   ProjectFormBasicComponent,
   ProjectFormCategoriesComponent,
   ProjectFormTagsComponent,
-  ProjectFormImagesComponent
+  ProjectFormImagesComponent,
+  ProjectFormFeaturesComponent,
+  ProjectFormResponsibilitiesComponent,
+  ProjectFormChangelogComponent
 } from './forms';
 
 // Import manager components
-import { 
+import {
   ProjectImportManagerComponent,
-  ProjectKeyFeaturesManagerComponent,
-  ProjectResponsibilitiesManagerComponent,
-  ProjectChangelogManagerComponent,
-  ProjectCategoryManagerComponent,
-  ProjectNicheManagerComponent
+  ProjectSuggestionManagerComponent
 } from './managers';
 
 @Component({
@@ -38,12 +37,11 @@ import {
     ProjectFormCategoriesComponent,
     ProjectFormTagsComponent,
     ProjectFormImagesComponent,
+    ProjectFormFeaturesComponent,
+    ProjectFormResponsibilitiesComponent,
+    ProjectFormChangelogComponent,
     ProjectImportManagerComponent,
-    ProjectKeyFeaturesManagerComponent,
-    ProjectResponsibilitiesManagerComponent,
-    ProjectChangelogManagerComponent,
-    ProjectCategoryManagerComponent,
-    ProjectNicheManagerComponent
+    ProjectSuggestionManagerComponent
   ],
   template: `
     <!-- Main Modal -->
@@ -67,81 +65,58 @@ import {
         <div class="flex-1 overflow-y-auto p-6 space-y-8">
           
           <!-- Import Section (only for creation) -->
-          <div *ngIf="isCreating" class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <app-project-import-manager
-              [(editingProject)]="formData"
-              [(isImporting)]="isImporting"
-              [(importUrl)]="importUrl"
-              (responsibilitiesImported)="onResponsibilitiesImported($event)"
-              (keyFeaturesImported)="onKeyFeaturesImported($event)"
-              (changelogImported)="onChangelogImported($event)">
-            </app-project-import-manager>
-          </div>
+          <app-project-import-manager *ngIf="isCreating"
+            [(editingProject)]="formData"
+            [(isImporting)]="isImporting"
+            [(importUrl)]="importUrl"
+            (responsibilitiesImported)="onResponsibilitiesImported($event)"
+            (keyFeaturesImported)="onKeyFeaturesImported($event)"
+            (changelogImported)="onChangelogImported($event)">
+          </app-project-import-manager>
 
           <!-- Basic Information -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Basic Information</h3>
-            <app-project-form-basic 
-              [project]="formData"
-              [submitted]="submitted()">
-            </app-project-form-basic>
-          </div>
+          <app-project-form-basic 
+            [project]="formData"
+            [submitted]="submitted()">
+          </app-project-form-basic>
 
           <!-- Categories -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Categories</h3>
-            <app-project-form-categories 
-              [project]="formData"
-              [categories]="getCategorySuggestions()"
-              [categoryArSuggestions]="getCategoryArSuggestions()"
-              [nicheSuggestions]="getNicheSuggestions()"
-              [nicheArSuggestions]="getNicheArSuggestions()"
-              (manageCategoriesClick)="onManageCategoriesClick()"
-              (manageNichesClick)="onManageNichesClick()">
-            </app-project-form-categories>
-          </div>
+          <app-project-form-categories 
+            [project]="formData"
+            [categories]="getCategorySuggestions()"
+            [categoryArSuggestions]="getCategoryArSuggestions()"
+            [nicheSuggestions]="getNicheSuggestions()"
+            [nicheArSuggestions]="getNicheArSuggestions()"
+            (manageCategoriesClick)="onManageCategoriesClick()"
+            (manageNichesClick)="onManageNichesClick()">
+          </app-project-form-categories>
 
           <!-- Tags -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Tags</h3>
-            <app-project-form-tags 
-              [(selectedTags)]="selectedTags"
-              [techSuggestions]="getTagSuggestions()">
-            </app-project-form-tags>
-          </div>
+          <app-project-form-tags 
+            [(selectedTags)]="selectedTags"
+            [techSuggestions]="getTagSuggestions()">
+          </app-project-form-tags>
 
           <!-- Images -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Images</h3>
-            <app-project-form-images 
-              [imageUrl]="formData.imageUrl"
-              [(galleryImages)]="galleryImages">
-            </app-project-form-images>
-          </div>
+          <app-project-form-images 
+            [imageUrl]="formData.imageUrl"
+            [(galleryImages)]="galleryImages">
+          </app-project-form-images>
 
           <!-- Key Features -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Key Features</h3>
-            <app-project-key-features-manager 
-              [(keyFeatures)]="keyFeatures">
-            </app-project-key-features-manager>
-          </div>
+          <app-project-form-features 
+            [(keyFeatures)]="keyFeatures">
+          </app-project-form-features>
 
           <!-- Responsibilities -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Responsibilities</h3>
-            <app-project-responsibilities-manager 
-              [(responsibilities)]="responsibilities">
-            </app-project-responsibilities-manager>
-          </div>
+          <app-project-form-responsibilities 
+            [(responsibilities)]="responsibilities">
+          </app-project-form-responsibilities>
 
           <!-- Changelog -->
-          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6">
-            <h3 class="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Changelog</h3>
-            <app-project-changelog-manager 
-              [(changelog)]="changelog">
-            </app-project-changelog-manager>
-          </div>
+          <app-project-form-changelog 
+            [(changelog)]="changelog">
+          </app-project-form-changelog>
 
         </div>
 
@@ -165,15 +140,15 @@ import {
       </div>
     </div>
 
-    <!-- Category Management Overlay Modal -->
-    <div *ngIf="showCategoryManager()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" (click)="onCategoryManagerClosed()">
+    <!-- Suggestion Management Overlay Modal (Unified) -->
+    <div *ngIf="showSuggestionManager()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" (click)="onSuggestionManagerClosed()">
       <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
         
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
-          <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Manage Categories</h2>
+          <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Manage {{ suggestionTitle() }}</h2>
           <button 
-            (click)="onCategoryManagerClosed()"
+            (click)="onSuggestionManagerClosed()"
             class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
             <lucide-icon [img]="XIcon" class="w-5 h-5 text-zinc-500"></lucide-icon>
           </button>
@@ -181,35 +156,12 @@ import {
 
         <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6">
-          <app-project-category-manager 
-            [managedCategories]="managedCategories"
-            (categoriesUpdated)="onCategoriesUpdated()">
-          </app-project-category-manager>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Niche Management Overlay Modal -->
-    <div *ngIf="showNicheManager()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4" (click)="onNicheManagerClosed()">
-      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
-        
-        <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
-          <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Manage Niches</h2>
-          <button 
-            (click)="onNicheManagerClosed()"
-            class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
-            <lucide-icon [img]="XIcon" class="w-5 h-5 text-zinc-500"></lucide-icon>
-          </button>
-        </div>
-
-        <!-- Content -->
-        <div class="flex-1 overflow-y-auto p-6">
-          <app-project-niche-manager 
-            [managedNiches]="managedNiches"
-            (nichesUpdated)="onNichesUpdated()">
-          </app-project-niche-manager>
+          <app-project-suggestion-manager 
+            [title]="suggestionTitle()"
+            [type]="suggestionType()"
+            [items]="suggestionType() === 'category' ? managedCategories : managedNiches"
+            (updated)="onSuggestionsUpdated()">
+          </app-project-suggestion-manager>
         </div>
 
       </div>
@@ -224,7 +176,7 @@ export class ProjectCrudModalComponent implements OnChanges {
   @Input() project?: ProjectEntry | null = null;
   @Input() mode: 'create' | 'edit' = 'create';
   @Input() open = false;
-  
+
   @Output() projectSaved = new EventEmitter<ProjectEntry>();
   @Output() modalClosed = new EventEmitter<void>();
 
@@ -239,15 +191,16 @@ export class ProjectCrudModalComponent implements OnChanges {
   submitted = signal(false);
   isImporting = false;
   importUrl = '';
-  showCategoryManager = signal(false);
-  showNicheManager = signal(false);
+  showSuggestionManager = signal(false);
+  suggestionTitle = signal('');
+  suggestionType = signal<'category' | 'niche'>('category');
 
   // Form data
   formData: ProjectFormData = this.crudService.createEmptyFormData();
   selectedTags: string[] = [];
   galleryImages: string[] = [];
   keyFeatures: any[] = [];
-  responsibilities: string[] = [];
+  responsibilities: Responsibility[] = [];
   changelog: any[] = [];
   managedCategories: any[] = [];
   managedNiches: any[] = [];
@@ -259,7 +212,7 @@ export class ProjectCrudModalComponent implements OnChanges {
 
   ngOnChanges() {
     this.isOpen.set(this.open);
-    
+
     if (this.open) {
       this.initializeForm();
       this.loadCategoriesAndNiches();
@@ -285,7 +238,7 @@ export class ProjectCrudModalComponent implements OnChanges {
       this.responsibilities = [];
       this.changelog = [];
     }
-    
+
     this.submitted.set(false);
     this.importUrl = '';
   }
@@ -376,7 +329,7 @@ export class ProjectCrudModalComponent implements OnChanges {
   }
 
   // Event handlers for imported data
-  onResponsibilitiesImported(responsibilities: string[]) {
+  onResponsibilitiesImported(responsibilities: Responsibility[]) {
     this.responsibilities = [...responsibilities];
   }
 
@@ -388,45 +341,29 @@ export class ProjectCrudModalComponent implements OnChanges {
     this.changelog = [...changelog];
   }
 
-  // Event handlers for category and niche management
+  // Unified Suggestion Management
   onManageCategoriesClick() {
-    console.log('Manage Categories clicked!');
-    this.showCategoryManager.set(true);
+    this.suggestionTitle.set('Categories');
+    this.suggestionType.set('category');
+    this.showSuggestionManager.set(true);
   }
 
   onManageNichesClick() {
-    console.log('Manage Niches clicked!');
-    this.showNicheManager.set(true);
+    this.suggestionTitle.set('Niches');
+    this.suggestionType.set('niche');
+    this.showSuggestionManager.set(true);
   }
 
-  onCategoriesUpdated() {
-    // Reload categories list
-    this.projectService.getCategories().subscribe({
-      next: (categories) => {
-        this.managedCategories = categories;
-        console.log('Categories updated and reloaded:', categories);
-      },
-      error: (err) => console.error('Failed to reload categories:', err)
-    });
+  onSuggestionsUpdated() {
+    if (this.suggestionType() === 'category') {
+      this.projectService.getCategories().subscribe(cats => this.managedCategories = cats);
+    } else {
+      this.projectService.getNiches().subscribe(niches => this.managedNiches = niches);
+    }
   }
 
-  onNichesUpdated() {
-    // Reload niches list
-    this.projectService.getNiches().subscribe({
-      next: (niches) => {
-        this.managedNiches = niches;
-        console.log('Niches updated and reloaded:', niches);
-      },
-      error: (err) => console.error('Failed to reload niches:', err)
-    });
-  }
-
-  onCategoryManagerClosed() {
-    this.showCategoryManager.set(false);
-  }
-
-  onNicheManagerClosed() {
-    this.showNicheManager.set(false);
+  onSuggestionManagerClosed() {
+    this.showSuggestionManager.set(false);
   }
 
   // Helper methods to get suggestions for the form

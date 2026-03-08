@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Data;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,22 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var errors = context.ModelState
+                .Where(e => e.Value?.Errors.Count > 0)
+                .Select(e => new { Field = e.Key, Errors = e.Value?.Errors.Select(er => er.ErrorMessage) });
+            
+            logger.LogWarning("Model validation failed for {Path}. Errors: {Errors}", 
+                context.HttpContext.Request.Path, 
+                JsonSerializer.Serialize(errors));
+                
+            return new BadRequestObjectResult(context.ModelState);
+        };
     });
 
 // Register Unit of Work
@@ -170,7 +187,110 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"Column creation warning (IsFeatured): {colEx.Message}");
         }
         
+        // Add GalleryJson column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'GalleryJson'
+                )
+                BEGIN
+                    ALTER TABLE Projects ADD GalleryJson NVARCHAR(MAX) NULL;
+                END
+            ");
+            Console.WriteLine("GalleryJson column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (GalleryJson): {colEx.Message}");
+        }
+
+        // Add ResponsibilitiesJson column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'ResponsibilitiesJson'
+                )
+                BEGIN
+                    ALTER TABLE Projects ADD ResponsibilitiesJson NVARCHAR(MAX) NULL;
+                END
+            ");
+            Console.WriteLine("ResponsibilitiesJson column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (ResponsibilitiesJson): {colEx.Message}");
+        }
+
+        // Add ReactionsCount column if it doesn't exist
+        try
+        {
+            await context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'ReactionsCount'
+                )
+                BEGIN
+                    ALTER TABLE Projects ADD ReactionsCount INT NOT NULL DEFAULT 0;
+                END
+            ");
+            Console.WriteLine("ReactionsCount column check/creation completed");
+        }
+        catch (Exception colEx)
+        {
+            Console.WriteLine($"Column creation warning (ReactionsCount): {colEx.Message}");
+        }
+
+        // Add translation (_Ar) columns if they don't exist
+        var arColumns = new[] 
+        {
+            ("Projects", "Title_Ar", "NVARCHAR(500) NULL"),
+            ("Projects", "Description_Ar", "NVARCHAR(MAX) NULL"),
+            ("Projects", "Summary_Ar", "NVARCHAR(MAX) NULL"),
+            ("Projects", "Category_Ar", "NVARCHAR(200) NULL"),
+            ("Projects", "Tags_Ar", "NVARCHAR(500) NULL"),
+            ("Projects", "Niche_Ar", "NVARCHAR(200) NULL"),
+            ("Projects", "Company_Ar", "NVARCHAR(200) NULL"),
+            ("Projects", "Duration_Ar", "NVARCHAR(100) NULL"),
+            ("Projects", "Language_Ar", "NVARCHAR(100) NULL"),
+            ("Projects", "Architecture_Ar", "NVARCHAR(200) NULL"),
+            ("Projects", "Status_Ar", "NVARCHAR(100) NULL"),
+            ("ProjectKeyFeatures", "Title_Ar", "NVARCHAR(500) NULL"),
+            ("ProjectKeyFeatures", "Description_Ar", "NVARCHAR(MAX) NULL"),
+            ("ProjectChangelogs", "Title_Ar", "NVARCHAR(500) NULL"),
+            ("ProjectChangelogs", "Description_Ar", "NVARCHAR(MAX) NULL"),
+        };
+
+        foreach (var (table, column, colType) in arColumns)
+        {
+            try
+            {
+                await context.Database.ExecuteSqlRawAsync($@"
+                    IF NOT EXISTS (
+                        SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                        WHERE TABLE_NAME = '{table}' 
+                        AND COLUMN_NAME = '{column}'
+                    )
+                    BEGIN
+                        ALTER TABLE {table} ADD {column} {colType};
+                    END
+                ");
+            }
+            catch (Exception colEx)
+            {
+                Console.WriteLine($"Column creation warning ({table}.{column}): {colEx.Message}");
+            }
+        }
+        Console.WriteLine("Translation columns check/creation completed");
+
         await DbInitializer.Initialize(services);
+
     }
     catch (Exception ex)
     {

@@ -94,10 +94,10 @@ import { environment } from '../../../../environments/environment';
             </div>
             
             <!-- Tech Tags -->
-            <div class="flex flex-wrap gap-2 lg:gap-3">
-                <span *ngFor="let tech of (project.tags || '').split(',')"
+            <div *ngIf="getFilteredTags().length > 0" class="flex flex-wrap gap-2 lg:gap-3">
+                <span *ngFor="let tech of getFilteredTags()"
                     class="bg-zinc-900 border border-zinc-800 px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl text-[10px] font-black tracking-widest uppercase text-zinc-500 hover:text-red-600 hover:border-red-600/30 transition-all cursor-default">
-                    {{ tech.trim() }}
+                    {{ tech }}
                 </span>
             </div>
         </section>
@@ -170,11 +170,11 @@ import { environment } from '../../../../environments/environment';
 })
 export class ProjectDetailsGalleryComponent {
     private translationService = inject(TranslationService);
-    
+
     @Input() project?: ProjectEntry;
     @Output() onReactEvent = new EventEmitter<void>();
     @Output() onShareEvent = new EventEmitter<void>();
-    
+
     PlayIcon = Play;
     RocketIcon = Rocket;
     GithubIcon = Github;
@@ -186,7 +186,7 @@ export class ProjectDetailsGalleryComponent {
     ChevronLeftIcon = ChevronLeft;
     ChevronRightIcon = ChevronRight;
     MaximizeIcon = Maximize2;
-    
+
     selectedImage?: string;
     lightboxOpen = false;
     lightboxImage = '';
@@ -196,29 +196,34 @@ export class ProjectDetailsGalleryComponent {
     getProjectSummary(): string {
         if (!this.project) return '';
         const currentLang = this.translationService.currentLang$();
-        
+
         // Use summary field if available, fallback to description
         const summary = currentLang === 'ar' && this.project.summary_Ar ? this.project.summary_Ar : (this.project.summary || '');
         if (summary) return summary;
-        
+
         // Fallback to description if summary is not available
         return currentLang === 'ar' && this.project.description_Ar ? this.project.description_Ar : (this.project.description || '');
     }
-    
+
+    getFilteredTags(): string[] {
+        if (!this.project?.tags) return [];
+        return this.project.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+    }
+
     getAllImages(): string[] {
         if (!this.project) return [];
         const images: string[] = [];
-        
+
         // Add main image first
         if (this.project.imageUrl) {
             images.push(this.project.imageUrl);
         }
-        
+
         // Add gallery images
         if (this.project.gallery && this.project.gallery.length > 0) {
             images.push(...this.project.gallery);
         }
-        
+
         return images;
     }
 
@@ -229,11 +234,11 @@ export class ProjectDetailsGalleryComponent {
     onShare() {
         this.onShareEvent.emit();
     }
-    
+
     selectImage(imageUrl: string) {
         this.selectedImage = imageUrl;
     }
-    
+
     getCurrentImage(): string {
         return this.selectedImage || this.project?.imageUrl || '';
     }
@@ -242,11 +247,11 @@ export class ProjectDetailsGalleryComponent {
         const images = this.getAllImages();
         this.currentLightboxIndex = images.indexOf(imageUrl);
         if (this.currentLightboxIndex === -1) this.currentLightboxIndex = 0;
-        
+
         this.lightboxImage = imageUrl;
         this.lightboxOpen = true;
         this.slideDirection = null;
-        
+
         // Prevent body scroll when lightbox is open
         document.body.style.overflow = 'hidden';
     }
@@ -254,7 +259,7 @@ export class ProjectDetailsGalleryComponent {
     closeLightbox() {
         this.lightboxOpen = false;
         this.slideDirection = null;
-        
+
         // Restore body scroll
         document.body.style.overflow = '';
     }
@@ -262,11 +267,11 @@ export class ProjectDetailsGalleryComponent {
     nextImage() {
         const images = this.getAllImages();
         if (images.length <= 1) return;
-        
+
         this.slideDirection = 'right';
         this.currentLightboxIndex = (this.currentLightboxIndex + 1) % images.length;
         this.lightboxImage = images[this.currentLightboxIndex];
-        
+
         // Reset animation
         setTimeout(() => this.slideDirection = null, 300);
     }
@@ -274,11 +279,11 @@ export class ProjectDetailsGalleryComponent {
     previousImage() {
         const images = this.getAllImages();
         if (images.length <= 1) return;
-        
+
         this.slideDirection = 'left';
         this.currentLightboxIndex = this.currentLightboxIndex === 0 ? images.length - 1 : this.currentLightboxIndex - 1;
         this.lightboxImage = images[this.currentLightboxIndex];
-        
+
         // Reset animation
         setTimeout(() => this.slideDirection = null, 300);
     }
@@ -286,27 +291,27 @@ export class ProjectDetailsGalleryComponent {
     goToImage(index: number) {
         const images = this.getAllImages();
         if (index < 0 || index >= images.length) return;
-        
+
         this.slideDirection = index > this.currentLightboxIndex ? 'right' : 'left';
         this.currentLightboxIndex = index;
         this.lightboxImage = images[index];
-        
+
         // Reset animation
         setTimeout(() => this.slideDirection = null, 300);
     }
 
     getFullImageUrl(url?: string): string {
         if (!url) return 'assets/project-placeholder.svg';
-        
+
         if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
         }
-        
+
         const baseUrl = environment.apiUrl.replace('/api', '');
         if (url.startsWith('/')) {
             return `${baseUrl}${url}`;
         }
-        
+
         return `${baseUrl}/${url}`;
     }
 
@@ -314,8 +319,8 @@ export class ProjectDetailsGalleryComponent {
     @HostListener('window:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) {
         if (!this.lightboxOpen) return;
-        
-        switch(event.key) {
+
+        switch (event.key) {
             case 'Escape':
                 this.closeLightbox();
                 break;

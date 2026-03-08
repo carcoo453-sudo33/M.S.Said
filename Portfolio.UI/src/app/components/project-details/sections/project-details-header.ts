@@ -71,19 +71,19 @@ export class ProjectDetailsHeaderComponent {
     private translate = inject(TranslateService);
     private translationService = inject(TranslationService);
     private toast = inject(ToastService);
-    
+
     @Input() project?: ProjectEntry;
     @Output() onEdit = new EventEmitter<void>();
     @Output() onDelete = new EventEmitter<void>();
-    
+
     EditIcon = Edit;
     DeleteIcon = Trash2;
 
     getProjectTitle(): string {
         if (!this.project) return '';
         const currentLang = this.translationService.currentLang$();
-        const title = currentLang === 'ar' && this.project.title_Ar ? this.project.title_Ar : this.project.title;
-        
+        const title = (currentLang === 'ar' && this.project.title_Ar) ? this.project.title_Ar : (this.project.title || 'Untitled Project');
+
         if (title.includes(':')) {
             const parts = title.split(':');
             return parts[0];

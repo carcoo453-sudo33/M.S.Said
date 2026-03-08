@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ProjectService } from '../../../services/project.service';
 import { ToastService } from '../../../services/toast.service';
 import { ProjectEntry } from '../../../models';
-import { KeyFeature, ChangelogItem } from '../../../models/project.model';
+import { KeyFeature, ChangelogItem, Responsibility } from '../../../models/project.model';
 
 export interface ProjectFormData {
   // Basic Info
@@ -14,7 +14,7 @@ export interface ProjectFormData {
   description_Ar?: string;
   summary?: string;
   summary_Ar?: string;
-  
+
   // Categorization
   category?: string;
   category_Ar?: string;
@@ -23,15 +23,15 @@ export interface ProjectFormData {
   company?: string;
   company_Ar?: string;
   tags?: string;
-  
+
   // Media
   imageUrl?: string;
   gallery?: string[];
-  
+
   // Links
   projectUrl?: string;
   gitHubUrl?: string;
-  
+
   // Metadata
   language?: string;
   language_Ar?: string;
@@ -41,14 +41,14 @@ export interface ProjectFormData {
   architecture_Ar?: string;
   status?: string;
   status_Ar?: string;
-  
+
   // Features
   isFeatured?: boolean;
   views?: number;
-  
+
   // Complex Data
   keyFeatures?: KeyFeature[];
-  responsibilities?: string[];
+  responsibilities?: Responsibility[];
   changelog?: ChangelogItem[];
 }
 

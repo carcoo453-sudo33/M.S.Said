@@ -11,7 +11,7 @@ import { ToastService, Toast, ToastType } from '../../services/toast.service';
         <!-- Toast Container - Sonner Style -->
         <div class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
             <div 
-                *ngFor="let toast of toasts; let i = index; trackBy: trackByToast"
+                *ngFor="let toast of toasts(); let i = index; trackBy: trackByToast"
                 [class]="getToastClasses(toast, i)"
                 [style.transform]="getToastTransform(i)"
                 [style.z-index]="100 - i"
@@ -100,7 +100,7 @@ import { ToastService, Toast, ToastType } from '../../services/toast.service';
 })
 export class ToastComponent {
     private toastService = inject(ToastService);
-    toasts: Toast[] = [];
+    toasts = this.toastService.toasts$;
 
     // Icons - Using non-deprecated versions
     CheckCircleIcon = CheckCircle;
@@ -110,12 +110,7 @@ export class ToastComponent {
     LoaderIcon = Loader;
     XIcon = X;
 
-    constructor() {
-        // Use effect to watch signal changes
-        effect(() => {
-            this.toasts = this.toastService.toasts$();
-        });
-    }
+    constructor() { }
 
     trackByToast(index: number, toast: Toast): number {
         return toast.id;
@@ -133,9 +128,9 @@ export class ToastComponent {
     }
 
     isLoading(toast: Toast): boolean {
-        return toast.message.toLowerCase().includes('loading') || 
-               toast.message.toLowerCase().includes('saving') ||
-               toast.persistent === true && toast.dismissible === false;
+        return toast.message.toLowerCase().includes('loading') ||
+            toast.message.toLowerCase().includes('saving') ||
+            toast.persistent === true && toast.dismissible === false;
     }
 
     getIcon(type: ToastType): any {
@@ -150,7 +145,7 @@ export class ToastComponent {
 
     getToastClasses(toast: Toast, index: number): string {
         const baseClasses = 'relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg backdrop-blur-sm transition-all duration-300 animate-toast-enter';
-        
+
         const typeClasses = {
             success: 'border-l-4 border-l-green-500',
             error: 'border-l-4 border-l-red-500',
@@ -172,7 +167,7 @@ export class ToastComponent {
 
     getIconClasses(type: ToastType): string {
         const baseClasses = 'flex-shrink-0 rounded-full p-1';
-        
+
         const typeClasses = {
             success: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400',
             error: 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400',

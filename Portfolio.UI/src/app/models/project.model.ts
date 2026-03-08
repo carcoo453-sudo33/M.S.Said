@@ -7,6 +7,11 @@ export interface KeyFeature {
     [key: string]: any;
 }
 
+export interface Responsibility {
+    text: string;
+    text_Ar?: string;
+}
+
 export interface ChangelogItem {
     date: string;
     version: string;
@@ -73,7 +78,7 @@ export interface BaseProject {
     status_Ar?: string;
     keyFeatures?: KeyFeature[];
     changelog?: ChangelogItem[];
-    responsibilities?: string[];
+    responsibilities?: Responsibility[];
     comments?: Comment[];
     reactionsCount?: number;
     views: number;

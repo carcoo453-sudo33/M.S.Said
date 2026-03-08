@@ -12,29 +12,34 @@ export class ProjectService {
     private http = inject(HttpClient);
     private apiUrl = environment.apiUrl;
 
-    getProjects() {
-        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects`);
+    getProjects(): Observable<ProjectEntry[]> {
+        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects`).pipe(
+            map(projects => projects.map(p => this.normalizeProject(p)))
+        );
     }
 
     getProject(slug: string): Observable<ProjectEntry> {
         return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${slug}`).pipe(
-            map(project => ({
-                ...project,
-                id: project.id || (project as any).Id || (project as any).ID
-            }))
+            map(project => this.normalizeProject(project))
         );
     }
 
     getFeaturedProjects(): Observable<ProjectEntry[]> {
-        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects/featured`);
+        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects/featured`).pipe(
+            map(projects => projects.map(p => this.normalizeProject(p)))
+        );
     }
 
     createProject(project: ProjectDto): Observable<ProjectEntry> {
-        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects`, project);
+        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects`, project).pipe(
+            map(p => this.normalizeProject(p))
+        );
     }
 
     updateProject(id: string, project: ProjectEntry): Observable<ProjectEntry> {
-        return this.http.put<ProjectEntry>(`${this.apiUrl}/projects/${id}`, project);
+        return this.http.put<ProjectEntry>(`${this.apiUrl}/projects/${id}`, project).pipe(
+            map(p => this.normalizeProject(p))
+        );
     }
 
     deleteProject(id: string) {
@@ -44,11 +49,11 @@ export class ProjectService {
     addComment(projectId: string, comment: { author: string; avatarUrl: string; content: string }): Observable<any> {
         console.log('ProjectService.addComment called with projectId:', projectId);
         console.log('API URL will be:', `${this.apiUrl}/projects/${projectId}/comments`);
-        
+
         if (!projectId) {
             throw new Error('Project ID is required to add a comment');
         }
-        
+
         return this.http.post(`${this.apiUrl}/projects/${projectId}/comments`, comment);
     }
 
@@ -69,15 +74,17 @@ export class ProjectService {
         console.log('[ProjectService] Project ID:', projectId);
         console.log('[ProjectService] GitHub URL:', githubUrl);
         console.log('[ProjectService] Full API URL:', `${this.apiUrl}/projects/${projectId}/import-from-github`);
-        
+
         return this.http.post<ProjectEntry>(`${this.apiUrl}/projects/${projectId}/import-from-github`, {
-            gitHubUrl: githubUrl
+            gitHubUrl: githubUrl,
+            url: githubUrl
         });
     }
 
     importFromUrl(url: string): Observable<ProjectDto> {
-        return this.http.post<ProjectDto>(`${this.apiUrl}/projects/import-from-url`, { 
-            gitHubUrl: url 
+        return this.http.post<ProjectDto>(`${this.apiUrl}/projects/import-from-url`, {
+            gitHubUrl: url,
+            url: url
         });
     }
 
@@ -133,5 +140,68 @@ export class ProjectService {
 
     deleteNiche(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/niches/${id}`);
+    }
+
+    /**
+     * Data Normalization
+     */
+    normalizeProject(project: any): ProjectEntry {
+        if (!project) return project;
+
+        // Defensive mapping for collection properties that might have casing variations
+        const keyFeatures = project.keyFeatures || project.KeyFeatures || [];
+        const changelog = project.changelog || project.Changelog || [];
+        const responsibilities = project.responsibilities || project.Responsibilities || [];
+        const comments = project.comments || project.Comments || [];
+
+        return {
+            ...project,
+            id: project.id || project.Id || project.ID,
+            summary: project.summary || '',
+            gallery: project.gallery?.length ? project.gallery : (project.Gallery?.length ? project.Gallery : [project.imageUrl || '']),
+            duration: project.duration || '',
+            language: project.language || '',
+            architecture: project.architecture || '',
+            status: project.status || '',
+            keyFeatures: keyFeatures,
+            changelog: changelog,
+            responsibilities: responsibilities,
+            relatedProjects: project.relatedProjects || project.RelatedProjects || [],
+            comments: comments,
+            reactionsCount: project.reactionsCount || project.ReactionsCount || 0,
+            projectUrl: project.projectUrl || project.ProjectUrl || '',
+            gitHubUrl: project.gitHubUrl || project.GitHubUrl || ''
+        };
+    }
+
+    /**
+     * Statistics & Highlights
+     */
+    getProjectHighlights(projects: ProjectEntry[]): ProjectEntry[] {
+        if (!projects || projects.length === 0) return [];
+
+        let mostVisited: ProjectEntry | null = null;
+        let featured: ProjectEntry | null = null;
+        let lastPublish: ProjectEntry | null = null;
+
+        // Sort projects by views descending
+        const byViews = [...projects].sort((a, b) => (b.views || 0) - (a.views || 0));
+        mostVisited = byViews[0] || null;
+
+        // Sort projects by featured, preferring newest, excluding mostVisited
+        const featuredProjects = [...projects].filter(p => !!p.isFeatured && p.id !== mostVisited?.id);
+        if (featuredProjects.length > 0) {
+            featured = featuredProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())[0];
+        } else {
+            featured = byViews.find(p => p.id !== mostVisited?.id) || null;
+        }
+
+        // Sort projects by latest, excluding mostVisited and featured
+        const byLatest = [...projects]
+            .filter(p => p.id !== mostVisited?.id && p.id !== featured?.id)
+            .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        lastPublish = byLatest[0] || null;
+
+        return [mostVisited, featured, lastPublish].filter(p => p != null) as ProjectEntry[];
     }
 }

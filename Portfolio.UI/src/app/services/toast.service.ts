@@ -81,7 +81,7 @@ export class ToastService {
     private add(message: string, type: ToastType, options?: ToastOptions): number {
         const id = this.nextId++;
         const duration = options?.duration ?? (type === 'error' ? 6000 : 4000);
-        
+
         const toast: Toast = {
             id,
             message,
@@ -92,7 +92,9 @@ export class ToastService {
             persistent: options?.persistent ?? false
         };
 
-        this.toasts.update(current => [...current, toast]);
+        setTimeout(() => {
+            this.toasts.update(current => [...current, toast]);
+        });
 
         // Auto remove after duration (unless persistent)
         if (!toast.persistent) {
@@ -103,15 +105,21 @@ export class ToastService {
     }
 
     remove(id: number) {
-        this.toasts.update(current => current.filter(t => t.id !== id));
+        setTimeout(() => {
+            this.toasts.update(current => current.filter(t => t.id !== id));
+        });
     }
 
     clear() {
-        this.toasts.set([]);
+        setTimeout(() => {
+            this.toasts.set([]);
+        });
     }
 
     // Dismiss all non-persistent toasts
     dismissAll() {
-        this.toasts.update(current => current.filter(t => t.persistent));
+        setTimeout(() => {
+            this.toasts.update(current => current.filter(t => t.persistent));
+        });
     }
 }
