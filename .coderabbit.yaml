@@ -1,0 +1,39 @@
+# CodeRabbit AI Code Review Configuration
+# https://coderabbit.ai/docs/configure
+
+# Language configuration
+language: "en"
+
+# Bot instructions for PR reviews
+instructions: |
+  Review the pull requests for a full-stack application composed of an Angular 19 frontend and a .NET 9 API.
+  Ensure code quality, readability, and performance.
+  Ensure security best practices particularly with entity mapping and REST API endpoints.
+  Ensure Angular components follow the Standalone Component pattern and avoid arbitrary tailwind hex values.
+
+# Review configuration
+reviews:
+  profile: "chill"  # Can be "chill", "assertive", etc.
+  request_changes_workflow: false # Whether CodeRabbit should 'Request Changes' on PRs
+  high_level_summary: true # Provide a high-level summary of the PR
+  poem: true # Add a short poem summarizing the review at the end
+  auto_review:
+    enabled: true
+    drafts: false # Do not auto-review draft PRs
+
+# Chat feature configuration
+chat:
+  auto_reply: true # Automatically reply to comments mentioning @coderabbitai
+
+# Routing configuration
+routing:
+  - rule: "frontend"
+    paths:
+      - "Portfolio.UI/**"
+    instructions: |
+      Focus on Angular best practices, Tailwind CSS responsiveness, and maintaining immutable state.
+  - rule: "backend"
+    paths:
+      - "Portfolio.API/**"
+    instructions: |
+      Focus on .NET Core best practices, Entity Framework performance/N+1 issues, and proper DTO separation.

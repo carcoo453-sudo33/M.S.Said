@@ -1,0 +1,34 @@
+version: 2
+updates:
+  # Maintain dependencies for npm (Angular UI)
+  - package-ecosystem: "npm"
+    directory: "/Portfolio.UI"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    assignees:
+      - "Mostafa-SAID7"
+    labels:
+      - "dependencies"
+      - "frontend"
+
+  # Maintain dependencies for NuGet (.NET API)
+  - package-ecosystem: "nuget"
+    directory: "/Portfolio.API"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    assignees:
+      - "Mostafa-SAID7"
+    labels:
+      - "dependencies"
+      - "backend"
+
+  # Maintain Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/devops"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "devops"

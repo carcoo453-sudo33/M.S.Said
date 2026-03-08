@@ -1,0 +1,18 @@
+# This file is used to define the individuals or teams that are responsible for code in a repository.
+# When someone opens a pull request that modifies code that is owned by someone, the owner(s) will automatically be requested for review.
+
+# Global owner for the entire repository
+*       @Mostafa-SAID7
+
+# Specific owners for the API
+/Portfolio.API/       @Mostafa-SAID7
+
+# Specific owners for the UI
+/Portfolio.UI/        @Mostafa-SAID7
+
+# Infrastructure and DevOps files
+/devops/              @Mostafa-SAID7
+/.github/             @Mostafa-SAID7
+
+# Documentation 
+/docs/                @Mostafa-SAID7
