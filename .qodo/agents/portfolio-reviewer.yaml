@@ -1,0 +1,67 @@
+name: "Portfolio Code Reviewer"
+description: "Specialized agent for reviewing portfolio application code"
+version: "1.0.0"
+
+# Agent configuration
+agent:
+  type: "code_reviewer"
+  expertise:
+    - "angular"
+    - "dotnet"
+    - "typescript"
+    - "csharp"
+    - "tailwindcss"
+    - "entity_framework"
+    - "web_security"
+    - "accessibility"
+
+# Review rules
+rules:
+  frontend:
+    - name: "Angular Best Practices"
+      pattern: "Portfolio.UI/**/*.ts"
+      checks:
+        - standalone_components
+        - proper_lifecycle_hooks
+        - change_detection_strategy
+        - input_output_validation
+        - accessibility_compliance
+        
+    - name: "Tailwind CSS Standards"
+      pattern: "Portfolio.UI/**/*.{html,ts}"
+      checks:
+        - no_arbitrary_values
+        - responsive_design
+        - consistent_spacing
+        - semantic_color_usage
+        
+  backend:
+    - name: ".NET API Standards"
+      pattern: "Portfolio.API/**/*.cs"
+      checks:
+        - restful_design
+        - input_validation
+        - proper_error_handling
+        - security_practices
+        - performance_optimization
+        
+    - name: "Entity Framework Optimization"
+      pattern: "Portfolio.API/Data/**/*.cs"
+      checks:
+        - n_plus_one_prevention
+        - proper_indexing
+        - migration_safety
+        - query_optimization
+
+# Automated actions
+actions:
+  on_pull_request:
+    - run_security_scan
+    - check_performance_metrics
+    - validate_accessibility
+    - review_code_quality
+    
+  on_commit:
+    - lint_check
+    - type_check
+    - unit_test_coverage

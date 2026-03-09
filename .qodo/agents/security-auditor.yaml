@@ -1,0 +1,71 @@
+name: "Security Auditor"
+description: "Specialized agent for security vulnerability detection"
+version: "1.0.0"
+
+agent:
+  type: "security_auditor"
+  expertise:
+    - "web_security"
+    - "api_security"
+    - "authentication"
+    - "data_protection"
+    - "owasp_top_10"
+
+# Security scan rules
+security_rules:
+  authentication:
+    - jwt_validation
+    - session_management
+    - password_policies
+    - multi_factor_auth
+    
+  data_protection:
+    - input_sanitization
+    - sql_injection_prevention
+    - xss_protection
+    - csrf_protection
+    
+  api_security:
+    - rate_limiting
+    - cors_configuration
+    - https_enforcement
+    - api_versioning
+    
+  infrastructure:
+    - docker_security
+    - environment_variables
+    - secrets_management
+    - dependency_vulnerabilities
+
+# Scan patterns
+scan_patterns:
+  high_risk:
+    - "Portfolio.API/Controllers/**/*.cs"
+    - "Portfolio.API/Data/**/*.cs"
+    - "Portfolio.API/Program.cs"
+    - "Portfolio.API/appsettings*.json"
+    
+  medium_risk:
+    - "Portfolio.UI/src/app/services/**/*.ts"
+    - "Portfolio.UI/src/app/interceptors/**/*.ts"
+    - "Portfolio.UI/src/environments/**/*.ts"
+    
+  infrastructure:
+    - "devops/**/*"
+    - "Dockerfile*"
+    - ".github/workflows/**/*.yml"
+
+# Automated security actions
+actions:
+  on_security_issue:
+    severity: "high"
+    actions:
+      - block_merge
+      - notify_security_team
+      - create_security_ticket
+      
+  on_dependency_vulnerability:
+    actions:
+      - update_dependencies
+      - run_security_tests
+      - generate_security_report

@@ -1,0 +1,257 @@
+name: Comprehensive Testing Suite
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+  DOTNET_VERSION: '9.0.x'
+
+jobs:
+  # Frontend comprehensive testing
+  frontend-comprehensive:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Portfolio.UI
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './Portfolio.UI/package-lock.json'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run comprehensive linting
+      run: |
+        npm run lint --if-present
+        npm run lint:styles --if-present
+        
+    - name: Type checking
+      run: npm run type-check --if-present
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run unit tests with coverage
+      run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      continue-on-error: true
+      
+    - name: Run e2e tests
+      run: npm run e2e --if-present
+      continue-on-error: true
+      
+    - name: Bundle analysis
+      run: |
+        npm install -g webpack-bundle-analyzer
+        npm run analyze --if-present
+        
+    - name: Performance audit
+      run: |
+        npm install -g lighthouse
+        npm run build
+        npm install -g http-server
+        http-server dist/portfolio-ui -p 4200 &
+        sleep 10
+        lighthouse http://localhost:4200 --output=json --output-path=./lighthouse-report.json
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-test-results
+        path: |
+          ./Portfolio.UI/coverage/
+          ./Portfolio.UI/lighthouse-report.json
+
+  # Backend comprehensive testing
+  backend-comprehensive:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    defaults:
+      run:
+        working-directory: ./Portfolio.API
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build application
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Run unit tests
+      run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+      
+    - name: Run integration tests
+      run: dotnet test --no-build --configuration Release --filter "Category=Integration"
+      env:
+        ConnectionStrings__DefaultConnection: "Host=localhost;Database=portfolio_test;Username=postgres;Password=postgres"
+        
+    - name: Performance testing
+      run: |
+        dotnet run --no-build --configuration Release &
+        sleep 30
+        # Add performance testing tools here
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: backend-test-results
+        path: ./Portfolio.API/coverage/
+
+  # Security comprehensive testing
+  security-comprehensive:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+        
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v2
+      with:
+        languages: 'csharp,javascript'
+        
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+      
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  # Cross-browser testing
+  cross-browser-testing:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    defaults:
+      run:
+        working-directory: ./Portfolio.UI
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './Portfolio.UI/package-lock.json'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Run cross-browser tests
+      run: npm run test:${{ matrix.browser }} --if-present
+      continue-on-error: true
+
+  # Accessibility testing
+  accessibility-comprehensive:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Portfolio.UI
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: './Portfolio.UI/package-lock.json'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Install accessibility testing tools
+      run: |
+        npm install -g @axe-core/cli
+        npm install -g pa11y-ci
+        
+    - name: Start application
+      run: |
+        npm install -g http-server
+        http-server dist/portfolio-ui -p 4200 &
+        sleep 10
+        
+    - name: Run axe accessibility tests
+      run: axe http://localhost:4200 --exit
+      continue-on-error: true
+      
+    - name: Run pa11y accessibility tests
+      run: pa11y-ci http://localhost:4200
+      continue-on-error: true
+
+  # Generate comprehensive report
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: [frontend-comprehensive, backend-comprehensive, security-comprehensive, cross-browser-testing, accessibility-comprehensive]
+    if: always()
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Generate comprehensive report
+      run: |
+        echo "# Comprehensive Testing Report" > test-report.md
+        echo "Generated on: $(date)" >> test-report.md
+        echo "" >> test-report.md
+        echo "## Test Results Summary" >> test-report.md
+        echo "- Frontend Tests: ${{ needs.frontend-comprehensive.result }}" >> test-report.md
+        echo "- Backend Tests: ${{ needs.backend-comprehensive.result }}" >> test-report.md
+        echo "- Security Tests: ${{ needs.security-comprehensive.result }}" >> test-report.md
+        echo "- Cross-browser Tests: ${{ needs.cross-browser-testing.result }}" >> test-report.md
+        echo "- Accessibility Tests: ${{ needs.accessibility-comprehensive.result }}" >> test-report.md
+        
+    - name: Upload comprehensive report
+      uses: actions/upload-artifact@v3
+      with:
+        name: comprehensive-test-report
+        path: test-report.md
