@@ -1,3 +1,4 @@
+using FluentValidation.Results;
 using Portfolio.API.Features.Comments.DTOs;
 using Portfolio.API.Helpers;
 
@@ -11,21 +12,21 @@ public static class CommentValidation
 
         // Author validation
         if (!ValidationHelper.IsRequired(request.Author))
-            result.AddError("Author name is required");
+            result.Errors.Add(new ValidationFailure("Author", "Author name is required"));
         else if (!ValidationHelper.IsWithinLength(request.Author, 100))
-            result.AddError("Author name must be less than 100 characters");
+            result.Errors.Add(new ValidationFailure("Author", "Author name must be less than 100 characters"));
 
         // Content validation
         if (!ValidationHelper.IsRequired(request.Content))
-            result.AddError("Comment content is required");
+            result.Errors.Add(new ValidationFailure("Content", "Comment content is required"));
         else if (!ValidationHelper.IsWithinLength(request.Content, 1000))
-            result.AddError("Comment must be less than 1000 characters");
+            result.Errors.Add(new ValidationFailure("Content", "Comment must be less than 1000 characters"));
         else if (ValidationHelper.ContainsSpamPatterns(request.Content))
-            result.AddError("Comment contains suspicious content");
+            result.Errors.Add(new ValidationFailure("Content", "Comment contains suspicious content"));
 
         // Avatar URL validation (optional)
         if (!string.IsNullOrEmpty(request.AvatarUrl) && !UrlHelper.IsValidUrl(request.AvatarUrl))
-            result.AddError("Invalid avatar URL format");
+            result.Errors.Add(new ValidationFailure("AvatarUrl", "Invalid avatar URL format"));
 
         return result;
     }

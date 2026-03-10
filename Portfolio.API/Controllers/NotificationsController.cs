@@ -37,7 +37,7 @@ public class NotificationsController : ControllerBase
                 .Select(n => new NotificationDto
                 {
                     Id = n.Id.ToString(),
-                    Type = n.Type,
+                    Type = n.Type.ToString(),
                     Title = n.Title,
                     Message = n.Message,
                     Link = n.Link,

@@ -18,17 +18,17 @@ public class TestimonialsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TestimonialEntry>>> GetTestimonials()
+    public async Task<ActionResult<IEnumerable<Testimonial>>> GetTestimonials()
     {
-        var testimonials = await _unitOfWork.Repository<TestimonialEntry>().GetAllAsync();
+        var testimonials = await _unitOfWork.Repository<Testimonial>().GetAllAsync();
         return Ok(testimonials.OrderBy(t => t.Order));
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<TestimonialEntry>> CreateTestimonial(TestimonialDto dto)
+    public async Task<ActionResult<Testimonial>> CreateTestimonial(TestimonialDto dto)
     {
-        var entry = new TestimonialEntry
+        var entry = new Testimonial
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
@@ -42,7 +42,7 @@ public class TestimonialsController : ControllerBase
             Order = dto.Order,
             IsFeatured = dto.IsFeatured
         };
-        await _unitOfWork.Repository<TestimonialEntry>().AddAsync(entry);
+        await _unitOfWork.Repository<Testimonial>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetTestimonials), new { id = entry.Id }, entry);
     }
@@ -51,7 +51,7 @@ public class TestimonialsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTestimonial(Guid id, TestimonialDto dto)
     {
-        var repository = _unitOfWork.Repository<TestimonialEntry>();
+        var repository = _unitOfWork.Repository<Testimonial>();
         var testimonial = await repository.GetByIdAsync(id);
         
         if (testimonial == null) return NotFound();
@@ -76,9 +76,9 @@ public class TestimonialsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTestimonial(Guid id)
     {
-        var entry = await _unitOfWork.Repository<TestimonialEntry>().GetByIdAsync(id);
+        var entry = await _unitOfWork.Repository<Testimonial>().GetByIdAsync(id);
         if (entry == null) return NotFound();
-        _unitOfWork.Repository<TestimonialEntry>().Delete(entry);
+        _unitOfWork.Repository<Testimonial>().Delete(entry);
         await _unitOfWork.CompleteAsync();
         return NoContent();
     }

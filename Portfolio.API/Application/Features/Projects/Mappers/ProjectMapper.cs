@@ -137,10 +137,16 @@ public static class ProjectMapper
 
         // Update key features
         entity.KeyFeatures.Clear();
-        entity.KeyFeatures.AddRange(request.KeyFeatures?.Select(f => KeyFeatureMapper.ToEntity(f, entity.Id)) ?? new List<KeyFeature>());
+        foreach (var feature in request.KeyFeatures?.Select(f => KeyFeatureMapper.ToEntity(f, entity.Id)) ?? new List<KeyFeature>())
+        {
+            entity.KeyFeatures.Add(feature);
+        }
 
         // Update changelog
         entity.Changelog.Clear();
-        entity.Changelog.AddRange(request.Changelog?.Select(c => ChangelogItemMapper.ToEntity(c, entity.Id)) ?? new List<ChangelogItem>());
+        foreach (var item in request.Changelog?.Select(c => ChangelogItemMapper.ToEntity(c, entity.Id)) ?? new List<ChangelogItem>())
+        {
+            entity.Changelog.Add(item);
+        }
     }
 }

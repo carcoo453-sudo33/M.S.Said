@@ -61,7 +61,7 @@ public class CategoriesController : ControllerBase
         if (exists)
             return BadRequest("Category with this name already exists");
 
-        var category = new CategoryEntry
+        var category = new Category
         {
             Name = dto.Name,
             Name_Ar = dto.Name_Ar

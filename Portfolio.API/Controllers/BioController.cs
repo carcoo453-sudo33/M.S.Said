@@ -17,13 +17,13 @@ public class BioController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<BioEntry>> GetBio()
+    public async Task<ActionResult<Bio>> GetBio()
     {
-        var bio = (await _unitOfWork.Repository<BioEntry>().GetAllAsync()).FirstOrDefault();
+        var bio = (await _unitOfWork.Repository<Bio>().GetAllAsync()).FirstOrDefault();
         
         if (bio == null) 
         {
-            return Ok(new BioEntry 
+            return Ok(new Bio 
             { 
                 Id = Guid.NewGuid(),
                 Name = "Default User",
@@ -40,12 +40,12 @@ public class BioController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateBio(Guid id, BioDto dto)
     {
-        var repository = _unitOfWork.Repository<BioEntry>();
+        var repository = _unitOfWork.Repository<Bio>();
         var bio = (await repository.GetAllAsync()).FirstOrDefault();
         
         if (bio == null)
         {
-            bio = new BioEntry { Id = id };
+            bio = new Bio { Id = id };
             await repository.AddAsync(bio);
         }
 

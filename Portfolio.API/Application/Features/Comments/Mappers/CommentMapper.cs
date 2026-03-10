@@ -16,7 +16,7 @@ public static class CommentMapper
             Author = entity.Author,
             AvatarUrl = entity.AvatarUrl,
             Content = entity.Content,
-            Date = entity.Date,
+            Date = DateTime.TryParse(entity.Date, out var parsedDate) ? parsedDate : DateTime.UtcNow,
             Likes = entity.Likes,
             Replies = replies
         };

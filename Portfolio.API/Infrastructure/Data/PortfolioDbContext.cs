@@ -19,9 +19,9 @@ public class PortfolioDbContext : IdentityDbContext
     }
 
     public DbSet<Project> Projects { get; set; }
-    public DbSet<Bio> BioEntries { get; set; }
-    public DbSet<Service> ServiceEntries { get; set; }
-    public DbSet<Education> EducationEntries { get; set; }
+    public DbSet<Bio> Bios { get; set; }
+    public DbSet<Service> Services { get; set; }
+    public DbSet<Education> Education { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<Testimonial> Testimonials { get; set; }
     public DbSet<Client> Clients { get; set; }
@@ -32,6 +32,7 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Niche> Niches { get; set; }
+    public DbSet<BlogPost> BlogPosts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

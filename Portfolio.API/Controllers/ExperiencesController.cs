@@ -18,13 +18,13 @@ public class ExperiencesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ExperienceEntry>>> GetExperiences()
+    public async Task<ActionResult<IEnumerable<Education>>> GetExperiences()
     {
-        var experiences = await _unitOfWork.Repository<ExperienceEntry>().GetAllAsync();
+        var experiences = await _unitOfWork.Repository<Education>().GetAllAsync();
         
         // Sort by IsCurrent first (current jobs at top), then by Duration descending
         return Ok(experiences
-            .OrderByDescending(e => e.IsCurrent)
+            .OrderByDescending(e => e.IsCompleted)
             .ThenByDescending(e => ExtractYear(e.Duration))
             .ThenByDescending(e => e.Duration));
     }
@@ -60,23 +60,23 @@ public class ExperiencesController : ControllerBase
 
     // [Authorize] // Temporarily disabled for testing
     [HttpPost]
-    public async Task<ActionResult<ExperienceEntry>> CreateExperience(ExperienceDto dto)
+    public async Task<ActionResult<Education>> CreateExperience(ExperienceDto dto)
     {
-        var entry = new ExperienceEntry
+        var entry = new Education
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-            Role = dto.Role,
-            Role_Ar = dto.Role_Ar,
-            Company = dto.Company,
-            Company_Ar = dto.Company_Ar,
+            Institution = dto.Company,
+            Institution_Ar = dto.Company_Ar,
+            Degree = dto.Role,
+            Degree_Ar = dto.Role_Ar,
             Duration = dto.Duration,
             Description = dto.Description,
             Description_Ar = dto.Description_Ar,
             Location = dto.Location,
             Location_Ar = dto.Location_Ar,
-            IsCurrent = dto.IsCurrent
+            IsCompleted = dto.IsCurrent
         };
-        await _unitOfWork.Repository<ExperienceEntry>().AddAsync(entry);
+        await _unitOfWork.Repository<Education>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetExperiences), new { id = entry.Id }, entry);
     }
@@ -85,21 +85,21 @@ public class ExperiencesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateExperience(Guid id, ExperienceDto dto)
     {
-        var repository = _unitOfWork.Repository<ExperienceEntry>();
+        var repository = _unitOfWork.Repository<Education>();
         var experience = await repository.GetByIdAsync(id);
         
         if (experience == null) return NotFound();
 
-        experience.Role = dto.Role;
-        experience.Role_Ar = dto.Role_Ar;
-        experience.Company = dto.Company;
-        experience.Company_Ar = dto.Company_Ar;
+        experience.Institution = dto.Company;
+        experience.Institution_Ar = dto.Company_Ar;
+        experience.Degree = dto.Role;
+        experience.Degree_Ar = dto.Role_Ar;
         experience.Duration = dto.Duration;
         experience.Description = dto.Description;
         experience.Description_Ar = dto.Description_Ar;
         experience.Location = dto.Location;
         experience.Location_Ar = dto.Location_Ar;
-        experience.IsCurrent = dto.IsCurrent;
+        experience.IsCompleted = dto.IsCurrent;
         experience.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.CompleteAsync();
@@ -110,9 +110,9 @@ public class ExperiencesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteExperience(Guid id)
     {
-        var experience = await _unitOfWork.Repository<ExperienceEntry>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<Education>().GetByIdAsync(id);
         if (experience == null) return NotFound();
-        _unitOfWork.Repository<ExperienceEntry>().Delete(experience);
+        _unitOfWork.Repository<Education>().Delete(experience);
         await _unitOfWork.CompleteAsync();
         return NoContent();
     }

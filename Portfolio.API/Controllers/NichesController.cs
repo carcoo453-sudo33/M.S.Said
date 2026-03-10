@@ -61,7 +61,7 @@ public class NichesController : ControllerBase
         if (exists)
             return BadRequest("Niche with this name already exists");
 
-        var niche = new NicheEntry
+        var niche = new Niche
         {
             Name = dto.Name,
             Name_Ar = dto.Name_Ar

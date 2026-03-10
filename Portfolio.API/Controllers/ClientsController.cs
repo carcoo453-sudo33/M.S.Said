@@ -18,24 +18,24 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClientEntry>>> GetClients()
+    public async Task<ActionResult<IEnumerable<Client>>> GetClients()
     {
-        var clients = await _unitOfWork.Repository<ClientEntry>().GetAllAsync();
+        var clients = await _unitOfWork.Repository<Client>().GetAllAsync();
         return Ok(clients.OrderBy(c => c.Order));
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ClientEntry>> CreateClient(ClientDto dto)
+    public async Task<ActionResult<Client>> CreateClient(ClientDto dto)
     {
-        var entry = new ClientEntry
+        var entry = new Client
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
             LogoUrl = dto.LogoUrl,
             Order = dto.Order
         };
-        await _unitOfWork.Repository<ClientEntry>().AddAsync(entry);
+        await _unitOfWork.Repository<Client>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetClients), new { id = entry.Id }, entry);
     }
@@ -44,7 +44,7 @@ public class ClientsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateClient(Guid id, ClientDto dto)
     {
-        var repository = _unitOfWork.Repository<ClientEntry>();
+        var repository = _unitOfWork.Repository<Client>();
         var client = await repository.GetByIdAsync(id);
         
         if (client == null) return NotFound();
@@ -62,9 +62,9 @@ public class ClientsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteClient(Guid id)
     {
-        var entry = await _unitOfWork.Repository<ClientEntry>().GetByIdAsync(id);
+        var entry = await _unitOfWork.Repository<Client>().GetByIdAsync(id);
         if (entry == null) return NotFound();
-        _unitOfWork.Repository<ClientEntry>().Delete(entry);
+        _unitOfWork.Repository<Client>().Delete(entry);
         await _unitOfWork.CompleteAsync();
         return NoContent();
     }

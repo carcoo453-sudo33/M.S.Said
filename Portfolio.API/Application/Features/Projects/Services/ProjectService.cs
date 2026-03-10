@@ -178,7 +178,7 @@ public class ProjectService : IProjectService
         _logger.LogInformation("Project deleted successfully: {ProjectId}", id);
     }
 
-    public async Task<ProjectResponse> ImportFromGitHubAsync(Guid projectId, string githubUrl)
+    public async Task<ProjectDto> ImportFromGitHubAsync(Guid projectId, string githubUrl)
     {
         _logger.LogInformation("Importing GitHub data for project: {ProjectId}", projectId);
 

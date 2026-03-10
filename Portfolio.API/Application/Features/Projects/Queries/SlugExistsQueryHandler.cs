@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
+using Portfolio.API.Entities;
 
 namespace Portfolio.API.Features.Projects.Queries;
 

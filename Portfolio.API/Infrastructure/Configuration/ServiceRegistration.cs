@@ -36,8 +36,7 @@ public static class ServiceRegistration
         services.AddSignalR();
 
         // Health Checks
-        services.AddHealthChecks()
-            .AddDbContextCheck<PortfolioDbContext>();
+        services.AddHealthChecks();
 
         return services;
     }

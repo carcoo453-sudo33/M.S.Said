@@ -18,17 +18,17 @@ public class SkillsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SkillEntry>>> GetSkills()
+    public async Task<ActionResult<IEnumerable<Skill>>> GetSkills()
     {
-        var skills = await _unitOfWork.Repository<SkillEntry>().GetAllAsync();
+        var skills = await _unitOfWork.Repository<Skill>().GetAllAsync();
         return Ok(skills.OrderBy(s => s.Order));
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<SkillEntry>> CreateSkill(SkillDto dto)
+    public async Task<ActionResult<Skill>> CreateSkill(SkillDto dto)
     {
-        var entry = new SkillEntry
+        var entry = new Skill
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
@@ -36,7 +36,7 @@ public class SkillsController : ControllerBase
             Icon = dto.Icon,
             Order = dto.Order
         };
-        await _unitOfWork.Repository<SkillEntry>().AddAsync(entry);
+        await _unitOfWork.Repository<Skill>().AddAsync(entry);
         await _unitOfWork.CompleteAsync();
         return CreatedAtAction(nameof(GetSkills), new { id = entry.Id }, entry);
     }
@@ -45,7 +45,7 @@ public class SkillsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateSkill(Guid id, SkillDto dto)
     {
-        var repository = _unitOfWork.Repository<SkillEntry>();
+        var repository = _unitOfWork.Repository<Skill>();
         var skill = await repository.GetByIdAsync(id);
         
         if (skill == null) return NotFound();
@@ -64,9 +64,9 @@ public class SkillsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSkill(Guid id)
     {
-        var skill = await _unitOfWork.Repository<SkillEntry>().GetByIdAsync(id);
+        var skill = await _unitOfWork.Repository<Skill>().GetByIdAsync(id);
         if (skill == null) return NotFound();
-        _unitOfWork.Repository<SkillEntry>().Delete(skill);
+        _unitOfWork.Repository<Skill>().Delete(skill);
         await _unitOfWork.CompleteAsync();
         return NoContent();
     }

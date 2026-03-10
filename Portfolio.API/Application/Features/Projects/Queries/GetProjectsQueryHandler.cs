@@ -3,6 +3,7 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Features.Projects.DTOs;
 using Portfolio.API.Features.Projects.Mappers;
 using Portfolio.API.DTOs;
+using Portfolio.API.Enums;
 
 namespace Portfolio.API.Features.Projects.Queries;
 
@@ -18,7 +19,13 @@ public class GetProjectsQueryHandler : BaseQueryHandler
 
         // Apply filters
         if (!string.IsNullOrEmpty(parameters.Category))
-            query = query.Where(p => p.Category == parameters.Category);
+        {
+            // Convert string to ProjectCategory enum for comparison
+            if (Enum.TryParse<ProjectCategory>(parameters.Category, out var category))
+            {
+                query = query.Where(p => p.Category == category);
+            }
+        }
 
         if (parameters.IsFeatured.HasValue)
             query = query.Where(p => p.IsFeatured == parameters.IsFeatured.Value);

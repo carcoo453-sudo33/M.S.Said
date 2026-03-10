@@ -14,6 +14,4 @@ public class Reaction : BaseEntity
     
     [Required]
     public ReactionType ReactionType { get; set; } = ReactionType.Like;
-    
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

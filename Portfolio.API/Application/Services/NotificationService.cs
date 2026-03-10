@@ -1,6 +1,7 @@
 using Portfolio.API.Data;
 using Portfolio.API.Entities;
 using Portfolio.API.Hubs;
+using Portfolio.API.Enums;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Portfolio.API.Services;
@@ -29,10 +30,16 @@ public class NotificationService : INotificationService
     {
         try
         {
-            var notification = new NotificationEntry
+            // Parse string to NotificationType enum
+            if (!Enum.TryParse<NotificationType>(type, out var notificationType))
+            {
+                notificationType = NotificationType.SystemAlert;
+            }
+
+            var notification = new Notification
             {
                 Id = Guid.NewGuid(),
-                Type = type,
+                Type = notificationType,
                 Title = title,
                 Message = message,
                 Link = link,
