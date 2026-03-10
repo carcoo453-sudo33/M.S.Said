@@ -1,0 +1,67 @@
+using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Helpers;
+
+namespace Portfolio.API.Features.Projects.Validation;
+
+public static class ProjectValidation
+{
+    public static ValidationResult ValidateCreateRequest(ProjectCreateDto request)
+    {
+        var result = new ValidationResult();
+
+        // Title validation
+        if (!ValidationHelper.IsRequired(request.Title))
+            result.AddError("Project title is required");
+        else if (!ValidationHelper.IsWithinLength(request.Title, 200))
+            result.AddError("Project title must be less than 200 characters");
+
+        // Description validation
+        if (!ValidationHelper.IsWithinLength(request.Description, 2000))
+            result.AddError("Project description must be less than 2000 characters");
+
+        // URL validations
+        if (!string.IsNullOrEmpty(request.ProjectUrl) && !UrlHelper.IsValidUrl(request.ProjectUrl))
+            result.AddError("Invalid project URL format");
+
+        if (!string.IsNullOrEmpty(request.GitHubUrl) && !UrlHelper.IsValidGitHubUrl(request.GitHubUrl))
+            result.AddError("Invalid GitHub URL format");
+
+        if (!string.IsNullOrEmpty(request.ImageUrl) && !UrlHelper.IsValidUrl(request.ImageUrl))
+            result.AddError("Invalid image URL format");
+
+        // Gallery URL validation
+        foreach (var galleryUrl in request.Gallery)
+        {
+            if (!UrlHelper.IsValidUrl(galleryUrl))
+                result.AddError($"Invalid gallery URL: {galleryUrl}");
+        }
+
+        return result;
+    }
+
+    public static ValidationResult ValidateUpdateRequest(ProjectUpdateDto request)
+    {
+        var result = ValidateCreateRequest(request);
+
+        if (request.Id == Guid.Empty)
+            result.AddError("Project ID is required for update");
+
+        return result;
+    }
+}
+
+public class ValidationResult
+{
+    public bool IsValid => !Errors.Any();
+    public List<string> Errors { get; } = new();
+
+    public void AddError(string error)
+    {
+        Errors.Add(error);
+    }
+
+    public void AddErrors(IEnumerable<string> errors)
+    {
+        Errors.AddRange(errors);
+    }
+}

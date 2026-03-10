@@ -1,84 +1,252 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { ProjectEntry, ProjectDto } from '../models';
 import { environment } from '../../environments/environment';
+import { ValidationService } from './validation.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProjectService {
     private http = inject(HttpClient);
+    private validationService = inject(ValidationService);
     private apiUrl = environment.apiUrl;
 
-    getProjects(): Observable<ProjectEntry[]> {
-        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects`).pipe(
-            map(projects => projects.map(p => this.normalizeProject(p)))
+    getProjects(page: number = 1, pageSize: number = 10, category?: string, isFeatured?: boolean): Observable<any> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+
+        if (category) {
+            params = params.set('category', category);
+        }
+
+        if (isFeatured !== undefined) {
+            params = params.set('isFeatured', isFeatured.toString());
+        }
+
+        return this.http.get<any>(`${this.apiUrl}/projects`, { params }).pipe(
+            map(response => ({
+                ...response,
+                items: response.items?.map((p: ProjectEntry) => this.normalizeProject(p)) || []
+            })),
+            catchError(error => {
+                console.error('Error fetching projects:', error);
+                return throwError(() => error);
+            })
         );
     }
 
     getProject(slug: string): Observable<ProjectEntry> {
-        return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${slug}`).pipe(
-            map(project => this.normalizeProject(project))
+        if (!slug || slug.trim().length === 0) {
+            return throwError(() => new Error('Project slug is required'));
+        }
+
+        return this.http.get<ProjectEntry>(`${this.apiUrl}/projects/${encodeURIComponent(slug)}`).pipe(
+            map(project => this.normalizeProject(project)),
+            catchError(error => {
+                console.error('Error fetching project:', error);
+                return throwError(() => error);
+            })
         );
     }
 
     getFeaturedProjects(): Observable<ProjectEntry[]> {
         return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects/featured`).pipe(
-            map(projects => projects.map(p => this.normalizeProject(p)))
+            map(projects => projects.map(p => this.normalizeProject(p))),
+            catchError(error => {
+                console.error('Error fetching featured projects:', error);
+                return throwError(() => error);
+            })
         );
     }
 
     createProject(project: ProjectDto): Observable<ProjectEntry> {
-        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects`, project).pipe(
-            map(p => this.normalizeProject(p))
+        // Validate project data
+        const validation = this.validationService.validateProject(project);
+        if (!validation.isValid) {
+            return throwError(() => new Error(validation.errors.join(', ')));
+        }
+
+        // Sanitize project data
+        const sanitizedProject = this.sanitizeProjectData(project);
+
+        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects`, sanitizedProject).pipe(
+            map(p => this.normalizeProject(p)),
+            catchError(error => {
+                console.error('Error creating project:', error);
+                return throwError(() => error);
+            })
         );
     }
 
     updateProject(id: string, project: ProjectEntry): Observable<ProjectEntry> {
-        return this.http.put<ProjectEntry>(`${this.apiUrl}/projects/${id}`, project).pipe(
-            map(p => this.normalizeProject(p))
+        if (!id) {
+            return throwError(() => new Error('Project ID is required'));
+        }
+
+        // Validate project data
+        const validation = this.validationService.validateProject(project);
+        if (!validation.isValid) {
+            return throwError(() => new Error(validation.errors.join(', ')));
+        }
+
+        // Sanitize project data
+        const sanitizedProject = this.sanitizeProjectData(project);
+
+        return this.http.put<ProjectEntry>(`${this.apiUrl}/projects/${encodeURIComponent(id)}`, sanitizedProject).pipe(
+            map(p => this.normalizeProject(p)),
+            catchError(error => {
+                console.error('Error updating project:', error);
+                return throwError(() => error);
+            })
         );
     }
 
-    deleteProject(id: string) {
-        return this.http.delete(`${this.apiUrl}/projects/${id}`);
+    deleteProject(id: string): Observable<void> {
+        if (!id) {
+            return throwError(() => new Error('Project ID is required'));
+        }
+
+        return this.http.delete<void>(`${this.apiUrl}/projects/${encodeURIComponent(id)}`).pipe(
+            catchError(error => {
+                console.error('Error deleting project:', error);
+                return throwError(() => error);
+            })
+        );
     }
 
     addComment(projectId: string, comment: { author: string; avatarUrl: string; content: string }): Observable<any> {
-        console.log('ProjectService.addComment called with projectId:', projectId);
-        console.log('API URL will be:', `${this.apiUrl}/projects/${projectId}/comments`);
-
         if (!projectId) {
-            throw new Error('Project ID is required to add a comment');
+            return throwError(() => new Error('Project ID is required to add a comment'));
         }
 
-        return this.http.post(`${this.apiUrl}/projects/${projectId}/comments`, comment);
+        // Validate and sanitize comment
+        const validation = this.validationService.validateComment(comment.content);
+        if (!validation.isValid) {
+            return throwError(() => new Error(validation.errors.join(', ')));
+        }
+
+        // Check rate limiting
+        const rateLimitKey = `comment_${projectId}`;
+        if (!this.validationService.checkRateLimit(rateLimitKey, 3, 60000)) {
+            return throwError(() => new Error('Too many comments. Please wait before commenting again.'));
+        }
+
+        const sanitizedComment = {
+            ...comment,
+            content: validation.sanitized,
+            author: this.validationService.sanitizeHtml(comment.author)
+        };
+
+        return this.http.post(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/comments`, sanitizedComment).pipe(
+            catchError(error => {
+                console.error('Error adding comment:', error);
+                return throwError(() => error);
+            })
+        );
     }
 
     likeComment(projectId: string, commentId: string): Observable<any> {
-        return this.http.post(`${this.apiUrl}/projects/${projectId}/comments/${commentId}/like`, {});
+        if (!projectId || !commentId) {
+            return throwError(() => new Error('Project ID and Comment ID are required'));
+        }
+
+        return this.http.post(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}/like`, {}).pipe(
+            catchError(error => {
+                console.error('Error liking comment:', error);
+                return throwError(() => error);
+            })
+        );
     }
 
     addReply(projectId: string, commentId: string, reply: { author: string; avatarUrl: string; content: string }): Observable<any> {
-        return this.http.post(`${this.apiUrl}/projects/${projectId}/comments/${commentId}/reply`, reply);
+        if (!projectId || !commentId) {
+            return throwError(() => new Error('Project ID and Comment ID are required'));
+        }
+
+        // Validate and sanitize reply
+        const validation = this.validationService.validateComment(reply.content);
+        if (!validation.isValid) {
+            return throwError(() => new Error(validation.errors.join(', ')));
+        }
+
+        const sanitizedReply = {
+            ...reply,
+            content: validation.sanitized,
+            author: this.validationService.sanitizeHtml(reply.author)
+        };
+
+        return this.http.post(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/comments/${encodeURIComponent(commentId)}/reply`, sanitizedReply).pipe(
+            catchError(error => {
+                console.error('Error adding reply:', error);
+                return throwError(() => error);
+            })
+        );
     }
 
     reactToProject(projectId: string): Observable<number> {
-        return this.http.post<number>(`${this.apiUrl}/projects/${projectId}/react`, {});
+        if (!projectId) {
+            return throwError(() => new Error('Project ID is required'));
+        }
+
+        return this.http.post<number>(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/react`, {}).pipe(
+            catchError(error => {
+                console.error('Error reacting to project:', error);
+                return throwError(() => error);
+            })
+        );
     }
 
     importFromGitHub(projectId: string, githubUrl: string): Observable<ProjectEntry> {
-        console.log('[ProjectService] importFromGitHub called');
-        console.log('[ProjectService] Project ID:', projectId);
-        console.log('[ProjectService] GitHub URL:', githubUrl);
-        console.log('[ProjectService] Full API URL:', `${this.apiUrl}/projects/${projectId}/import-from-github`);
+        if (!projectId || !githubUrl) {
+            return throwError(() => new Error('Project ID and GitHub URL are required'));
+        }
 
-        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects/${projectId}/import-from-github`, {
+        if (!this.validationService.isValidGitHubUrl(githubUrl)) {
+            return throwError(() => new Error('Invalid GitHub URL format'));
+        }
+
+        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/import-from-github`, {
             gitHubUrl: githubUrl,
             url: githubUrl
-        });
+        }).pipe(
+            map(p => this.normalizeProject(p)),
+            catchError(error => {
+                console.error('Error importing from GitHub:', error);
+                return throwError(() => error);
+            })
+        );
+    }
+
+    private sanitizeProjectData(project: any): any {
+        return {
+            ...project,
+            title: this.validationService.sanitizeHtml(project.title),
+            description: this.validationService.sanitizeHtml(project.description),
+            summary: this.validationService.sanitizeHtml(project.summary),
+            category: this.validationService.sanitizeHtml(project.category),
+            company: this.validationService.sanitizeHtml(project.company),
+            // Sanitize nested objects
+            keyFeatures: project.keyFeatures?.map((feature: any) => ({
+                ...feature,
+                title: this.validationService.sanitizeHtml(feature.title),
+                description: this.validationService.sanitizeHtml(feature.description)
+            })) || [],
+            changelog: project.changelog?.map((item: any) => ({
+                ...item,
+                title: this.validationService.sanitizeHtml(item.title),
+                description: this.validationService.sanitizeHtml(item.description)
+            })) || [],
+            responsibilities: project.responsibilities?.map((resp: any) => ({
+                ...resp,
+                title: this.validationService.sanitizeHtml(resp.title),
+                description: this.validationService.sanitizeHtml(resp.description)
+            })) || []
+        };
+    }
     }
 
     importFromUrl(url: string): Observable<ProjectDto> {
