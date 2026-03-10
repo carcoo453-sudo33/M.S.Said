@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Entities;
-using Portfolio.API.Repositories;
-using Portfolio.API.DTOs;
+using Portfolio.API.Application.Features.Skills.DTOs;
+using Portfolio.API.Application.Features.Skills.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -10,64 +9,49 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class SkillsController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISkillService _skillService;
 
-    public SkillsController(IUnitOfWork unitOfWork)
+    public SkillsController(ISkillService skillService)
     {
-        _unitOfWork = unitOfWork;
+        _skillService = skillService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Skill>>> GetSkills()
+    public async Task<ActionResult<IEnumerable<SkillDto>>> GetSkills()
     {
-        var skills = await _unitOfWork.Repository<Skill>().GetAllAsync();
-        return Ok(skills.OrderBy(s => s.Order));
+        var skills = await _skillService.GetSkillsAsync();
+        return Ok(skills);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<Skill>> CreateSkill(SkillDto dto)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<SkillDto>> GetSkillById(Guid id)
     {
-        var entry = new Skill
-        {
-            Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-            Name = dto.Name,
-            Name_Ar = dto.Name_Ar,
-            Icon = dto.Icon,
-            Order = dto.Order
-        };
-        await _unitOfWork.Repository<Skill>().AddAsync(entry);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetSkills), new { id = entry.Id }, entry);
-    }
-
-    [Authorize]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateSkill(Guid id, SkillDto dto)
-    {
-        var repository = _unitOfWork.Repository<Skill>();
-        var skill = await repository.GetByIdAsync(id);
-        
+        var skill = await _skillService.GetSkillByIdAsync(id);
         if (skill == null) return NotFound();
-
-        skill.Name = dto.Name;
-        skill.Name_Ar = dto.Name_Ar;
-        skill.Icon = dto.Icon;
-        skill.Order = dto.Order;
-        skill.UpdatedAt = DateTime.UtcNow;
-
-        await _unitOfWork.CompleteAsync();
         return Ok(skill);
     }
 
     [Authorize]
-    [HttpDelete("{id}")]
+    [HttpPost]
+    public async Task<ActionResult<SkillDto>> CreateSkill(SkillDto dto)
+    {
+        var result = await _skillService.CreateSkillAsync(dto);
+        return CreatedAtAction(nameof(GetSkillById), new { id = result.Id }, result);
+    }
+
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateSkill(Guid id, SkillDto dto)
+    {
+        var result = await _skillService.UpdateSkillAsync(id, dto);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteSkill(Guid id)
     {
-        var skill = await _unitOfWork.Repository<Skill>().GetByIdAsync(id);
-        if (skill == null) return NotFound();
-        _unitOfWork.Repository<Skill>().Delete(skill);
-        await _unitOfWork.CompleteAsync();
+        await _skillService.DeleteSkillAsync(id);
         return NoContent();
     }
 }

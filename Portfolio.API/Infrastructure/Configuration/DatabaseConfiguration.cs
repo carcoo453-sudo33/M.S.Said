@@ -22,9 +22,6 @@ public static class DatabaseConfiguration
             
             // Apply database schema updates
             await ApplySchemaUpdatesAsync(context);
-            
-            // Initialize seed data
-            await DbInitializer.Initialize(services);
         }
         catch (Exception ex)
         {

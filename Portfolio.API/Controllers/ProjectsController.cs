@@ -6,7 +6,8 @@ using Portfolio.API.Features.Comments.DTOs;
 using Portfolio.API.Features.Comments.Services;
 using Portfolio.API.Features.Reactions.DTOs;
 using Portfolio.API.Features.Reactions.Services;
-using Portfolio.API.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Common;
 
 namespace Portfolio.API.Controllers;
 

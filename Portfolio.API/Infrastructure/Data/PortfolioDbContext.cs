@@ -23,8 +23,7 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<Service> Services { get; set; }
     public DbSet<Education> Education { get; set; }
     public DbSet<Skill> Skills { get; set; }
-    public DbSet<Testimonial> Testimonials { get; set; }
-    public DbSet<Client> Clients { get; set; }
+    public DbSet<Reference> References { get; set; }
     public DbSet<KeyFeature> KeyFeatures { get; set; }
     public DbSet<ChangelogItem> ChangelogItems { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -44,8 +43,7 @@ public class PortfolioDbContext : IdentityDbContext
         builder.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<Education>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<Skill>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Testimonial>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Client>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Reference>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<KeyFeature>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<ChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
         builder.Entity<Comment>().HasQueryFilter(x => !x.IsDeleted);

@@ -1,4 +1,4 @@
-namespace Portfolio.API.DTOs;
+namespace Portfolio.API.Application.Common;
 
 public class PagedResult<T>
 {

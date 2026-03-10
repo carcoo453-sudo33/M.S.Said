@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Entities;
-using Portfolio.API.Repositories;
-using Portfolio.API.DTOs;
-using Portfolio.API.Enums;
+using Portfolio.API.Application.Features.Education.DTOs;
+using Portfolio.API.Application.Features.Education.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -11,80 +9,49 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class EducationController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEducationService _educationService;
 
-    public EducationController(IUnitOfWork unitOfWork)
+    public EducationController(IEducationService educationService)
     {
-        _unitOfWork = unitOfWork;
+        _educationService = educationService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Education>>> GetEducation()
+    public async Task<ActionResult<IEnumerable<EducationDto>>> GetEducation()
     {
-        var education = await _unitOfWork.Repository<Education>().GetAllAsync();
-        return Ok(education.OrderByDescending(e => e.Duration));
+        var education = await _educationService.GetEducationAsync();
+        return Ok(education);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<Education>> CreateEducation(EducationDto dto)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<EducationDto>> GetEducationById(Guid id)
     {
-        var entry = new Education
-        {
-            Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-            Institution = dto.Institution,
-            Institution_Ar = dto.Institution_Ar,
-            Degree = dto.Degree,
-            Degree_Ar = dto.Degree_Ar,
-            Duration = dto.Duration,
-            Description = dto.Description,
-            Description_Ar = dto.Description_Ar,
-            Location = dto.Location,
-            Location_Ar = dto.Location_Ar,
-            ImageUrl = dto.ImageUrl,
-            IsCompleted = dto.IsCompleted,
-            Category = Enum.TryParse<EducationCategory>(dto.Category, true, out var category) ? category : EducationCategory.Education
-        };
-        await _unitOfWork.Repository<Education>().AddAsync(entry);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetEducation), new { id = entry.Id }, entry);
-    }
-
-    [Authorize]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateEducation(Guid id, EducationDto dto)
-    {
-        var repository = _unitOfWork.Repository<Education>();
-        var education = await repository.GetByIdAsync(id);
-        
+        var education = await _educationService.GetEducationByIdAsync(id);
         if (education == null) return NotFound();
-
-        education.Institution = dto.Institution;
-        education.Institution_Ar = dto.Institution_Ar;
-        education.Degree = dto.Degree;
-        education.Degree_Ar = dto.Degree_Ar;
-        education.Duration = dto.Duration;
-        education.Description = dto.Description;
-        education.Description_Ar = dto.Description_Ar;
-        education.Location = dto.Location;
-        education.Location_Ar = dto.Location_Ar;
-        education.ImageUrl = dto.ImageUrl;
-        education.IsCompleted = dto.IsCompleted;
-        education.Category = Enum.TryParse<EducationCategory>(dto.Category, true, out var category) ? category : EducationCategory.Education;
-        education.UpdatedAt = DateTime.UtcNow;
-
-        await _unitOfWork.CompleteAsync();
         return Ok(education);
     }
 
     [Authorize]
-    [HttpDelete("{id}")]
+    [HttpPost]
+    public async Task<ActionResult<EducationDto>> CreateEducation(EducationDto dto)
+    {
+        var result = await _educationService.CreateEducationAsync(dto);
+        return CreatedAtAction(nameof(GetEducationById), new { id = result.Id }, result);
+    }
+
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateEducation(Guid id, EducationDto dto)
+    {
+        var result = await _educationService.UpdateEducationAsync(id, dto);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteEducation(Guid id)
     {
-        var entry = await _unitOfWork.Repository<Education>().GetByIdAsync(id);
-        if (entry == null) return NotFound();
-        _unitOfWork.Repository<Education>().Delete(entry);
-        await _unitOfWork.CompleteAsync();
+        await _educationService.DeleteEducationAsync(id);
         return NoContent();
     }
 }
