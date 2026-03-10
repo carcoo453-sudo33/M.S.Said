@@ -295,8 +295,3 @@ public class ProjectsController : ControllerBase
         }
     }
 }
-
-public class GitHubImportDto
-{
-    public string GitHubUrl { get; set; } = string.Empty;
-}
