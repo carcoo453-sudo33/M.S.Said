@@ -79,6 +79,13 @@ reviews:
     - "!.github/workflows/**"
     - "!docker-compose.yml"
     - "!Dockerfile*"
+    - "!Portfolio.API/Domain/Enums/**"
+    - "!Portfolio.API/Constants/**"
+    - "!Portfolio.API/Application/DTOs/**" # Legacy/Duplicate DTOs
+    - "!Portfolio.API/Infrastructure/Data/Configurations/**"
+    - "!Portfolio.API/Domain/Events/**"
+    - "!Portfolio.API/Portfolio.API.http"
+    - "!.dockerignore"
 
 chat:
   auto_reply: true
