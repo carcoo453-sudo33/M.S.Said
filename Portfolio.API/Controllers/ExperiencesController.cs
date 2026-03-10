@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Entities;
-using Portfolio.API.Repositories;
-using Portfolio.API.DTOs;
+using Portfolio.API.Application.Features.Experiences.DTOs;
+using Portfolio.API.Application.Features.Experiences.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -10,110 +9,79 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ExperiencesController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IExperienceService _experienceService;
 
-    public ExperiencesController(IUnitOfWork unitOfWork)
+    /// <summary>
+    /// Initializes a new ExperiencesController that uses the provided experience service for handling experience operations.
+    /// </summary>
+    /// <param name="experienceService">Service that provides CRUD operations and DTO handling for experiences.</param>
+    public ExperiencesController(IExperienceService experienceService)
     {
-        _unitOfWork = unitOfWork;
+        _experienceService = experienceService;
     }
 
+    /// <summary>
+    /// Retrieves all experience DTOs.
+    /// </summary>
+    /// <returns>An ActionResult containing a collection of ExperienceDto; on success contains HTTP 200 OK with the list of experiences.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ExperienceEntry>>> GetExperiences()
+    public async Task<ActionResult<IEnumerable<ExperienceDto>>> GetExperiences()
     {
-        var experiences = await _unitOfWork.Repository<ExperienceEntry>().GetAllAsync();
-        
-        // Sort by IsCurrent first (current jobs at top), then by Duration descending
-        return Ok(experiences
-            .OrderByDescending(e => e.IsCurrent)
-            .ThenByDescending(e => ExtractYear(e.Duration))
-            .ThenByDescending(e => e.Duration));
+        var experiences = await _experienceService.GetExperiencesAsync();
+        return Ok(experiences);
     }
 
-    private int ExtractYear(string duration)
+    /// <summary>
+    /// Retrieves a single experience by its identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the experience to retrieve.</param>
+    /// <returns>The requested <see cref="ExperienceDto"/> if found; a NotFound result otherwise.</returns>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ExperienceDto>> GetExperienceById(Guid id)
     {
-        if (string.IsNullOrEmpty(duration)) return 0;
-        
-        // Handle formats like "05/2024 - Present", "2023", "2022-2023"
-        var parts = duration.Split(new[] { '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
-        
-        foreach (var part in parts)
-        {
-            var trimmed = part.Trim();
-            // Try to find a 4-digit year
-            if (int.TryParse(trimmed, out int year) && year >= 2000 && year <= 2100)
-            {
-                return year;
-            }
-            // Check if it contains a year (like "05/2024")
-            if (trimmed.Length >= 4)
-            {
-                var lastFour = trimmed.Substring(trimmed.Length - 4);
-                if (int.TryParse(lastFour, out int yearFromEnd) && yearFromEnd >= 2000 && yearFromEnd <= 2100)
-                {
-                    return yearFromEnd;
-                }
-            }
-        }
-        
-        return 0;
-    }
-
-    // [Authorize] // Temporarily disabled for testing
-    [HttpPost]
-    public async Task<ActionResult<ExperienceEntry>> CreateExperience(ExperienceDto dto)
-    {
-        var entry = new ExperienceEntry
-        {
-            Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-            Role = dto.Role,
-            Role_Ar = dto.Role_Ar,
-            Company = dto.Company,
-            Company_Ar = dto.Company_Ar,
-            Duration = dto.Duration,
-            Description = dto.Description,
-            Description_Ar = dto.Description_Ar,
-            Location = dto.Location,
-            Location_Ar = dto.Location_Ar,
-            IsCurrent = dto.IsCurrent
-        };
-        await _unitOfWork.Repository<ExperienceEntry>().AddAsync(entry);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetExperiences), new { id = entry.Id }, entry);
-    }
-
-    // [Authorize] // Temporarily disabled for testing
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateExperience(Guid id, ExperienceDto dto)
-    {
-        var repository = _unitOfWork.Repository<ExperienceEntry>();
-        var experience = await repository.GetByIdAsync(id);
-        
+        var experience = await _experienceService.GetExperienceByIdAsync(id);
         if (experience == null) return NotFound();
-
-        experience.Role = dto.Role;
-        experience.Role_Ar = dto.Role_Ar;
-        experience.Company = dto.Company;
-        experience.Company_Ar = dto.Company_Ar;
-        experience.Duration = dto.Duration;
-        experience.Description = dto.Description;
-        experience.Description_Ar = dto.Description_Ar;
-        experience.Location = dto.Location;
-        experience.Location_Ar = dto.Location_Ar;
-        experience.IsCurrent = dto.IsCurrent;
-        experience.UpdatedAt = DateTime.UtcNow;
-
-        await _unitOfWork.CompleteAsync();
         return Ok(experience);
     }
 
-    // [Authorize] // Temporarily disabled for testing
-    [HttpDelete("{id}")]
+    /// <summary>
+    /// Creates a new experience resource from the provided DTO and returns the created resource.
+    /// </summary>
+    /// <param name="dto">The experience data to create.</param>
+    /// <returns>The created ExperienceDto and a 201 Created response with a Location header for the new resource.</returns>
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<ExperienceDto>> CreateExperience(ExperienceDto dto)
+    {
+        var result = await _experienceService.CreateExperienceAsync(dto);
+        return CreatedAtAction(nameof(GetExperienceById), new { id = result.Id }, result);
+    }
+
+    /// <summary>
+    /// Updates the experience identified by the given id with values from the provided DTO.
+    /// </summary>
+    /// <param name="id">The unique identifier of the experience to update.</param>
+    /// <param name="dto">An ExperienceDto containing the updated values for the experience.</param>
+    /// <returns>The updated ExperienceDto if the update succeeds.</returns>
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateExperience(Guid id, ExperienceDto dto)
+    {
+        var result = await _experienceService.UpdateExperienceAsync(id, dto);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Deletes the experience with the specified identifier.
+    /// </summary>
+    /// <param name="id">The GUID of the experience to delete.</param>
+    /// <returns>`NoContent` (204) if the experience was deleted; `NotFound` (404) if no experience exists with the specified id.</returns>
+    [Authorize]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteExperience(Guid id)
     {
-        var experience = await _unitOfWork.Repository<ExperienceEntry>().GetByIdAsync(id);
-        if (experience == null) return NotFound();
-        _unitOfWork.Repository<ExperienceEntry>().Delete(experience);
-        await _unitOfWork.CompleteAsync();
+        var deleted = await _experienceService.DeleteExperienceAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

@@ -1,19 +1,22 @@
-using Portfolio.API.Endpoints;
-
 namespace Portfolio.API.Configuration;
 
 public static class PipelineConfiguration
 {
+    /// <summary>
+    /// Configures the application's HTTP request pipeline including error handling, HTTPS redirection, static files, rate limiting, CORS, authentication and authorization, health checks, controller endpoints, and SignalR hubs; exposes Swagger UI only in Development or Testing environments.
+    /// </summary>
+    /// <returns>The same <see cref="WebApplication"/> instance after middleware, endpoints, and hubs have been configured.</returns>
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         // Configure the HTTP request pipeline
+        app.UseExceptionHandler();
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
         else
         {
-            app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
 
@@ -31,15 +34,16 @@ public static class PipelineConfiguration
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Configure OpenAPI/Swagger
-        app.MapOpenApi();
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        // Swagger (development and testing)
+        if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
         {
-            options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
-            options.RoutePrefix = "swagger";
-        });
-
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
+                options.RoutePrefix = "swagger";
+            });
+        }
         // Health checks
         app.MapHealthChecks("/health");
 
@@ -47,7 +51,6 @@ public static class PipelineConfiguration
         app.MapGet("/", () => Results.Redirect("/swagger"));
 
         // Map endpoints
-        app.MapAuthenticationEndpoints();
         app.MapControllers().RequireRateLimiting("ApiPolicy");
 
         // SignalR Hub

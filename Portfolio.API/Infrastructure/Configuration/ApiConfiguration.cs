@@ -5,6 +5,16 @@ namespace Portfolio.API.Configuration;
 
 public static class ApiConfiguration
 {
+    /// <summary>
+    /// Configures MVC controllers, JSON serialization, API behavior, and Swagger services for the application.
+    /// </summary>
+    /// <remarks>
+    /// - Enables controllers.
+    /// - Configures JSON serialization to use camelCase property names and case-insensitive property matching.
+    /// - Configures API behavior to log model validation failures (including request path and validation errors) and return a BadRequest result containing the ModelState.
+    /// - Registers Swagger generation services.
+    /// </remarks>
+    /// <returns>The modified <see cref="IServiceCollection"/> to allow fluent chaining.</returns>
     public static IServiceCollection AddApiConfiguration(this IServiceCollection services)
     {
         services.AddControllers()
@@ -30,8 +40,7 @@ public static class ApiConfiguration
                 };
             });
 
-        // OpenAPI/Swagger
-        services.AddOpenApi();
+        // Swagger
         services.AddSwaggerGen();
 
         return services;

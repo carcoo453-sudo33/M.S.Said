@@ -1,13 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Features.Comments.DTOs;
-using Portfolio.API.Features.Comments.Mappers;
-using Portfolio.API.Repositories;
 using Portfolio.API.Entities;
-using Portfolio.API.Services;
+using Portfolio.API.Repositories;
+using Portfolio.API.Application.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.Mappers;
+using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Helpers;
 
-namespace Portfolio.API.Features.Comments.Services;
+namespace Portfolio.API.Application.Features.Comments.Services;
 
 public class CommentService : ICommentService
 {
@@ -25,6 +26,13 @@ public class CommentService : ICommentService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Create and persist a new comment for the specified project and emit a notification.
+    /// </summary>
+    /// <param name="projectId">The project identifier to which the comment will be added.</param>
+    /// <param name="request">A CommentCreateDto containing the comment author, content, and optional avatar URL.</param>
+    /// <returns>The created comment mapped to a <c>CommentDto</c>.</returns>
+    /// <exception cref="ArgumentException">Thrown when a project with the specified <paramref name="projectId"/> does not exist.</exception>
     public async Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding comment to project: {ProjectId}", projectId);
@@ -40,9 +48,9 @@ public class CommentService : ICommentService
         {
             Id = Guid.NewGuid(),
             ProjectId = projectId,
-            Author = request.Author,
+            Author = SanitizationHelper.Sanitize(request.Author),
             AvatarUrl = request.AvatarUrl,
-            Content = request.Content,
+            Content = SanitizationHelper.Sanitize(request.Content),
             Date = DateTime.UtcNow.ToString("MMM dd, yyyy"),
             Likes = 0,
             RepliesJson = "[]",
@@ -69,6 +77,14 @@ public class CommentService : ICommentService
         return CommentMapper.ToResponse(comment);
     }
 
+    /// <summary>
+    /// Adds a reply to an existing comment on a project, persists the updated comment, and emits a notification.
+    /// </summary>
+    /// <param name="projectId">The identifier of the project that contains the comment.</param>
+    /// <param name="commentId">The identifier of the comment to reply to.</param>
+    /// <param name="request">The reply data (author, content, avatar URL).</param>
+    /// <returns>The updated comment mapped to a <see cref="CommentDto"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when the target comment cannot be found.</exception>
     public async Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding reply to comment: {CommentId} on project: {ProjectId}", commentId, projectId);
@@ -101,9 +117,9 @@ public class CommentService : ICommentService
         var reply = new ReplyDto
         {
             Id = Guid.NewGuid(),
-            Author = request.Author,
+            Author = SanitizationHelper.Sanitize(request.Author),
             AvatarUrl = request.AvatarUrl,
-            Content = request.Content,
+            Content = SanitizationHelper.Sanitize(request.Content),
             Date = DateTime.UtcNow
         };
 
@@ -135,6 +151,13 @@ public class CommentService : ICommentService
         return CommentMapper.ToResponse(comment);
     }
 
+    /// <summary>
+    /// Increments the like count of a comment belonging to the specified project.
+    /// </summary>
+    /// <param name="projectId">The identifier of the project that contains the comment.</param>
+    /// <param name="commentId">The identifier of the comment to like.</param>
+    /// <returns>The updated number of likes for the comment.</returns>
+    /// <exception cref="ArgumentException">Thrown when a comment with the specified projectId and commentId does not exist.</exception>
     public async Task<int> LikeCommentAsync(Guid projectId, Guid commentId)
     {
         _logger.LogInformation("Liking comment: {CommentId} on project: {ProjectId}", commentId, projectId);
@@ -158,3 +181,5 @@ public class CommentService : ICommentService
         return comment.Likes;
     }
 }
+
+

@@ -1,12 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Features.Reactions.DTOs;
-using Portfolio.API.Features.Reactions.Mappers;
 using Portfolio.API.Repositories;
+using Portfolio.API.Application.Features.Reactions.DTOs;
+using Portfolio.API.Application.Features.Reactions.Mappers;
 using Portfolio.API.Entities;
-using Portfolio.API.Services;
+using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
+using Microsoft.EntityFrameworkCore;
 
-namespace Portfolio.API.Features.Reactions.Services;
+namespace Portfolio.API.Application.Features.Reactions.Services;
 
 public class ReactionService : IReactionService
 {
@@ -112,6 +112,11 @@ public class ReactionService : IReactionService
         return reactions.Select(ReactionMapper.ToResponse).ToList();
     }
 
+    /// <summary>
+    /// Gets the number of reactions for the specified project.
+    /// </summary>
+    /// <param name="projectId">The project's unique identifier.</param>
+    /// <returns>The number of reactions associated with the project.</returns>
     public async Task<int> GetReactionCountAsync(Guid projectId)
     {
         _logger.LogInformation("Getting reaction count for project: {ProjectId}", projectId);
@@ -121,3 +126,6 @@ public class ReactionService : IReactionService
             .CountAsync(r => r.ProjectId == projectId);
     }
 }
+
+
+
