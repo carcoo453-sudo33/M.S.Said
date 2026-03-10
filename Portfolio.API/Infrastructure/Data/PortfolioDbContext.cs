@@ -18,60 +18,61 @@ public class PortfolioDbContext : IdentityDbContext
             warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
     }
 
-    public DbSet<ExperienceEntry> Experiences { get; set; }
-    public DbSet<ProjectEntry> Projects { get; set; }
-    public DbSet<BioEntry> BioEntries { get; set; }
-    public DbSet<ServiceEntry> ServiceEntries { get; set; }
-    public DbSet<BlogPost> BlogPosts { get; set; }
-    public DbSet<EducationEntry> EducationEntries { get; set; }
-    public DbSet<ContactMessage> ContactMessages { get; set; }
-    public DbSet<SkillEntry> Skills { get; set; }
-    public DbSet<TestimonialEntry> Testimonials { get; set; }
-    public DbSet<ClientEntry> Clients { get; set; }
-    public DbSet<ProjectKeyFeature> ProjectKeyFeatures { get; set; }
-    public DbSet<ProjectChangelogItem> ProjectChangelogItems { get; set; }
-    public DbSet<ProjectComment> ProjectComments { get; set; }
-    public DbSet<NotificationEntry> Notifications { get; set; }
-    public DbSet<CategoryEntry> Categories { get; set; }
-    public DbSet<NicheEntry> Niches { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Bio> BioEntries { get; set; }
+    public DbSet<Service> ServiceEntries { get; set; }
+    public DbSet<Education> EducationEntries { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<Testimonial> Testimonials { get; set; }
+    public DbSet<Client> Clients { get; set; }
+    public DbSet<KeyFeature> KeyFeatures { get; set; }
+    public DbSet<ChangelogItem> ChangelogItems { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Reaction> Reactions { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Niche> Niches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         
         // Soft delete global query filter
-        builder.Entity<ExperienceEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<BioEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ServiceEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<BlogPost>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<EducationEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ContactMessage>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<SkillEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<TestimonialEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ClientEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectKeyFeature>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectComment>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<NotificationEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<CategoryEntry>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<NicheEntry>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Project>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Bio>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Education>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Skill>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Testimonial>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Client>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<KeyFeature>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<ChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Comment>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Reaction>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Notification>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
+        builder.Entity<Niche>().HasQueryFilter(x => !x.IsDeleted);
 
         // Project Relationships
-        builder.Entity<ProjectEntry>()
+        builder.Entity<Project>()
             .HasMany(p => p.KeyFeatures)
             .WithOne()
-            .HasForeignKey(kf => kf.ProjectEntryId);
+            .HasForeignKey(kf => kf.ProjectId);
 
-        builder.Entity<ProjectEntry>()
+        builder.Entity<Project>()
             .HasMany(p => p.Changelog)
             .WithOne()
-            .HasForeignKey(cl => cl.ProjectEntryId);
+            .HasForeignKey(cl => cl.ProjectId);
 
-        builder.Entity<ProjectEntry>()
+        builder.Entity<Project>()
             .HasMany(p => p.Comments)
             .WithOne()
-            .HasForeignKey(c => c.ProjectEntryId);
+            .HasForeignKey(c => c.ProjectId);
+
+        builder.Entity<Project>()
+            .HasMany(p => p.Reactions)
+            .WithOne()
+            .HasForeignKey(r => r.ProjectId);
     }
 
     public override int SaveChanges()
