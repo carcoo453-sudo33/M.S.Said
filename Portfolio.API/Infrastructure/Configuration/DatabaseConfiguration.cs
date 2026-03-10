@@ -22,6 +22,9 @@ public static class DatabaseConfiguration
             
             // Apply database schema updates
             await ApplySchemaUpdatesAsync(context);
+            
+            // Seed admin user
+            await SeedAdminUserAsync(services);
         }
         catch (Exception ex)
         {
@@ -34,7 +37,7 @@ public static class DatabaseConfiguration
     {
         var schemaUpdates = new[]
         {
-            ("ProjectComments", "RepliesJson", "NVARCHAR(MAX) NULL"),
+            ("Comments", "RepliesJson", "NVARCHAR(MAX) NULL"),
             ("Projects", "Views", "INT NOT NULL DEFAULT 0"),
             ("Projects", "IsFeatured", "BIT NOT NULL DEFAULT 0"),
             ("Projects", "GalleryJson", "NVARCHAR(MAX) NULL"),
@@ -61,10 +64,10 @@ public static class DatabaseConfiguration
             ("Projects", "Language_Ar", "NVARCHAR(100) NULL"),
             ("Projects", "Architecture_Ar", "NVARCHAR(200) NULL"),
             ("Projects", "Status_Ar", "NVARCHAR(100) NULL"),
-            ("ProjectKeyFeatures", "Title_Ar", "NVARCHAR(500) NULL"),
-            ("ProjectKeyFeatures", "Description_Ar", "NVARCHAR(MAX) NULL"),
-            ("ProjectChangelogs", "Title_Ar", "NVARCHAR(500) NULL"),
-            ("ProjectChangelogs", "Description_Ar", "NVARCHAR(MAX) NULL")
+            ("KeyFeatures", "Title_Ar", "NVARCHAR(500) NULL"),
+            ("KeyFeatures", "Description_Ar", "NVARCHAR(MAX) NULL"),
+            ("ChangelogItems", "Title_Ar", "NVARCHAR(500) NULL"),
+            ("ChangelogItems", "Description_Ar", "NVARCHAR(MAX) NULL")
         };
 
         foreach (var (table, column, columnType) in translationColumns)
@@ -95,6 +98,48 @@ public static class DatabaseConfiguration
         catch (Exception ex)
         {
             Console.WriteLine($"Column creation warning ({table}.{column}): {ex.Message}");
+        }
+    }
+
+    private static async Task SeedAdminUserAsync(IServiceProvider services)
+    {
+        var userManager = services.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser>>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
+            const string adminEmail = "m.ssaid356@gmail.com";
+            const string adminPassword = "Memo@3560";
+
+            var existingUser = await userManager.FindByEmailAsync(adminEmail);
+            if (existingUser == null)
+            {
+                var adminUser = new Microsoft.AspNetCore.Identity.IdentityUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
+                {
+                    logger.LogInformation("Admin user created successfully: {Email}", adminEmail);
+                }
+                else
+                {
+                    logger.LogError("Failed to create admin user. Errors: {Errors}", 
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                logger.LogInformation("Admin user already exists: {Email}", adminEmail);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding admin user");
         }
     }
 }

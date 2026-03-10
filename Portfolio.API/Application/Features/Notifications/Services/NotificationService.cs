@@ -52,21 +52,8 @@ public class NotificationService : INotificationService
             await _context.SaveChangesAsync();
 
             // Send real-time notification via SignalR
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
-            {
-                id = notification.Id.ToString(),
-                type = notification.Type,
-                title = notification.Title,
-                message = notification.Message,
-                link = notification.Link,
-                icon = notification.Icon,
-                isRead = notification.IsRead,
-                createdAt = notification.CreatedAt,
-                relatedEntityId = notification.RelatedEntityId,
-                relatedEntityType = notification.RelatedEntityType,
-                senderName = notification.SenderName,
-                senderEmail = notification.SenderEmail
-            });
+            var notificationDto = NotificationMapper.ToDto(notification);
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notificationDto);
         }
         catch (Exception ex)
         {

@@ -16,6 +16,7 @@ using Portfolio.API.Application.Features.References.Services;
 using Portfolio.API.Application.Features.Skills.Services;
 using Portfolio.API.Application.Features.Comments.Services;
 using Portfolio.API.Application.Features.Reactions.Services;
+using Portfolio.API.Application.Features.Auth.Services;
 using INotificationService = Portfolio.API.Application.Features.Notifications.Services.INotificationService;
 using NotificationService = Portfolio.API.Application.Features.Notifications.Services.NotificationService;
 
@@ -41,6 +42,7 @@ public static class ServiceRegistration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddHttpClient();
 
         // Feature Services

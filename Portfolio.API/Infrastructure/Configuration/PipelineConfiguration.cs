@@ -1,5 +1,3 @@
-using Portfolio.API.Endpoints;
-
 namespace Portfolio.API.Configuration;
 
 public static class PipelineConfiguration
@@ -31,12 +29,11 @@ public static class PipelineConfiguration
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Configure OpenAPI/Swagger
-        app.MapOpenApi();
+        // Swagger
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/openapi/v1.json", "Portfolio API v1");
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
             options.RoutePrefix = "swagger";
         });
 
@@ -47,7 +44,6 @@ public static class PipelineConfiguration
         app.MapGet("/", () => Results.Redirect("/swagger"));
 
         // Map endpoints
-        app.MapAuthenticationEndpoints();
         app.MapControllers().RequireRateLimiting("ApiPolicy");
 
         // SignalR Hub

@@ -1772,3 +1772,152 @@ SELECT @result
 2026-03-10 16:43:25.684 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/ - 302 0 null 7473.1772ms
 2026-03-10 16:43:29.671 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5283/swagger/index.html - null null
 2026-03-10 16:43:36.237 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/swagger/index.html - 200 null text/html;charset=utf-8 6565.9452ms
+2026-03-10 16:54:03.513 +02:00 [INF] User profile is available. Using 'C:\Users\Memo\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-10 16:54:08.788 +02:00 [INF] Executed DbCommand (98ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-10 16:54:08.840 +02:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-03-10 16:54:08.914 +02:00 [INF] Executed DbCommand (61ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-03-10 16:54:09.354 +02:00 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-03-10 16:54:09.391 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-10 16:54:09.406 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-10 16:54:09.434 +02:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-03-10 16:54:09.473 +02:00 [INF] Applying migration '20260310144311_CleanupOldTables'.
+2026-03-10 16:54:10.458 +02:00 [INF] Executed DbCommand (820ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF OBJECT_ID(N'[dbo].[AspNetUserLogins]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetUserLogins];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetUserTokens]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetUserTokens];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetUserClaims]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetUserClaims];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetRoleClaims]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetRoleClaims];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetUserRoles]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetUserRoles];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetUsers]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetUsers];
+                
+                IF OBJECT_ID(N'[dbo].[AspNetRoles]', N'U') IS NOT NULL
+                    DROP TABLE [dbo].[AspNetRoles];
+2026-03-10 16:54:10.517 +02:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260310144311_CleanupOldTables', N'9.0.0');
+2026-03-10 16:54:10.565 +02:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-03-10 16:54:10.985 +02:00 [ERR] Failed executing DbCommand (344ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectComments' 
+                    AND COLUMN_NAME = 'RepliesJson'
+                )
+                BEGIN
+                    ALTER TABLE [ProjectComments] ADD [RepliesJson] NVARCHAR(MAX) NULL;
+                END
+2026-03-10 16:54:11.693 +02:00 [INF] Executed DbCommand (58ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'Duration_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [Projects] ADD [Duration_Ar] NVARCHAR(100) NULL;
+                END
+2026-03-10 16:54:11.759 +02:00 [INF] Executed DbCommand (52ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'Language_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [Projects] ADD [Language_Ar] NVARCHAR(100) NULL;
+                END
+2026-03-10 16:54:11.835 +02:00 [INF] Executed DbCommand (51ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'Architecture_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [Projects] ADD [Architecture_Ar] NVARCHAR(200) NULL;
+                END
+2026-03-10 16:54:11.902 +02:00 [INF] Executed DbCommand (55ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'Projects' 
+                    AND COLUMN_NAME = 'Status_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [Projects] ADD [Status_Ar] NVARCHAR(100) NULL;
+                END
+2026-03-10 16:54:11.974 +02:00 [ERR] Failed executing DbCommand (52ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectKeyFeatures' 
+                    AND COLUMN_NAME = 'Title_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [ProjectKeyFeatures] ADD [Title_Ar] NVARCHAR(500) NULL;
+                END
+2026-03-10 16:54:12.049 +02:00 [ERR] Failed executing DbCommand (60ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectKeyFeatures' 
+                    AND COLUMN_NAME = 'Description_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [ProjectKeyFeatures] ADD [Description_Ar] NVARCHAR(MAX) NULL;
+                END
+2026-03-10 16:54:12.137 +02:00 [ERR] Failed executing DbCommand (80ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectChangelogs' 
+                    AND COLUMN_NAME = 'Title_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [ProjectChangelogs] ADD [Title_Ar] NVARCHAR(500) NULL;
+                END
+2026-03-10 16:54:12.201 +02:00 [ERR] Failed executing DbCommand (48ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+
+                IF NOT EXISTS (
+                    SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                    WHERE TABLE_NAME = 'ProjectChangelogs' 
+                    AND COLUMN_NAME = 'Description_Ar'
+                )
+                BEGIN
+                    ALTER TABLE [ProjectChangelogs] ADD [Description_Ar] NVARCHAR(MAX) NULL;
+                END
+2026-03-10 16:54:12.652 +02:00 [INF] Now listening on: http://localhost:5283
+2026-03-10 16:54:12.670 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-10 16:54:12.681 +02:00 [INF] Hosting environment: Development
+2026-03-10 16:54:12.684 +02:00 [INF] Content root path: C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API

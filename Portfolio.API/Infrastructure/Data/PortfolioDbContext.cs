@@ -36,89 +36,14 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Niche> Niches { get; set; }
     public DbSet<BlogPost> BlogPosts { get; set;}
+    public DbSet<ContactMessage> ContactMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         
-        // Soft delete global query filter
-        builder.Entity<Project>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ProjectImage>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Bio>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Signature>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<TechnicalFocus>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Seo>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Education>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Skill>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Reference>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<KeyFeature>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Comment>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Reaction>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Notification>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Niche>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<BlogPost>().HasQueryFilter(x => !x.IsDeleted);
-
-        // Bio Relationships
-        builder.Entity<Bio>()
-            .HasOne(b => b.Signature)
-            .WithOne(s => s.Bio)
-            .HasForeignKey<Signature>(s => s.BioId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<Bio>()
-            .HasOne(b => b.TechnicalFocus)
-            .WithOne(tf => tf.Bio)
-            .HasForeignKey<TechnicalFocus>(tf => tf.BioId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // SEO Relationships
-        builder.Entity<Project>()
-            .HasOne(p => p.Seo)
-            .WithOne()
-            .HasForeignKey<Seo>(s => s.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<Service>()
-            .HasOne(s => s.Seo)
-            .WithOne()
-            .HasForeignKey<Seo>(seo => seo.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<BlogPost>()
-            .HasOne(b => b.Seo)
-            .WithOne()
-            .HasForeignKey<Seo>(s => s.EntityId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Project Relationships
-        builder.Entity<Project>()
-            .HasMany(p => p.Images)
-            .WithOne(pi => pi.Project)
-            .HasForeignKey(pi => pi.ProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.KeyFeatures)
-            .WithOne()
-            .HasForeignKey(kf => kf.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Changelog)
-            .WithOne()
-            .HasForeignKey(cl => cl.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Comments)
-            .WithOne()
-            .HasForeignKey(c => c.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Reactions)
-            .WithOne()
-            .HasForeignKey(r => r.ProjectId);
+        // Apply all entity configurations from the assembly
+        builder.ApplyConfigurationsFromAssembly(typeof(PortfolioDbContext).Assembly);
     }
 
     public override int SaveChanges()

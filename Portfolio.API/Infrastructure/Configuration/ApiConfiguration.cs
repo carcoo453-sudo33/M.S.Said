@@ -30,8 +30,7 @@ public static class ApiConfiguration
                 };
             });
 
-        // OpenAPI/Swagger
-        services.AddOpenApi();
+        // Swagger
         services.AddSwaggerGen();
 
         return services;

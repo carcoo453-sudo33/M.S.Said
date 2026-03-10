@@ -1,0 +1,7 @@
+namespace Portfolio.API.Application.Features.Auth.DTOs;
+
+public class LoginRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
