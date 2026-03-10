@@ -9,6 +9,12 @@ public static class ProjectValidation
     {
         var result = new ValidationResult();
 
+        if (request == null)
+        {
+            result.AddError("Request body is required");
+            return result;
+        }
+
         // Title validation
         if (!ValidationHelper.IsRequired(request.Title))
             result.AddError("Project title is required");
@@ -29,11 +35,30 @@ public static class ProjectValidation
         if (!string.IsNullOrEmpty(request.ImageUrl) && !UrlHelper.IsValidUrl(request.ImageUrl))
             result.AddError("Invalid image URL format");
 
+        // Validate individual project images
+        if (request.Images != null)
+        {
+            foreach (var image in request.Images)
+            {
+                if (!string.IsNullOrEmpty(image.ImageUrl) && !UrlHelper.IsValidUrl(image.ImageUrl))
+                {
+                    result.AddError($"Invalid image URL format in images list: {image.ImageUrl}");
+                }
+            }
+        }
+
         return result;
     }
 
     public static ValidationResult ValidateUpdateRequest(ProjectUpdateDto request)
     {
+        if (request == null)
+        {
+            var errorResult = new ValidationResult();
+            errorResult.AddError("Request body is required");
+            return errorResult;
+        }
+
         var result = ValidateCreateRequest(request);
 
         if (request.Id == Guid.Empty)

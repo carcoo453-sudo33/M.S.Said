@@ -93,7 +93,17 @@ public static class ProjectMapper
             ReactionsCount = 0,
             ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities),
             KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf)).ToList() ?? new(),
-            Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new()
+            Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new(),
+            Images = request.Images?.Select(img => new ProjectImage
+            {
+                ImageUrl = img.ImageUrl,
+                Title = img.Title,
+                Title_Ar = img.Title_Ar,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description,
+                Description_Ar = img.Description_Ar
+            }).ToList() ?? new()
         };
     }
 
@@ -131,6 +141,23 @@ public static class ProjectMapper
         entity.Order = request.Order;
         entity.IsFeatured = request.IsFeatured;
         entity.ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities);
+
+        // Update images
+        entity.Images.Clear();
+        foreach (var img in request.Images ?? new List<ProjectImageCreateDto>())
+        {
+            entity.Images.Add(new ProjectImage
+            {
+                ProjectId = entity.Id,
+                ImageUrl = img.ImageUrl,
+                Title = img.Title,
+                Title_Ar = img.Title_Ar,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description,
+                Description_Ar = img.Description_Ar
+            });
+        }
 
         // Update key features
         entity.KeyFeatures.Clear();
