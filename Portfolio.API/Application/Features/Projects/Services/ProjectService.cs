@@ -122,7 +122,7 @@ public class ProjectService : IProjectService
         return ProjectMapper.ToResponse(project);
     }
 
-    public async Task<ProjectDto> UpdateProjectAsync(Guid id, ProjectUpdateDto request)
+    public async Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request)
     {
         _logger.LogInformation("Updating project: {ProjectId}", id);
 
@@ -181,7 +181,7 @@ public class ProjectService : IProjectService
         return true;
     }
 
-    public async Task<ProjectDto> ImportFromGitHubAsync(Guid projectId, string githubUrl)
+    public async Task<ProjectDto?> ImportFromGitHubAsync(Guid projectId, string githubUrl)
     {
         _logger.LogInformation("Importing GitHub data for project: {ProjectId}", projectId);
 

@@ -138,7 +138,7 @@ public class ProjectsController : ControllerBase
     [HttpPost("{projectId}/import-from-github")]
     public async Task<ActionResult<ProjectDto>> ImportFromGitHub(Guid projectId, [FromBody] GitHubImportDto request)
     {
-        var project = await _projectService.ImportFromGitHubAsync(projectId, request.GitHubUrl);
+        var project = await _projectService.ImportFromGitHubAsync(projectId, request.GitHubUrl ?? request.Url);
         return Ok(project);
     }
 }

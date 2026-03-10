@@ -41,14 +41,14 @@ public static class BioMapper
     {
         bio.Name = dto.Name;
         bio.Name_Ar = dto.Name_Ar;
-        bio.Title = dto.Title;
+        bio.Title = dto.Title ?? string.Empty;
         bio.Title_Ar = dto.Title_Ar;
-        bio.Description = dto.Description;
+        bio.Description = dto.Description ?? string.Empty;
         bio.Description_Ar = dto.Description_Ar;
-        bio.Location = dto.Location;
+        bio.Location = dto.Location ?? string.Empty;
         bio.Location_Ar = dto.Location_Ar;
-        bio.Email = dto.Email;
-        bio.Phone = dto.Phone;
+        bio.Email = dto.Email ?? string.Empty;
+        bio.Phone = dto.Phone ?? string.Empty;
         bio.AvatarUrl = dto.AvatarUrl;
         bio.LinkedInUrl = dto.LinkedInUrl;
         bio.GitHubUrl = dto.GitHubUrl;
