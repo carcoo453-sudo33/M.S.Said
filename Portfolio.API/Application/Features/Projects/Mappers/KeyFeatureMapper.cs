@@ -21,6 +21,9 @@ public static class KeyFeatureMapper
 
     public static KeyFeature ToEntity(KeyFeatureCreateDto request, Guid? projectId = null)
     {
+        if (projectId == null || projectId == Guid.Empty)
+            throw new ArgumentException("ProjectId is required to create a KeyFeature", nameof(projectId));
+
         return new KeyFeature
         {
             Id = Guid.NewGuid(),
@@ -29,7 +32,7 @@ public static class KeyFeatureMapper
             Link = request.Link,
             Date = request.Date,
             FeatureType = request.FeatureType,
-            ProjectId = projectId ?? Guid.Empty,
+            ProjectId = projectId.Value,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

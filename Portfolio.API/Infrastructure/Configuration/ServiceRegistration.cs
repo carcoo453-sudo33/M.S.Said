@@ -19,6 +19,7 @@ using Portfolio.API.Application.Features.Reactions.Services;
 using Portfolio.API.Application.Features.Auth.Services;
 using INotificationService = Portfolio.API.Application.Features.Notifications.Services.INotificationService;
 using NotificationService = Portfolio.API.Application.Features.Notifications.Services.NotificationService;
+using Portfolio.API.Application.Features.Projects.Queries;
 
 namespace Portfolio.API.Configuration;
 
@@ -54,6 +55,11 @@ public static class ServiceRegistration
         services.AddScoped<IExperienceService, ExperienceService>();
         services.AddScoped<INicheService, NicheService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<GetProjectsQueryHandler>();
+        services.AddScoped<GetProjectBySlugQueryHandler>();
+        services.AddScoped<GetFeaturedProjectsQueryHandler>();
+        services.AddScoped<GetRelatedProjectsQueryHandler>();
+        services.AddScoped<SlugExistsQueryHandler>();
         services.AddScoped<IReferenceService, ReferenceService>();
         services.AddScoped<ISkillService, SkillService>();
         services.AddScoped<ICommentService, CommentService>();

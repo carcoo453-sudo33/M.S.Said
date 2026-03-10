@@ -44,6 +44,11 @@ public class PortfolioDbContext : IdentityDbContext
         
         // Apply all entity configurations from the assembly
         builder.ApplyConfigurationsFromAssembly(typeof(PortfolioDbContext).Assembly);
+
+        // Reactions must be unique per project + user
+        builder.Entity<Reaction>()
+            .HasIndex(r => new { r.ProjectId, r.UserId })
+            .IsUnique();
     }
 
     public override int SaveChanges()

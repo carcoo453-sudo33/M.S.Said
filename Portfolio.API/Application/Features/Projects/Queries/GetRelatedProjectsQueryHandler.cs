@@ -12,11 +12,11 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
     {
     }
 
-    public async Task<List<ProjectDto>> HandleAsync(string slug)
+    public async Task<List<ProjectDto>> HandleAsync(string slug, CancellationToken cancellationToken = default)
     {
         // First get the project to find its category
         var project = await GetBaseQuery(false)
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null) return new List<ProjectDto>();
 
@@ -25,7 +25,7 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
             .Where(p => p.Category == project.Category && p.Id != project.Id)
             .OrderBy(p => p.Order)
             .Take(PaginationConstants.RelatedProjectsCount)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return relatedProjects.Select(ProjectMapper.ToResponse).ToList();
     }

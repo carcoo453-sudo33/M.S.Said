@@ -21,6 +21,9 @@ public static class ChangelogItemMapper
 
     public static ChangelogItem ToEntity(ChangelogItemCreateDto request, Guid? projectId = null)
     {
+        if (projectId == null || projectId == Guid.Empty)
+            throw new ArgumentException("ProjectId is required to create a ChangelogItem", nameof(projectId));
+
         return new ChangelogItem
         {
             Id = Guid.NewGuid(),
@@ -30,7 +33,7 @@ public static class ChangelogItemMapper
             Title_Ar = request.Title_Ar,
             Description = request.Description,
             Description_Ar = request.Description_Ar,
-            ProjectId = projectId ?? Guid.Empty,
+            ProjectId = projectId.Value,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

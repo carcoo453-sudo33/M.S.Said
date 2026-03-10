@@ -94,7 +94,8 @@ public class CommentService : ICommentService
             }
             catch (JsonException ex)
             {
-                _logger.LogWarning("Failed to deserialize replies JSON: {Error}", ex.Message);
+                _logger.LogError(ex, "Failed to deserialize replies JSON for comment {CommentId}. Aborting to prevent data loss.", commentId);
+                throw new InvalidOperationException("Failed to process existing replies due to data corruption.");
             }
         }
 
@@ -108,14 +109,44 @@ public class CommentService : ICommentService
             Date = DateTime.UtcNow
         };
 
-        replies.Add(reply);
+        const int maxRetries = 3;
+        for (int parseAttempt = 0; parseAttempt < maxRetries; parseAttempt++)
+        {
+            try
+            {
+                // We re-parse inside the loop in case we had to reload the comment
+                var currentReplies = new List<ReplyDto>();
+                if (!string.IsNullOrEmpty(comment.RepliesJson))
+                {
+                    currentReplies = JsonSerializer.Deserialize<List<ReplyDto>>(comment.RepliesJson) ?? new List<ReplyDto>();
+                }
+                currentReplies.Add(reply);
 
-        // Update comment with new replies
-        comment.RepliesJson = JsonSerializer.Serialize(replies);
-        comment.UpdatedAt = DateTime.UtcNow;
+                comment.RepliesJson = JsonSerializer.Serialize(currentReplies);
+                comment.UpdatedAt = DateTime.UtcNow;
 
-        _unitOfWork.Repository<Comment>().Update(comment);
-        await _unitOfWork.CompleteAsync();
+                _unitOfWork.Repository<Comment>().Update(comment);
+                await _unitOfWork.CompleteAsync();
+                break; // Success
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency exception while adding reply to comment {CommentId}. Attempt {Attempt} of {MaxRetries}", commentId, parseAttempt + 1, maxRetries);
+                
+                if (parseAttempt == maxRetries - 1)
+                {
+                    throw new InvalidOperationException("Failed to add reply due to concurrent updates. Please try again.");
+                }
+
+                // Reload the entity from the database to get the latest values including RepliesJson and RowVersion
+                await ex.Entries.Single().ReloadAsync();
+            }
+            catch (JsonException ex)
+            {
+                 _logger.LogError(ex, "Failed to deserialize replies JSON for comment {CommentId} during retry.", commentId);
+                 throw new InvalidOperationException("Failed to process existing replies due to data corruption.");
+            }
+        }
 
         // Get project for notification
         var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
@@ -149,11 +180,31 @@ public class CommentService : ICommentService
             throw new ArgumentException("Comment not found");
         }
 
-        comment.Likes++;
-        comment.UpdatedAt = DateTime.UtcNow;
+        const int maxRetries = 3;
+        for (int attempt = 0; attempt < maxRetries; attempt++)
+        {
+            try
+            {
+                comment.Likes++;
+                comment.UpdatedAt = DateTime.UtcNow;
 
-        _unitOfWork.Repository<Comment>().Update(comment);
-        await _unitOfWork.CompleteAsync();
+                _unitOfWork.Repository<Comment>().Update(comment);
+                await _unitOfWork.CompleteAsync();
+                break; // Success
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency exception while liking comment {CommentId}. Attempt {Attempt} of {MaxRetries}", commentId, attempt + 1, maxRetries);
+
+                if (attempt == maxRetries - 1)
+                {
+                    throw new InvalidOperationException("Failed to like comment due to concurrent updates. Please try again.");
+                }
+
+                // Reload the entity to get the latest Likes count and RowVersion
+                await ex.Entries.Single().ReloadAsync();
+            }
+        }
 
         _logger.LogInformation("Comment liked successfully. New like count: {Likes}", comment.Likes);
         return comment.Likes;

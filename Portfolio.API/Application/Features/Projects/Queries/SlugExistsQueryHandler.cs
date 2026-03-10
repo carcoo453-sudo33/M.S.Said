@@ -10,7 +10,7 @@ public class SlugExistsQueryHandler : BaseQueryHandler
     {
     }
 
-    public async Task<bool> HandleAsync(string slug, Guid? excludeId = null)
+    public async Task<bool> HandleAsync(string slug, Guid? excludeId = null, CancellationToken cancellationToken = default)
     {
         var query = _unitOfWork.Repository<Project>()
             .Query()
@@ -21,7 +21,7 @@ public class SlugExistsQueryHandler : BaseQueryHandler
             query = query.Where(p => p.Id != excludeId.Value);
         }
 
-        return await query.AnyAsync();
+        return await query.AnyAsync(cancellationToken);
     }
 }
 

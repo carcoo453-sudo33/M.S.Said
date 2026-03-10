@@ -11,10 +11,13 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
     {
     }
 
-    public async Task<ProjectDto?> HandleAsync(string slug)
+    public async Task<ProjectDto?> HandleAsync(string slug, CancellationToken cancellationToken = default)
     {
         var project = await GetBaseQuery()
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+            .Include(p => p.KeyFeatures)
+            .Include(p => p.Changelog)
+            .Include(p => p.Comments)
+            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null)
         {
@@ -23,6 +26,6 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
 
         return ProjectMapper.ToResponse(project);
     }
+
+
 }
-
-

@@ -22,13 +22,7 @@ public class BioController : ControllerBase
         
         if (bio == null) 
         {
-            return Ok(new BioDto 
-            { 
-                Name = "Default User",
-                Title = "Please edit profile to update",
-                Email = "email@example.com",
-                Description = "Default description..."
-            });
+            return NotFound("User profile bio not populated yet");
         }
         
         return Ok(bio);

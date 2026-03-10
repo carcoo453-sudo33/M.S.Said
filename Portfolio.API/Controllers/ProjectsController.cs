@@ -29,16 +29,16 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedResult<ProjectDto>>> GetProjects([FromQuery] ProjectQueryDto parameters)
+    public async Task<ActionResult<PagedResult<ProjectDto>>> GetProjects([FromQuery] ProjectQueryDto parameters, CancellationToken cancellationToken)
     {
-        var result = await _projectService.GetProjectsAsync(parameters);
+        var result = await _projectService.GetProjectsAsync(parameters, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("{slug}")]
-    public async Task<ActionResult<ProjectDto>> GetProject(string slug)
+    public async Task<ActionResult<ProjectDto>> GetProject(string slug, CancellationToken cancellationToken)
     {
-        var project = await _projectService.GetProjectBySlugAsync(slug);
+        var project = await _projectService.GetProjectBySlugAsync(slug, cancellationToken);
         if (project == null)
         {
             return NotFound($"Project with slug '{slug}' not found");
@@ -47,44 +47,63 @@ public class ProjectsController : ControllerBase
         return Ok(project);
     }
 
-    [HttpGet("featured")]
-    public async Task<ActionResult<List<ProjectDto>>> GetFeaturedProjects()
+    [HttpPost("{slug}/views")]
+    public async Task<IActionResult> TrackProjectView(string slug, CancellationToken cancellationToken)
     {
-        var projects = await _projectService.GetFeaturedProjectsAsync();
+        var success = await _projectService.TrackProjectViewAsync(slug, cancellationToken);
+        if (!success)
+        {
+            return NotFound($"Project with slug '{slug}' not found");
+        }
+
+        return Ok();
+    }
+
+    [HttpGet("featured")]
+    public async Task<ActionResult<List<ProjectDto>>> GetFeaturedProjects(CancellationToken cancellationToken)
+    {
+        var projects = await _projectService.GetFeaturedProjectsAsync(cancellationToken);
         return Ok(projects);
     }
 
     [HttpGet("{slug}/related")]
-    public async Task<ActionResult<List<ProjectDto>>> GetRelatedProjects(string slug)
+    public async Task<ActionResult<List<ProjectDto>>> GetRelatedProjects(string slug, CancellationToken cancellationToken)
     {
-        var projects = await _projectService.GetRelatedProjectsAsync(slug);
+        var projects = await _projectService.GetRelatedProjectsAsync(slug, cancellationToken);
         return Ok(projects);
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProjectDto>> CreateProject(ProjectCreateDto request)
+    public async Task<ActionResult<ProjectDto>> CreateProject(ProjectCreateDto request, CancellationToken cancellationToken)
     {
-        var project = await _projectService.CreateProjectAsync(request);
+        var project = await _projectService.CreateProjectAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetProject), new { slug = project.Slug }, project);
     }
 
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, ProjectUpdateDto request)
+    public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, ProjectUpdateDto request, CancellationToken cancellationToken)
     {
-        request.Id = id; // Ensure ID matches route
-        var project = await _projectService.UpdateProjectAsync(id, request);
-        if (project == null) return NotFound();
+        var project = await _projectService.UpdateProjectAsync(id, request, cancellationToken);
+        if (project == null)
+        {
+            return NotFound($"Project with ID {id} not found");
+        }
+
         return Ok(project);
     }
 
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteProject(Guid id)
+    public async Task<IActionResult> DeleteProject(Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _projectService.DeleteProjectAsync(id);
-        if (!deleted) return NotFound();
+        var result = await _projectService.DeleteProjectAsync(id, cancellationToken);
+        if (!result)
+        {
+            return NotFound($"Project with ID {id} not found");
+        }
+
         return NoContent();
     }
 

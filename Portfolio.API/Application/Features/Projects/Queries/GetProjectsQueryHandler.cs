@@ -13,7 +13,7 @@ public class GetProjectsQueryHandler : BaseQueryHandler
     {
     }
 
-    public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters)
+    public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
     {
         var query = GetBaseQuery();
 
@@ -57,11 +57,11 @@ public class GetProjectsQueryHandler : BaseQueryHandler
             _ => query.OrderBy(p => p.Order)
         };
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken);
         var projects = await query
             .Skip((parameters.Page - 1) * parameters.PageSize)
             .Take(parameters.PageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return new PagedResult<ProjectDto>
         {

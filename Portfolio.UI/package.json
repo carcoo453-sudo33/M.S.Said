@@ -79,7 +79,7 @@
     "@angular-eslint/schematics": "^18.4.1",
     "@angular-eslint/template-parser": "^18.4.1",
     "@angular/build": "21.1.5",
-    "@angular/cli": "21.1.5",
+    "@angular/cli": "^21.2.1",
     "@angular/compiler-cli": "21.1.5",
     "@axe-core/cli": "^4.10.2",
     "@lhci/cli": "^0.14.0",

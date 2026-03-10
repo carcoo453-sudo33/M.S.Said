@@ -27,33 +27,37 @@ public class ProjectService : IProjectService
     public ProjectService(
         IUnitOfWork unitOfWork,
         INotificationService notificationService,
-        ILogger<ProjectService> logger)
+        ILogger<ProjectService> logger,
+        GetProjectsQueryHandler getProjectsQueryHandler,
+        GetProjectBySlugQueryHandler getProjectBySlugQueryHandler,
+        GetFeaturedProjectsQueryHandler getFeaturedProjectsQueryHandler,
+        GetRelatedProjectsQueryHandler getRelatedProjectsQueryHandler,
+        SlugExistsQueryHandler slugExistsQueryHandler)
     {
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
         _logger = logger;
         
-        // Initialize query handlers
-        _getProjectsQueryHandler = new GetProjectsQueryHandler(unitOfWork);
-        _getProjectBySlugQueryHandler = new GetProjectBySlugQueryHandler(unitOfWork);
-        _getFeaturedProjectsQueryHandler = new GetFeaturedProjectsQueryHandler(unitOfWork);
-        _getRelatedProjectsQueryHandler = new GetRelatedProjectsQueryHandler(unitOfWork);
-        _slugExistsQueryHandler = new SlugExistsQueryHandler(unitOfWork);
+        _getProjectsQueryHandler = getProjectsQueryHandler;
+        _getProjectBySlugQueryHandler = getProjectBySlugQueryHandler;
+        _getFeaturedProjectsQueryHandler = getFeaturedProjectsQueryHandler;
+        _getRelatedProjectsQueryHandler = getRelatedProjectsQueryHandler;
+        _slugExistsQueryHandler = slugExistsQueryHandler;
     }
 
-    public async Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters)
+    public async Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
     {
-        return await _getProjectsQueryHandler.HandleAsync(parameters);
+        return await _getProjectsQueryHandler.HandleAsync(parameters, cancellationToken);
     }
 
-    public async Task<ProjectDto?> GetProjectBySlugAsync(string slug)
+    public async Task<ProjectDto?> GetProjectBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
         var project = await _unitOfWork.Repository<Project>()
             .Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
             .Include(p => p.Comments)
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null)
         {
@@ -61,12 +65,18 @@ public class ProjectService : IProjectService
             return null;
         }
 
-        // Increment view count
+        return ProjectMapper.ToResponse(project);
+    }
+
+    public async Task<bool> TrackProjectViewAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        var project = await _unitOfWork.Repository<Project>().Query().FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
+        if (project == null) return false;
+
         project.Views++;
         project.UpdatedAt = DateTime.UtcNow;
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
-        // Create notification for project view
         await _notificationService.CreateNotificationAsync(
             NotificationTypeConstants.ProjectView,
             "Project Viewed",
@@ -74,23 +84,24 @@ public class ProjectService : IProjectService
             $"/projects/{project.Slug}",
             "eye",
             project.Id.ToString(),
-            "Project"
+            "Project",
+            "Anonymous"
         );
 
-        return ProjectMapper.ToResponse(project);
+        return true;
     }
 
-    public async Task<List<ProjectDto>> GetFeaturedProjectsAsync()
+    public async Task<List<ProjectDto>> GetFeaturedProjectsAsync(CancellationToken cancellationToken = default)
     {
-        return await _getFeaturedProjectsQueryHandler.HandleAsync();
+        return await _getFeaturedProjectsQueryHandler.HandleAsync(cancellationToken);
     }
 
-    public async Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug)
+    public async Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug, CancellationToken cancellationToken = default)
     {
-        return await _getRelatedProjectsQueryHandler.HandleAsync(slug);
+        return await _getRelatedProjectsQueryHandler.HandleAsync(slug, cancellationToken);
     }
 
-    public async Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request)
+    public async Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Creating new project: {Title}", request.Title);
 
@@ -111,6 +122,21 @@ public class ProjectService : IProjectService
         project.CreatedAt = DateTime.UtcNow;
         project.UpdatedAt = DateTime.UtcNow;
 
+        // Map child entities now that we have a valid ProjectId
+        project.KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf, project.Id)).ToList() ?? new();
+        project.Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl, project.Id)).ToList() ?? new();
+        project.Images = request.Images?.Select(img => new Portfolio.API.Entities.ProjectImage
+        {
+            ProjectId = project.Id,
+            ImageUrl = img.ImageUrl,
+            Title = img.Title,
+            Title_Ar = img.Title_Ar,
+            Type = img.Type,
+            Order = img.Order,
+            Description = img.Description,
+            Description_Ar = img.Description_Ar
+        }).ToList() ?? new();
+
         await _unitOfWork.Repository<Project>().AddAsync(project);
         await _unitOfWork.CompleteAsync();
 
@@ -118,7 +144,7 @@ public class ProjectService : IProjectService
         return ProjectMapper.ToResponse(project);
     }
 
-    public async Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request)
+    public async Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Updating project: {ProjectId}", id);
 
@@ -133,7 +159,7 @@ public class ProjectService : IProjectService
             .Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
         if (project == null)
         {
@@ -159,7 +185,7 @@ public class ProjectService : IProjectService
         return ProjectMapper.ToResponse(project);
     }
 
-    public async Task<bool> DeleteProjectAsync(Guid id)
+    public async Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Deleting project: {ProjectId}", id);
 
@@ -171,18 +197,20 @@ public class ProjectService : IProjectService
         }
 
         _unitOfWork.Repository<Project>().Delete(project);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
         _logger.LogInformation("Project deleted successfully: {ProjectId}", id);
         return true;
     }
-
-    public async Task<ProjectDto> ImportFromUrlAsync(ImportRequest request)
+    public async Task<ProjectDto?> ImportFromUrlAsync(ImportRequest request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Importing project data from URL: {Url}", request.Url);
 
         var extractor = new MetadataExtractor();
         var metadata = await extractor.ExtractMetadata(request.Url);
+
+        if (metadata == null)
+            return null;
 
         // Map metadata to a DTO
         return new ProjectDto

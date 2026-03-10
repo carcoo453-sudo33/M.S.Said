@@ -35,25 +35,25 @@ public class ReactionService : IReactionService
             throw new ArgumentException("Project not found");
         }
 
-        // Check if user already reacted
-        var existingReaction = await _unitOfWork.Repository<Reaction>()
-            .Query()
-            .FirstOrDefaultAsync(r => r.ProjectId == projectId && r.UserId == request.UserId);
+        var reaction = ReactionMapper.ToEntity(projectId, request);
+        await _unitOfWork.Repository<Reaction>().AddAsync(reaction);
 
-        if (existingReaction != null)
+        try
         {
+            await _unitOfWork.CompleteAsync();
+            
+            // Only increment the project reactions count *after* the unique reaction insert successfully saves.
+            // This prevents lost updates and dangling counts if the insert fails (e.g., due to duplicate).
+            project.ReactionsCount++;
+            _unitOfWork.Repository<Project>().Update(project);
+            await _unitOfWork.CompleteAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            // The DB Unique Constraint (ProjectId, UserId) will trigger an exception if the user already reacted.
+            _logger.LogWarning(ex, "Failed to add reaction. User {UserId} already reacted to project {ProjectId}", request.UserId, projectId);
             throw new ArgumentException("User has already reacted to this project");
         }
-
-        var reaction = ReactionMapper.ToEntity(projectId, request);
-
-        await _unitOfWork.Repository<Reaction>().AddAsync(reaction);
-        
-        // Increment project reactions count
-        project.ReactionsCount++;
-        _unitOfWork.Repository<Project>().Update(project);
-        
-        await _unitOfWork.CompleteAsync();
 
         // Create notification
         await _notificationService.CreateNotificationAsync(
