@@ -13,5 +13,4 @@ public interface IProjectService
     Task<ProjectDto> UpdateProjectAsync(Guid id, ProjectUpdateDto request);
     Task DeleteProjectAsync(Guid id);
     Task<ProjectDto> ImportFromGitHubAsync(Guid projectId, string githubUrl);
-    Task<int> ReactToProjectAsync(Guid projectId);
 }

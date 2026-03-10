@@ -29,7 +29,8 @@ public static class ServiceRegistration
 
         // Feature Services
         services.AddScoped<Features.Projects.Services.IProjectService, Features.Projects.Services.ProjectService>();
-        services.AddScoped<Features.Projects.Services.IProjectCommentService, Features.Projects.Services.ProjectCommentService>();
+        services.AddScoped<Features.Comments.Services.ICommentService, Features.Comments.Services.CommentService>();
+        services.AddScoped<Features.Reactions.Services.IReactionService, Features.Reactions.Services.ReactionService>();
 
         // SignalR
         services.AddSignalR();

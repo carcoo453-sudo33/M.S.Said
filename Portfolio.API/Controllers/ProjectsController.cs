@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Features.Projects.DTOs;
 using Portfolio.API.Features.Projects.Services;
+using Portfolio.API.Features.Comments.DTOs;
+using Portfolio.API.Features.Comments.Services;
+using Portfolio.API.Features.Reactions.DTOs;
+using Portfolio.API.Features.Reactions.Services;
 using Portfolio.API.DTOs;
 
 namespace Portfolio.API.Controllers;
@@ -11,16 +15,19 @@ namespace Portfolio.API.Controllers;
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
-    private readonly IProjectCommentService _commentService;
+    private readonly ICommentService _commentService;
+    private readonly IReactionService _reactionService;
     private readonly ILogger<ProjectsController> _logger;
 
     public ProjectsController(
         IProjectService projectService,
-        IProjectCommentService commentService,
+        ICommentService commentService,
+        IReactionService reactionService,
         ILogger<ProjectsController> logger)
     {
         _projectService = projectService;
         _commentService = commentService;
+        _reactionService = reactionService;
         _logger = logger;
     }
 
@@ -154,22 +161,56 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpPost("{projectId}/react")]
-    public async Task<ActionResult<int>> ReactToProject(Guid projectId)
+    public async Task<ActionResult<ReactionDto>> ReactToProject(Guid projectId, ReactionCreateDto request)
     {
         try
         {
-            var reactionCount = await _projectService.ReactToProjectAsync(projectId);
-            return Ok(reactionCount);
+            var reaction = await _reactionService.AddReactionAsync(projectId, request);
+            return Ok(reaction);
         }
         catch (ArgumentException ex)
         {
             _logger.LogWarning("Error reacting to project {ProjectId}: {Error}", projectId, ex.Message);
-            return NotFound(ex.Message);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error reacting to project {ProjectId}", projectId);
             return StatusCode(500, "An error occurred while reacting to the project");
+        }
+    }
+
+    [HttpDelete("{projectId}/react/{userId}")]
+    public async Task<ActionResult> RemoveReaction(Guid projectId, string userId)
+    {
+        try
+        {
+            var removed = await _reactionService.RemoveReactionAsync(projectId, userId);
+            if (!removed)
+            {
+                return NotFound("Reaction not found");
+            }
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing reaction from project {ProjectId}", projectId);
+            return StatusCode(500, "An error occurred while removing the reaction");
+        }
+    }
+
+    [HttpGet("{projectId}/reactions")]
+    public async Task<ActionResult<List<ReactionDto>>> GetProjectReactions(Guid projectId)
+    {
+        try
+        {
+            var reactions = await _reactionService.GetProjectReactionsAsync(projectId);
+            return Ok(reactions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving reactions for project {ProjectId}", projectId);
+            return StatusCode(500, "An error occurred while retrieving reactions");
         }
     }
 

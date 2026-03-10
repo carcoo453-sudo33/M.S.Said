@@ -204,23 +204,6 @@ public class ProjectService : IProjectService
         return ProjectMapper.ToResponse(project);
     }
 
-    public async Task<int> ReactToProjectAsync(Guid projectId)
-    {
-        var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
-        if (project == null)
-        {
-            throw new ArgumentException("Project not found");
-        }
-
-        project.ReactionsCount++;
-        project.UpdatedAt = DateTime.UtcNow;
-
-        _unitOfWork.Repository<Project>().Update(project);
-        await _unitOfWork.CompleteAsync();
-
-        return project.ReactionsCount;
-    }
-
     private async Task<string> GenerateUniqueSlugAsync(string baseSlug, Guid? excludeId = null)
     {
         var slug = baseSlug;
