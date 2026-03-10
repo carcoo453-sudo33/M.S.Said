@@ -80,16 +80,20 @@ public static class DatabaseConfiguration
     {
         try
         {
-            await context.Database.ExecuteSqlRawAsync($@"
+            // Use parameterized query to prevent SQL injection
+            var sql = @"
                 IF NOT EXISTS (
                     SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
-                    WHERE TABLE_NAME = '{table}' 
-                    AND COLUMN_NAME = '{column}'
+                    WHERE TABLE_NAME = @table 
+                    AND COLUMN_NAME = @column
                 )
                 BEGIN
-                    ALTER TABLE {table} ADD {column} {columnType};
+                    DECLARE @sql NVARCHAR(MAX) = 'ALTER TABLE ' + QUOTENAME(@table) + ' ADD ' + QUOTENAME(@column) + ' ' + @columnType;
+                    EXEC sp_executesql @sql;
                 END
-            ");
+            ";
+            
+            await context.Database.ExecuteSqlAsync(FormattableStringFactory.Create(sql, table, column, columnType));
             Console.WriteLine($"{table}.{column} column check/creation completed");
         }
         catch (Exception ex)
