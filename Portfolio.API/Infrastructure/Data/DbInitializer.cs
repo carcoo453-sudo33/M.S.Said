@@ -12,6 +12,12 @@ public static class DbInitializer
         var context = serviceProvider.GetRequiredService<PortfolioDbContext>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
+        // Only seed if database is empty (no projects exist)
+        if (context.Projects.Any())
+        {
+            return; // Database already has data, skip seeding
+        }
+
         // Seed Admin User
         var adminEmail = configuration["AdminUser:Email"] ?? Environment.GetEnvironmentVariable("ADMIN_EMAIL");
         var adminPassword = configuration["AdminUser:Password"] ?? Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
