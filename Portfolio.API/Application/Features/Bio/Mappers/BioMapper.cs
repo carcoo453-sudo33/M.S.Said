@@ -1,11 +1,12 @@
 using Portfolio.API.Entities;
 using Portfolio.API.Application.Features.Bio.DTOs;
+using BioEntity = Portfolio.API.Entities.Bio;
 
 namespace Portfolio.API.Application.Features.Bio.Mappers;
 
 public static class BioMapper
 {
-    public static BioDto ToDto(Bio bio)
+    public static BioDto ToDto(BioEntity bio)
     {
         return new BioDto
         {
@@ -36,7 +37,7 @@ public static class BioMapper
         };
     }
 
-    public static void UpdateEntity(Bio bio, BioDto dto)
+    public static void UpdateEntity(BioEntity bio, BioDto dto)
     {
         bio.Name = dto.Name;
         bio.Name_Ar = dto.Name_Ar;

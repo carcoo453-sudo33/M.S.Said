@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
 
@@ -38,3 +38,4 @@ public class ProjectImage : BaseEntity
     // Navigation
     public virtual Project? Project { get; set; }
 }
+

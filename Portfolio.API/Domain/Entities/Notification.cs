@@ -1,4 +1,4 @@
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
 
@@ -15,3 +15,4 @@ public class Notification : BaseEntity
     public string? SenderName { get; set; } // Name of person who triggered notification
     public string? SenderEmail { get; set; }
 }
+

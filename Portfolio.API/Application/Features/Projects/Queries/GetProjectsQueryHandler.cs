@@ -1,6 +1,5 @@
 using Portfolio.API.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Infrastructure.Repositories;
 using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Application.Features.Projects.Mappers;
 using Portfolio.API.Application.Common;

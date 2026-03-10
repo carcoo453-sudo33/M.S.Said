@@ -1,12 +1,13 @@
 using Portfolio.API.Entities;
 using Portfolio.API.Application.Features.Education.DTOs;
 using Portfolio.API.Domain.Enums;
+using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Education.Mappers;
 
 public class EducationMapper
 {
-    public static EducationDto ToDto(Education entity)
+    public static EducationDto ToDto(EducationEntity entity)
     {
         return new EducationDto
         {
@@ -28,7 +29,7 @@ public class EducationMapper
         };
     }
 
-    public static void UpdateEntity(Education entity, EducationDto dto)
+    public static void UpdateEntity(EducationEntity entity, EducationDto dto)
     {
         entity.Institution = dto.Institution;
         entity.Institution_Ar = dto.Institution_Ar;

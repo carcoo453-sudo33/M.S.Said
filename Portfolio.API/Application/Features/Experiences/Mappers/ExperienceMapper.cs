@@ -1,11 +1,12 @@
 using Portfolio.API.Entities;
 using Portfolio.API.Application.Features.Experiences.DTOs;
+using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Experiences.Mappers;
 
 public class ExperienceMapper
 {
-    public static ExperienceDto ToDto(Education entity)
+    public static ExperienceDto ToDto(EducationEntity entity)
     {
         return new ExperienceDto
         {
@@ -25,7 +26,7 @@ public class ExperienceMapper
         };
     }
 
-    public static void UpdateEntity(Education entity, ExperienceDto dto)
+    public static void UpdateEntity(EducationEntity entity, ExperienceDto dto)
     {
         entity.Institution = dto.Company;
         entity.Institution_Ar = dto.Company_Ar;

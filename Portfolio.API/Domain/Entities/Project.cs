@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
 
@@ -72,3 +72,4 @@ public class Project : BaseEntity
     public virtual ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
     public virtual Seo? Seo { get; set; }
 }
+
