@@ -6,8 +6,10 @@ using EducationEntity = Portfolio.API.Entities.Education;
 namespace Portfolio.API.Application.Features.Education.Mappers;
 
 public static class EducationMapper
-{    public static EducationDto ToDto(EducationEntity entity)
+{
+    public static EducationDto ToDto(EducationEntity entity)
     {
+        ArgumentNullException.ThrowIfNull(entity);
         return new EducationDto
         {
             Id = entity.Id,
@@ -47,6 +49,5 @@ public static class EducationMapper
         entity.UpdatedAt = DateTime.UtcNow;
     }
 }
-
 
 

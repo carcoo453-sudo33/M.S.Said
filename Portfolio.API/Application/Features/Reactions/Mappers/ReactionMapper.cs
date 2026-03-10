@@ -27,9 +27,9 @@ public static class ReactionMapper
             UserId = request.UserId,
             ReactionType = Enum.TryParse<ReactionType>(request.ReactionType, out var reactionType)
                 ? reactionType
-                : throw new ArgumentException($"Invalid reaction type: {request.ReactionType}"),            CreatedAt = DateTime.UtcNow
-        };
-    }
+                : throw new ArgumentException($"Invalid reaction type: {request.ReactionType}"),
+            CreatedAt = DateTime.UtcNow
+        };    }
 }
 
 

@@ -30,7 +30,7 @@ public class Bio : BaseEntity
     public string? StackOverflowUrl { get; set; }
 
     // Professional Statistics
-    public DateTime CareerStartDate { get; set; } // Start date for calculating years of experience
+    public DateTime CareerStartDate { get; set; } = DateTime.UtcNow; // Start date for calculating years of experience
     public string? GitHubUsername { get; set; } // For fetching commits from GitHub API
     public string YearsOfExperience { get; set; } = "3+";
     public string ProjectsCompleted { get; set; } = "0";

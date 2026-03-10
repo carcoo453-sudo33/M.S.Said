@@ -181,14 +181,21 @@ public class MetadataExtractor
 
     private bool IsPrivateIP(string host)
     {
-        // Simple check for common private IP patterns
-        return host.StartsWith("10.") || 
-               host.StartsWith("192.168.") || 
-               host.StartsWith("172.16.") || // Needs careful 172.16.0.0/12 check but this is a start
-               host.StartsWith("169.254.") ||
-               host.EndsWith(".local");
-    }
+        if (host.StartsWith("10.") || 
+            host.StartsWith("192.168.") || 
+            host.StartsWith("169.254.") ||
+            host.EndsWith(".local"))
+            return true;
 
+        // Check 172.16.0.0/12 range (172.16.x.x - 172.31.x.x)
+        if (host.StartsWith("172."))
+        {
+            var parts = host.Split('.');
+            if (parts.Length >= 2 && int.TryParse(parts[1], out var second))
+                return second >= 16 && second <= 31;
+        }
+        return false;
+    }
     private async Task<string> FetchHtmlAsync(string url)
     {
         try

@@ -40,25 +40,24 @@ public class ContactController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/read")]
-    public async Task<IActionResult> MarkAsRead(Guid id)
+    public async Task<IActionResult> MarkAsRead(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
-            await _contactService.MarkAsReadAsync(id);
+            await _contactService.MarkAsReadAsync(id, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)
         {
             return NotFound();
-        }
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteMessage(Guid id)
+    public async Task<IActionResult> DeleteMessage(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
-            await _contactService.DeleteMessageAsync(id);
+            await _contactService.DeleteMessageAsync(id, cancellationToken);
             return NoContent();
         }
         catch (KeyNotFoundException)

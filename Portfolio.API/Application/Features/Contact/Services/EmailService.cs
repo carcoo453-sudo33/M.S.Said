@@ -47,7 +47,7 @@ public class EmailService : IEmailService
                 EnableSsl = enableSsl
             };
 
-            var mailMessage = new MailMessage
+            using var mailMessage = new MailMessage
             {
                 From = new MailAddress(fromEmail ?? smtpUsername, "Portfolio Contact Form"),
                 To = { toEmail },
@@ -55,8 +55,7 @@ public class EmailService : IEmailService
                 Body = ContactEmailTemplate.GetContactEmailHtml(senderName, senderEmail, subject, message),
                 IsBodyHtml = true
             };
-
-            await client.SendMailAsync(mailMessage);
+            await client.SendMailAsync(mailMessage, cancellationToken);            
             _logger.LogInformation("Contact email sent successfully to {ToEmail} from {SenderEmail}", toEmail, senderEmail);
         }
         catch (Exception ex)

@@ -3,7 +3,8 @@ using Portfolio.API.Application.Features.Niches.DTOs;
 
 namespace Portfolio.API.Application.Features.Niches.Mappers;
 
-public static class NicheMapper{
+public static class NicheMapper
+{
     public static NicheDto ToDto(Niche entity)
     {
         ArgumentNullException.ThrowIfNull(entity);

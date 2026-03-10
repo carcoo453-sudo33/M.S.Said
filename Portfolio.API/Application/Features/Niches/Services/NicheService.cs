@@ -56,7 +56,7 @@ public class NicheService : INicheService
             throw new KeyNotFoundException($"Niche with id {id} not found");
 
         var exists = await _context.Niches
-            .AnyAsync(n => n.Name.ToLower() == dto.Name.ToLower() && n.Id != id, cancellationToken);
+            .AnyAsync(n => EF.Functions.Collate(n.Name, "SQL_Latin1_General_CP1_CI_AS") == dto.Name && n.Id != id, cancellationToken);
 
         if (exists)
             throw new InvalidOperationException("Another niche with this name already exists");
@@ -65,7 +65,6 @@ public class NicheService : INicheService
         await _context.SaveChangesAsync(cancellationToken);
         return NicheMapper.ToDto(niche);
     }
-
     public async Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);

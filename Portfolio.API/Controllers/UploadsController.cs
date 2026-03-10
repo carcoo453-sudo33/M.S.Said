@@ -47,6 +47,23 @@ public class UploadsController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
+        const long maxFileSize = 5 * 1024 * 1024; // 5MB
+        if (file.Length > maxFileSize)
+            return BadRequest("File size exceeds the 5MB limit.");
+
+        var allowedExtensions = subFolder switch
+        {
+            "uploads/avatars" => new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" },
+            "uploads/cvs" => new[] { ".pdf", ".doc", ".docx" },
+            "uploads/skills" => new[] { ".svg", ".png", ".jpg", ".jpeg" },
+            "uploads/projects" => new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" },
+            _ => Array.Empty<string>()
+        };
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+            return BadRequest($"File type '{extension}' is not allowed for this upload type.");
+
         // Robust path resolution: if WebRootPath is null (common in some run scenarios),
         // use ContentRootPath and append wwwroot.
         var webRoot = _environment.WebRootPath;
@@ -70,5 +87,6 @@ public class UploadsController : ControllerBase
         // Always return a path starting with / for consistency in the UI
         var relativePath = $"/{subFolder}/{fileName}";
         return Ok(new { url = relativePath });
-    }
+    }    
 }
+
