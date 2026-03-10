@@ -1,13 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Features.Comments.DTOs;
-using Portfolio.API.Features.Comments.Mappers;
-using Portfolio.API.Repositories;
 using Portfolio.API.Entities;
-using Portfolio.API.Services;
+using Portfolio.API.Repositories;
+using Portfolio.API.Application.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.Mappers;
+using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
 using System.Text.Json;
 
-namespace Portfolio.API.Features.Comments.Services;
+namespace Portfolio.API.Application.Features.Comments.Services;
 
 public class CommentService : ICommentService
 {
@@ -158,3 +157,5 @@ public class CommentService : ICommentService
         return comment.Likes;
     }
 }
+
+

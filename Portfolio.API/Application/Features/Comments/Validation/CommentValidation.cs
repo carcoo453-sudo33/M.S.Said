@@ -1,8 +1,8 @@
 using FluentValidation.Results;
-using Portfolio.API.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.DTOs;
 using Portfolio.API.Helpers;
 
-namespace Portfolio.API.Features.Comments.Validation;
+namespace Portfolio.API.Application.Features.Comments.Validation;
 
 public static class CommentValidation
 {
@@ -31,3 +31,6 @@ public static class CommentValidation
         return result;
     }
 }
+
+
+

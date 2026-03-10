@@ -1,10 +1,10 @@
-using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Entities;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 using Portfolio.API.Helpers;
 using System.Text.Json;
 
-namespace Portfolio.API.Features.Projects.Mappers;
+namespace Portfolio.API.Application.Features.Projects.Mappers;
 
 public static class ProjectMapper
 {
@@ -82,7 +82,7 @@ public static class ProjectMapper
             Language_Ar = request.Language_Ar,
             Architecture = request.Architecture,
             Architecture_Ar = request.Architecture_Ar,
-            Status = request.Status ?? Enums.ProjectStatus.Planning,
+            Status = request.Status ?? ProjectStatus.Planning,
             Status_Ar = request.Status_Ar,
             Type = request.Type ?? ProjectType.Initial,
             Type_Ar = request.Type_Ar,
@@ -150,3 +150,5 @@ public static class ProjectMapper
         }
     }
 }
+
+

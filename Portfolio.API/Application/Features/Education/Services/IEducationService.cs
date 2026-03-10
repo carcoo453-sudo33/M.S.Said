@@ -10,3 +10,6 @@ public interface IEducationService
     Task<EducationDto> UpdateEducationAsync(Guid id, EducationDto dto);
     Task DeleteEducationAsync(Guid id);
 }
+
+
+

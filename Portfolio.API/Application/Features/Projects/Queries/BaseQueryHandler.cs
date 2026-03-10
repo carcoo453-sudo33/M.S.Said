@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
 using Portfolio.API.Entities;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public abstract class BaseQueryHandler
 {
@@ -30,3 +30,5 @@ public abstract class BaseQueryHandler
         return query;
     }
 }
+
+

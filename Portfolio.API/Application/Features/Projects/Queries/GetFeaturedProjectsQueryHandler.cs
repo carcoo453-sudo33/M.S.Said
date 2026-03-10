@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetFeaturedProjectsQueryHandler : BaseQueryHandler
 {
@@ -21,3 +21,5 @@ public class GetFeaturedProjectsQueryHandler : BaseQueryHandler
         return projects.Select(ProjectMapper.ToResponse).ToList();
     }
 }
+
+

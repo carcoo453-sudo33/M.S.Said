@@ -24,3 +24,6 @@ public class NicheMapper
         entity.UpdatedAt = DateTime.UtcNow;
     }
 }
+
+
+

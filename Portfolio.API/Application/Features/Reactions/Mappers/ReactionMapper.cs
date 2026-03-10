@@ -1,7 +1,8 @@
 using Portfolio.API.Entities;
-using Portfolio.API.Features.Reactions.DTOs;
+using Portfolio.API.Application.Features.Reactions.DTOs;
+using Portfolio.API.Domain.Enums;
 
-namespace Portfolio.API.Features.Reactions.Mappers;
+namespace Portfolio.API.Application.Features.Reactions.Mappers;
 
 public static class ReactionMapper
 {
@@ -24,8 +25,11 @@ public static class ReactionMapper
             Id = Guid.NewGuid(),
             ProjectId = projectId,
             UserId = request.UserId,
-            ReactionType = Enum.Parse<Enums.ReactionType>(request.ReactionType),
+            ReactionType = Enum.Parse<ReactionType>(request.ReactionType),
             CreatedAt = DateTime.UtcNow
         };
     }
 }
+
+
+

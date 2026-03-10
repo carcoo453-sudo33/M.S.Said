@@ -1,6 +1,6 @@
-using Portfolio.API.Features.Reactions.DTOs;
+using Portfolio.API.Application.Features.Reactions.DTOs;
 
-namespace Portfolio.API.Features.Reactions.Services;
+namespace Portfolio.API.Application.Features.Reactions.Services;
 
 public interface IReactionService
 {
@@ -9,3 +9,6 @@ public interface IReactionService
     Task<List<ReactionDto>> GetProjectReactionsAsync(Guid projectId);
     Task<int> GetReactionCountAsync(Guid projectId);
 }
+
+
+

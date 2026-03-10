@@ -1,6 +1,6 @@
 using Portfolio.API.Entities;
 using Portfolio.API.Application.Features.Education.DTOs;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Application.Features.Education.Mappers;
 
@@ -47,3 +47,6 @@ public class EducationMapper
         entity.UpdatedAt = DateTime.UtcNow;
     }
 }
+
+
+

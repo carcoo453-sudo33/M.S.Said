@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
-using Portfolio.API.Features.Projects.Queries;
-using Portfolio.API.Features.Projects.Validation;
 using Portfolio.API.Repositories;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
+using Portfolio.API.Application.Features.Projects.Queries;
+using Portfolio.API.Application.Features.Projects.Validation;
 using Portfolio.API.Entities;
 using Portfolio.API.Constants;
-using Portfolio.API.DTOs;
-using Portfolio.API.Services;
+using Portfolio.API.Application.Common;
+using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Helpers;
 
-namespace Portfolio.API.Features.Projects.Services;
+namespace Portfolio.API.Application.Features.Projects.Services;
 
 public class ProjectService : IProjectService
 {
@@ -223,3 +223,5 @@ public class ProjectService : IProjectService
         return await _slugExistsQueryHandler.HandleAsync(slug, excludeId);
     }
 }
+
+

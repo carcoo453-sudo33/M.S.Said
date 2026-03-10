@@ -1,151 +1,44 @@
-using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Data;
 using Portfolio.API.Entities;
-using Portfolio.API.Enums;
-using Portfolio.API.Infrastructure.Data;
-using Portfolio.API.Application.Features.Notifications.DTOs;
-using Portfolio.API.Application.Features.Notifications.Mappers;
+using Portfolio.API.Hubs;
+using Portfolio.API.Domain.Enums;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Portfolio.API.Application.Features.Notifications.Services;
 
 public class NotificationService : INotificationService
 {
     private readonly PortfolioDbContext _context;
+    private readonly IHubContext<NotificationHub> _hubContext;
 
-    public NotificationService(PortfolioDbContext context)
+    public NotificationService(PortfolioDbContext context, IHubContext<NotificationHub> hubContext)
     {
         _context = context;
+        _hubContext = hubContext;
     }
 
-    public async Task<IEnumerable<NotificationDto>> GetNotificationsAsync(int limit = 50, bool unreadOnly = false)
+    public async Task CreateNotificationAsync(string type, string title, string message, string? link = null, 
+        string? icon = null, string? relatedEntityId = null, string? relatedEntityType = null,
+        string? senderName = null, string? senderEmail = null)
     {
         try
         {
-            var query = _context.Notifications.AsQueryable();
-
-            if (unreadOnly)
+            // Parse string to NotificationType enum
+            if (!Enum.TryParse<NotificationType>(type, out var notificationType))
             {
-                query = query.Where(n => !n.IsRead);
+                notificationType = NotificationType.SystemAlert;
             }
 
-            var notifications = await query
-                .OrderByDescending(n => n.CreatedAt)
-                .Take(limit)
-                .ToListAsync();
-
-            return notifications.Select(NotificationMapper.ToDto);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error getting notifications: {ex.Message}");
-            return new List<NotificationDto>();
-        }
-    }
-
-    public async Task<NotificationStatsDto> GetStatsAsync()
-    {
-        try
-        {
-            var totalCount = await _context.Notifications.CountAsync();
-            var unreadCount = await _context.Notifications.CountAsync(n => !n.IsRead);
-
-            return new NotificationStatsDto
-            {
-                TotalCount = totalCount,
-                UnreadCount = unreadCount
-            };
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error getting stats: {ex.Message}");
-            return new NotificationStatsDto { TotalCount = 0, UnreadCount = 0 };
-        }
-    }
-
-    public async Task MarkAsReadAsync(string id)
-    {
-        try
-        {
-            var notification = await _context.Notifications.FindAsync(id);
-            if (notification == null)
-                throw new KeyNotFoundException($"Notification with id {id} not found");
-
-            notification.IsRead = true;
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error marking as read: {ex.Message}");
-        }
-    }
-
-    public async Task MarkAllAsReadAsync()
-    {
-        try
-        {
-            var unreadNotifications = await _context.Notifications
-                .Where(n => !n.IsRead)
-                .ToListAsync();
-
-            foreach (var notification in unreadNotifications)
-            {
-                notification.IsRead = true;
-            }
-
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error marking all as read: {ex.Message}");
-        }
-    }
-
-    public async Task DeleteNotificationAsync(string id)
-    {
-        try
-        {
-            var notification = await _context.Notifications.FindAsync(id);
-            if (notification == null)
-                throw new KeyNotFoundException($"Notification with id {id} not found");
-
-            _context.Notifications.Remove(notification);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error deleting notification: {ex.Message}");
-        }
-    }
-
-    public async Task ClearAllAsync()
-    {
-        try
-        {
-            var notifications = await _context.Notifications.ToListAsync();
-            _context.Notifications.RemoveRange(notifications);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[NotificationService] Error clearing all: {ex.Message}");
-        }
-    }
-
-    public async Task CreateNotificationAsync(string type, string title, string message, string? link,
-        string? icon, string? relatedEntityId, string? relatedEntityType, string? senderName, string? senderEmail)
-    {
-        try
-        {
             var notification = new Notification
             {
-                Id = Guid.NewGuid().ToString(),
-                Type = Enum.TryParse<NotificationType>(type, true, out var notificationType)
-                    ? notificationType
-                    : NotificationType.SystemAlert,
+                Id = Guid.NewGuid(),
+                Type = notificationType,
                 Title = title,
                 Message = message,
                 Link = link,
-                Icon = icon,
+                Icon = icon ?? GetDefaultIcon(type),
                 IsRead = false,
+                CreatedAt = DateTime.UtcNow,
                 RelatedEntityId = relatedEntityId,
                 RelatedEntityType = relatedEntityType,
                 SenderName = senderName,
@@ -154,10 +47,45 @@ public class NotificationService : INotificationService
 
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
+
+            // Send real-time notification via SignalR
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+            {
+                id = notification.Id.ToString(),
+                type = notification.Type,
+                title = notification.Title,
+                message = notification.Message,
+                link = notification.Link,
+                icon = notification.Icon,
+                isRead = notification.IsRead,
+                createdAt = notification.CreatedAt,
+                relatedEntityId = notification.RelatedEntityId,
+                relatedEntityType = notification.RelatedEntityType,
+                senderName = notification.SenderName,
+                senderEmail = notification.SenderEmail
+            });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[NotificationService] Error creating notification: {ex.Message}");
+            // Log error but don't throw - notifications are not critical
+            Console.WriteLine($"[NotificationService] Failed to create notification: {ex.Message}");
         }
     }
+
+    private string GetDefaultIcon(string type)
+    {
+        return type switch
+        {
+            "ContactForm" => "mail",
+            "Comment" => "message-circle",
+            "Reply" => "corner-down-right",
+            "WhatsApp" => "message-square",
+            "ProjectView" => "eye",
+            "BlogView" => "book-open",
+            _ => "bell"
+        };
+    }
 }
+
+
+

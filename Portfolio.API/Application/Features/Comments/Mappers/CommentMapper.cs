@@ -1,8 +1,7 @@
 using Portfolio.API.Entities;
-using Portfolio.API.Helpers;
-using Portfolio.API.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.DTOs;
 
-namespace Portfolio.API.Features.Comments.Mappers;
+namespace Portfolio.API.Application.Features.Comments.Mappers;
 
 public static class CommentMapper
 {
@@ -22,3 +21,5 @@ public static class CommentMapper
         };
     }
 }
+
+

@@ -62,12 +62,13 @@ public class Project : BaseEntity
     public int ReactionsCount { get; set; }
 
     // JSON properties for simple lists (or can be configured in DbContext)
-    public string? GalleryJson { get; set; }
     public string? ResponsibilitiesJson { get; set; }
 
     // Navigation Properties
+    public virtual ICollection<ProjectImage> Images { get; set; } = new List<ProjectImage>();
     public virtual ICollection<KeyFeature> KeyFeatures { get; set; } = new List<KeyFeature>();
     public virtual ICollection<ChangelogItem> Changelog { get; set; } = new List<ChangelogItem>();
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public virtual ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+    public virtual Seo? Seo { get; set; }
 }

@@ -7,3 +7,6 @@ public interface IBioService
     Task<BioDto?> GetBioAsync();
     Task<BioDto> UpdateBioAsync(Guid id, BioDto dto);
 }
+
+
+

@@ -15,3 +15,6 @@ public class NotificationDto
     public string? SenderName { get; set; }
     public string? SenderEmail { get; set; }
 }
+
+
+

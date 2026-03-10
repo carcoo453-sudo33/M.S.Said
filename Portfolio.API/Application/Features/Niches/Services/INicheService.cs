@@ -10,3 +10,6 @@ public interface INicheService
     Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto);
     Task DeleteNicheAsync(Guid id);
 }
+
+
+

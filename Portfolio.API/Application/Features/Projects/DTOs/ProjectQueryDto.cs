@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Projects.DTOs;
+namespace Portfolio.API.Application.Features.Projects.DTOs;
 
 public class ProjectQueryDto
 {
@@ -10,3 +10,5 @@ public class ProjectQueryDto
     public string? SortBy { get; set; } = "Order";
     public string? SortDirection { get; set; } = "asc";
 }
+
+

@@ -1,11 +1,12 @@
-using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
-using Portfolio.API.DTOs;
-using Portfolio.API.Enums;
+using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Infrastructure.Repositories;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
+using Portfolio.API.Application.Common;
+using Portfolio.API.Domain.Enums;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetProjectsQueryHandler : BaseQueryHandler
 {
@@ -69,3 +70,6 @@ public class GetProjectsQueryHandler : BaseQueryHandler
         };
     }
 }
+
+
+

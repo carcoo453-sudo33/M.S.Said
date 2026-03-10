@@ -1,7 +1,7 @@
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Common;
 
-namespace Portfolio.API.Features.Projects.Services;
+namespace Portfolio.API.Application.Features.Projects.Services;
 
 public interface IProjectService
 {
@@ -14,3 +14,5 @@ public interface IProjectService
     Task DeleteProjectAsync(Guid id);
     Task<ProjectDto> ImportFromGitHubAsync(Guid projectId, string githubUrl);
 }
+
+

@@ -11,3 +11,6 @@ public interface IBlogService
     Task DeletePostAsync(Guid id);
     Task<BlogPostDto> ImportFromUrlAsync(string url);
 }
+
+
+

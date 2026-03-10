@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Entities;
-using Portfolio.API.Infrastructure.Data;
+using Portfolio.API.Data;
 using Portfolio.API.Application.Features.Niches.DTOs;
 using Portfolio.API.Application.Features.Niches.Mappers;
 
@@ -76,3 +76,6 @@ public class NicheService : INicheService
         await _context.SaveChangesAsync();
     }
 }
+
+
+

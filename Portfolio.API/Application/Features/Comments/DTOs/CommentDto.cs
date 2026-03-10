@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Comments.DTOs;
+namespace Portfolio.API.Application.Features.Comments.DTOs;
 
 public class CommentDto
 {
@@ -10,3 +10,5 @@ public class CommentDto
     public int Likes { get; set; }
     public List<ReplyDto> Replies { get; set; } = new();
 }
+
+

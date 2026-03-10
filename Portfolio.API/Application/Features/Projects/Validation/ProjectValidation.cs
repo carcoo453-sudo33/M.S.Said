@@ -1,7 +1,7 @@
-using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Helpers;
 
-namespace Portfolio.API.Features.Projects.Validation;
+namespace Portfolio.API.Application.Features.Projects.Validation;
 
 public static class ProjectValidation
 {
@@ -65,3 +65,5 @@ public class ValidationResult
         Errors.AddRange(errors);
     }
 }
+
+

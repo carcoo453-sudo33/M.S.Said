@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Reactions.DTOs;
+namespace Portfolio.API.Application.Features.Reactions.DTOs;
 
 public class ReactionDto
 {
@@ -8,3 +8,6 @@ public class ReactionDto
     public string ReactionType { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
 }
+
+
+

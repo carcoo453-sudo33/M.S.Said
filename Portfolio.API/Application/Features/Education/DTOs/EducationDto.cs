@@ -1,4 +1,4 @@
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Application.Features.Education.DTOs;
 
@@ -20,3 +20,6 @@ public class EducationDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }
+
+
+

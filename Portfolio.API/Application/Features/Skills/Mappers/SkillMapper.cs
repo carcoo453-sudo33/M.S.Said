@@ -11,8 +11,7 @@ public class SkillMapper
         {
             Id = entity.Id,
             Name = entity.Name,
-            Name_Ar = entity.Name_Ar,
-            Icon = entity.Icon,
+            IconPath = entity.IconPath,
             Order = entity.Order,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt
@@ -22,9 +21,11 @@ public class SkillMapper
     public static void UpdateEntity(Skill entity, SkillDto dto)
     {
         entity.Name = dto.Name;
-        entity.Name_Ar = dto.Name_Ar;
-        entity.Icon = dto.Icon;
+        entity.IconPath = dto.IconPath;
         entity.Order = dto.Order;
         entity.UpdatedAt = DateTime.UtcNow;
     }
 }
+
+
+

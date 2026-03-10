@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Projects.DTOs;
+namespace Portfolio.API.Application.Features.Projects.DTOs;
 
 public class ChangelogItemCreateDto
 {
@@ -9,3 +9,5 @@ public class ChangelogItemCreateDto
     public string Description { get; set; } = string.Empty;
     public string? Description_Ar { get; set; }
 }
+
+

@@ -59,3 +59,6 @@ public class EducationService : IEducationService
         await _unitOfWork.CompleteAsync();
     }
 }
+
+
+

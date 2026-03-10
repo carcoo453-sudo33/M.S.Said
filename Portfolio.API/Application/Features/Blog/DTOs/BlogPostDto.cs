@@ -24,3 +24,6 @@ public class BlogPostDto
     public int ForksCount { get; set; }
     public int Version { get; set; } = 1;
 }
+
+
+

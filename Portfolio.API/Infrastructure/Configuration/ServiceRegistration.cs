@@ -41,6 +41,7 @@ public static class ServiceRegistration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddHttpClient();
 
         // Feature Services
         services.AddScoped<IBioService, BioService>();

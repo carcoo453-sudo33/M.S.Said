@@ -10,3 +10,6 @@ public interface ISkillService
     Task<SkillDto> UpdateSkillAsync(Guid id, SkillDto dto);
     Task DeleteSkillAsync(Guid id);
 }
+
+
+

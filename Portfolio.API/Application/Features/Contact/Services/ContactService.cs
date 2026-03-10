@@ -2,7 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Contact.DTOs;
 using Portfolio.API.Application.Features.Contact.Mappers;
-using Portfolio.API.Services;
+using Portfolio.API.Application.Features.Notifications.Services;
 
 namespace Portfolio.API.Application.Features.Contact.Services;
 
@@ -88,3 +88,6 @@ public class ContactService : IContactService
         await _unitOfWork.CompleteAsync();
     }
 }
+
+
+

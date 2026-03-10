@@ -33,4 +33,7 @@ public class BlogPost : BaseEntity
     public int ForksCount { get; set; }
     
     public int Version { get; set; } = 1;
+    
+    // Navigation Property
+    public virtual Seo? Seo { get; set; }
 }

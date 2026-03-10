@@ -10,3 +10,6 @@ public interface IContactService
     Task MarkAsReadAsync(Guid id);
     Task DeleteMessageAsync(Guid id);
 }
+
+
+

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Application.Features.Bio.DTOs;
 using Portfolio.API.Application.Features.Bio.Services;
-using Portfolio.API.Entities;
 
 namespace Portfolio.API.Controllers;
 

@@ -10,3 +10,6 @@ public interface IServiceService
     Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto);
     Task DeleteServiceAsync(Guid id);
 }
+
+
+

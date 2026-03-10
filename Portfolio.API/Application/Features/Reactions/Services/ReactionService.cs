@@ -1,12 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Features.Reactions.DTOs;
-using Portfolio.API.Features.Reactions.Mappers;
 using Portfolio.API.Repositories;
+using Portfolio.API.Application.Features.Reactions.DTOs;
+using Portfolio.API.Application.Features.Reactions.Mappers;
 using Portfolio.API.Entities;
-using Portfolio.API.Services;
+using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
 
-namespace Portfolio.API.Features.Reactions.Services;
+namespace Portfolio.API.Application.Features.Reactions.Services;
 
 public class ReactionService : IReactionService
 {
@@ -121,3 +120,6 @@ public class ReactionService : IReactionService
             .CountAsync(r => r.ProjectId == projectId);
     }
 }
+
+
+

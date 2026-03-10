@@ -10,3 +10,6 @@ public interface ICategoryService
     Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto dto);
     Task DeleteCategoryAsync(Guid id);
 }
+
+
+

@@ -5,3 +5,6 @@ public class NotificationStatsDto
     public int TotalCount { get; set; }
     public int UnreadCount { get; set; }
 }
+
+
+

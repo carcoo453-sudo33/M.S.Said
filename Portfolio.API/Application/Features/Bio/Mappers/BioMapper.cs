@@ -5,10 +5,11 @@ namespace Portfolio.API.Application.Features.Bio.Mappers;
 
 public static class BioMapper
 {
-    public static BioDto ToDto(Entities.Bio bio)
+    public static BioDto ToDto(Bio bio)
     {
         return new BioDto
         {
+            Id = bio.Id,
             Name = bio.Name,
             Name_Ar = bio.Name_Ar,
             Title = bio.Title,
@@ -30,24 +31,12 @@ public static class BioMapper
             CodeCommits = bio.CodeCommits,
             EducationQuote = bio.EducationQuote,
             EducationQuote_Ar = bio.EducationQuote_Ar,
-            SignatureRole = bio.SignatureRole,
-            SignatureRole_Ar = bio.SignatureRole_Ar,
-            SignatureName = bio.SignatureName,
-            SignatureName_Ar = bio.SignatureName_Ar,
-            SignatureSubtitle = bio.SignatureSubtitle,
-            SignatureSubtitle_Ar = bio.SignatureSubtitle_Ar,
-            SignatureVerifiedText = bio.SignatureVerifiedText,
-            SignatureVerifiedText_Ar = bio.SignatureVerifiedText_Ar,
-            TechnicalFocusTitle = bio.TechnicalFocusTitle,
-            TechnicalFocusTitle_Ar = bio.TechnicalFocusTitle_Ar,
-            TechnicalFocusDescription = bio.TechnicalFocusDescription,
-            TechnicalFocusDescription_Ar = bio.TechnicalFocusDescription_Ar,
-            TechnicalFocusItems = bio.TechnicalFocusItems,
-            TechnicalFocusItems_Ar = bio.TechnicalFocusItems_Ar
+            Signature = bio.Signature != null ? SignatureMapper.ToDto(bio.Signature) : null,
+            TechnicalFocus = bio.TechnicalFocus != null ? TechnicalFocusMapper.ToDto(bio.TechnicalFocus) : null
         };
     }
 
-    public static void UpdateEntity(Entities.Bio bio, BioDto dto)
+    public static void UpdateEntity(Bio bio, BioDto dto)
     {
         bio.Name = dto.Name;
         bio.Name_Ar = dto.Name_Ar;
@@ -65,25 +54,39 @@ public static class BioMapper
         bio.WhatsAppUrl = dto.WhatsAppUrl;
         bio.CVUrl = dto.CVUrl;
         bio.TwitterUrl = dto.TwitterUrl;
-        bio.YearsOfExperience = dto.YearsOfExperience;
-        bio.ProjectsCompleted = dto.ProjectsCompleted;
-        bio.CodeCommits = dto.CodeCommits;
+        // Note: YearsOfExperience, ProjectsCompleted, and CodeCommits are calculated dynamically in the service
         bio.EducationQuote = dto.EducationQuote;
         bio.EducationQuote_Ar = dto.EducationQuote_Ar;
-        bio.SignatureRole = dto.SignatureRole;
-        bio.SignatureRole_Ar = dto.SignatureRole_Ar;
-        bio.SignatureName = dto.SignatureName;
-        bio.SignatureName_Ar = dto.SignatureName_Ar;
-        bio.SignatureSubtitle = dto.SignatureSubtitle;
-        bio.SignatureSubtitle_Ar = dto.SignatureSubtitle_Ar;
-        bio.SignatureVerifiedText = dto.SignatureVerifiedText;
-        bio.SignatureVerifiedText_Ar = dto.SignatureVerifiedText_Ar;
-        bio.TechnicalFocusTitle = dto.TechnicalFocusTitle;
-        bio.TechnicalFocusTitle_Ar = dto.TechnicalFocusTitle_Ar;
-        bio.TechnicalFocusDescription = dto.TechnicalFocusDescription;
-        bio.TechnicalFocusDescription_Ar = dto.TechnicalFocusDescription_Ar;
-        bio.TechnicalFocusItems = dto.TechnicalFocusItems;
-        bio.TechnicalFocusItems_Ar = dto.TechnicalFocusItems_Ar;
+        
+        // Handle Signature
+        if (dto.Signature != null)
+        {
+            if (bio.Signature == null)
+            {
+                bio.Signature = SignatureMapper.ToEntity(dto.Signature, bio.Id);
+            }
+            else
+            {
+                SignatureMapper.UpdateEntity(bio.Signature, dto.Signature);
+            }
+        }
+
+        // Handle TechnicalFocus
+        if (dto.TechnicalFocus != null)
+        {
+            if (bio.TechnicalFocus == null)
+            {
+                bio.TechnicalFocus = TechnicalFocusMapper.ToEntity(dto.TechnicalFocus, bio.Id);
+            }
+            else
+            {
+                TechnicalFocusMapper.UpdateEntity(bio.TechnicalFocus, dto.TechnicalFocus);
+            }
+        }
+
         bio.UpdatedAt = DateTime.UtcNow;
     }
 }
+
+
+

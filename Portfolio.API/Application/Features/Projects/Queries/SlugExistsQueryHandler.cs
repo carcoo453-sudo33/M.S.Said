@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
 using Portfolio.API.Entities;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class SlugExistsQueryHandler : BaseQueryHandler
 {
@@ -24,3 +24,5 @@ public class SlugExistsQueryHandler : BaseQueryHandler
         return await query.AnyAsync();
     }
 }
+
+

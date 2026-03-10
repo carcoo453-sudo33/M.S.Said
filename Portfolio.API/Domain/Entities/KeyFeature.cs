@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Portfolio.API.Enums;
 
 namespace Portfolio.API.Entities;
 
@@ -16,5 +17,5 @@ public class KeyFeature : BaseEntity
     
     public string? Date { get; set; }
     
-    public string FeatureType { get; set; } = "added";
+    public FeatureType FeatureType { get; set; } = FeatureType.Added;
 }

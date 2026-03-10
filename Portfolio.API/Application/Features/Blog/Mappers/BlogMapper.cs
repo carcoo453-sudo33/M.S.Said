@@ -1,5 +1,5 @@
-using Portfolio.API.DTOs;
 using Portfolio.API.Entities;
+using Portfolio.API.Application.Features.Blog.DTOs;
 
 namespace Portfolio.API.Application.Features.Blog.Mappers;
 
@@ -53,3 +53,6 @@ public class BlogMapper
         entity.Version = dto.Version;
     }
 }
+
+
+

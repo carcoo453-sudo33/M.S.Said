@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Services;
-using Portfolio.API.Features.Comments.DTOs;
-using Portfolio.API.Features.Comments.Services;
-using Portfolio.API.Features.Reactions.DTOs;
-using Portfolio.API.Features.Reactions.Services;
 using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Services;
+using Portfolio.API.Application.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.Services;
+using Portfolio.API.Application.Features.Reactions.DTOs;
+using Portfolio.API.Application.Features.Reactions.Services;
 using Portfolio.API.Application.Common;
 
 namespace Portfolio.API.Controllers;

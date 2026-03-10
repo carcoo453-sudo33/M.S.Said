@@ -14,7 +14,8 @@ public class ServiceMapper
             Title_Ar = entity.Title_Ar,
             Description = entity.Description,
             Description_Ar = entity.Description_Ar,
-            Icon = entity.Icon,
+            IconPath = entity.IconPath,
+            Order = entity.Order,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt
         };
@@ -26,7 +27,11 @@ public class ServiceMapper
         entity.Title_Ar = dto.Title_Ar;
         entity.Description = dto.Description;
         entity.Description_Ar = dto.Description_Ar;
-        entity.Icon = dto.Icon;
+        entity.IconPath = dto.IconPath;
+        entity.Order = dto.Order;
         entity.UpdatedAt = DateTime.UtcNow;
     }
 }
+
+
+

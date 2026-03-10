@@ -10,3 +10,6 @@ public interface IExperienceService
     Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto);
     Task DeleteExperienceAsync(Guid id);
 }
+
+
+

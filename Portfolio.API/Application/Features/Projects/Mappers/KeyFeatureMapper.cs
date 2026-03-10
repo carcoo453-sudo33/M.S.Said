@@ -1,8 +1,8 @@
-using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Entities;
 using Portfolio.API.Constants;
 
-namespace Portfolio.API.Features.Projects.Mappers;
+namespace Portfolio.API.Application.Features.Projects.Mappers;
 
 public static class KeyFeatureMapper
 {
@@ -35,3 +35,5 @@ public static class KeyFeatureMapper
         };
     }
 }
+
+

@@ -1,6 +1,18 @@
+using Portfolio.API.Application.Common;
+
 namespace Portfolio.API.Application.Features.Blog.DTOs;
 
-public class ImportUrlRequest
+/// <summary>
+/// Blog import request - uses unified ImportRequest from Common
+/// Supports: Medium, Dev.to, StackOverflow, LinkedIn, and generic blogs
+/// </summary>
+public class ImportUrlRequest : ImportRequest
 {
-    public string Url { get; set; } = string.Empty;
+    public ImportUrlRequest()
+    {
+        ImportType = "Blog"; // Default to Blog for blog feature
+    }
 }
+
+
+

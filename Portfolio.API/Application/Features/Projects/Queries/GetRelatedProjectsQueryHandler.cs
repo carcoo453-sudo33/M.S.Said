@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
 using Portfolio.API.Constants;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetRelatedProjectsQueryHandler : BaseQueryHandler
 {
@@ -30,3 +30,5 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
         return relatedProjects.Select(ProjectMapper.ToResponse).ToList();
     }
 }
+
+

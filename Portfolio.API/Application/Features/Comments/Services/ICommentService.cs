@@ -1,6 +1,6 @@
-using Portfolio.API.Features.Comments.DTOs;
+using Portfolio.API.Application.Features.Comments.DTOs;
 
-namespace Portfolio.API.Features.Comments.Services;
+namespace Portfolio.API.Application.Features.Comments.Services;
 
 public interface ICommentService
 {
@@ -8,3 +8,5 @@ public interface ICommentService
     Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request);
     Task<int> LikeCommentAsync(Guid projectId, Guid commentId);
 }
+
+
