@@ -29,13 +29,6 @@ public static class ProjectValidation
         if (!string.IsNullOrEmpty(request.ImageUrl) && !UrlHelper.IsValidUrl(request.ImageUrl))
             result.AddError("Invalid image URL format");
 
-        // Gallery URL validation
-        foreach (var galleryUrl in request.Gallery)
-        {
-            if (!UrlHelper.IsValidUrl(galleryUrl))
-                result.AddError($"Invalid gallery URL: {galleryUrl}");
-        }
-
         return result;
     }
 

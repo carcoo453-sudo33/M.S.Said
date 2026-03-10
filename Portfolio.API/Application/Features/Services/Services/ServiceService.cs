@@ -35,7 +35,8 @@ public class ServiceService : IServiceService
             Title_Ar = dto.Title_Ar,
             Description = dto.Description,
             Description_Ar = dto.Description_Ar,
-            Icon = dto.Icon
+            IconPath = dto.IconPath,
+            Order = dto.Order
         };
         await _unitOfWork.Repository<Service>().AddAsync(service);
         await _unitOfWork.CompleteAsync();

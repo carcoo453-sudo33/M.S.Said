@@ -2,6 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Experiences.DTOs;
 using Portfolio.API.Application.Features.Experiences.Mappers;
+using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Experiences.Services;
 
@@ -16,7 +17,7 @@ public class ExperienceService : IExperienceService
 
     public async Task<IEnumerable<ExperienceDto>> GetExperiencesAsync()
     {
-        var experiences = await _unitOfWork.Repository<Education>().GetAllAsync();
+        var experiences = await _unitOfWork.Repository<EducationEntity>().GetAllAsync();
         return experiences
             .OrderByDescending(e => e.IsCompleted)
             .ThenByDescending(e => ExtractYear(e.Duration))
@@ -26,25 +27,25 @@ public class ExperienceService : IExperienceService
 
     public async Task<ExperienceDto?> GetExperienceByIdAsync(Guid id)
     {
-        var experience = await _unitOfWork.Repository<Education>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         return experience == null ? null : ExperienceMapper.ToDto(experience);
     }
 
     public async Task<ExperienceDto> CreateExperienceAsync(ExperienceDto dto)
     {
-        var entity = new Education
+        var entity = new EducationEntity
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid()
         };
         ExperienceMapper.UpdateEntity(entity, dto);
-        await _unitOfWork.Repository<Education>().AddAsync(entity);
+        await _unitOfWork.Repository<EducationEntity>().AddAsync(entity);
         await _unitOfWork.CompleteAsync();
         return ExperienceMapper.ToDto(entity);
     }
 
     public async Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto)
     {
-        var experience = await _unitOfWork.Repository<Education>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         if (experience == null)
             throw new KeyNotFoundException($"Experience with id {id} not found");
 
@@ -55,11 +56,11 @@ public class ExperienceService : IExperienceService
 
     public async Task DeleteExperienceAsync(Guid id)
     {
-        var experience = await _unitOfWork.Repository<Education>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         if (experience == null)
             throw new KeyNotFoundException($"Experience with id {id} not found");
 
-        _unitOfWork.Repository<Education>().Delete(experience);
+        _unitOfWork.Repository<EducationEntity>().Delete(experience);
         await _unitOfWork.CompleteAsync();
     }
 

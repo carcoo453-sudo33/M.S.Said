@@ -1,6 +1,7 @@
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.References.DTOs;
 using Portfolio.API.Application.Features.References.Mappers;
+using Portfolio.API.Entities;
 
 namespace Portfolio.API.Application.Features.References.Services;
 

@@ -32,8 +32,7 @@ public class SkillService : ISkillService
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
             Name = dto.Name,
-            Name_Ar = dto.Name_Ar,
-            Icon = dto.Icon,
+            IconPath = dto.IconPath,
             Order = dto.Order
         };
         await _unitOfWork.Repository<Skill>().AddAsync(skill);

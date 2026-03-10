@@ -2,8 +2,10 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Bio.DTOs;
 using Portfolio.API.Application.Features.Bio.Mappers;
+using Portfolio.API.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
+using BioEntity = Portfolio.API.Entities.Bio;
 
 namespace Portfolio.API.Application.Features.Bio.Services;
 
@@ -22,7 +24,7 @@ public class BioService : IBioService
 
     public async Task<BioDto?> GetBioAsync()
     {
-        var bios = await _unitOfWork.Repository<Bio>().GetAllAsync();
+        var bios = await _unitOfWork.Repository<BioEntity>().GetAllAsync();
         var bio = bios.FirstOrDefault();
         if (bio == null) return null;
 
@@ -43,13 +45,13 @@ public class BioService : IBioService
 
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto)
     {
-        var repository = _unitOfWork.Repository<Bio>();
+        var repository = _unitOfWork.Repository<BioEntity>();
         var bios = await repository.GetAllAsync();
         var bio = bios.FirstOrDefault();
 
         if (bio == null)
         {
-            bio = new Bio { Id = id };
+            bio = new BioEntity { Id = id };
             await repository.AddAsync(bio);
         }
 

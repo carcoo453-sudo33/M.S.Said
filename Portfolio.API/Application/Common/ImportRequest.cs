@@ -25,6 +25,7 @@ public class ImportRequest
     // Project-specific fields
     public string? TechStack { get; set; }
     public string? Company { get; set; }
+    public string? GitHubUrl { get; set; }
     
     // Control flags - General
     public bool ExtractMetadata { get; set; } = true;

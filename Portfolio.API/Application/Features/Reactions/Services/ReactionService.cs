@@ -4,6 +4,7 @@ using Portfolio.API.Application.Features.Reactions.Mappers;
 using Portfolio.API.Entities;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Reactions.Services;
 

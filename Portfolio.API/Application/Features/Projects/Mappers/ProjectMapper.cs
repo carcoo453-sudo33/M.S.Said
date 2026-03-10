@@ -48,7 +48,6 @@ public static class ProjectMapper
             ReactionsCount = entity.ReactionsCount,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
-            Gallery = JsonHelper.DeserializeList<string>(entity.GalleryJson),
             Responsibilities = JsonHelper.DeserializeList<ResponsibilityDto>(entity.ResponsibilitiesJson),
             KeyFeatures = entity.KeyFeatures?.Select(KeyFeatureMapper.ToResponse).ToList() ?? new(),
             Changelog = entity.Changelog?.Select(ChangelogItemMapper.ToResponse).ToList() ?? new()
@@ -92,7 +91,6 @@ public static class ProjectMapper
             IsFeatured = request.IsFeatured,
             Views = 0,
             ReactionsCount = 0,
-            GalleryJson = JsonSerializer.Serialize(request.Gallery),
             ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities),
             KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf)).ToList() ?? new(),
             Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new()
@@ -124,7 +122,7 @@ public static class ProjectMapper
         entity.Language_Ar = request.Language_Ar;
         entity.Architecture = request.Architecture;
         entity.Architecture_Ar = request.Architecture_Ar;
-        entity.Status = request.Status ?? Enums.ProjectStatus.Planning;
+        entity.Status = request.Status ?? ProjectStatus.Planning;
         entity.Status_Ar = request.Status_Ar;
         entity.Type = request.Type ?? ProjectType.Initial;
         entity.Type_Ar = request.Type_Ar;
@@ -132,7 +130,6 @@ public static class ProjectMapper
         entity.DevelopmentMethod_Ar = request.DevelopmentMethod_Ar;
         entity.Order = request.Order;
         entity.IsFeatured = request.IsFeatured;
-        entity.GalleryJson = JsonSerializer.Serialize(request.Gallery);
         entity.ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities);
 
         // Update key features

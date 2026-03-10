@@ -5,6 +5,7 @@ using Portfolio.API.Application.Features.Comments.Mappers;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Comments.Services;
 

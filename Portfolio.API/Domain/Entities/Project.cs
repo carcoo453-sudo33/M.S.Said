@@ -50,7 +50,7 @@ public class Project : BaseEntity
     public ProjectType? Type { get; set; } = ProjectType.Initial;
     public string? Type_Ar { get; set; }
 
-    public DevelopmentMethod? DevelopmentMethod { get; set; } = Enums.DevelopmentMethod.Manual;
+    public DevelopmentMethod? DevelopmentMethod { get; set; }
     public string? DevelopmentMethod_Ar { get; set; }
 
     public int Order { get; set; }
