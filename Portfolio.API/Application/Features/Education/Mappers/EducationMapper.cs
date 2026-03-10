@@ -8,11 +8,11 @@ namespace Portfolio.API.Application.Features.Education.Mappers;
 public static class EducationMapper
 {
     public static EducationDto ToDto(EducationEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-        return new EducationDto
         {
-            Id = entity.Id,
+            ArgumentNullException.ThrowIfNull(entity);
+            return new EducationDto
+            {
+                Id = entity.Id,            Id = entity.Id,
             Institution = entity.Institution,
             Institution_Ar = entity.Institution_Ar,
             Degree = entity.Degree,

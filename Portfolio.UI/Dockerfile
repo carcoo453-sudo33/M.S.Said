@@ -25,7 +25,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy built application from build stage
-COPY --from=build /app/dist/Portfolio.UI/browser .
+COPY --from=build /app/dist/browser .
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

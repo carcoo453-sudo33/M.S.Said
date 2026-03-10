@@ -50,6 +50,7 @@ public class ContactController : ControllerBase
         catch (KeyNotFoundException)
         {
             return NotFound();
+        }
     }
 
     [HttpDelete("{id:guid}")]
