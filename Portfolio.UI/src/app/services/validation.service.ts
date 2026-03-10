@@ -44,7 +44,7 @@ export class ValidationService {
      */
     isValidGitHubUrl(url: string): boolean {
         if (!url) return false;
-        const githubRegex = /^https:\/\/github\.com\/[\w\-\.]+\/[\w\-\.]+\/?$/;
+        const githubRegex = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/;
         return githubRegex.test(url);
     }
 

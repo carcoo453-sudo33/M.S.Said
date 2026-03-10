@@ -11,6 +11,7 @@ public static class DatabaseConfiguration
         using var scope = app.Services.CreateScope();
         var services = scope.ServiceProvider;
         
+        var logger = services.GetRequiredService<ILogger<Program>>();
         try
         {
             var context = services.GetRequiredService<PortfolioDbContext>();
@@ -22,19 +23,18 @@ public static class DatabaseConfiguration
             }
             
             // Apply database schema updates
-            await ApplySchemaUpdatesAsync(context);
+            await ApplySchemaUpdatesAsync(context, logger);
             
             // Seed admin user
-            await SeedAdminUserAsync(services);
+            await SeedAdminUserAsync(services, logger);
         }
         catch (Exception ex)
         {
-            var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred while migrating or seeding the database.");
         }
     }
 
-    private static async Task ApplySchemaUpdatesAsync(PortfolioDbContext context)
+    private static async Task ApplySchemaUpdatesAsync(PortfolioDbContext context, ILogger logger)
     {
         var schemaUpdates = new[]
         {
@@ -48,7 +48,7 @@ public static class DatabaseConfiguration
 
         foreach (var (table, column, columnType) in schemaUpdates)
         {
-            await AddColumnIfNotExistsAsync(context, table, column, columnType);
+            await AddColumnIfNotExistsAsync(context, table, column, columnType, logger);
         }
 
         // Add Arabic translation columns
@@ -73,11 +73,11 @@ public static class DatabaseConfiguration
 
         foreach (var (table, column, columnType) in translationColumns)
         {
-            await AddColumnIfNotExistsAsync(context, table, column, columnType);
+            await AddColumnIfNotExistsAsync(context, table, column, columnType, logger);
         }
     }
 
-    private static async Task AddColumnIfNotExistsAsync(PortfolioDbContext context, string table, string column, string columnType)
+    private static async Task AddColumnIfNotExistsAsync(PortfolioDbContext context, string table, string column, string columnType, ILogger logger)
     {
         try
         {
@@ -94,18 +94,18 @@ public static class DatabaseConfiguration
                 END
             ";
             
-            await context.Database.ExecuteSqlRawAsync(sql);            Console.WriteLine($"{table}.{column} column check/creation completed");
+            await context.Database.ExecuteSqlRawAsync(sql);
+            logger.LogInformation("{Table}.{Column} column check/creation completed", table, column);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Column creation warning ({table}.{column}): {ex.Message}");
+            logger.LogWarning(ex, "Column creation warning ({Table}.{Column}): {Message}", table, column, ex.Message);
         }
     }
 
-    private static async Task SeedAdminUserAsync(IServiceProvider services)
+    private static async Task SeedAdminUserAsync(IServiceProvider services, ILogger logger)
     {
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-        var logger = services.GetRequiredService<ILogger<Program>>();
         var configuration = services.GetRequiredService<IConfiguration>();
 
         try

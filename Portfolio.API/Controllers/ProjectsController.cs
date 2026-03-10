@@ -135,10 +135,41 @@ public class ProjectsController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("{projectId}/import-from-github")]
-    public async Task<ActionResult<ProjectDto>> ImportFromGitHub(Guid projectId, [FromBody] GitHubImportDto request)
+    [HttpPost("import-from-url")]
+    public async Task<ActionResult<ProjectDto>> ImportFromUrl([FromBody] ImportRequest request)
     {
-        var project = await _projectService.ImportFromGitHubAsync(projectId, request.GitHubUrl ?? request.Url);
+        var project = await _projectService.ImportFromUrlAsync(request);
         return Ok(project);
+    }
+
+    [HttpGet("test-cors")]
+    public IActionResult TestCors()
+    {
+        return Ok(new { Message = "CORS test successful" });
+    }
+
+    [HttpGet("suggestions/tags")]
+    public ActionResult<List<string>> GetTagSuggestions()
+    {
+        // For now return dummy data or extract from DB
+        return Ok(new List<string> { "Angular", "React", ".NET", "TypeScript", "SQL Server" });
+    }
+
+    [HttpGet("suggestions/categories")]
+    public ActionResult<List<string>> GetCategorySuggestions()
+    {
+        return Ok(new List<string> { "Web", "Mobile", "Desktop", "AI", "Cloud" });
+    }
+
+    [HttpGet("suggestions/niches")]
+    public ActionResult<List<string>> GetNicheSuggestions()
+    {
+        return Ok(new List<string> { "Fintech", "Healthcare", "E-commerce", "Education" });
+    }
+
+    [HttpGet("suggestions/companies")]
+    public ActionResult<List<object>> GetCompanySuggestions()
+    {
+        return Ok(new List<object> { new { Name = "Freelance" }, new { Name = "Personal" } });
     }
 }

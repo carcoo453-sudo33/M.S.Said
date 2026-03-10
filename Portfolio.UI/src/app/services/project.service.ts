@@ -200,27 +200,6 @@ export class ProjectService {
         );
     }
 
-    importFromGitHub(projectId: string, githubUrl: string): Observable<ProjectEntry> {
-        if (!projectId || !githubUrl) {
-            return throwError(() => new Error('Project ID and GitHub URL are required'));
-        }
-
-        if (!this.validationService.isValidGitHubUrl(githubUrl)) {
-            return throwError(() => new Error('Invalid GitHub URL format'));
-        }
-
-        return this.http.post<ProjectEntry>(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/import-from-github`, {
-            gitHubUrl: githubUrl,
-            url: githubUrl
-        }).pipe(
-            map(p => this.normalizeProject(p)),
-            catchError(error => {
-                console.error('Error importing from GitHub:', error);
-                return throwError(() => error);
-            })
-        );
-    }
-
     private sanitizeProjectData(project: any): any {
         return {
             ...project,

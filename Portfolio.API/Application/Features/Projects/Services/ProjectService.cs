@@ -9,6 +9,7 @@ using Portfolio.API.Constants;
 using Portfolio.API.Application.Common;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Helpers;
+using HtmlAgilityPack;
 
 namespace Portfolio.API.Application.Features.Projects.Services;
 
@@ -47,41 +48,36 @@ public class ProjectService : IProjectService
 
     public async Task<ProjectDto?> GetProjectBySlugAsync(string slug)
     {
-        var projectDto = await _getProjectBySlugQueryHandler.HandleAsync(slug);
+        var project = await _unitOfWork.Repository<Project>()
+            .Query()
+            .Include(p => p.KeyFeatures)
+            .Include(p => p.Changelog)
+            .Include(p => p.Comments)
+            .FirstOrDefaultAsync(p => p.Slug == slug);
 
-        if (projectDto == null)
+        if (project == null)
         {
             _logger.LogWarning("Project with slug {Slug} not found", slug);
             return null;
         }
 
-        // Get the entity to update view count
-        var project = await _unitOfWork.Repository<Project>()
-            .GetByIdAsync(projectDto.Id);
+        // Increment view count
+        project.Views++;
+        project.UpdatedAt = DateTime.UtcNow;
+        await _unitOfWork.CompleteAsync();
 
-        if (project != null)
-        {
-            // Increment view count
-            project.Views++;
-            project.UpdatedAt = DateTime.UtcNow;
-            await _unitOfWork.CompleteAsync();
+        // Create notification for project view
+        await _notificationService.CreateNotificationAsync(
+            NotificationTypeConstants.ProjectView,
+            "Project Viewed",
+            $"Project '{project.Title}' was viewed",
+            $"/projects/{project.Slug}",
+            "eye",
+            project.Id.ToString(),
+            "Project"
+        );
 
-            // Create notification for project view
-            await _notificationService.CreateNotificationAsync(
-                NotificationTypeConstants.ProjectView,
-                "Project Viewed",
-                $"Project '{project.Title}' was viewed",
-                $"/projects/{project.Slug}",
-                "eye",
-                project.Id.ToString(),
-                "Project"
-            );
-
-            // Update the DTO with new view count
-            projectDto.Views = project.Views;
-        }
-
-        return projectDto;
+        return ProjectMapper.ToResponse(project);
     }
 
     public async Task<List<ProjectDto>> GetFeaturedProjectsAsync()
@@ -181,30 +177,24 @@ public class ProjectService : IProjectService
         return true;
     }
 
-    public async Task<ProjectDto?> ImportFromGitHubAsync(Guid projectId, string githubUrl)
+    public async Task<ProjectDto> ImportFromUrlAsync(ImportRequest request)
     {
-        _logger.LogInformation("Importing GitHub data for project: {ProjectId}", projectId);
+        _logger.LogInformation("Importing project data from URL: {Url}", request.Url);
 
-        if (!UrlHelper.IsValidGitHubUrl(githubUrl))
+        var extractor = new MetadataExtractor();
+        var metadata = await extractor.ExtractMetadata(request.Url);
+
+        // Map metadata to a DTO
+        return new ProjectDto
         {
-            throw new ArgumentException("Invalid GitHub URL format");
-        }
-
-        var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
-        if (project == null)
-        {
-            throw new ArgumentException("Project not found");
-        }
-
-        // TODO: Implement GitHub API integration
-        // For now, just update the GitHub URL
-        project.RepoUrl = githubUrl;
-        project.UpdatedAt = DateTime.UtcNow;
-
-        _unitOfWork.Repository<Project>().Update(project);
-        await _unitOfWork.CompleteAsync();
-
-        return ProjectMapper.ToResponse(project);
+            Title = metadata.Title,
+            Description = metadata.Description ?? metadata.Content,
+            Summary = metadata.Description,
+            GitHubUrl = request.Url.Contains("github.com") ? request.Url : null,
+            ProjectUrl = request.Url,
+            TechStack = metadata.Tags,
+            CreatedAt = metadata.PublishedDate ?? DateTime.UtcNow
+        };
     }
 
     private async Task<string> GenerateUniqueSlugAsync(string baseSlug, Guid? excludeId = null)

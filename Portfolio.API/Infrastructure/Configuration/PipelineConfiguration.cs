@@ -30,8 +30,8 @@ public static class PipelineConfiguration
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Swagger (development only)
-        if (app.Environment.IsDevelopment())
+        // Swagger (development and testing)
+        if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
         {
             app.UseSwagger();
             app.UseSwaggerUI(options =>

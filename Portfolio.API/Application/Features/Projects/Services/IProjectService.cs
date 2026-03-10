@@ -12,7 +12,7 @@ public interface IProjectService
     Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request);
     Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request);
     Task<bool> DeleteProjectAsync(Guid id);
-    Task<ProjectDto?> ImportFromGitHubAsync(Guid projectId, string githubUrl);
+    Task<ProjectDto> ImportFromUrlAsync(ImportRequest request);
 }
 
 

@@ -6,6 +6,7 @@ using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Constants;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Helpers;
 
 namespace Portfolio.API.Application.Features.Comments.Services;
 
@@ -40,9 +41,9 @@ public class CommentService : ICommentService
         {
             Id = Guid.NewGuid(),
             ProjectId = projectId,
-            Author = request.Author,
+            Author = SanitizationHelper.Sanitize(request.Author),
             AvatarUrl = request.AvatarUrl,
-            Content = request.Content,
+            Content = SanitizationHelper.Sanitize(request.Content),
             Date = DateTime.UtcNow.ToString("MMM dd, yyyy"),
             Likes = 0,
             RepliesJson = "[]",
@@ -101,9 +102,9 @@ public class CommentService : ICommentService
         var reply = new ReplyDto
         {
             Id = Guid.NewGuid(),
-            Author = request.Author,
+            Author = SanitizationHelper.Sanitize(request.Author),
             AvatarUrl = request.AvatarUrl,
-            Content = request.Content,
+            Content = SanitizationHelper.Sanitize(request.Content),
             Date = DateTime.UtcNow
         };
 

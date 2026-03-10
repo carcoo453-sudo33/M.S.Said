@@ -10,6 +10,12 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     {
         builder.HasQueryFilter(x => !x.IsDeleted);
 
+        builder.HasIndex(p => p.Slug).IsUnique();
+        builder.HasIndex(p => p.Category);
+        builder.HasIndex(p => p.TechStack);
+        builder.HasIndex(p => p.CreatedAt);
+
+
         builder.HasOne(p => p.Seo)
             .WithOne()
             .HasForeignKey<Seo>(s => s.EntityId)

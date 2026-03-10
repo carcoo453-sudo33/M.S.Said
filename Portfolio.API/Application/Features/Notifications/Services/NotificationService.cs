@@ -13,11 +13,16 @@ public class NotificationService : INotificationService
 {
     private readonly PortfolioDbContext _context;
     private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly ILogger<NotificationService> _logger;
 
-    public NotificationService(PortfolioDbContext context, IHubContext<NotificationHub> hubContext)
+    public NotificationService(
+        PortfolioDbContext context, 
+        IHubContext<NotificationHub> hubContext,
+        ILogger<NotificationService> logger)
     {
         _context = context;
         _hubContext = hubContext;
+        _logger = logger;
     }
 
     public async Task CreateNotificationAsync(string type, string title, string message, string? link = null, 
@@ -58,7 +63,7 @@ public class NotificationService : INotificationService
         catch (Exception ex)
         {
             // Log error but don't throw - notifications are not critical
-            Console.WriteLine($"[NotificationService] Failed to create notification: {ex.Message}");
+            _logger.LogError(ex, "Failed to create notification of type {Type}: {Message}", type, ex.Message);
         }
     }
 
