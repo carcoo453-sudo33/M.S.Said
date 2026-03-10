@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
-
 public class Project : BaseEntity
 {
     [Required]

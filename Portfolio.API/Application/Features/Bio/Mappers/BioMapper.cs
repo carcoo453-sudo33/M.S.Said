@@ -71,6 +71,10 @@ public static class BioMapper
                 SignatureMapper.UpdateEntity(bio.Signature, dto.Signature);
             }
         }
+        else
+        {
+            bio.Signature = null;
+        }
 
         // Handle TechnicalFocus
         if (dto.TechnicalFocus != null)
@@ -84,7 +88,10 @@ public static class BioMapper
                 TechnicalFocusMapper.UpdateEntity(bio.TechnicalFocus, dto.TechnicalFocus);
             }
         }
-
+        else
+        {
+            bio.TechnicalFocus = null;
+        }
         bio.UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -20,12 +20,14 @@ public class ReferenceService : IReferenceService
         return references.OrderByDescending(r => r.PublishedAt).Select(ReferenceMapper.ToDto);
     }
 
+    /// <inheritdoc />
     public async Task<ReferenceDto?> GetReferenceByIdAsync(Guid id)
     {
         var reference = await _unitOfWork.Repository<Reference>().GetByIdAsync(id);
         return reference == null ? null : ReferenceMapper.ToDto(reference);
     }
 
+    /// <inheritdoc />
     public async Task<ReferenceDto> CreateReferenceAsync(ReferenceDto dto)
     {
         var reference = new Reference
@@ -43,32 +45,36 @@ public class ReferenceService : IReferenceService
             Phone = dto.Phone,
             Email = dto.Email,
             SocialLink = dto.SocialLink,
-            PublishedAt = dto.PublishedAt
+            PublishedAt = dto.PublishedAt,
+            CreatedAt = DateTime.UtcNow
         };
         await _unitOfWork.Repository<Reference>().AddAsync(reference);
         await _unitOfWork.CompleteAsync();
         return ReferenceMapper.ToDto(reference);
     }
 
-    public async Task<ReferenceDto> UpdateReferenceAsync(Guid id, ReferenceDto dto)
+    /// <inheritdoc />
+    public async Task<ReferenceDto?> UpdateReferenceAsync(Guid id, ReferenceDto dto)
     {
         var reference = await _unitOfWork.Repository<Reference>().GetByIdAsync(id);
         if (reference == null)
-            throw new KeyNotFoundException($"Reference with id {id} not found");
+            return null;
 
         ReferenceMapper.UpdateEntity(reference, dto);
         await _unitOfWork.CompleteAsync();
         return ReferenceMapper.ToDto(reference);
     }
 
-    public async Task DeleteReferenceAsync(Guid id)
+    /// <inheritdoc />
+    public async Task<bool> DeleteReferenceAsync(Guid id)
     {
         var reference = await _unitOfWork.Repository<Reference>().GetByIdAsync(id);
         if (reference == null)
-            throw new KeyNotFoundException($"Reference with id {id} not found");
+            return false;
 
         _unitOfWork.Repository<Reference>().Delete(reference);
         await _unitOfWork.CompleteAsync();
+        return true;
     }
 }
 

@@ -141,7 +141,8 @@ public class ProjectService : IProjectService
 
         if (project == null)
         {
-            throw new ArgumentException("Project not found");
+            _logger.LogWarning("Project not found: {ProjectId}", id);
+            return null;
         }
 
         // Check for duplicate slug (excluding current project)
@@ -162,20 +163,22 @@ public class ProjectService : IProjectService
         return ProjectMapper.ToResponse(project);
     }
 
-    public async Task DeleteProjectAsync(Guid id)
+    public async Task<bool> DeleteProjectAsync(Guid id)
     {
         _logger.LogInformation("Deleting project: {ProjectId}", id);
 
         var project = await _unitOfWork.Repository<Project>().GetByIdAsync(id);
         if (project == null)
         {
-            throw new ArgumentException("Project not found");
+            _logger.LogWarning("Project not found: {ProjectId}", id);
+            return false;
         }
 
         _unitOfWork.Repository<Project>().Delete(project);
         await _unitOfWork.CompleteAsync();
 
         _logger.LogInformation("Project deleted successfully: {ProjectId}", id);
+        return true;
     }
 
     public async Task<ProjectDto> ImportFromGitHubAsync(Guid projectId, string githubUrl)

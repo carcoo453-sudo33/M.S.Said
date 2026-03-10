@@ -51,7 +51,8 @@ public class SkillsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteSkill(Guid id)
     {
-        await _skillService.DeleteSkillAsync(id);
+        var deleted = await _skillService.DeleteSkillAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

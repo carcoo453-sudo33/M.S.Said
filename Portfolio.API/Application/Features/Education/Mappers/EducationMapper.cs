@@ -5,9 +5,8 @@ using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Education.Mappers;
 
-public class EducationMapper
-{
-    public static EducationDto ToDto(EducationEntity entity)
+public static class EducationMapper
+{    public static EducationDto ToDto(EducationEntity entity)
     {
         return new EducationDto
         {

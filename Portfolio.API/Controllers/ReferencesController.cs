@@ -44,14 +44,15 @@ public class ReferencesController : ControllerBase
     public async Task<IActionResult> UpdateReference(Guid id, ReferenceDto dto)
     {
         var result = await _referenceService.UpdateReferenceAsync(id, dto);
+        if (result == null) return NotFound();
         return Ok(result);
     }
-
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteReference(Guid id)
     {
-        await _referenceService.DeleteReferenceAsync(id);
+        var deleted = await _referenceService.DeleteReferenceAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

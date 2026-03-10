@@ -4,12 +4,11 @@ namespace Portfolio.API.Application.Features.Contact.Services;
 
 public interface IContactService
 {
-    Task<IEnumerable<ContactDto>> GetMessagesAsync();
-    Task<ContactDto?> GetMessageByIdAsync(Guid id);
-    Task<ContactDto> CreateMessageAsync(ContactDto dto);
-    Task MarkAsReadAsync(Guid id);
-    Task DeleteMessageAsync(Guid id);
+    Task<IEnumerable<ContactDto>> GetMessagesAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+    Task<ContactDto?> GetMessageByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ContactDto> CreateMessageAsync(ContactDto dto, CancellationToken cancellationToken = default);
+    Task MarkAsReadAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteMessageAsync(Guid id, CancellationToken cancellationToken = default);
 }
-
 
 

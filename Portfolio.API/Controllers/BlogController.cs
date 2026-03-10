@@ -51,7 +51,8 @@ public class BlogController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeletePost(Guid id)
     {
-        await _blogService.DeletePostAsync(id);
+        var deleted = await _blogService.DeletePostAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 
@@ -59,14 +60,7 @@ public class BlogController : ControllerBase
     [HttpPost("import-from-url")]
     public async Task<ActionResult<BlogPostDto>> ImportFromUrl([FromBody] ImportUrlRequest request)
     {
-        try
-        {
-            var result = await _blogService.ImportFromUrlAsync(request.Url);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = $"Failed to import from URL: {ex.Message}" });
-        }
+        var result = await _blogService.ImportFromUrlAsync(request.Url);
+        return Ok(result);
     }
 }

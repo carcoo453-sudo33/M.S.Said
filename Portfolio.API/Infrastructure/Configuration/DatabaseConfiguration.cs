@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Portfolio.API.Data;
 
 namespace Portfolio.API.Configuration;
@@ -80,7 +81,8 @@ public static class DatabaseConfiguration
     {
         try
         {
-            // Use parameterized query to prevent SQL injection
+            // Note: Table/column names cannot be parameterized in SQL.
+            // Values are safe here as they come from hardcoded arrays within this class.
             var sql = $@"
                 IF NOT EXISTS (
                     SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
@@ -92,8 +94,7 @@ public static class DatabaseConfiguration
                 END
             ";
             
-            await context.Database.ExecuteSqlRawAsync(sql);
-            Console.WriteLine($"{table}.{column} column check/creation completed");
+            await context.Database.ExecuteSqlRawAsync(sql);            Console.WriteLine($"{table}.{column} column check/creation completed");
         }
         catch (Exception ex)
         {
@@ -103,18 +104,25 @@ public static class DatabaseConfiguration
 
     private static async Task SeedAdminUserAsync(IServiceProvider services)
     {
-        var userManager = services.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser>>();
+        var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
         var logger = services.GetRequiredService<ILogger<Program>>();
+        var configuration = services.GetRequiredService<IConfiguration>();
 
         try
         {
-            const string adminEmail = "m.ssaid356@gmail.com";
-            const string adminPassword = "Memo@3560";
+            var adminEmail = configuration["AdminUser:Email"];
+            var adminPassword = configuration["AdminUser:Password"];
+
+            if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+            {
+                logger.LogWarning("Admin credentials not configured. Skipping admin user seeding.");
+                return;
+            }
 
             var existingUser = await userManager.FindByEmailAsync(adminEmail);
             if (existingUser == null)
             {
-                var adminUser = new Microsoft.AspNetCore.Identity.IdentityUser
+                var adminUser = new IdentityUser
                 {
                     UserName = adminEmail,
                     Email = adminEmail,

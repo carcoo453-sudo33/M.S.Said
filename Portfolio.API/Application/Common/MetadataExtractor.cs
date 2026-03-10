@@ -1,3 +1,5 @@
+using System;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
@@ -17,12 +19,16 @@ public class MetadataExtractor
 
     public MetadataExtractor()
     {
-        _httpClient = new HttpClient();
+        _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(10)
+        };
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
     }
 
     public async Task<Metadata> ExtractMetadata(string url)
     {
+        ValidateUrl(url);
         try
         {
             var platformType = DetectPlatformType(url);
@@ -63,6 +69,10 @@ public class MetadataExtractor
 
             return metadata;
         }
+        catch (TimeoutException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw new InvalidOperationException($"Failed to extract metadata from URL: {url}", ex);
@@ -71,13 +81,22 @@ public class MetadataExtractor
 
     public string DetectPlatformType(string url)
     {
-        if (url.Contains(StackOverflowDomain, StringComparison.OrdinalIgnoreCase))
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            return "Blog";
+
+        var host = uri.Host;
+
+        if (host.Equals(StackOverflowDomain, StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith($".{StackOverflowDomain}", StringComparison.OrdinalIgnoreCase))
             return "StackOverflow";
-        if (url.Contains(MediumDomain, StringComparison.OrdinalIgnoreCase))
+        if (host.Equals(MediumDomain, StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith($".{MediumDomain}", StringComparison.OrdinalIgnoreCase))
             return "Medium";
-        if (url.Contains(DevToDomain, StringComparison.OrdinalIgnoreCase))
+        if (host.Equals(DevToDomain, StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith($".{DevToDomain}", StringComparison.OrdinalIgnoreCase))
             return "DevTo";
-        if (url.Contains(LinkedInDomain, StringComparison.OrdinalIgnoreCase))
+        if (host.Equals(LinkedInDomain, StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith($".{LinkedInDomain}", StringComparison.OrdinalIgnoreCase))
             return "LinkedIn";
 
         return "Blog";
@@ -142,13 +161,46 @@ public class MetadataExtractor
         return null;
     }
 
+    private void ValidateUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            throw new ArgumentException("Invalid URL format");
+
+        if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            throw new ArgumentException("Only HTTP and HTTPS schemes are allowed");
+
+        var host = uri.Host.ToLower();
+
+        // Block loopback, private, and link-local addresses
+        if (host == "localhost" || host == "127.0.0.1" || host == "::1")
+            throw new ArgumentException("Loopback addresses are not allowed");
+
+        if (IsPrivateIP(host))
+            throw new ArgumentException("Private IP addresses are not allowed");
+    }
+
+    private bool IsPrivateIP(string host)
+    {
+        // Simple check for common private IP patterns
+        return host.StartsWith("10.") || 
+               host.StartsWith("192.168.") || 
+               host.StartsWith("172.16.") || // Needs careful 172.16.0.0/12 check but this is a start
+               host.StartsWith("169.254.") ||
+               host.EndsWith(".local");
+    }
+
     private async Task<string> FetchHtmlAsync(string url)
     {
         try
         {
-            var response = await _httpClient.GetAsync(url);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            var response = await _httpClient.GetAsync(url, cts.Token);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TimeoutException($"Request to {url} timed out");
         }
         catch (HttpRequestException ex)
         {

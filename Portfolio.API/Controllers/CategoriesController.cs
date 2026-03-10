@@ -43,15 +43,24 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, CategoryDto dto)
     {
+        var existing = await _categoryService.GetCategoryByIdAsync(id);
+        if (existing == null) return NotFound();
+        
         var result = await _categoryService.UpdateCategoryAsync(id, dto);
         return Ok(result);
     }
-
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _categoryService.DeleteCategoryAsync(id);
-        return NoContent();
+        try
+        {
+            await _categoryService.DeleteCategoryAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

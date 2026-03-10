@@ -44,14 +44,15 @@ public class ServicesController : ControllerBase
     public async Task<IActionResult> UpdateService(Guid id, ServiceDto dto)
     {
         var result = await _serviceService.UpdateServiceAsync(id, dto);
+        if (result == null) return NotFound();
         return Ok(result);
     }
-
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteService(Guid id)
     {
-        await _serviceService.DeleteServiceAsync(id);
+        var deleted = await _serviceService.DeleteServiceAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

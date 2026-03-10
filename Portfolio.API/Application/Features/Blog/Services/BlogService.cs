@@ -108,7 +108,7 @@ public class BlogService : IBlogService
         return BlogMapper.ToDto(post);
     }
 
-    public async Task DeletePostAsync(Guid id)
+    public async Task<bool> DeletePostAsync(Guid id)
     {
         _logger.LogInformation("Deleting blog post: {PostId}", id);
 
@@ -117,13 +117,15 @@ public class BlogService : IBlogService
 
         if (post == null)
         {
-            throw new ArgumentException("Blog post not found");
+            _logger.LogWarning("Blog post not found: {PostId}", id);
+            return false;
         }
 
         _unitOfWork.Repository<BlogPost>().Delete(post);
         await _unitOfWork.CompleteAsync();
 
         _logger.LogInformation("Blog post deleted successfully: {PostId}", id);
+        return true;
     }
 
     public async Task<BlogPostDto> ImportFromUrlAsync(string url)

@@ -17,8 +17,7 @@ public class BlogPostDto
     public DateTime PublishedAt { get; set; }
     public string? Tags { get; set; }
     public string? Tags_Ar { get; set; }
-    public string Author { get; set; } = "Mostafa Samir Said";
-    public int LikesCount { get; set; }
+    public string Author { get; set; } = string.Empty;    public int LikesCount { get; set; }
     public int CommentsCount { get; set; }
     public int StarsCount { get; set; }
     public int ForksCount { get; set; }

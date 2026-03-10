@@ -5,13 +5,14 @@ public static class PipelineConfiguration
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
         // Configure the HTTP request pipeline
+        app.UseExceptionHandler();
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
         else
         {
-            app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
 
@@ -29,14 +30,16 @@ public static class PipelineConfiguration
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Swagger
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        // Swagger (development only)
+        if (app.Environment.IsDevelopment())
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
-            options.RoutePrefix = "swagger";
-        });
-
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
+                options.RoutePrefix = "swagger";
+            });
+        }
         // Health checks
         app.MapHealthChecks("/health");
 

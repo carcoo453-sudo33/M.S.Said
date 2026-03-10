@@ -15,25 +15,24 @@ public class NicheService : INicheService
         _context = context;
     }
 
-    public async Task<IEnumerable<NicheDto>> GetNichesAsync()
+    public async Task<IEnumerable<NicheDto>> GetNichesAsync(CancellationToken cancellationToken = default)
     {
         var niches = await _context.Niches
             .OrderBy(n => n.Name)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return niches.Select(NicheMapper.ToDto);
     }
 
-    public async Task<NicheDto?> GetNicheByIdAsync(Guid id)
+    public async Task<NicheDto?> GetNicheByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var niche = await _context.Niches.FindAsync(id);
+        var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);
         return niche == null ? null : NicheMapper.ToDto(niche);
     }
 
-    public async Task<NicheDto> CreateNicheAsync(NicheDto dto)
+    public async Task<NicheDto> CreateNicheAsync(NicheDto dto, CancellationToken cancellationToken = default)
     {
         var exists = await _context.Niches
-            .AnyAsync(n => n.Name.ToLower() == dto.Name.ToLower());
-
+            .AnyAsync(n => EF.Functions.Collate(n.Name, "SQL_Latin1_General_CP1_CI_AS") == dto.Name, cancellationToken);
         if (exists)
             throw new InvalidOperationException("Niche with this name already exists");
 
@@ -41,39 +40,40 @@ public class NicheService : INicheService
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
-            Name_Ar = dto.Name_Ar
+            Name_Ar = dto.Name_Ar,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Niches.Add(niche);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return NicheMapper.ToDto(niche);
     }
 
-    public async Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto)
+    public async Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto, CancellationToken cancellationToken = default)
     {
-        var niche = await _context.Niches.FindAsync(id);
+        var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);
         if (niche == null)
             throw new KeyNotFoundException($"Niche with id {id} not found");
 
         var exists = await _context.Niches
-            .AnyAsync(n => n.Name.ToLower() == dto.Name.ToLower() && n.Id != id);
+            .AnyAsync(n => n.Name.ToLower() == dto.Name.ToLower() && n.Id != id, cancellationToken);
 
         if (exists)
             throw new InvalidOperationException("Another niche with this name already exists");
 
         NicheMapper.UpdateEntity(niche, dto);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return NicheMapper.ToDto(niche);
     }
 
-    public async Task DeleteNicheAsync(Guid id)
+    public async Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var niche = await _context.Niches.FindAsync(id);
+        var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);
         if (niche == null)
             throw new KeyNotFoundException($"Niche with id {id} not found");
 
         _context.Niches.Remove(niche);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
 

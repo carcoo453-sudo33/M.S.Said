@@ -7,6 +7,7 @@ public class ReferenceMapper
 {
     public static ReferenceDto ToDto(Reference entity)
     {
+        ArgumentNullException.ThrowIfNull(entity);
         return new ReferenceDto
         {
             Id = entity.Id,

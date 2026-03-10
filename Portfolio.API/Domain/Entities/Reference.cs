@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Portfolio.API.Entities;
-
 public class Reference : BaseEntity
 {
     [Required]

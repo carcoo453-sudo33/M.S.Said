@@ -15,7 +15,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task SendContactEmailAsync(string senderName, string senderEmail, string subject, string message)
+    public async Task SendContactEmailAsync(string senderName, string senderEmail, string subject, string message, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -25,7 +25,13 @@ public class EmailService : IEmailService
             var smtpUsername = smtpSettings["SmtpUsername"];
             var smtpPassword = smtpSettings["SmtpPassword"];
             var fromEmail = smtpSettings["FromEmail"];
-            var toEmail = smtpSettings["ToEmail"] ?? "m.ssaid356@gmail.com";
+            var toEmail = smtpSettings["ToEmail"];
+            if (string.IsNullOrEmpty(toEmail))
+            {
+                _logger.LogWarning("ToEmail not configured. Skipping email send.");
+                return;
+            }
+
             var enableSsl = bool.Parse(smtpSettings["EnableSsl"] ?? "true");
 
             // If SMTP is not configured, log and return
@@ -44,16 +50,14 @@ public class EmailService : IEmailService
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(fromEmail ?? smtpUsername, "Portfolio Contact Form"),
+                To = { toEmail },
                 Subject = $"New Contact Message: {subject}",
                 Body = ContactEmailTemplate.GetContactEmailHtml(senderName, senderEmail, subject, message),
                 IsBodyHtml = true
             };
 
-            mailMessage.To.Add(toEmail);
-            mailMessage.ReplyToList.Add(new MailAddress(senderEmail, senderName));
-
             await client.SendMailAsync(mailMessage);
-            _logger.LogInformation($"Contact email sent successfully to {toEmail} from {senderEmail}");
+            _logger.LogInformation("Contact email sent successfully to {ToEmail} from {SenderEmail}", toEmail, senderEmail);
         }
         catch (Exception ex)
         {

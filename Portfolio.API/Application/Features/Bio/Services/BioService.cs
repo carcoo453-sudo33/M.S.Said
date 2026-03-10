@@ -22,7 +22,7 @@ public class BioService : IBioService
         _httpClient = httpClient;
     }
 
-    public async Task<BioDto?> GetBioAsync()
+    public async Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default)
     {
         var bios = await _unitOfWork.Repository<BioEntity>().GetAllAsync();
         var bio = bios.FirstOrDefault();
@@ -43,7 +43,7 @@ public class BioService : IBioService
         return BioMapper.ToDto(bio);
     }
 
-    public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto)
+    public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
         var repository = _unitOfWork.Repository<BioEntity>();
         var bios = await repository.GetAllAsync();

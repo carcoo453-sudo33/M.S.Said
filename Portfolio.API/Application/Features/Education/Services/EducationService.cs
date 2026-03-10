@@ -50,14 +50,15 @@ public class EducationService : IEducationService
         return EducationMapper.ToDto(education);
     }
 
-    public async Task DeleteEducationAsync(Guid id)
+    public async Task<bool> DeleteEducationAsync(Guid id)
     {
         var education = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         if (education == null)
-            throw new KeyNotFoundException($"Education with id {id} not found");
+            return false;
 
         _unitOfWork.Repository<EducationEntity>().Delete(education);
         await _unitOfWork.CompleteAsync();
+        return true;
     }
 }
 

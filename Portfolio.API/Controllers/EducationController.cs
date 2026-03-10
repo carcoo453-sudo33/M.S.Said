@@ -44,14 +44,15 @@ public class EducationController : ControllerBase
     public async Task<IActionResult> UpdateEducation(Guid id, EducationDto dto)
     {
         var result = await _educationService.UpdateEducationAsync(id, dto);
+        if (result == null) return NotFound();
         return Ok(result);
     }
-
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteEducation(Guid id)
     {
-        await _educationService.DeleteEducationAsync(id);
+        var deleted = await _educationService.DeleteEducationAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

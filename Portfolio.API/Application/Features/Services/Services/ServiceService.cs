@@ -54,14 +54,15 @@ public class ServiceService : IServiceService
         return ServiceMapper.ToDto(service);
     }
 
-    public async Task DeleteServiceAsync(Guid id)
+    public async Task<bool> DeleteServiceAsync(Guid id)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         if (service == null)
-            throw new KeyNotFoundException($"Service with id {id} not found");
+            return false;
 
         _unitOfWork.Repository<Service>().Delete(service);
         await _unitOfWork.CompleteAsync();
+        return true;
     }
 }
 

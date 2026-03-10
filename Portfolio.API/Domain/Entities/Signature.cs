@@ -1,11 +1,13 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Portfolio.API.Entities;
 
 public class Signature : BaseEntity
 {
+    [ForeignKey(nameof(Bio))]
     public Guid BioId { get; set; }
-    
+
     public string? Role { get; set; } // e.g., "Strategic Lead"
     public string? Role_Ar { get; set; }
     

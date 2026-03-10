@@ -25,8 +25,12 @@ public class GetProjectsQueryHandler : BaseQueryHandler
             {
                 query = query.Where(p => p.Category == category);
             }
+            else
+            {
+                // Return empty result for invalid category rather than ignoring filter
+                query = query.Where(p => false);
+            }
         }
-
         if (parameters.IsFeatured.HasValue)
             query = query.Where(p => p.IsFeatured == parameters.IsFeatured.Value);
 

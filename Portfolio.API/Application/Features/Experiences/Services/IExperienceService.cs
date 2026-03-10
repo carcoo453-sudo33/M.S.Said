@@ -8,7 +8,7 @@ public interface IExperienceService
     Task<ExperienceDto?> GetExperienceByIdAsync(Guid id);
     Task<ExperienceDto> CreateExperienceAsync(ExperienceDto dto);
     Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto);
-    Task DeleteExperienceAsync(Guid id);
+    Task<bool> DeleteExperienceAsync(Guid id);
 }
 
 

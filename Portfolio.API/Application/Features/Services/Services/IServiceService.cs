@@ -8,7 +8,7 @@ public interface IServiceService
     Task<ServiceDto?> GetServiceByIdAsync(Guid id);
     Task<ServiceDto> CreateServiceAsync(ServiceDto dto);
     Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto);
-    Task DeleteServiceAsync(Guid id);
+    Task<bool> DeleteServiceAsync(Guid id);
 }
 
 

@@ -51,7 +51,14 @@ public class NichesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _nicheService.DeleteNicheAsync(id);
-        return NoContent();
+        try
+        {
+            await _nicheService.DeleteNicheAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

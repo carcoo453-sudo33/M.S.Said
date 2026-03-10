@@ -4,12 +4,11 @@ namespace Portfolio.API.Application.Features.Niches.Services;
 
 public interface INicheService
 {
-    Task<IEnumerable<NicheDto>> GetNichesAsync();
-    Task<NicheDto?> GetNicheByIdAsync(Guid id);
-    Task<NicheDto> CreateNicheAsync(NicheDto dto);
-    Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto);
-    Task DeleteNicheAsync(Guid id);
+    Task<IEnumerable<NicheDto>> GetNichesAsync(CancellationToken cancellationToken = default);
+    Task<NicheDto?> GetNicheByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<NicheDto> CreateNicheAsync(NicheDto dto, CancellationToken cancellationToken = default);
+    Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto, CancellationToken cancellationToken = default);
+    Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default);
 }
-
 
 

@@ -62,6 +62,10 @@ public static class ServiceRegistration
         // SignalR
         services.AddSignalR();
 
+        // Global Exception Handler
+        services.AddExceptionHandler<Portfolio.API.Infrastructure.Middlewares.GlobalExceptionHandler>();
+        services.AddProblemDetails();
+
         // Health Checks
         services.AddHealthChecks();
 

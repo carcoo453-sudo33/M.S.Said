@@ -25,8 +25,9 @@ public static class ReactionMapper
             Id = Guid.NewGuid(),
             ProjectId = projectId,
             UserId = request.UserId,
-            ReactionType = Enum.Parse<ReactionType>(request.ReactionType),
-            CreatedAt = DateTime.UtcNow
+            ReactionType = Enum.TryParse<ReactionType>(request.ReactionType, out var reactionType)
+                ? reactionType
+                : throw new ArgumentException($"Invalid reaction type: {request.ReactionType}"),            CreatedAt = DateTime.UtcNow
         };
     }
 }

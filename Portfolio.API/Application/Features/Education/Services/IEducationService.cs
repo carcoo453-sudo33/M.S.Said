@@ -8,7 +8,7 @@ public interface IEducationService
     Task<EducationDto?> GetEducationByIdAsync(Guid id);
     Task<EducationDto> CreateEducationAsync(EducationDto dto);
     Task<EducationDto> UpdateEducationAsync(Guid id, EducationDto dto);
-    Task DeleteEducationAsync(Guid id);
+    Task<bool> DeleteEducationAsync(Guid id);
 }
 
 

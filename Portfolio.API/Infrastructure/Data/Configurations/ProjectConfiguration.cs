@@ -22,18 +22,21 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.HasMany(p => p.KeyFeatures)
             .WithOne()
-            .HasForeignKey(kf => kf.ProjectId);
+            .HasForeignKey(kf => kf.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Changelog)
             .WithOne()
-            .HasForeignKey(cl => cl.ProjectId);
+            .HasForeignKey(cl => cl.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Comments)
             .WithOne()
-            .HasForeignKey(c => c.ProjectId);
+            .HasForeignKey(c => c.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Reactions)
             .WithOne()
-            .HasForeignKey(r => r.ProjectId);
-    }
+            .HasForeignKey(r => r.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);    }
 }

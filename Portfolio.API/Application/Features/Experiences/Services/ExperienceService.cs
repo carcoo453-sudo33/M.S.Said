@@ -54,14 +54,15 @@ public class ExperienceService : IExperienceService
         return ExperienceMapper.ToDto(experience);
     }
 
-    public async Task DeleteExperienceAsync(Guid id)
+    public async Task<bool> DeleteExperienceAsync(Guid id)
     {
         var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         if (experience == null)
-            throw new KeyNotFoundException($"Experience with id {id} not found");
+            return false;
 
         _unitOfWork.Repository<EducationEntity>().Delete(experience);
         await _unitOfWork.CompleteAsync();
+        return true;
     }
 
     private int ExtractYear(string duration)

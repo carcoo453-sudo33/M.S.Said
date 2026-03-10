@@ -19,19 +19,22 @@ public class ContactService : IContactService
         _emailService = emailService;
     }
 
-    public async Task<IEnumerable<ContactDto>> GetMessagesAsync()
+    public async Task<IEnumerable<ContactDto>> GetMessagesAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
         var messages = await _unitOfWork.Repository<ContactMessage>().GetAllAsync();
-        return messages.OrderByDescending(m => m.SentAt).Select(ContactMapper.ToDto);
+        return messages.OrderByDescending(m => m.SentAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(ContactMapper.ToDto);
     }
 
-    public async Task<ContactDto?> GetMessageByIdAsync(Guid id)
+    public async Task<ContactDto?> GetMessageByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var message = await _unitOfWork.Repository<ContactMessage>().GetByIdAsync(id);
         return message == null ? null : ContactMapper.ToDto(message);
     }
 
-    public async Task<ContactDto> CreateMessageAsync(ContactDto dto)
+    public async Task<ContactDto> CreateMessageAsync(ContactDto dto, CancellationToken cancellationToken = default)
     {
         var message = new ContactMessage
         {
@@ -67,7 +70,7 @@ public class ContactService : IContactService
         return ContactMapper.ToDto(message);
     }
 
-    public async Task MarkAsReadAsync(Guid id)
+    public async Task MarkAsReadAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var message = await _unitOfWork.Repository<ContactMessage>().GetByIdAsync(id);
         if (message == null)
@@ -78,7 +81,7 @@ public class ContactService : IContactService
         await _unitOfWork.CompleteAsync();
     }
 
-    public async Task DeleteMessageAsync(Guid id)
+    public async Task DeleteMessageAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var message = await _unitOfWork.Repository<ContactMessage>().GetByIdAsync(id);
         if (message == null)

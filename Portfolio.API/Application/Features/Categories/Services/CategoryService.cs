@@ -15,24 +15,24 @@ public class CategoryService : ICategoryService
         _context = context;
     }
 
-    public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync()
+    public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         var categories = await _context.Categories
             .OrderBy(c => c.Name)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return categories.Select(CategoryMapper.ToDto);
     }
 
-    public async Task<CategoryDto?> GetCategoryByIdAsync(Guid id)
+    public async Task<CategoryDto?> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
         return category == null ? null : CategoryMapper.ToDto(category);
     }
 
-    public async Task<CategoryDto> CreateCategoryAsync(CategoryDto dto)
+    public async Task<CategoryDto> CreateCategoryAsync(CategoryDto dto, CancellationToken cancellationToken = default)
     {
         var exists = await _context.Categories
-            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower());
+            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower(), cancellationToken);
 
         if (exists)
             throw new InvalidOperationException("Category with this name already exists");
@@ -45,35 +45,35 @@ public class CategoryService : ICategoryService
         };
 
         _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return CategoryMapper.ToDto(category);
     }
 
-    public async Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto dto)
+    public async Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto dto, CancellationToken cancellationToken = default)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
         if (category == null)
             throw new KeyNotFoundException($"Category with id {id} not found");
 
         var exists = await _context.Categories
-            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id);
+            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id, cancellationToken);
 
         if (exists)
             throw new InvalidOperationException("Another category with this name already exists");
 
         CategoryMapper.UpdateEntity(category, dto);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return CategoryMapper.ToDto(category);
     }
 
-    public async Task DeleteCategoryAsync(Guid id)
+    public async Task DeleteCategoryAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
         if (category == null)
             throw new KeyNotFoundException($"Category with id {id} not found");
 
         _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
 

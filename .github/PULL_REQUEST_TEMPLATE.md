@@ -1,9 +1,8 @@
 ## Description
 Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. Provide a link to the original issue if applicable.
 
-**Example for this refactoring:**
-This PR refactors the Portfolio API to implement proper feature separation and clean architecture principles. It separates Comments and Reactions into independent features with their own complete service layers, removes redundant code, and fixes security vulnerabilities.
-
+**Example:**
+This PR refactors [component/feature name] to [primary goal, e.g., implement clean architecture, improve performance, enhance security]. Key changes include [specific changes like separating concerns, removing redundancy, fixing vulnerabilities].
 Fixes # (issue number)
 
 ## Type of change

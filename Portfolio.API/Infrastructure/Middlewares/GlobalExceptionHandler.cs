@@ -1,0 +1,47 @@
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Portfolio.API.Infrastructure.Middlewares;
+
+public class GlobalExceptionHandler : IExceptionHandler
+{
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+
+    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogError(
+            exception, "Exception occurred: {Message}", exception.Message);
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = exception switch
+            {
+                ArgumentException => StatusCodes.Status400BadRequest,
+                UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                _ => StatusCodes.Status500InternalServerError
+            },
+            Title = exception switch
+            {
+                ArgumentException => "Bad Request",
+                UnauthorizedAccessException => "Unauthorized",
+                _ => "Server Error"
+            },
+            Detail = exception.Message
+        };
+
+        httpContext.Response.StatusCode = problemDetails.Status.Value;
+        
+        await httpContext.Response
+            .WriteAsJsonAsync(problemDetails, cancellationToken);
+
+        return true;
+    }
+}

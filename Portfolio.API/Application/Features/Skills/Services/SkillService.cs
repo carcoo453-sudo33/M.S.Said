@@ -51,14 +51,15 @@ public class SkillService : ISkillService
         return SkillMapper.ToDto(skill);
     }
 
-    public async Task DeleteSkillAsync(Guid id)
+    public async Task<bool> DeleteSkillAsync(Guid id)
     {
         var skill = await _unitOfWork.Repository<Skill>().GetByIdAsync(id);
         if (skill == null)
-            throw new KeyNotFoundException($"Skill with id {id} not found");
+            return false;
 
         _unitOfWork.Repository<Skill>().Delete(skill);
         await _unitOfWork.CompleteAsync();
+        return true;
     }
 }
 

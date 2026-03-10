@@ -3,9 +3,8 @@ using Portfolio.API.Application.Features.Notifications.DTOs;
 
 namespace Portfolio.API.Application.Features.Notifications.Mappers;
 
-public class NotificationMapper
-{
-    public static NotificationDto ToDto(Notification entity)
+public static class NotificationMapper
+{    public static NotificationDto ToDto(Notification entity)
     {
         return new NotificationDto
         {

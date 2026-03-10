@@ -3,8 +3,7 @@ using Portfolio.API.Application.Features.Contact.DTOs;
 
 namespace Portfolio.API.Application.Features.Contact.Mappers;
 
-public class ContactMapper
-{
+public static class ContactMapper{
     public static ContactDto ToDto(ContactMessage entity)
     {
         return new ContactDto

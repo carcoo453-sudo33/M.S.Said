@@ -51,7 +51,8 @@ public class ExperiencesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteExperience(Guid id)
     {
-        await _experienceService.DeleteExperienceAsync(id);
+        var deleted = await _experienceService.DeleteExperienceAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }

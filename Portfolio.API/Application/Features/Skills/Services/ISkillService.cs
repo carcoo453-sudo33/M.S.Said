@@ -8,7 +8,7 @@ public interface ISkillService
     Task<SkillDto?> GetSkillByIdAsync(Guid id);
     Task<SkillDto> CreateSkillAsync(SkillDto dto);
     Task<SkillDto> UpdateSkillAsync(Guid id, SkillDto dto);
-    Task DeleteSkillAsync(Guid id);
+    Task<bool> DeleteSkillAsync(Guid id);
 }
 
 

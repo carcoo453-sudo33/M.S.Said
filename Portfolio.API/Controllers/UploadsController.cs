@@ -47,35 +47,28 @@ public class UploadsController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
-        try
+        // Robust path resolution: if WebRootPath is null (common in some run scenarios),
+        // use ContentRootPath and append wwwroot.
+        var webRoot = _environment.WebRootPath;
+        if (string.IsNullOrEmpty(webRoot))
         {
-            // Robust path resolution: if WebRootPath is null (common in some run scenarios),
-            // use ContentRootPath and append wwwroot.
-            var webRoot = _environment.WebRootPath;
-            if (string.IsNullOrEmpty(webRoot))
-            {
-                webRoot = Path.Combine(_environment.ContentRootPath, "wwwroot");
-            }
-
-            var uploadsFolder = Path.Combine(webRoot, subFolder);
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Always return a path starting with / for consistency in the UI
-            var relativePath = $"/{subFolder}/{fileName}";
-            return Ok(new { url = relativePath });
+            webRoot = Path.Combine(_environment.ContentRootPath, "wwwroot");
         }
-        catch (Exception ex)
+
+        var uploadsFolder = Path.Combine(webRoot, subFolder);
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
+            await file.CopyToAsync(stream);
         }
+
+        // Always return a path starting with / for consistency in the UI
+        var relativePath = $"/{subFolder}/{fileName}";
+        return Ok(new { url = relativePath });
     }
 }

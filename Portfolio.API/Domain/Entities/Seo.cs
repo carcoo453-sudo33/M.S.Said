@@ -1,7 +1,4 @@
-using System;
-
 namespace Portfolio.API.Entities;
-
 public class Seo : BaseEntity
 {
     public Guid EntityId { get; set; } // ID of the entity this SEO belongs to
