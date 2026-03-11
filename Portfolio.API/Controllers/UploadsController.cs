@@ -44,6 +44,9 @@ public class UploadsController : ControllerBase
         MaxBytes: 5 * 1024 * 1024 // 5 MB
     );
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="UploadsController"/> with the provided hosting environment and logger.
+    /// </summary>
     public UploadsController(IWebHostEnvironment environment, ILogger<UploadsController> logger)
     {
         _environment = environment;
@@ -54,7 +57,8 @@ public class UploadsController : ControllerBase
     /// Securely uploads a profile image.
     /// Validates magic bytes, enforces a 5MB limit, and stores the file outside wwwroot.
     /// </summary>
-    [Authorize]
+    /// <param name="file">The uploaded image file. Allowed extensions: .jpg, .jpeg, .png, .webp. Maximum size: 5 MB.</param>
+    /// <returns>The URL where the uploaded image can be retrieved via the uploads endpoint, or an error response if validation or storage fails.</returns>
     [HttpPost("profile-image")]
     public async Task<IActionResult> UploadProfileImage(IFormFile file)
         => await ProcessFileUpload(file, "avatars", ProfileImagePolicy);
@@ -63,7 +67,14 @@ public class UploadsController : ControllerBase
     /// Securely uploads a CV (resume).
     /// Enforces PDF/Docx extensions with signature validation and a 10MB limit.
     /// </summary>
-    [Authorize]
+    /// <param name="file">The uploaded CV file to validate and store.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> representing the outcome:
+    /// - 200 OK with the URL to access the stored CV on success;
+    /// - 400 Bad Request for missing or invalid upload or disallowed extension;
+    /// - 413 Payload Too Large when the file exceeds the configured maximum size;
+    /// - 422 Unprocessable Entity when the file's binary signature does not match the allowed types.
+    /// </returns>
     [HttpPost("cv")]
     public async Task<IActionResult> UploadCV(IFormFile file)
         => await ProcessFileUpload(file, "cvs", CvPolicy);
@@ -72,7 +83,12 @@ public class UploadsController : ControllerBase
     /// Securely uploads a skill icon.
     /// Note: SVG uploads are disabled due to potential XSS/active content risks.
     /// </summary>
-    [Authorize]
+    /// <param name="file">The uploaded image file. Allowed extensions: .png, .jpg, .jpeg, .webp; maximum size 2 MB.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> with 200 OK and a URL to the stored file on success;
+    /// 400 BadRequest for missing, empty, oversized, or disallowed files;
+    /// 422 UnprocessableEntity if the file's binary signature does not match its extension.
+    /// </returns>
     [HttpPost("skill-icon")]
     public async Task<IActionResult> UploadSkillIcon(IFormFile file)
         => await ProcessFileUpload(file, "skills", SkillIconPolicy);
@@ -81,14 +97,29 @@ public class UploadsController : ControllerBase
     /// Securely uploads a project showcase image.
     /// Enforces size limits and randomized filenames for security.
     /// </summary>
-    [Authorize]
+    /// <param name="file">The image file uploaded by the client to be stored as a project image.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> that is 200 OK containing a URL to the stored file on success; otherwise a 4xx response describing the validation or processing error.
+    /// </returns>
     [HttpPost("project-image")]
     public async Task<IActionResult> UploadProjectImage(IFormFile file)
         => await ProcessFileUpload(file, "projects", ProjectImagePolicy);
 
     /// <summary>
     /// Serves files from the secure uploads directory (outside wwwroot).
+<<<<<<< HEAD
     /// </summary>
+=======
+    /// <summary>
+    /// Serves a file from the secure uploads directory for the given category and file name.
+    /// </summary>
+    /// <param name="category">A single path segment identifying the upload subfolder; must not contain "..".</param>
+    /// <param name="fileName">The file name within the category folder; must not contain "..".</param>
+    /// <returns>
+    /// 400 Bad Request if a path segment contains "..", 404 Not Found if the file does not exist,
+    /// or a file response with an appropriate Content-Type and Content-Disposition header on success.
+    /// </returns>
+>>>>>>> origin/master
     [HttpGet("{category}/{fileName}")]
     public IActionResult ServeFile(string category, string fileName)
     {
@@ -122,7 +153,18 @@ public class UploadsController : ControllerBase
         return PhysicalFile(filePath, contentType);
     }
 
-    // -------------------------------------------------------------------------
+    /// <summary>
+    /// Validate an uploaded file against the provided policy, store it in a secure subfolder, and return a URL to retrieve the saved file.
+    /// </summary>
+    /// <param name="file">The uploaded file to validate and store.</param>
+    /// <param name="subFolder">The uploads category subfolder (relative to the secure uploads root) used to store and serve the file.</param>
+    /// <param name="policy">The file upload policy defining allowed extensions and maximum size.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> that is:
+    /// - 200 OK with a JSON object { url = "..."} containing the serving URL on success;
+    /// - 400 BadRequest with a JSON { error = "..."} for missing/invalid files, size or extension violations;
+    /// - 422 UnprocessableEntity with a JSON { error = "..."} when the file's content signature does not match its declared type.
+    /// </returns>
 
     private async Task<IActionResult> ProcessFileUpload(
         IFormFile file,
@@ -165,6 +207,12 @@ public class UploadsController : ControllerBase
         return Ok(new { url });
     }
 
+    /// <summary>
+    /// Determines whether the uploaded file's initial bytes match one of the known signature patterns for the given file extension.
+    /// </summary>
+    /// <param name="file">The uploaded file to validate.</param>
+    /// <param name="extension">The file extension to validate against (including the leading dot, e.g. ".png").</param>
+    /// <returns>`true` if there are no known signatures for the extension or the file's header matches any known signature; `false` otherwise.</returns>
     private static async Task<bool> HasValidSignatureAsync(IFormFile file, string extension)
     {
         // SVG has no binary magic bytes — accept by extension only (SVG is already removed from policies above)
@@ -183,9 +231,9 @@ public class UploadsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns the uploads root directory, which sits OUTSIDE wwwroot
-    /// so the web server cannot serve files directly.
+    /// Gets the filesystem root directory used for storing uploaded files. This sits OUTSIDE wwwroot so the web server cannot serve files directly.
     /// </summary>
+    /// <returns>The absolute path to the application's secure uploads directory (a folder named "secure-uploads" under the application's content root, outside wwwroot).</returns>
     private string GetUploadsRoot()
         => Path.Combine(_environment.ContentRootPath, "secure-uploads");
 }

@@ -15,6 +15,12 @@ public class BioService : IBioService
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BioService"/> class with its required dependencies.
+    /// </summary>
+>>>>>>> origin/master
     public BioService(IUnitOfWork unitOfWork, IConfiguration configuration, HttpClient httpClient)
     {
         _unitOfWork = unitOfWork;
@@ -22,6 +28,14 @@ public class BioService : IBioService
         _httpClient = httpClient;
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves the primary bio, loads its related signature and technical focus, updates runtime statistics, and returns the mapped DTO.
+    /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>The mapped <see cref="BioDto"/> for the first bio found, or <c>null</c> if no bio exists.</returns>
+>>>>>>> origin/master
     public async Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default)
     {
         var bios = await _unitOfWork.Repository<BioEntity>().GetAllAsync();
@@ -43,6 +57,16 @@ public class BioService : IBioService
         return BioMapper.ToDto(bio);
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Creates or updates the site's bio using the provided data and returns the updated DTO.
+    /// </summary>
+    /// <param name="id">Identifier to assign when creating a new bio if none exists.</param>
+    /// <param name="dto">Data to apply to the bio.</param>
+    /// <param name="cancellationToken">Token to observe while performing the operation.</param>
+    /// <returns>The updated <see cref="BioDto"/> reflecting persisted changes and recalculated dynamic fields (years of experience, projects completed, code commits).</returns>
+>>>>>>> origin/master
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
         var repository = _unitOfWork.Repository<BioEntity>();
@@ -73,6 +97,14 @@ public class BioService : IBioService
         return BioMapper.ToDto(bio);
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Calculate the number of full years since the specified career start date and format the result with a trailing '+'.
+    /// </summary>
+    /// <param name="careerStartDate">The UTC date when the career began; used as the reference point for computing full years of experience.</param>
+    /// <returns>A string in the format "&lt;years&gt;+" where &lt;years&gt; is the number of full years since <paramref name="careerStartDate"/>, with a minimum of 0.</returns>
+>>>>>>> origin/master
     private string CalculateYearsOfExperience(DateTime careerStartDate)
     {
         var years = DateTime.UtcNow.Year - careerStartDate.Year;
@@ -84,6 +116,13 @@ public class BioService : IBioService
         return $"{Math.Max(years, 0)}+";
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieve the number of completed projects.
+    /// </summary>
+    /// <returns>The count of projects whose Status equals <c>ProjectStatus.Completed</c>, returned as a string; returns "0" if an error occurs.</returns>
+>>>>>>> origin/master
     private async Task<string> GetProjectsCompletedCountAsync()
     {
         try
@@ -98,6 +137,14 @@ public class BioService : IBioService
         }
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves a GitHub user's public repository count from the GitHub API.
+    /// </summary>
+    /// <param name="gitHubUsername">The GitHub username to query; if null or empty the method returns "0".</param>
+    /// <returns>The number of public repositories for the specified user as a string, or "0" if the username is missing, the GitHub token is not configured, the API call fails, or the response cannot be parsed.</returns>
+>>>>>>> origin/master
     private async Task<string> GetGitHubCommitsAsync(string? gitHubUsername)
     {
         if (string.IsNullOrEmpty(gitHubUsername))

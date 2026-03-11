@@ -6,6 +6,11 @@ namespace Portfolio.API.Application.Features.Comments.Validation;
 
 public static class CommentValidation
 {
+    /// <summary>
+    /// Validates a comment DTO and collects any field-specific validation failures.
+    /// </summary>
+    /// <param name="request">The comment data to validate (author, content, optional avatar URL).</param>
+    /// <returns>A <see cref="ValidationResult"/> containing zero or more <see cref="ValidationFailure"/> entries for invalid fields.</returns>
     public static ValidationResult ValidateComment(CommentCreateDto request)
     {
         var result = new ValidationResult();

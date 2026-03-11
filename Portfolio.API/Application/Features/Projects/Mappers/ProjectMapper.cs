@@ -8,6 +8,13 @@ namespace Portfolio.API.Application.Features.Projects.Mappers;
 
 public static class ProjectMapper
 {
+    /// <summary>
+    /// Create the API response representation of a project.
+    /// </summary>
+    /// <param name="entity">The project domain entity to map.</param>
+    /// <returns>
+    /// A ProjectDto with scalar properties copied from the entity, responsibilities deserialized from the entity's ResponsibilitiesJson, and KeyFeatures and Changelog converted to their DTO forms; any missing collections are returned as empty lists.
+    /// </returns>
     public static ProjectDto ToResponse(Project entity)
     {
         return new ProjectDto
@@ -54,6 +61,11 @@ public static class ProjectMapper
         };
     }
 
+    /// <summary>
+    /// Create a Project entity populated from the provided ProjectCreateDto.
+    /// </summary>
+    /// <param name="request">The DTO containing data for the new project.</param>
+    /// <returns>A Project entity with values taken from the request; enum fields use sensible defaults when null and collection properties are initialized when absent.</returns>
     public static Project ToEntity(ProjectCreateDto request)
     {
         return new Project
@@ -91,12 +103,33 @@ public static class ProjectMapper
             IsFeatured = request.IsFeatured,
             Views = 0,
             ReactionsCount = 0,
+<<<<<<< HEAD
             ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities)
             // Note: KeyFeatures, Changelog, and Images are mapped in the Service layer
             // AFTER the Project is saved so we have a valid ProjectId for the foreign keys.
+=======
+            ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities),
+            KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf)).ToList() ?? new(),
+            Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new(),
+            Images = request.Images?.Select(img => new ProjectImage
+            {
+                ImageUrl = img.ImageUrl,
+                Title = img.Title,
+                Title_Ar = img.Title_Ar,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description,
+                Description_Ar = img.Description_Ar
+            }).ToList() ?? new()
+>>>>>>> origin/master
         };
     }
 
+    /// <summary>
+    /// Updates the provided Project entity in place using values from a ProjectUpdateDto.
+    /// </summary>
+    /// <param name="entity">The existing Project entity to update; its properties and related collections are modified.</param>
+    /// <param name="request">The DTO containing updated values to apply to the entity.</param>
     public static void UpdateEntity(Project entity, ProjectUpdateDto request)
     {
         entity.Title = request.Title;

@@ -18,6 +18,13 @@ public static class ReactionMapper
         };
     }
 
+    /// <summary>
+    /// Creates a new Reaction entity for the specified project using values from the create DTO.
+    /// </summary>
+    /// <param name="projectId">The identifier of the project the reaction belongs to.</param>
+    /// <param name="request">The DTO containing the user identifier and the reaction type string.</param>
+    /// <returns>The newly created Reaction entity with a generated Id and current UTC CreatedAt.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="request"/>.ReactionType cannot be parsed as a valid ReactionType enum.</exception>
     public static Reaction ToEntity(Guid projectId, ReactionCreateDto request)
     {
         return new Reaction

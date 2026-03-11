@@ -6,6 +6,11 @@ namespace Portfolio.API.Application.Features.Comments.Mappers;
 
 public static class CommentMapper
 {
+    /// <summary>
+    /// Converts a Comment entity into a CommentDto suitable for API responses.
+    /// </summary>
+    /// <param name="entity">The source Comment entity to convert.</param>
+    /// <returns>A CommentDto with fields mapped from the entity; AvatarUrl is an empty string when the source is null, Date is parsed from entity.Date or falls back to DateTime.UtcNow if parsing fails, and Replies are deserialized from RepliesJson.</returns>
     public static CommentDto ToResponse(Comment entity)
     {
         var replies = JsonHelper.DeserializeList<ReplyDto>(entity.RepliesJson);

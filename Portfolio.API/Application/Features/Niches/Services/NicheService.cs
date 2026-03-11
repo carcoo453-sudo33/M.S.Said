@@ -10,11 +10,25 @@ public class NicheService : INicheService
 {
     private readonly PortfolioDbContext _context;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Initializes a new instance of <see cref="NicheService"/> using the provided <see cref="PortfolioDbContext"/> for data access.
+    /// </summary>
+    /// <param name="context">The database context used to access Niche entities.</param>
+>>>>>>> origin/master
     public NicheService(PortfolioDbContext context)
     {
         _context = context;
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves all niches ordered by name and maps them to DTOs.
+    /// </summary>
+    /// <returns>An enumerable of NicheDto representing all niches sorted by Name.</returns>
+>>>>>>> origin/master
     public async Task<IEnumerable<NicheDto>> GetNichesAsync(CancellationToken cancellationToken = default)
     {
         var niches = await _context.Niches
@@ -23,12 +37,30 @@ public class NicheService : INicheService
         return niches.Select(NicheMapper.ToDto);
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves the niche with the specified identifier.
+    /// </summary>
+    /// <param name="id">The niche identifier.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>`NicheDto` for the niche with the specified identifier, or `null` if no matching niche is found.</returns>
+>>>>>>> origin/master
     public async Task<NicheDto?> GetNicheByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);
         return niche == null ? null : NicheMapper.ToDto(niche);
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Creates a new niche from the provided DTO and persists it to the database.
+    /// </summary>
+    /// <param name="dto">DTO containing the niche data to create (expects at least a Name; Name_Ar may be provided).</param>
+    /// <returns>The created niche as a <see cref="NicheDto"/> including generated Id and CreatedAt timestamp.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when a niche with the same name already exists.</exception>
+>>>>>>> origin/master
     public async Task<NicheDto> CreateNicheAsync(NicheDto dto, CancellationToken cancellationToken = default)
     {
         var exists = await _context.Niches
@@ -49,6 +81,18 @@ public class NicheService : INicheService
         return NicheMapper.ToDto(niche);
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Updates an existing niche identified by <paramref name="id"/> using values from <paramref name="dto"/>.
+    /// </summary>
+    /// <param name="id">Identifier of the niche to update.</param>
+    /// <param name="dto">DTO containing the updated niche values.</param>
+    /// <param name="cancellationToken">Token to cancel the database operation.</param>
+    /// <returns>The updated niche as a <see cref="NicheDto"/>.</returns>
+    /// <exception cref="KeyNotFoundException">Thrown when no niche with the specified <paramref name="id"/> exists.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when another niche with the same name already exists.</exception>
+>>>>>>> origin/master
     public async Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto, CancellationToken cancellationToken = default)
     {
         var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);
@@ -65,6 +109,14 @@ public class NicheService : INicheService
         await _context.SaveChangesAsync(cancellationToken);
         return NicheMapper.ToDto(niche);
     }
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Deletes the Niche with the specified id from the database.
+    /// </summary>
+    /// <param name="id">Identifier of the Niche to delete.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if a Niche with the specified id does not exist.</exception>
+>>>>>>> origin/master
     public async Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var niche = await _context.Niches.FindAsync(new object[] { id }, cancellationToken);

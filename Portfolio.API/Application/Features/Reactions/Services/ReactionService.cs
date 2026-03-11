@@ -133,10 +133,17 @@ public class ReactionService : IReactionService
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// Retrieves the total count of reactions for a specified project.
     /// </summary>
     /// <param name="projectId">The unique identifier of the project.</param>
     /// <returns>The number of reactions on the project.</returns>
+=======
+    /// Gets the number of reactions for the specified project.
+    /// </summary>
+    /// <param name="projectId">The project's unique identifier.</param>
+    /// <returns>The number of reactions associated with the project.</returns>
+>>>>>>> origin/master
     public async Task<int> GetReactionCountAsync(Guid projectId)
     {
         _logger.LogInformation("Getting reaction count for project: {ProjectId}", projectId);

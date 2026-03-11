@@ -6,6 +6,14 @@ namespace Portfolio.API.Application.Features.Bio.Mappers;
 
 public static class BioMapper
 {
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Create a BioDto from a BioEntity by mapping scalar properties and converting nested Signature and TechnicalFocus when present.
+    /// </summary>
+    /// <param name="bio">The source BioEntity to convert.</param>
+    /// <returns>A BioDto whose scalar fields are copied from the source and whose Signature and TechnicalFocus are mapped when present (null if absent).</returns>
+>>>>>>> origin/master
     public static BioDto ToDto(BioEntity bio)
     {
         return new BioDto
@@ -37,6 +45,21 @@ public static class BioMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Updates the target BioEntity's properties from the supplied BioDto, applying defaults for certain string fields and synchronizing nested Signature and TechnicalFocus objects.
+    /// </summary>
+    /// <param name="bio">The existing BioEntity to update.</param>
+    /// <param name="dto">The source BioDto containing new values.</param>
+    /// <remarks>
+    /// - Uses empty string defaults for Title, Description, Location, Email, and Phone when the corresponding dto values are null.
+    /// - If dto.Signature is non-null, creates a new Signature entity when bio.Signature is null or updates the existing one; if dto.Signature is null, sets bio.Signature to null.
+    /// - If dto.TechnicalFocus is non-null, creates a new TechnicalFocus entity when bio.TechnicalFocus is null or updates the existing one; if dto.TechnicalFocus is null, sets bio.TechnicalFocus to null.
+    /// - Sets bio.UpdatedAt to the current UTC time.
+    /// - Does not update YearsOfExperience, ProjectsCompleted, or CodeCommits (these are calculated dynamically elsewhere).
+    /// </remarks>
+>>>>>>> origin/master
     public static void UpdateEntity(BioEntity bio, BioDto dto)
     {
         bio.Name = dto.Name;

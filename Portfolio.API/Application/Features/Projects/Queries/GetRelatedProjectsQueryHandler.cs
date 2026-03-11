@@ -12,7 +12,16 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
     {
     }
 
+<<<<<<< HEAD
     public async Task<List<ProjectDto>> HandleAsync(string slug, CancellationToken cancellationToken = default)
+=======
+    /// <summary>
+    /// Retrieve projects related to the project identified by the given slug.
+    /// </summary>
+    /// <param name="slug">The unique slug of the project used to find its category.</param>
+    /// <returns>A list of ProjectDto for projects in the same category as the referenced project, excluding the project itself; an empty list if the project is not found.</returns>
+    public async Task<List<ProjectDto>> HandleAsync(string slug)
+>>>>>>> origin/master
     {
         // First get the project to find its category
         var project = await GetBaseQuery(false)

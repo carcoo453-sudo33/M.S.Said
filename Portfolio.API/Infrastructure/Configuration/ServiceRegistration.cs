@@ -25,6 +25,12 @@ namespace Portfolio.API.Configuration;
 
 public static class ServiceRegistration
 {
+    /// <summary>
+    /// Registers application-wide infrastructure and feature services, database context, identity, SignalR, global exception handling, ProblemDetails, and health checks into the provided service collection.
+    /// </summary>
+    /// <param name="configuration">Application configuration; must contain a connection string named "DefaultConnection".</param>
+    /// <returns>The same <see cref="IServiceCollection"/> instance with services registered.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the "DefaultConnection" connection string is not found in <paramref name="configuration"/>.</exception>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Database

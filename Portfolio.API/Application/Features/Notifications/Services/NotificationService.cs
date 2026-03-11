@@ -15,6 +15,12 @@ public class NotificationService : INotificationService
     private readonly IHubContext<NotificationHub> _hubContext;
     private readonly ILogger<NotificationService> _logger;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Initializes a new instance of <see cref="NotificationService"/> with required dependencies.
+    /// </summary>
+>>>>>>> origin/master
     public NotificationService(
         PortfolioDbContext context, 
         IHubContext<NotificationHub> hubContext,
@@ -25,6 +31,21 @@ public class NotificationService : INotificationService
         _logger = logger;
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Creates a notification record, persists it to the database, and broadcasts the notification to all connected clients.
+    /// </summary>
+    /// <param name="type">A string representing the notification type; parsed to the NotificationType enum. If parsing fails, a system alert type is used.</param>
+    /// <param name="title">The notification title shown to recipients.</param>
+    /// <param name="message">The notification message body.</param>
+    /// <param name="link">An optional URL or internal link associated with the notification.</param>
+    /// <param name="icon">An optional icon name; when null a default icon is chosen based on <paramref name="type"/>.</param>
+    /// <param name="relatedEntityId">Optional identifier of a related entity (for linking the notification to a resource).</param>
+    /// <param name="relatedEntityType">Optional type name of the related entity.</param>
+    /// <param name="senderName">Optional display name of the notification sender.</param>
+    /// <param name="senderEmail">Optional email address of the notification sender.</param>
+>>>>>>> origin/master
     public async Task CreateNotificationAsync(string type, string title, string message, string? link = null, 
         string? icon = null, string? relatedEntityId = null, string? relatedEntityType = null,
         string? senderName = null, string? senderEmail = null)
@@ -67,6 +88,15 @@ public class NotificationService : INotificationService
         }
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves recent notifications, optionally filtering to only unread items.
+    /// </summary>
+    /// <param name="limit">Maximum number of notifications to return.</param>
+    /// <param name="unreadOnly">If true, only include notifications that have not been read.</param>
+    /// <returns>A list of NotificationDto ordered by creation time descending, containing up to <paramref name="limit"/> items; if <paramref name="unreadOnly"/> is true, only unread notifications are included.</returns>
+>>>>>>> origin/master
     public async Task<List<NotificationDto>> GetNotificationsAsync(int limit = 50, bool unreadOnly = false)
     {
         var query = _context.Notifications.AsQueryable();
@@ -82,6 +112,13 @@ public class NotificationService : INotificationService
         return notifications.Select(NotificationMapper.ToDto).ToList();
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Retrieves the total number of notifications and the number of unread notifications.
+    /// </summary>
+    /// <returns>A <see cref="NotificationStatsDto"/> where <c>TotalCount</c> is the total notifications and <c>UnreadCount</c> is the number of notifications with <c>IsRead</c> equal to false.</returns>
+>>>>>>> origin/master
     public async Task<NotificationStatsDto> GetStatsAsync()
     {
         var total = await _context.Notifications.CountAsync();
@@ -94,6 +131,13 @@ public class NotificationService : INotificationService
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Marks the notification identified by <paramref name="id"/> as read and persists the change to the database.
+    /// </summary>
+    /// <param name="id">The notification identifier as a GUID string; if the value is not a valid GUID or no matching notification exists, no action is taken.</param>
+>>>>>>> origin/master
     public async Task MarkAsReadAsync(string id)
     {
         if (!Guid.TryParse(id, out var notificationId))
@@ -107,6 +151,12 @@ public class NotificationService : INotificationService
         }
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Marks all notifications that are currently unread as read and saves the changes to the data store.
+    /// </summary>
+>>>>>>> origin/master
     public async Task MarkAllAsReadAsync()
     {
         var unreadNotifications = await _context.Notifications
@@ -121,6 +171,13 @@ public class NotificationService : INotificationService
         await _context.SaveChangesAsync();
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Deletes the notification with the specified GUID string from the database if it exists.
+    /// </summary>
+    /// <param name="id">The notification's GUID as a string; if the value is not a valid GUID no action is taken.</param>
+>>>>>>> origin/master
     public async Task DeleteNotificationAsync(string id)
     {
         if (!Guid.TryParse(id, out var notificationId))
@@ -134,6 +191,15 @@ public class NotificationService : INotificationService
         }
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Deletes all notifications from the persistent store.
+    /// </summary>
+    /// <remarks>
+    /// All Notification records are removed and the change is persisted to the database.
+    /// </remarks>
+>>>>>>> origin/master
     public async Task ClearAllAsync()
     {
         var allNotifications = await _context.Notifications.ToListAsync();
@@ -141,6 +207,14 @@ public class NotificationService : INotificationService
         await _context.SaveChangesAsync();
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Selects the default icon name for a notification based on its type.
+    /// </summary>
+    /// <param name="type">The notification type identifier (e.g., "Comment", "Reply").</param>
+    /// <returns>The icon name corresponding to the given notification type, or "bell" if no specific icon is defined.</returns>
+>>>>>>> origin/master
     private string GetDefaultIcon(string type)
     {
         return type switch

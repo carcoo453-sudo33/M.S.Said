@@ -5,6 +5,16 @@ namespace Portfolio.API.Application.Features.Blog.Mappers;
 
 public class BlogMapper
 {
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Create a BlogPostDto populated from the provided BlogPost entity.
+    /// </summary>
+    /// <param name="entity">The source BlogPost to map from.</param>
+    /// <returns>
+    /// A BlogPostDto with fields copied from the entity. If the entity's Summary or Content is null they are returned as an empty string; if the entity's Author is null it is returned as "Mostafa Samir Said".
+    /// </returns>
+>>>>>>> origin/master
     public static BlogPostDto ToDto(BlogPost entity)
     {
         return new BlogPostDto
@@ -31,6 +41,14 @@ public class BlogMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Copies values from a BlogPostDto into an existing BlogPost instance, updating its mapped properties.
+    /// </summary>
+    /// <param name="entity">The BlogPost to update; its properties are modified in place.</param>
+    /// <param name="dto">The source BlogPostDto providing new property values.</param>
+>>>>>>> origin/master
     public static void UpdateEntity(BlogPost entity, BlogPostDto dto)
     {
         entity.Title = dto.Title;

@@ -5,6 +5,14 @@ namespace Portfolio.API.Application.Features.Services.Mappers;
 
 public class ServiceMapper
 {
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Creates a ServiceDto populated from the given Service entity.
+    /// </summary>
+    /// <param name="entity">The Service entity to convert to a DTO.</param>
+    /// <returns>A ServiceDto with properties copied from the provided entity.</returns>
+>>>>>>> origin/master
     public static ServiceDto ToDto(Service entity)
     {
         return new ServiceDto
@@ -21,6 +29,14 @@ public class ServiceMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Update a Service entity's editable fields from a ServiceDto and set UpdatedAt to the current UTC time.
+    /// </summary>
+    /// <param name="entity">The Service entity to update.</param>
+    /// <param name="dto">The ServiceDto that provides new values for the entity's properties.</param>
+>>>>>>> origin/master
     public static void UpdateEntity(Service entity, ServiceDto dto)
     {
         entity.Title = dto.Title;

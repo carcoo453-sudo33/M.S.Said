@@ -19,6 +19,16 @@ public static class ChangelogItemMapper
         };
     }
 
+    /// <summary>
+    /// Creates a new ChangelogItem entity from the provided create DTO and optional project identifier.
+    /// </summary>
+    /// <param name="request">DTO containing changelog fields to copy into the entity.</param>
+    /// <param name="projectId">Optional project identifier to assign to the entity; uses Guid.Empty when null.</param>
+    /// <returns>
+    /// A ChangelogItem with a new Id, Date set to request.Date or the current UTC date formatted as "MMM dd, yyyy",
+    /// Version defaulting to "1.0.0" when not provided, Title/Description fields copied from the request,
+    /// ProjectId set from <paramref name="projectId"/>, and CreatedAt/UpdatedAt set to the current UTC time.
+    /// </returns>
     public static ChangelogItem ToEntity(ChangelogItemCreateDto request, Guid? projectId = null)
     {
         if (projectId == null || projectId == Guid.Empty)

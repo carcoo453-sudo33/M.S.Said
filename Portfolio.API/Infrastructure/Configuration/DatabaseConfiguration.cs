@@ -6,6 +6,11 @@ namespace Portfolio.API.Configuration;
 
 public static class DatabaseConfiguration
 {
+    /// <summary>
+    /// Configures the application's database: creates a scope, runs EF migrations in the Development environment, applies schema updates, and seeds an admin user if configured.
+    /// </summary>
+    /// <param name="app">The WebApplication instance to configure.</param>
+    /// <returns>A task that completes when database configuration, schema updates, and admin seeding have finished.</returns>
     public static async Task ConfigureDatabaseAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -34,6 +39,11 @@ public static class DatabaseConfiguration
         }
     }
 
+    /// <summary>
+    /// Ensures required columns for the application's schema exist on the database and adds Arabic translation columns when missing.
+    /// </summary>
+    /// <param name="context">The <see cref="PortfolioDbContext"/> used to inspect and modify the database schema.</param>
+    /// <param name="logger">Logger used to record informational and warning messages about applied schema changes.</param>
     private static async Task ApplySchemaUpdatesAsync(PortfolioDbContext context, ILogger logger)
     {
         var schemaUpdates = new[]
@@ -77,6 +87,14 @@ public static class DatabaseConfiguration
         }
     }
 
+    /// <summary>
+    /// Ensures a column with the specified name and type exists on the given table, adding it if missing.
+    /// </summary>
+    /// <param name="context">The database context used to execute the schema change.</param>
+    /// <param name="table">The target table name (expected to be a hardcoded, trusted identifier).</param>
+    /// <param name="column">The column name to ensure exists on the table.</param>
+    /// <param name="columnType">The SQL column type definition to use when adding the column (for example, "nvarchar(256)" or "int").</param>
+    /// <param name="logger">A logger instance used to record success or warning messages.</param>
     private static async Task AddColumnIfNotExistsAsync(PortfolioDbContext context, string table, string column, string columnType, ILogger logger)
     {
         try
@@ -103,6 +121,12 @@ public static class DatabaseConfiguration
         }
     }
 
+    /// <summary>
+    /// Seeds an administrator Identity user using credentials from configuration when configured and not already present.
+    /// </summary>
+    /// <remarks>
+    /// Reads "AdminUser:Email" and "AdminUser:Password" from the application's configuration. If both values are present and no user with that email exists, creates the user with EmailConfirmed set to true and logs the result; if credentials are missing or the user already exists, logs an appropriate message.
+    /// </remarks>
     private static async Task SeedAdminUserAsync(IServiceProvider services, ILogger logger)
     {
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();

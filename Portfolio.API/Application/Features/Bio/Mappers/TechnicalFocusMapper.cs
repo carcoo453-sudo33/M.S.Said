@@ -5,6 +5,14 @@ namespace Portfolio.API.Application.Features.Bio.Mappers;
 
 public static class TechnicalFocusMapper
 {
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Maps a TechnicalFocus entity to a TechnicalFocusDto.
+    /// </summary>
+    /// <param name="technicalFocus">The TechnicalFocus entity to convert.</param>
+    /// <returns>A new TechnicalFocusDto with properties copied from the provided entity.</returns>
+>>>>>>> origin/master
     public static TechnicalFocusDto ToDto(TechnicalFocus technicalFocus)
     {
         return new TechnicalFocusDto
@@ -20,6 +28,15 @@ public static class TechnicalFocusMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Create a TechnicalFocus entity from a TechnicalFocusDto and associate it with the specified Bio ID.
+    /// </summary>
+    /// <param name="dto">Source DTO containing title, description and item values to copy into the entity.</param>
+    /// <param name="bioId">Identifier of the parent Bio to assign to the new entity.</param>
+    /// <returns>A new TechnicalFocus with properties copied from <paramref name="dto"/> and <paramref name="bioId"/> assigned to its BioId.</returns>
+>>>>>>> origin/master
     public static TechnicalFocus ToEntity(TechnicalFocusDto dto, Guid bioId)
     {
         return new TechnicalFocus
@@ -34,6 +51,14 @@ public static class TechnicalFocusMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Updates the given TechnicalFocus entity's fields from the provided DTO and records the current UTC update time.
+    /// </summary>
+    /// <param name="technicalFocus">The existing entity to update; its properties will be modified in-place.</param>
+    /// <param name="dto">The data transfer object supplying new values for the entity's title, description, and items (including Arabic variants).</param>
+>>>>>>> origin/master
     public static void UpdateEntity(TechnicalFocus technicalFocus, TechnicalFocusDto dto)
     {
         technicalFocus.Title = dto.Title;

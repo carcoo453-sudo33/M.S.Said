@@ -5,6 +5,14 @@ namespace Portfolio.API.Application.Features.Bio.Mappers;
 
 public static class SignatureMapper
 {
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Maps a Signature entity to a SignatureDto.
+    /// </summary>
+    /// <param name="signature">The Signature entity to map.</param>
+    /// <returns>A SignatureDto with values copied from the provided Signature entity.</returns>
+>>>>>>> origin/master
     public static SignatureDto ToDto(Signature signature)
     {
         return new SignatureDto
@@ -22,6 +30,15 @@ public static class SignatureMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Create a new Signature entity from a SignatureDto and associate it with the specified bio.
+    /// </summary>
+    /// <param name="dto">DTO containing signature fields to copy into the entity.</param>
+    /// <param name="bioId">Identifier of the parent Bio to assign to the new entity's BioId.</param>
+    /// <returns>A Signature entity with properties mapped from <paramref name="dto"/> and BioId set to <paramref name="bioId"/>.</returns>
+>>>>>>> origin/master
     public static Signature ToEntity(SignatureDto dto, Guid bioId)
     {
         return new Signature
@@ -38,6 +55,14 @@ public static class SignatureMapper
         };
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Updates an existing Signature entity with values from a SignatureDto.
+    /// </summary>
+    /// <param name="signature">The Signature entity to be updated in place.</param>
+    /// <param name="dto">The DTO providing new property values to apply to the entity; matching fields are copied.</param>
+>>>>>>> origin/master
     public static void UpdateEntity(Signature signature, SignatureDto dto)
     {
         signature.Role = dto.Role;
