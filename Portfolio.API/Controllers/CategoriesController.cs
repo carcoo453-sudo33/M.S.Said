@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Portfolio.API.Data;
-using Portfolio.API.DTOs;
-using Portfolio.API.Entities;
+using Portfolio.API.Application.Features.Categories.DTOs;
+using Portfolio.API.Application.Features.Categories.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -11,105 +9,87 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class CategoriesController : ControllerBase
 {
-    private readonly PortfolioDbContext _context;
+    private readonly ICategoryService _categoryService;
 
-    public CategoriesController(PortfolioDbContext context)
+    /// <summary>
+    /// Initializes a new instance of <see cref="CategoriesController"/> with the provided category service.
+    /// </summary>
+    /// <param name="categoryService">Service used to perform category operations (retrieval, creation, update, deletion).</param>
+    public CategoriesController(ICategoryService categoryService)
     {
-        _context = context;
+        _categoryService = categoryService;
     }
 
+    /// <summary>
+    /// Retrieves all categories.
+    /// </summary>
+    /// <returns>An ActionResult containing the collection of CategoryDto objects; on success returns 200 OK with the list.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
     {
-        var categories = await _context.Categories
-            .OrderBy(c => c.Name)
-            .Select(c => new CategoryDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Name_Ar = c.Name_Ar
-            })
-            .ToListAsync();
-
+        var categories = await _categoryService.GetCategoriesAsync();
         return Ok(categories);
     }
 
-    [HttpGet("{id}")]
+    /// <summary>
+    /// Retrieves a category by its identifier.
+    /// </summary>
+    /// <param name="id">The GUID of the category to retrieve.</param>
+    /// <returns>The requested <see cref="CategoryDto"/> if found; otherwise a 404 NotFound result.</returns>
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<CategoryDto>> GetById(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
-
-        if (category == null)
-            return NotFound();
-
-        return Ok(new CategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            Name_Ar = category.Name_Ar
-        });
+        var category = await _categoryService.GetCategoryByIdAsync(id);
+        if (category == null) return NotFound();
+        return Ok(category);
     }
 
+    /// <summary>
+    /// Creates a new category.
+    /// </summary>
+    /// <param name="dto">The category data to create.</param>
+    /// <returns>An ActionResult containing the created <see cref="CategoryDto"/> and a Location header referencing the newly created resource.</returns>
     [Authorize]
     [HttpPost]
     public async Task<ActionResult<CategoryDto>> Create(CategoryDto dto)
     {
-        // Check if category with same name already exists
-        var exists = await _context.Categories
-            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower());
-
-        if (exists)
-            return BadRequest("Category with this name already exists");
-
-        var category = new CategoryEntry
-        {
-            Name = dto.Name,
-            Name_Ar = dto.Name_Ar
-        };
-
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        dto.Id = category.Id;
-        return CreatedAtAction(nameof(GetById), new { id = category.Id }, dto);
+        var result = await _categoryService.CreateCategoryAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
+    /// <summary>
+    /// Updates an existing category identified by the provided ID.
+    /// </summary>
+    /// <param name="id">The GUID of the category to update.</param>
+    /// <param name="dto">The category data to apply to the existing category.</param>
+    /// <returns>200 OK with the updated CategoryDto when the category exists; 404 NotFound if no category with the specified ID is found.</returns>
     [Authorize]
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, CategoryDto dto)
     {
-        var category = await _context.Categories.FindAsync(id);
-
-        if (category == null)
-            return NotFound();
-
-        // Check if another category with same name exists
-        var exists = await _context.Categories
-            .AnyAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id);
-
-        if (exists)
-            return BadRequest("Another category with this name already exists");
-
-        category.Name = dto.Name;
-        category.Name_Ar = dto.Name_Ar;
-
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        var existing = await _categoryService.GetCategoryByIdAsync(id);
+        if (existing == null) return NotFound();
+        
+        var result = await _categoryService.UpdateCategoryAsync(id, dto);
+        return Ok(result);
     }
-
+    /// <summary>
+    /// Deletes the category identified by the specified GUID.
+    /// </summary>
+    /// <param name="id">The GUID of the category to delete.</param>
+    /// <returns>204 No Content if the category was deleted; 404 Not Found if no category exists with the provided id.</returns>
     [Authorize]
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
-
-        if (category == null)
+        try
+        {
+            await _categoryService.DeleteCategoryAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
             return NotFound();
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        }
     }
 }
