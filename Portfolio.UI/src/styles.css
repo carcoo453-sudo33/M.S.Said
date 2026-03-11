@@ -18,7 +18,6 @@
    DOTTED GRID BACKGROUND - PERSISTENT
    ============================================ */
 html {
-  background-color: hsl(var(--background)) !important;
   background-image: radial-gradient(circle, hsl(var(--grid-dot)) 1px, transparent 1px) !important;
   background-size: 20px 20px !important;
   background-position: 0 0 !important;
