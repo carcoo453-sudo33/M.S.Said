@@ -1,10 +1,11 @@
-using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
-using Portfolio.API.DTOs;
+using Microsoft.EntityFrameworkCore;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
+using Portfolio.API.Application.Common;
+using Portfolio.API.Domain.Enums;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetProjectsQueryHandler : BaseQueryHandler
 {
@@ -12,14 +13,29 @@ public class GetProjectsQueryHandler : BaseQueryHandler
     {
     }
 
+    /// <summary>
+    /// Retrieves a paged list of projects using the provided query parameters, applying category, featured, and search filters, sorting, and pagination.
+    /// </summary>
+    /// <param name="parameters">Query and pagination options (Category, IsFeatured, Search, SortBy, SortDirection, Page, PageSize).</param>
+    /// <returns>A PagedResult&lt;ProjectDto&gt; containing the mapped project items, the total item count, current page, page size, and total pages.</returns>
     public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters)
     {
         var query = GetBaseQuery();
 
         // Apply filters
         if (!string.IsNullOrEmpty(parameters.Category))
-            query = query.Where(p => p.Category == parameters.Category);
-
+        {
+            // Convert string to ProjectCategory enum for comparison
+            if (Enum.TryParse<ProjectCategory>(parameters.Category, out var category))
+            {
+                query = query.Where(p => p.Category == category);
+            }
+            else
+            {
+                // Return empty result for invalid category rather than ignoring filter
+                query = query.Where(p => false);
+            }
+        }
         if (parameters.IsFeatured.HasValue)
             query = query.Where(p => p.IsFeatured == parameters.IsFeatured.Value);
 
@@ -62,3 +78,6 @@ public class GetProjectsQueryHandler : BaseQueryHandler
         };
     }
 }
+
+
+

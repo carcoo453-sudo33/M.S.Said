@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetProjectBySlugQueryHandler : BaseQueryHandler
 {
@@ -11,6 +11,13 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
     {
     }
 
+    /// <summary>
+    /// Retrieves a project identified by its slug.
+    /// </summary>
+    /// <param name="slug">The unique slug identifying the project.</param>
+    /// <returns>
+    /// The <see cref="ProjectDto"/> for the matching project, or <c>null</c> if no project exists with the provided slug.
+    /// </returns>
     public async Task<ProjectDto?> HandleAsync(string slug)
     {
         var project = await GetBaseQuery()
@@ -24,3 +31,5 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
         return ProjectMapper.ToResponse(project);
     }
 }
+
+

@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.API.Repositories;
-using Portfolio.API.Features.Projects.DTOs;
-using Portfolio.API.Features.Projects.Mappers;
+using Portfolio.API.Application.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.Mappers;
 using Portfolio.API.Constants;
 
-namespace Portfolio.API.Features.Projects.Queries;
+namespace Portfolio.API.Application.Features.Projects.Queries;
 
 public class GetRelatedProjectsQueryHandler : BaseQueryHandler
 {
@@ -12,6 +12,11 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
     {
     }
 
+    /// <summary>
+    /// Retrieve projects related to the project identified by the given slug.
+    /// </summary>
+    /// <param name="slug">The unique slug of the project used to find its category.</param>
+    /// <returns>A list of ProjectDto for projects in the same category as the referenced project, excluding the project itself; an empty list if the project is not found.</returns>
     public async Task<List<ProjectDto>> HandleAsync(string slug)
     {
         // First get the project to find its category
@@ -30,3 +35,5 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
         return relatedProjects.Select(ProjectMapper.ToResponse).ToList();
     }
 }
+
+

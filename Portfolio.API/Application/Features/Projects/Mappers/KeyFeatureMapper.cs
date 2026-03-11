@@ -1,8 +1,8 @@
-using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Entities;
 using Portfolio.API.Constants;
 
-namespace Portfolio.API.Features.Projects.Mappers;
+namespace Portfolio.API.Application.Features.Projects.Mappers;
 
 public static class KeyFeatureMapper
 {
@@ -19,6 +19,12 @@ public static class KeyFeatureMapper
         };
     }
 
+    /// <summary>
+    /// Creates a new KeyFeature entity populated from a KeyFeatureCreateDto.
+    /// </summary>
+    /// <param name="request">The DTO containing Title, Title_Ar, Link, Date, and FeatureType to copy into the entity.</param>
+    /// <param name="projectId">Optional project identifier to assign to the entity; if null, the entity's ProjectId is set to Guid.Empty.</param>
+    /// <returns>A new KeyFeature with a generated Id, UTC CreatedAt and UpdatedAt timestamps, ProjectId as specified, and other properties copied from the request.</returns>
     public static KeyFeature ToEntity(KeyFeatureCreateDto request, Guid? projectId = null)
     {
         return new KeyFeature
@@ -35,3 +41,5 @@ public static class KeyFeatureMapper
         };
     }
 }
+
+

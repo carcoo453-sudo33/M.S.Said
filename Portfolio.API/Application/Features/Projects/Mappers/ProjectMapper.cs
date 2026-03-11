@@ -1,13 +1,20 @@
-using Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Entities;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 using Portfolio.API.Helpers;
 using System.Text.Json;
 
-namespace Portfolio.API.Features.Projects.Mappers;
+namespace Portfolio.API.Application.Features.Projects.Mappers;
 
 public static class ProjectMapper
 {
+    /// <summary>
+    /// Create the API response representation of a project.
+    /// </summary>
+    /// <param name="entity">The project domain entity to map.</param>
+    /// <returns>
+    /// A ProjectDto with scalar properties copied from the entity, responsibilities deserialized from the entity's ResponsibilitiesJson, and KeyFeatures and Changelog converted to their DTO forms; any missing collections are returned as empty lists.
+    /// </returns>
     public static ProjectDto ToResponse(Project entity)
     {
         return new ProjectDto
@@ -48,13 +55,17 @@ public static class ProjectMapper
             ReactionsCount = entity.ReactionsCount,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
-            Gallery = JsonHelper.DeserializeList<string>(entity.GalleryJson),
             Responsibilities = JsonHelper.DeserializeList<ResponsibilityDto>(entity.ResponsibilitiesJson),
             KeyFeatures = entity.KeyFeatures?.Select(KeyFeatureMapper.ToResponse).ToList() ?? new(),
             Changelog = entity.Changelog?.Select(ChangelogItemMapper.ToResponse).ToList() ?? new()
         };
     }
 
+    /// <summary>
+    /// Create a Project entity populated from the provided ProjectCreateDto.
+    /// </summary>
+    /// <param name="request">The DTO containing data for the new project.</param>
+    /// <returns>A Project entity with values taken from the request; enum fields use sensible defaults when null and collection properties are initialized when absent.</returns>
     public static Project ToEntity(ProjectCreateDto request)
     {
         return new Project
@@ -82,7 +93,7 @@ public static class ProjectMapper
             Language_Ar = request.Language_Ar,
             Architecture = request.Architecture,
             Architecture_Ar = request.Architecture_Ar,
-            Status = request.Status ?? Enums.ProjectStatus.Planning,
+            Status = request.Status ?? ProjectStatus.Planning,
             Status_Ar = request.Status_Ar,
             Type = request.Type ?? ProjectType.Initial,
             Type_Ar = request.Type_Ar,
@@ -92,13 +103,27 @@ public static class ProjectMapper
             IsFeatured = request.IsFeatured,
             Views = 0,
             ReactionsCount = 0,
-            GalleryJson = JsonSerializer.Serialize(request.Gallery),
             ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities),
             KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf)).ToList() ?? new(),
-            Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new()
+            Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new(),
+            Images = request.Images?.Select(img => new ProjectImage
+            {
+                ImageUrl = img.ImageUrl,
+                Title = img.Title,
+                Title_Ar = img.Title_Ar,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description,
+                Description_Ar = img.Description_Ar
+            }).ToList() ?? new()
         };
     }
 
+    /// <summary>
+    /// Updates the provided Project entity in place using values from a ProjectUpdateDto.
+    /// </summary>
+    /// <param name="entity">The existing Project entity to update; its properties and related collections are modified.</param>
+    /// <param name="request">The DTO containing updated values to apply to the entity.</param>
     public static void UpdateEntity(Project entity, ProjectUpdateDto request)
     {
         entity.Title = request.Title;
@@ -124,7 +149,7 @@ public static class ProjectMapper
         entity.Language_Ar = request.Language_Ar;
         entity.Architecture = request.Architecture;
         entity.Architecture_Ar = request.Architecture_Ar;
-        entity.Status = request.Status ?? Enums.ProjectStatus.Planning;
+        entity.Status = request.Status ?? ProjectStatus.Planning;
         entity.Status_Ar = request.Status_Ar;
         entity.Type = request.Type ?? ProjectType.Initial;
         entity.Type_Ar = request.Type_Ar;
@@ -132,15 +157,39 @@ public static class ProjectMapper
         entity.DevelopmentMethod_Ar = request.DevelopmentMethod_Ar;
         entity.Order = request.Order;
         entity.IsFeatured = request.IsFeatured;
-        entity.GalleryJson = JsonSerializer.Serialize(request.Gallery);
         entity.ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities);
+
+        // Update images
+        entity.Images.Clear();
+        foreach (var img in request.Images ?? new List<ProjectImageCreateDto>())
+        {
+            entity.Images.Add(new ProjectImage
+            {
+                ProjectId = entity.Id,
+                ImageUrl = img.ImageUrl,
+                Title = img.Title,
+                Title_Ar = img.Title_Ar,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description,
+                Description_Ar = img.Description_Ar
+            });
+        }
 
         // Update key features
         entity.KeyFeatures.Clear();
-        entity.KeyFeatures.AddRange(request.KeyFeatures?.Select(f => KeyFeatureMapper.ToEntity(f, entity.Id)) ?? new List<KeyFeature>());
+        foreach (var feature in request.KeyFeatures?.Select(f => KeyFeatureMapper.ToEntity(f, entity.Id)) ?? new List<KeyFeature>())
+        {
+            entity.KeyFeatures.Add(feature);
+        }
 
         // Update changelog
         entity.Changelog.Clear();
-        entity.Changelog.AddRange(request.Changelog?.Select(c => ChangelogItemMapper.ToEntity(c, entity.Id)) ?? new List<ChangelogItem>());
+        foreach (var item in request.Changelog?.Select(c => ChangelogItemMapper.ToEntity(c, entity.Id)) ?? new List<ChangelogItem>())
+        {
+            entity.Changelog.Add(item);
+        }
     }
 }
+
+
