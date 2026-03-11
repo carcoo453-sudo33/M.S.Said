@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Play, Rocket, Github, Heart, Share2, Eye, MessageCircle, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-angular';
+import { LucideAngularModule, Play, Rocket, Github, Heart, Share2, Eye, MessageCircle, X, ChevronLeft, ChevronRight, Maximize2, Layers, Box, Code, Wrench } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { TranslationService } from '../../../services/translation.service';
 import { environment } from '../../../../environments/environment';
@@ -11,6 +11,18 @@ import { environment } from '../../../../environments/environment';
     imports: [CommonModule, LucideAngularModule],
     template: `
     <ng-container *ngIf="project">
+        <!-- Tab Navigation - Above Main Image -->
+        <div class="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-2" *ngIf="hasMultipleImageTypes()">
+            <button *ngFor="let tab of availableTabs"
+                (click)="setActiveTab(tab.type)"
+                [class]="activeTab === tab.type ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'bg-zinc-900 text-zinc-500 hover:text-white border border-zinc-800'"
+                class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 flex items-center gap-2">
+                <lucide-icon [img]="tab.icon" class="w-3.5 h-3.5"></lucide-icon>
+                {{ tab.label }}
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-black/20 text-[8px] ml-1">{{ tab.count }}</span>
+            </button>
+        </div>
+
         <!-- Featured Media Section with Vertical Reaction Icons -->
         <section class="space-y-6 lg:space-y-8 animate-fade-in-up" style="animation-delay: 0.2s">
             <div class="relative group rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 aspect-video shadow-2xl cursor-pointer"
@@ -70,14 +82,14 @@ import { environment } from '../../../../environments/environment';
                 <!-- Featured Badge - Bottom Left -->
                 <div class="absolute bottom-4 lg:bottom-8 ltr:left-4 ltr:lg:left-8 rtl:right-4 rtl:lg:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
                     <div class="bg-black/60 backdrop-blur-md px-4 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl border border-white/10">
-                        <span class="text-[10px] font-black tracking-[0.15em] lg:tracking-[0.2em] uppercase text-red-600">Featured Media • Case Study</span>
+                        <span class="text-[10px] font-black tracking-[0.15em] lg:tracking-[0.2em] uppercase text-red-600">{{ getActiveTabLabel() }} • Featured Media</span>
                     </div>
                 </div>
             </div>
 
             <!-- Gallery Thumbnails -->
-            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 pt-2 lg:pb-4 no-scrollbar" *ngIf="getAllImages().length > 0">
-                <div *ngFor="let img of getAllImages(); let i = index"
+            <div class="flex gap-3 lg:gap-4 overflow-x-auto pb-2 pt-2 lg:pb-4 no-scrollbar" *ngIf="getActiveTabImages().length > 0">
+                <div *ngFor="let img of getActiveTabImages(); let i = index"
                     (click)="selectImage(img)"
                     [class.ring-2]="selectedImage === img || (!selectedImage && i === 0)"
                     [class.ring-red-600]="selectedImage === img || (!selectedImage && i === 0)"
@@ -116,7 +128,7 @@ import { environment } from '../../../../environments/environment';
             <!-- Image Counter -->
             <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[210] px-6 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20">
                 <span class="text-white font-black text-sm tracking-widest">
-                    {{ currentLightboxIndex + 1 }} / {{ getAllImages().length }}
+                    {{ currentLightboxIndex + 1 }} / {{ getActiveTabImages().length }}
                 </span>
             </div>
 
@@ -129,25 +141,25 @@ import { environment } from '../../../../environments/environment';
             </div>
 
             <!-- Navigation Buttons -->
-            <button *ngIf="getAllImages().length > 1"
+            <button *ngIf="getActiveTabImages().length > 1"
                 (click)="previousImage(); $event.stopPropagation()"
                 class="absolute ltr:left-4 ltr:md:left-8 rtl:right-4 rtl:md:right-8 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-600 hover:border-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed group">
                 <lucide-icon [img]="ChevronLeftIcon" class="w-7 h-7 group-hover:scale-110 transition-transform"></lucide-icon>
             </button>
 
-            <button *ngIf="getAllImages().length > 1"
+            <button *ngIf="getActiveTabImages().length > 1"
                 (click)="nextImage(); $event.stopPropagation()"
                 class="absolute ltr:right-4 ltr:md:right-8 rtl:left-4 rtl:md:left-8 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-red-600 hover:border-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed group">
                 <lucide-icon [img]="ChevronRightIcon" class="w-7 h-7 group-hover:scale-110 transition-transform"></lucide-icon>
             </button>
 
             <!-- Thumbnail Strip -->
-            <div *ngIf="getAllImages().length > 1" 
+            <div *ngIf="getActiveTabImages().length > 1" 
                 class="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[210] max-w-[90%]"
                 (click)="$event.stopPropagation()">
                 <div class="overflow-x-auto no-scrollbar">
                     <div class="flex gap-2 md:gap-3 px-4 py-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
-                        <div *ngFor="let img of getAllImages(); let i = index"
+                        <div *ngFor="let img of getActiveTabImages(); let i = index"
                             (click)="goToImage(i)"
                             [class.ring-2]="i === currentLightboxIndex"
                             [class.ring-red-600]="i === currentLightboxIndex"
@@ -160,13 +172,13 @@ import { environment } from '../../../../environments/environment';
             </div>
             
             <!-- Close Button for Thumbnail Strip - Fixed to top right -->
-            <button *ngIf="getAllImages().length > 1" (click)="closeLightbox()"
+            <button *ngIf="getActiveTabImages().length > 1" (click)="closeLightbox()"
                 class="absolute top-20 md:top-24 right-4 md:right-8 z-[210] w-12 h-12 rounded-xl bg-red-600 backdrop-blur-md border border-red-500 flex items-center justify-center text-white hover:bg-red-700 transition-all group shadow-lg">
                 <lucide-icon [img]="XIcon" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-300"></lucide-icon>
             </button>
         </div>
     </ng-container>
-  `
+    `
 })
 export class ProjectDetailsGalleryComponent {
     private translationService = inject(TranslationService);
@@ -186,12 +198,79 @@ export class ProjectDetailsGalleryComponent {
     ChevronLeftIcon = ChevronLeft;
     ChevronRightIcon = ChevronRight;
     MaximizeIcon = Maximize2;
+    LayersIcon = Layers;
+    BoxIcon = Box;
+    CodeIcon = Code;
+    WrenchIcon = Wrench;
 
     selectedImage?: string;
     lightboxOpen = false;
     lightboxImage = '';
     currentLightboxIndex = 0;
     slideDirection: 'left' | 'right' | null = null;
+
+    activeTab: number = 0; // Default to Real (0)
+
+    get availableTabs() {
+        if (!this.project) return [];
+        
+        const tabs = [
+            { type: 0, label: 'Real View', icon: this.LayersIcon, count: this.getImagesByType(0).length },
+            { type: 1, label: 'Base Details', icon: this.BoxIcon, count: this.getImagesByType(1).length },
+            { type: 2, label: 'Wireframes', icon: this.CodeIcon, count: this.getImagesByType(2).length },
+            { type: 3, label: 'Bug Fixes', icon: this.WrenchIcon, count: this.getImagesByType(3).length }
+        ];
+
+        return tabs.filter(tab => tab.count > 0);
+    }
+
+    hasMultipleImageTypes(): boolean {
+        return this.availableTabs.length > 1;
+    }
+
+    setActiveTab(type: number) {
+        this.activeTab = type;
+        this.selectedImage = this.getActiveTabImages()[0];
+    }
+
+    getActiveTabLabel(): string {
+        const tab = this.availableTabs.find(t => t.type === this.activeTab);
+        return tab ? tab.label : 'Project Media';
+    }
+
+    getImagesByType(type: number): string[] {
+        if (!this.project) return [];
+        
+        // Filter from project.images if available
+        let typedImages = this.project.images
+            ?.filter(img => img.type === type)
+            .map(img => img.imageUrl) || [];
+
+        // If type is Real (0), also include the main imageUrl and gallery if they aren't redundant
+        if (type === 0) {
+            if (this.project.imageUrl && !typedImages.includes(this.project.imageUrl)) {
+                typedImages.unshift(this.project.imageUrl);
+            }
+            if (this.project.gallery) {
+                this.project.gallery.forEach(img => {
+                    if (!typedImages.includes(img)) {
+                        typedImages.push(img);
+                    }
+                });
+            }
+        }
+
+        return typedImages;
+    }
+
+    getActiveTabImages(): string[] {
+        const images = this.getImagesByType(this.activeTab);
+        if (images.length === 0 && this.activeTab !== 0) {
+            // Fallback to real if no images for current tab (shouldn't happen with filtered buttons)
+            return this.getImagesByType(0);
+        }
+        return images;
+    }
 
     getProjectSummary(): string {
         if (!this.project) return '';
@@ -210,23 +289,6 @@ export class ProjectDetailsGalleryComponent {
         return this.project.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     }
 
-    getAllImages(): string[] {
-        if (!this.project) return [];
-        const images: string[] = [];
-
-        // Add main image first
-        if (this.project.imageUrl) {
-            images.push(this.project.imageUrl);
-        }
-
-        // Add gallery images
-        if (this.project.gallery && this.project.gallery.length > 0) {
-            images.push(...this.project.gallery);
-        }
-
-        return images;
-    }
-
     onReact() {
         this.onReactEvent.emit();
     }
@@ -240,11 +302,11 @@ export class ProjectDetailsGalleryComponent {
     }
 
     getCurrentImage(): string {
-        return this.selectedImage || this.project?.imageUrl || '';
+        return this.selectedImage || this.getActiveTabImages()[0] || this.project?.imageUrl || '';
     }
 
     openLightbox(imageUrl: string) {
-        const images = this.getAllImages();
+        const images = this.getActiveTabImages();
         this.currentLightboxIndex = images.indexOf(imageUrl);
         if (this.currentLightboxIndex === -1) this.currentLightboxIndex = 0;
 
@@ -265,7 +327,7 @@ export class ProjectDetailsGalleryComponent {
     }
 
     nextImage() {
-        const images = this.getAllImages();
+        const images = this.getActiveTabImages();
         if (images.length <= 1) return;
 
         this.slideDirection = 'right';
@@ -277,7 +339,7 @@ export class ProjectDetailsGalleryComponent {
     }
 
     previousImage() {
-        const images = this.getAllImages();
+        const images = this.getActiveTabImages();
         if (images.length <= 1) return;
 
         this.slideDirection = 'left';
@@ -289,7 +351,7 @@ export class ProjectDetailsGalleryComponent {
     }
 
     goToImage(index: number) {
-        const images = this.getAllImages();
+        const images = this.getActiveTabImages();
         if (index < 0 || index >= images.length) return;
 
         this.slideDirection = index > this.currentLightboxIndex ? 'right' : 'left';
@@ -315,7 +377,6 @@ export class ProjectDetailsGalleryComponent {
         return `${baseUrl}/${url}`;
     }
 
-    // Keyboard navigation for lightbox
     @HostListener('window:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) {
         if (!this.lightboxOpen) return;

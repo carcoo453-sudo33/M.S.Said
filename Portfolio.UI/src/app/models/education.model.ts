@@ -12,5 +12,7 @@ export interface EducationEntry {
     imageUrl?: string;
     isCompleted: boolean;
     category: 'Education' | 'Training' | 'Certification' | 'Achievement';
+    createdAt: string | Date;
+    updatedAt?: string | Date;
     [key: string]: any;
 }

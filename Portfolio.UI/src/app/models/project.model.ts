@@ -1,14 +1,37 @@
-export interface KeyFeature {
-    icon: string;
+export interface ProjectImage {
+    id?: string;
+    projectId?: string;
+    imageUrl: string;
     title: string;
     title_Ar?: string;
-    description: string;
+    type?: number;
+    order?: number;
+    description?: string;
     description_Ar?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface KeyFeature {
+    id?: string;
+    icon?: string;
+    title: string;
+    title_Ar?: string;
+    description?: string;
+    description_Ar?: string;
+    link?: string;
+    date?: string;
+    featureType?: number;
     [key: string]: any;
 }
 
 export interface Responsibility {
-    text: string;
+    id?: string;
+    title?: string;
+    title_Ar?: string;
+    description?: string;
+    description_Ar?: string;
+    text?: string;
     text_Ar?: string;
 }
 
@@ -66,6 +89,7 @@ export interface BaseProject {
     company_Ar?: string;
     imageUrl?: string;
     gallery?: string[];
+    images?: ProjectImage[];
     projectUrl?: string;
     gitHubUrl?: string;
     duration?: string;
@@ -76,6 +100,11 @@ export interface BaseProject {
     architecture_Ar?: string;
     status?: string;
     status_Ar?: string;
+    type?: string;
+    type_Ar?: string;
+    developmentMethod?: string;
+    developmentMethod_Ar?: string;
+    techStack?: string;
     keyFeatures?: KeyFeature[];
     changelog?: ChangelogItem[];
     responsibilities?: Responsibility[];

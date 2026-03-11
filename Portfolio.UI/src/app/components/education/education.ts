@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router, RouterLink } from '@angular/router';
+import { Meta, Title } from '@angular/platform-browser';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { EducationEntry, BioEntry } from '../../models';
@@ -47,6 +48,9 @@ export class EducationComponent implements OnInit {
     private router = inject(Router);
     public auth = inject(AuthService);
     public translationService = inject(TranslationService);
+    private translate = inject(TranslateService);
+    private titleService = inject(Title);
+    private metaService = inject(Meta);
     allEducation = signal<EducationEntry[]>([]);
     bio = signal<BioEntry | null>(null);
     isLoading = signal(true);
@@ -87,6 +91,38 @@ export class EducationComponent implements OnInit {
             error: (err) => console.error('Education: Failed to load bio', err)
         });
         this.loadEducation();
+        this.updateSeoTags();
+    }
+
+    private updateSeoTags() {
+        const isAr = this.translationService.isRTL();
+        const title = isAr ? 'التعليم والخبرة الأكاديمية | Mostafa.Dev' : 'Education & Academic Specialization | Mostafa.Dev';
+        const description = isAr 
+            ? 'اكتشف الرحلة الأكاديمية والشهادات والتدريب التقني لـ مصطفى صادق. تخصص في هندسة البرمجيات والأنظمة الموزعة.'
+            : 'Explore the academic journey, certifications, and technical training of Mostafa Said. Specializing in Software Engineering and Distributed Systems.';
+
+        this.titleService.setTitle(title);
+        this.metaService.updateTag({ name: 'description', content: description });
+
+        // OpenGraph
+        this.metaService.updateTag({ property: 'og:title', content: title });
+        this.metaService.updateTag({ property: 'og:description', content: description });
+        this.metaService.updateTag({ property: 'og:type', content: 'website' });
+        this.metaService.updateTag({ property: 'og:url', content: window.location.href });
+
+        // Twitter
+        this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+        this.metaService.updateTag({ name: 'twitter:title', content: title });
+        this.metaService.updateTag({ name: 'twitter:description', content: description });
+
+        // Canonical
+        let link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
+        if (!link) {
+            link = document.createElement('link');
+            link.setAttribute('rel', 'canonical');
+            document.head.appendChild(link);
+        }
+        link.setAttribute('href', window.location.href);
     }
 
     loadEducation() {

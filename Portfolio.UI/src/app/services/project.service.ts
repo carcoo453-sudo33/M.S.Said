@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { ProjectEntry, ProjectDto } from '../models';
 import { environment } from '../../environments/environment';
 import { ValidationService } from './validation.service';
+import { ImageUtilsService } from './image-utils.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,9 +13,10 @@ import { ValidationService } from './validation.service';
 export class ProjectService {
     private http = inject(HttpClient);
     private validationService = inject(ValidationService);
+    private imageUtils = inject(ImageUtilsService);
     private apiUrl = environment.apiUrl;
 
-    getProjects(page: number = 1, pageSize: number = 10, category?: string, isFeatured?: boolean): Observable<any> {
+    getProjects(page: number = 1, pageSize: number = 10, category?: string, isFeatured?: boolean, search?: string, sortBy?: string, sortDirection?: string): Observable<any> {
         let params = new HttpParams()
             .set('page', page.toString())
             .set('pageSize', pageSize.toString());
@@ -25,6 +27,18 @@ export class ProjectService {
 
         if (isFeatured !== undefined) {
             params = params.set('isFeatured', isFeatured.toString());
+        }
+
+        if (search) {
+            params = params.set('search', search);
+        }
+
+        if (sortBy) {
+            params = params.set('sortBy', sortBy);
+        }
+
+        if (sortDirection) {
+            params = params.set('sortDirection', sortDirection);
         }
 
         return this.http.get<any>(`${this.apiUrl}/projects`, { params }).pipe(
@@ -58,6 +72,33 @@ export class ProjectService {
             map(projects => projects.map(p => this.normalizeProject(p))),
             catchError(error => {
                 console.error('Error fetching featured projects:', error);
+                return throwError(() => error);
+            })
+        );
+    }
+
+    getRelatedProjects(slug: string): Observable<ProjectEntry[]> {
+        if (!slug || slug.trim().length === 0) {
+            return throwError(() => new Error('Project slug is required'));
+        }
+
+        return this.http.get<ProjectEntry[]>(`${this.apiUrl}/projects/${encodeURIComponent(slug)}/related`).pipe(
+            map(projects => projects.map(p => this.normalizeProject(p))),
+            catchError(error => {
+                console.error('Error fetching related projects:', error);
+                return throwError(() => error);
+            })
+        );
+    }
+
+    trackProjectView(slug: string): Observable<void> {
+        if (!slug || slug.trim().length === 0) {
+            return throwError(() => new Error('Project slug is required'));
+        }
+
+        return this.http.post<void>(`${this.apiUrl}/projects/${encodeURIComponent(slug)}/views`, {}).pipe(
+            catchError(error => {
+                console.error('Error tracking project view:', error);
                 return throwError(() => error);
             })
         );
@@ -200,6 +241,32 @@ export class ProjectService {
         );
     }
 
+    removeReaction(projectId: string, userId: string): Observable<void> {
+        if (!projectId || !userId) {
+            return throwError(() => new Error('Project ID and User ID are required'));
+        }
+
+        return this.http.delete<void>(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/react/${encodeURIComponent(userId)}`).pipe(
+            catchError(error => {
+                console.error('Error removing reaction:', error);
+                return throwError(() => error);
+            })
+        );
+    }
+
+    getProjectReactions(projectId: string): Observable<any[]> {
+        if (!projectId) {
+            return throwError(() => new Error('Project ID is required'));
+        }
+
+        return this.http.get<any[]>(`${this.apiUrl}/projects/${encodeURIComponent(projectId)}/reactions`).pipe(
+            catchError(error => {
+                console.error('Error fetching reactions:', error);
+                return throwError(() => error);
+            })
+        );
+    }
+
     private sanitizeProjectData(project: any): any {
         return {
             ...project,
@@ -223,6 +290,11 @@ export class ProjectService {
                 ...resp,
                 title: this.validationService.sanitizeHtml(resp.title),
                 description: this.validationService.sanitizeHtml(resp.description)
+            })) || [],
+            images: project.images?.map((img: any) => ({
+                ...img,
+                title: this.validationService.sanitizeHtml(img.title),
+                description: this.validationService.sanitizeHtml(img.description)
             })) || []
         };
     }
@@ -299,12 +371,14 @@ export class ProjectService {
         const changelog = project.changelog || project.Changelog || [];
         const responsibilities = project.responsibilities || project.Responsibilities || [];
         const comments = project.comments || project.Comments || [];
+        const images = project.images || project.Images || [];
 
         return {
             ...project,
             id: project.id || project.Id || project.ID,
             summary: project.summary || '',
             gallery: project.gallery?.length ? project.gallery : (project.Gallery?.length ? project.Gallery : [project.imageUrl || '']),
+            images: images,
             duration: project.duration || '',
             language: project.language || '',
             architecture: project.architecture || '',
@@ -349,5 +423,9 @@ export class ProjectService {
         lastPublish = byLatest[0] || null;
 
         return [mostVisited, featured, lastPublish].filter(p => p != null) as ProjectEntry[];
+    }
+
+    getFullImageUrl(url?: string): string {
+        return this.imageUtils.getFullImageUrl(url);
     }
 }

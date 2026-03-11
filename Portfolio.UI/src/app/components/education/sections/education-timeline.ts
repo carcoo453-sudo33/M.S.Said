@@ -504,6 +504,7 @@ export class EducationTimelineComponent implements OnDestroy {
             location_Ar: '',
             imageUrl: '',
             isCompleted: true,
+            createdAt: new Date(),
             category: this.sectionCategory
         });
     }
@@ -565,15 +566,6 @@ export class EducationTimelineComponent implements OnDestroy {
 
         forkJoin(requests).subscribe({
             next: (savedEntries) => {
-                console.log('=== EDUCATION SAVE DEBUG ===');
-                console.log('Saved education entries from server:', savedEntries);
-                console.log('First entry Arabic fields:', {
-                    institution_Ar: savedEntries[0]?.institution_Ar,
-                    degree_Ar: savedEntries[0]?.degree_Ar,
-                    description_Ar: savedEntries[0]?.description_Ar,
-                    location_Ar: savedEntries[0]?.location_Ar
-                });
-                console.log('=== END DEBUG ===');
                 this.education = [...savedEntries];
                 this.educationUpdated.emit(this.education);
                 this.isSaving = false;

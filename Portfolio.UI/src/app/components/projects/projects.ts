@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -73,6 +74,8 @@ export class ProjectsComponent implements OnInit {
   public auth = inject(AuthService);
   public translationService = inject(TranslationService);
   private imageUtils = inject(ImageUtilsService);
+  private titleService = inject(Title);
+  private meta = inject(Meta);
   PlusIcon = Plus;
   ArrowRightIcon = ArrowRight;
 
@@ -95,6 +98,7 @@ export class ProjectsComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.updateSeoTags();
     this.loadData();
 
     // Safety guard: Ensure skeleton doesn't hang forever
@@ -217,5 +221,30 @@ export class ProjectsComponent implements OnInit {
 
   getFullImageUrl(url: string): string {
     return this.imageUtils.getFullImageUrl(url);
+  }
+
+  private updateSeoTags() {
+    const isAr = this.translationService.isRTL();
+    const title = isAr ? 'المشاريع | رحلة الابتكار والتميز التقني | Mostafa.Dev' : 'Projects | Journey of Innovation & Technical Excellence | Mostafa.Dev';
+    const description = isAr 
+        ? 'اكتشف أبرز المشاريع والحلول التقنية التي قمت بتطويرها. من تطبيقات الويب المعقدة إلى الأنظمة الهندسية المبتكرة.' 
+        : 'Discover featured projects and technical solutions I have developed. From complex web applications to innovative engineering systems.';
+
+    this.titleService.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+
+    // Canonical link
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', window.location.href);
   }
 }

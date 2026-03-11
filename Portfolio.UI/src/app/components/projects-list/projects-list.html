@@ -297,6 +297,10 @@
                             class="px-2 py-0.5 rounded-full bg-red-600 text-white text-xs font-black">
                             Featured
                         </span>
+                        <span *ngIf="project.type"
+                            class="px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-black">
+                            {{ project.type }}
+                        </span>
                     </div>
                 </div>
 
@@ -326,10 +330,10 @@
                     </div>
 
                     <!-- Tags -->
-                    <div *ngIf="project.tags" class="flex flex-wrap gap-2">
-                        <span *ngFor="let tag of project.tags.split(',').slice(0, 5)"
-                            class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium">
-                            {{ tag.trim() }}
+                    <div *ngIf="project.techStack || project.tags" class="flex flex-wrap gap-2">
+                        <span *ngFor="let tech of (project.techStack || project.tags || '').split(',').slice(0, 5)"
+                            class="px-2 py-1 rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium border border-zinc-300 dark:border-zinc-700">
+                            {{ tech.trim() }}
                         </span>
                     </div>
                 </div>

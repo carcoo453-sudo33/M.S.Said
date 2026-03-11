@@ -61,6 +61,11 @@ import { OptimizedImageComponent } from '../optimized-image/optimized-image';
                             class="bg-amber-600/90 backdrop-blur-md text-white text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg shadow-amber-600/20">
                             {{ 'home.featuredProjects.featured' | translate }}
                         </span>
+                        <!-- Custom Type Badge -->
+                        <span *ngIf="project.type" 
+                            class="bg-zinc-800/90 border border-zinc-700 backdrop-blur-md text-zinc-300 text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-[0.2em] shadow-lg">
+                            {{ project.type }}
+                        </span>
                     </div>
                 </div>
 
@@ -78,11 +83,11 @@ import { OptimizedImageComponent } from '../optimized-image/optimized-image';
                 <!-- Tech Stack Tags (Bottom of Image) -->
                 <div class="absolute bottom-4 left-4 right-4 z-20 translate-y-4 group-hover:translate-y-0 transition-all duration-500 opacity-0 group-hover:opacity-100">
                     <div class="flex flex-wrap gap-1.5">
-                        <ng-container *ngFor="let tag of (project.tags || '').split(',')">
+                        <ng-container *ngFor="let tech of (project.techStack || project.tags || '').split(',')">
                             <span 
-                                *ngIf="tag.trim()"
-                                class="bg-white/10 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
-                                {{ tag.trim() }}
+                                *ngIf="tech.trim()"
+                                class="bg-black/60 backdrop-blur-md text-[8px] font-bold px-2.5 py-1 rounded-lg text-white border border-white/20 uppercase tracking-wide">
+                                {{ tech.trim() }}
                             </span>
                         </ng-container>
                     </div>

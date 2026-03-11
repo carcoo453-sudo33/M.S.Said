@@ -2,7 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ProfileService } from '../../services/profile.service';
 import { TranslationService } from '../../services/translation.service';
 import { BioEntry, EducationEntry } from '../../models';
@@ -35,6 +36,9 @@ export class EducationCategoryList implements OnInit {
   public location = inject(Location);
   private profileService = inject(ProfileService);
   public translationService = inject(TranslationService);
+  private translate = inject(TranslateService);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   categoryType = signal<string>('');
   allEducation = signal<EducationEntry[]>([]);
@@ -141,6 +145,50 @@ export class EducationCategoryList implements OnInit {
         this.categoryDescription.set('education.educationDesc');
         break;
     }
+    this.updateSeoTags(category);
+  }
+
+  private updateSeoTags(category: string) {
+    const isAr = this.translationService.isRTL();
+    let title = '';
+    let description = '';
+
+    switch (category) {
+        case 'training':
+            title = isAr ? 'التدريب التقني والورش | Mostafa.Dev' : 'Technical Training & Workshops | Mostafa.Dev';
+            description = isAr ? 'قائمة كاملة بالتدريبات التقنية والورش العمل التي حضرها مصطفى صادق.' : 'A complete list of technical trainings and workshops attended by Mostafa Said.';
+            break;
+        case 'certification':
+            title = isAr ? 'الشهادات والاعتمادات | Mostafa.Dev' : 'Certifications & Credentials | Mostafa.Dev';
+            description = isAr ? 'الشهادات المهنية والاعتمادات التقنية في مختلف تقنيات هندسة البرمجيات.' : 'Professional certifications and technical credentials in various software engineering technologies.';
+            break;
+        case 'achievement':
+            title = isAr ? 'الإنجازات والجوائز | Mostafa.Dev' : 'Achievements & Awards | Mostafa.Dev';
+            description = isAr ? 'تكريمات وإنجازات مصطفى صادق خلال مسيرته المهنية والأكاديمية.' : 'Honors and achievements of Mostafa Said during his professional and academic career.';
+            break;
+        case 'education':
+        default:
+            title = isAr ? 'المسيرة الأكاديمية | Mostafa.Dev' : 'Academic Journey | Mostafa.Dev';
+            description = isAr ? 'استكشف الخلفية التعليمية والدرجات العلمية لمصطفى صادق.' : 'Explore the educational background and academic degrees of Mostafa Said.';
+            break;
+    }
+
+    this.titleService.setTitle(title);
+    this.metaService.updateTag({ name: 'description', content: description });
+
+    // OpenGraph
+    this.metaService.updateTag({ property: 'og:title', content: title });
+    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:url', content: window.location.href });
+
+    // Canonical
+    let link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', window.location.href);
   }
 
   loadEducation(): void {

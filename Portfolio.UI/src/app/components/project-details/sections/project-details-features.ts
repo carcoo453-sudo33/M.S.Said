@@ -98,7 +98,7 @@ export class ProjectDetailsFeaturesComponent {
 
         // Try to get the description in current language, fallback to other language if not available
         if (currentLang === 'ar') {
-            return (feature.description_Ar && feature.description_Ar.trim().length > 0) ? feature.description_Ar : feature.description;
+            return (feature.description_Ar && feature.description_Ar.trim().length > 0) ? feature.description_Ar : (feature.description || '');
         } else {
             return (feature.description && feature.description.trim().length > 0) ? feature.description : (feature.description_Ar || '');
         }
@@ -108,18 +108,21 @@ export class ProjectDetailsFeaturesComponent {
         if (!this.project?.responsibilities) return [];
 
         return this.project.responsibilities.filter(res => {
-            return (res.text && res.text.trim().length > 0) ||
-                (res.text_Ar && res.text_Ar.trim().length > 0);
+            const title = res.title || res.text || '';
+            const title_Ar = res.title_Ar || res.text_Ar || '';
+            return title.trim().length > 0 || title_Ar.trim().length > 0;
         });
     }
 
     getResponsibilityText(responsibility: Responsibility): string {
         const currentLang = this.translationService.currentLang$();
+        const text = responsibility.title || responsibility.text || '';
+        const text_Ar = responsibility.title_Ar || responsibility.text_Ar || '';
 
         if (currentLang === 'ar') {
-            return (responsibility.text_Ar && responsibility.text_Ar.trim().length > 0) ? responsibility.text_Ar : responsibility.text;
+            return (text_Ar.trim().length > 0) ? text_Ar : text;
         } else {
-            return (responsibility.text && responsibility.text.trim().length > 0) ? responsibility.text : (responsibility.text_Ar || '');
+            return (text.trim().length > 0) ? text : text_Ar;
         }
     }
 }

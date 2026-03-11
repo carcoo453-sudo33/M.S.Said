@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProfileService } from '../../services/profile.service';
@@ -76,6 +77,9 @@ export class ProjectDetailsComponent implements OnInit {
   private crudService = inject(ProjectCrudService);
   private toast = inject(ToastService);
   public translationService = inject(TranslationService);
+  private meta = inject(Meta);
+  private titleService = inject(Title);
+  private translate = inject(TranslateService);
 
   project = signal<ProjectEntry | undefined>(undefined);
   bio = signal<BioEntry | null>(null);
@@ -109,6 +113,7 @@ export class ProjectDetailsComponent implements OnInit {
         next: (data) => {
           console.log('Project loaded from API:', data);
           this.project.set(data);
+          this.updateSeoTags(data);
           // Wrap state changes in setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
           setTimeout(() => {
             this.isLoading.set(false);
@@ -195,5 +200,45 @@ export class ProjectDetailsComponent implements OnInit {
   onProjectDeleted(project: ProjectEntry) {
     this.showDeleteModal.set(false);
     this.router.navigate(['/projects']);
+  }
+
+  private updateSeoTags(project: ProjectEntry) {
+    const isAr = this.translationService.isRTL();
+    const title = isAr && project.title_Ar ? project.title_Ar : project.title;
+    const description = isAr && project.summary_Ar ? project.summary_Ar : (project.summary || project.description);
+    const imageUrl = project.imageUrl ? this.projectService.getFullImageUrl(project.imageUrl) : '';
+    const siteTitle = `Mostafa.Dev | ${title}`;
+
+    this.titleService.setTitle(siteTitle);
+
+    const tags = [
+      { name: 'description', content: description },
+      { property: 'og:title', content: siteTitle },
+      { property: 'og:description', content: description },
+      { property: 'og:type', content: 'article' },
+      { property: 'og:image', content: imageUrl },
+      { property: 'og:url', content: window.location.href },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: siteTitle },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: imageUrl }
+    ];
+
+    tags.forEach(tag => {
+      if ((tag as any).name) {
+        this.meta.updateTag({ name: (tag as any).name, content: tag.content });
+      } else {
+        this.meta.updateTag({ property: (tag as any).property, content: tag.content });
+      }
+    });
+
+    // Add canonical link
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', window.location.href);
   }
 }

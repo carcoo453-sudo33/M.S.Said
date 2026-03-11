@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -44,6 +45,8 @@ export class ProjectsListComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private imageUtils = inject(ImageUtilsService);
   public auth = inject(AuthService);
+  private titleService = inject(Title);
+  private meta = inject(Meta);
 
   // Create project modal state
   showCreateModal = signal(false);
@@ -195,6 +198,7 @@ export class ProjectsListComponent implements OnInit {
   );
 
   ngOnInit() {
+    this.updateSeoTags();
     this.loadData();
 
     // Auto-open create modal if navigated with ?create=true
@@ -385,5 +389,30 @@ export class ProjectsListComponent implements OnInit {
     this.allProjects.set(updatedProjects);
     this.showDeleteModal.set(false);
     this.deletingProject.set(null);
+  }
+
+  private updateSeoTags() {
+    const isAr = this.translationService.isRTL();
+    const title = isAr ? 'كل المشاريع | معرض الأعمال الكامل | Mostafa.Dev' : 'All Projects | Complete Portfolio | Mostafa.Dev';
+    const description = isAr 
+        ? 'استكشف معرض الأعمال الكامل للمهندس مصطفى سعيد. مشاريع في هندسة البرمجيات، تطوير المواقع، والحلول التقنية المبتكرة.' 
+        : 'Explore the complete portfolio of Eng. Mostafa Said. Projects in software engineering, web development, and innovative technical solutions.';
+
+    this.titleService.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+
+    // Canonical link
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', window.location.href);
   }
 }
