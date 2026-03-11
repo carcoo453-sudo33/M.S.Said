@@ -70,7 +70,7 @@
   
   --border: 240 3.7% 15.9%; /* zinc-800 */
   
-  --grid-dot: 240 3.7% 25%; /* subtle dark gray for dots */
+  --grid-dot: 240 3.7% 35%; /* brighter gray for dark mode visibility */
 }
 
 /* ========== LIGHT THEME ========== */
