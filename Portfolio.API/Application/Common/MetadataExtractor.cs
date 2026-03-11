@@ -17,9 +17,12 @@ public class MetadataExtractor
     private const string DevToDomain = "dev.to";
     private const string LinkedInDomain = "linkedin.com";
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of MetadataExtractor and configures the internal HttpClient with a 10-second timeout and a default User-Agent header.
     /// </summary>
+>>>>>>> origin/master
     public MetadataExtractor()
     {
         _httpClient = new HttpClient
@@ -29,6 +32,8 @@ public class MetadataExtractor
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Extracts page metadata from the specified URL and returns a populated Metadata instance.
     /// </summary>
@@ -39,6 +44,7 @@ public class MetadataExtractor
     /// </returns>
     /// <exception cref="TimeoutException">Thrown when the HTTP request to fetch the page times out.</exception>
     /// <exception cref="InvalidOperationException">Thrown when metadata extraction fails for reasons other than a timeout; the original exception is provided as the inner exception.</exception>
+>>>>>>> origin/master
     public async Task<Metadata> ExtractMetadata(string url)
     {
         ValidateUrl(url);
@@ -92,11 +98,14 @@ public class MetadataExtractor
         }
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Determines the platform type represented by the given URL.
     /// </summary>
     /// <param name="url">The URL to classify; may be any string. If the URL is not a valid absolute URI or the host is not recognized, the method treats it as a generic blog.</param>
     /// <returns>The platform name: "StackOverflow", "Medium", "DevTo", "LinkedIn", or "Blog" when the host is unrecognized or the URL is invalid.</returns>
+>>>>>>> origin/master
     public string DetectPlatformType(string url)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
@@ -120,34 +129,43 @@ public class MetadataExtractor
         return "Blog";
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Retrieve the value of a meta tag's content attribute that matches the given property or name.
     /// </summary>
     /// <param name="doc">The HTML document to search.</param>
     /// <param name="tagName">The meta tag property or name to match (for example, "og:title" or "description").</param>
     /// <returns>The content attribute value of the matching meta tag, or <c>null</c> if none is found.</returns>
+>>>>>>> origin/master
     public string? ExtractMetaTag(HtmlDocument doc, string tagName)
     {
         var node = doc.DocumentNode.SelectSingleNode($"//meta[@property='{tagName}' or @name='{tagName}']");
         return node?.GetAttributeValue("content", null);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Retrieves the document's &lt;title&gt; text.
     /// </summary>
     /// <param name="doc">The parsed HTML document to read the title from.</param>
     /// <returns>The trimmed text content of the &lt;title&gt; element, or <c>null</c> if no title element exists.</returns>
+>>>>>>> origin/master
     public string? ExtractTitleTag(HtmlDocument doc)
     {
         var node = doc.DocumentNode.SelectSingleNode("//title");
         return node?.InnerText?.Trim();
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Extracts the question title and body content from a Stack Overflow question page.
     /// </summary>
     /// <param name="doc">An HtmlDocument representing the Stack Overflow question page HTML.</param>
     /// <returns>A tuple where `Title` is the question title (defaults to "Untitled" if not found) and `Content` is the question body text (empty string if not found).</returns>
+>>>>>>> origin/master
     public (string Title, string Content) ExtractStackOverflowQuestion(HtmlDocument doc)
     {
         var titleNode = doc.DocumentNode.SelectSingleNode("//h1[@class='s-heading--large']");
@@ -159,11 +177,14 @@ public class MetadataExtractor
         return (title, content);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Extracts tag names from a StackOverflow question page and returns them as a single comma-separated string.
     /// </summary>
     /// <param name="doc">An HtmlDocument representing the parsed StackOverflow question HTML.</param>
     /// <returns>A comma-separated list of tag names (e.g., "c#,asp.net"), or <c>null</c> if no tags are found.</returns>
+>>>>>>> origin/master
     public string? ExtractStackOverflowTags(HtmlDocument doc)
     {
         var tagNodes = doc.DocumentNode.SelectNodes("//a[@class='post-tag']");
@@ -174,10 +195,13 @@ public class MetadataExtractor
         return string.Join(", ", tags);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Extracts the main article text from common content containers in the HTML document.
     /// </summary>
     /// <returns>The trimmed text content found in an &lt;article&gt;, &lt;main&gt;, or &lt;div class="post-content"&gt; element, or an empty string if no such element is present.</returns>
+>>>>>>> origin/master
     private string ExtractArticleContent(HtmlDocument doc)
     {
         var contentNode = doc.DocumentNode.SelectSingleNode("//article") 
@@ -187,6 +211,8 @@ public class MetadataExtractor
         return contentNode?.InnerText?.Trim() ?? string.Empty;
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Extracts the published date of the document from common article metadata.
     /// </summary>
@@ -194,6 +220,7 @@ public class MetadataExtractor
     /// The method looks for a meta tag with property "article:published_time" or a &lt;time&gt; element with a datetime attribute and parses its value to a DateTime.
     /// </remarks>
     /// <returns>The parsed published date as a DateTime, or null if no valid date is found.</returns>
+>>>>>>> origin/master
     private DateTime? ExtractPublishedDate(HtmlDocument doc)
     {
         var dateNode = doc.DocumentNode.SelectSingleNode("//meta[@property='article:published_time']");
@@ -211,11 +238,14 @@ public class MetadataExtractor
         return null;
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Validates that the provided URL is an absolute HTTP or HTTPS URI and is not a loopback, link-local, or private address.
     /// </summary>
     /// <param name="url">The URL to validate.</param>
     /// <exception cref="ArgumentException">Thrown when the URL is malformed, uses a non-HTTP(S) scheme, or targets a loopback/link-local/private host.</exception>
+>>>>>>> origin/master
     private void ValidateUrl(string url)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
@@ -234,11 +264,14 @@ public class MetadataExtractor
             throw new ArgumentException("Private IP addresses are not allowed");
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Determines whether the given host or IP string represents a private, link-local, or local-name address.
     /// </summary>
     /// <param name="host">The host name or IPv4 address string to evaluate (e.g., "192.168.1.1", "example.local").</param>
     /// <returns>`true` if the host is in a private IPv4 range (10.*, 172.16.*–172.31.*, 192.168.*), the link-local range (169.254.*), or ends with ".local"; `false` otherwise.</returns>
+>>>>>>> origin/master
     private bool IsPrivateIP(string host)
     {
         if (host.StartsWith("10.") || 
@@ -256,6 +289,8 @@ public class MetadataExtractor
         }
         return false;
     }
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Fetches the HTML content from the specified URL using a short (8 second) request timeout.
     /// </summary>
@@ -263,6 +298,7 @@ public class MetadataExtractor
     /// <returns>The response body as a string.</returns>
     /// <exception cref="TimeoutException">Thrown when the request exceeds the configured timeout.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the HTTP request fails; the inner exception contains the original <see cref="HttpRequestException"/>.</exception>
+>>>>>>> origin/master
     private async Task<string> FetchHtmlAsync(string url)
     {
         try

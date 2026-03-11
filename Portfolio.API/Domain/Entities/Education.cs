@@ -1,8 +1,7 @@
 using System;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
-
 public class Education : BaseEntity
 {
     public string Institution { get; set; } = string.Empty;

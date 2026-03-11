@@ -22,4 +22,7 @@ public class Comment : BaseEntity
     
     // Store replies as JSON to avoid complex relationships
     public string? RepliesJson { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = null!;
 }

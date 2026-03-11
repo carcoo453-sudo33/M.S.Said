@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Entities;
 
@@ -14,6 +14,4 @@ public class Reaction : BaseEntity
     
     [Required]
     public ReactionType ReactionType { get; set; } = ReactionType.Like;
-    
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

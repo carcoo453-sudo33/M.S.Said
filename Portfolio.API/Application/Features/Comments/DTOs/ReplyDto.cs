@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Comments.DTOs;
+namespace Portfolio.API.Application.Features.Comments.DTOs;
 
 public class ReplyDto
 {
@@ -8,3 +8,5 @@ public class ReplyDto
     public string Content { get; set; } = string.Empty;
     public DateTime Date { get; set; }
 }
+
+

@@ -1,4 +1,4 @@
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
 namespace Portfolio.API.Events;
 

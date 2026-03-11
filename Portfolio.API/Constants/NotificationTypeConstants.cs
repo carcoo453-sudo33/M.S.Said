@@ -8,4 +8,5 @@ public static class NotificationTypeConstants
     public const string WhatsApp = "WhatsApp";
     public const string ProjectView = "ProjectView";
     public const string BlogView = "BlogView";
+    public const string Reaction = "Reaction";
 }

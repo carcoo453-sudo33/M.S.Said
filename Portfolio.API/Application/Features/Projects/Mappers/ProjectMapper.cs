@@ -103,6 +103,11 @@ public static class ProjectMapper
             IsFeatured = request.IsFeatured,
             Views = 0,
             ReactionsCount = 0,
+<<<<<<< HEAD
+            ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities)
+            // Note: KeyFeatures, Changelog, and Images are mapped in the Service layer
+            // AFTER the Project is saved so we have a valid ProjectId for the foreign keys.
+=======
             ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities),
             KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf)).ToList() ?? new(),
             Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl)).ToList() ?? new(),
@@ -116,6 +121,7 @@ public static class ProjectMapper
                 Description = img.Description,
                 Description_Ar = img.Description_Ar
             }).ToList() ?? new()
+>>>>>>> origin/master
         };
     }
 

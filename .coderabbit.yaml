@@ -1,126 +1,91 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # CodeRabbit AI Code Review Configuration
 # https://coderabbit.ai/docs/configure
 
-# Language configuration
 language: "en"
 
-# Bot instructions for PR reviews
-instructions: |
-  Review the pull requests for a full-stack portfolio application with Angular 19 frontend and .NET 9 API.
-  
-  Key Focus Areas:
-  - Code quality, readability, and maintainability
-  - Performance optimization and best practices
-  - Security vulnerabilities and data validation
-  - Accessibility compliance (WCAG guidelines)
-  - Cross-browser compatibility
-  - Mobile responsiveness
-  - API security and proper error handling
-  - Database query optimization and N+1 prevention
-  - Proper separation of concerns and clean architecture
-
-# Review configuration
 reviews:
-  profile: "assertive"  # More thorough reviews for production code
-  request_changes_workflow: true # Request changes for critical issues
+  profile: "assertive"
+  request_changes_workflow: true
   high_level_summary: true
   poem: true
   auto_review:
     enabled: true
     drafts: false
-  
-  # Enhanced review settings
   early_access: true
   tools:
     github_checks: true
+  
+  # Tone and global instructions
+  tone_instructions: "Be professional, concise, and helpful."
+  system_instructions: |
+    Review the pull requests for a full-stack portfolio application with Angular 19 frontend and .NET 9 API.
     
-# Chat feature configuration
+    Key Focus Areas:
+    - Code quality, readability, and maintainability
+    - Performance optimization and best practices
+    - Security vulnerabilities and data validation
+    - API security and proper error handling
+    - Proper separation of concerns and clean architecture
+
+  # Targeted review guidelines for specific paths
+  path_instructions:
+    - path: "Portfolio.UI/src/app/components/**"
+      system_instructions: |
+        Angular Component Review Focus:
+        - Standalone component pattern compliance
+        - Proper lifecycle hook usage
+        - Template accessibility (ARIA labels, semantic HTML)
+        - Tailwind CSS class organization (avoid arbitrary values)
+        
+    - path: "Portfolio.UI/src/app/services/**"
+      system_instructions: |
+        Angular Service Review Focus:
+        - Proper dependency injection patterns
+        - HTTP error handling and retry logic
+        - Observable stream management and memory leaks
+        
+    - path: "Portfolio.API/Controllers/**"
+      system_instructions: |
+        API Controller Review Focus:
+        - RESTful API design principles
+        - Input validation and sanitization
+        - Proper HTTP status codes
+        
+    - path: "Portfolio.API/Infrastructure/Data/**"
+      system_instructions: |
+        Data Layer Review Focus:
+        - Entity Framework performance (N+1 queries)
+        - Database indexing strategies
+        - Migration safety and rollback plans
+        
+    - path: "Portfolio.API/Domain/Entities/**"
+      system_instructions: |
+        Entity Review Focus:
+        - Proper data annotations and constraints
+        - Entity relationships and clean domain model
+
+  # Exclude files to stay within the limit and focus on logic changes
+  path_filters:
+    - "!Portfolio.API/Infrastructure/Data/Migrations/**"
+    - "!Portfolio.API/Migrations/**"
+    - "!Portfolio.API/logs/**"
+    - "!**/*.Designer.cs"
+    - "!**/*.resx"
+    - "!database/**"
+    - "!Portfolio.API/migration-script.sql"
+    - "!**/*.json"
+    - "!**/*.md"
+    - "!docker-compose.yml"
+    - "!Portfolio.API/Constants/**"
+    - "!Portfolio.API/Infrastructure/Data/Configurations/**"
+    - "!Portfolio.API/Domain/Events/**"
+    - "!Portfolio.API/Portfolio.API.http"
+    - "!.dockerignore"
+
 chat:
   auto_reply: true
 
-# Knowledge base configuration
 knowledge_base:
   learnings:
     enabled: true
-  
-# Path-based routing with enhanced instructions
-routing:
-  - rule: "frontend-components"
-    paths:
-      - "Portfolio.UI/src/app/components/**"
-    instructions: |
-      Angular Component Review Focus:
-      - Standalone component pattern compliance
-      - Proper lifecycle hook usage
-      - Input/Output property validation
-      - Change detection strategy optimization
-      - Template accessibility (ARIA labels, semantic HTML)
-      - Tailwind CSS class organization (avoid arbitrary values)
-      - Component reusability and composition
-      - Error boundary implementation
-      
-  - rule: "frontend-services"
-    paths:
-      - "Portfolio.UI/src/app/services/**"
-    instructions: |
-      Angular Service Review Focus:
-      - Proper dependency injection patterns
-      - HTTP error handling and retry logic
-      - Observable stream management and memory leaks
-      - State management patterns
-      - Caching strategies
-      - Type safety and interface compliance
-      
-  - rule: "backend-api"
-    paths:
-      - "Portfolio.API/Controllers/**"
-    instructions: |
-      API Controller Review Focus:
-      - RESTful API design principles
-      - Input validation and sanitization
-      - Proper HTTP status codes
-      - Authentication and authorization
-      - Rate limiting considerations
-      - API versioning strategy
-      - Swagger documentation completeness
-      
-  - rule: "backend-data"
-    paths:
-      - "Portfolio.API/Data/**"
-      - "Portfolio.API/Entities/**"
-    instructions: |
-      Data Layer Review Focus:
-      - Entity Framework performance (N+1 queries)
-      - Database indexing strategies
-      - Migration safety and rollback plans
-      - Data validation and constraints
-      - Proper entity relationships
-      - Repository pattern implementation
-      
-  - rule: "security-config"
-    paths:
-      - "Portfolio.API/Program.cs"
-      - "Portfolio.API/appsettings*.json"
-      - "Portfolio.UI/src/environments/**"
-    instructions: |
-      Security Configuration Review:
-      - CORS policy validation
-      - Authentication middleware setup
-      - Environment variable usage
-      - Secrets management
-      - HTTPS enforcement
-      - Security headers configuration
-      
-  - rule: "infrastructure"
-    paths:
-      - "devops/**"
-      - "Dockerfile*"
-      - ".github/workflows/**"
-    instructions: |
-      Infrastructure Review Focus:
-      - Docker security best practices
-      - CI/CD pipeline optimization
-      - Environment parity
-      - Deployment safety checks
-      - Resource optimization
-      - Monitoring and logging setup

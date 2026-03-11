@@ -11,6 +11,9 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
     {
     }
 
+<<<<<<< HEAD
+    public async Task<ProjectDto?> HandleAsync(string slug, CancellationToken cancellationToken = default)
+=======
     /// <summary>
     /// Retrieves a project identified by its slug.
     /// </summary>
@@ -19,9 +22,13 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
     /// The <see cref="ProjectDto"/> for the matching project, or <c>null</c> if no project exists with the provided slug.
     /// </returns>
     public async Task<ProjectDto?> HandleAsync(string slug)
+>>>>>>> origin/master
     {
         var project = await GetBaseQuery()
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+            .Include(p => p.KeyFeatures)
+            .Include(p => p.Changelog)
+            .Include(p => p.Comments)
+            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null)
         {
@@ -30,6 +37,12 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
 
         return ProjectMapper.ToResponse(project);
     }
+<<<<<<< HEAD
+
+
+}
+=======
 }
 
 
+>>>>>>> origin/master

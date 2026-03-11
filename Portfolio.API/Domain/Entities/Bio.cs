@@ -30,33 +30,17 @@ public class Bio : BaseEntity
     public string? StackOverflowUrl { get; set; }
 
     // Professional Statistics
-    public string YearsOfExperience { get; set; } = "5+";
-    public string ProjectsCompleted { get; set; } = "40+";
-    public string CodeCommits { get; set; } = "12k";
+    public DateTime CareerStartDate { get; set; } = DateTime.UtcNow; // Start date for calculating years of experience
+    public string? GitHubUsername { get; set; } // For fetching commits from GitHub API
+    public string YearsOfExperience { get; set; } = "3+";
+    public string ProjectsCompleted { get; set; } = "0";
+    public string CodeCommits { get; set; } = "0";
 
     // Education Page Content
     public string? EducationQuote { get; set; }
     public string? EducationQuote_Ar { get; set; }
-    
-    // Signature Section
-    public string? SignatureRole { get; set; } // e.g., "Strategic Lead"
-    public string? SignatureRole_Ar { get; set; }
-    
-    public string? SignatureName { get; set; } // e.g., "Mostafa Samir Said"
-    public string? SignatureName_Ar { get; set; }
-    
-    public string? SignatureSubtitle { get; set; } // e.g., "Arch. Design"
-    public string? SignatureSubtitle_Ar { get; set; }
-    
-    public string? SignatureVerifiedText { get; set; } // e.g., "Verified Origin"
-    public string? SignatureVerifiedText_Ar { get; set; }
-    
-    public string? TechnicalFocusTitle { get; set; }
-    public string? TechnicalFocusTitle_Ar { get; set; }
-    
-    public string? TechnicalFocusDescription { get; set; }
-    public string? TechnicalFocusDescription_Ar { get; set; }
-    
-    public string? TechnicalFocusItems { get; set; } // Comma-separated list
-    public string? TechnicalFocusItems_Ar { get; set; }
+
+    // Navigation Properties
+    public virtual Signature? Signature { get; set; }
+    public virtual TechnicalFocus? TechnicalFocus { get; set; }
 }

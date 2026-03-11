@@ -19,12 +19,15 @@ public class PortfolioDbContext : IdentityDbContext
     }
 
     public DbSet<Project> Projects { get; set; }
-    public DbSet<Bio> BioEntries { get; set; }
-    public DbSet<Service> ServiceEntries { get; set; }
-    public DbSet<Education> EducationEntries { get; set; }
+    public DbSet<ProjectImage> ProjectImages { get; set; }
+    public DbSet<Bio> Bios { get; set; }
+    public DbSet<Signature> Signatures { get; set; }
+    public DbSet<TechnicalFocus> TechnicalFocuses { get; set; }
+    public DbSet<Service> Services { get; set; }
+    public DbSet<Seo> Seos { get; set; }
+    public DbSet<Education> Education { get; set; }
     public DbSet<Skill> Skills { get; set; }
-    public DbSet<Testimonial> Testimonials { get; set; }
-    public DbSet<Client> Clients { get; set; }
+    public DbSet<Reference> References { get; set; }
     public DbSet<KeyFeature> KeyFeatures { get; set; }
     public DbSet<ChangelogItem> ChangelogItems { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -32,47 +35,20 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Niche> Niches { get; set; }
+    public DbSet<BlogPost> BlogPosts { get; set;}
+    public DbSet<ContactMessage> ContactMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         
-        // Soft delete global query filter
-        builder.Entity<Project>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Bio>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Service>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Education>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Skill>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Testimonial>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Client>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<KeyFeature>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<ChangelogItem>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Comment>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Reaction>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Notification>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
-        builder.Entity<Niche>().HasQueryFilter(x => !x.IsDeleted);
+        // Apply all entity configurations from the assembly
+        builder.ApplyConfigurationsFromAssembly(typeof(PortfolioDbContext).Assembly);
 
-        // Project Relationships
-        builder.Entity<Project>()
-            .HasMany(p => p.KeyFeatures)
-            .WithOne()
-            .HasForeignKey(kf => kf.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Changelog)
-            .WithOne()
-            .HasForeignKey(cl => cl.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Comments)
-            .WithOne()
-            .HasForeignKey(c => c.ProjectId);
-
-        builder.Entity<Project>()
-            .HasMany(p => p.Reactions)
-            .WithOne()
-            .HasForeignKey(r => r.ProjectId);
+        // Reactions must be unique per project + user
+        builder.Entity<Reaction>()
+            .HasIndex(r => new { r.ProjectId, r.UserId })
+            .IsUnique();
     }
 
     public override int SaveChanges()

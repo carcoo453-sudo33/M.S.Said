@@ -1,4 +1,4 @@
-namespace Portfolio.API.Features.Comments.DTOs;
+namespace Portfolio.API.Application.Features.Comments.DTOs;
 
 public class CommentCreateDto
 {
@@ -6,3 +6,5 @@ public class CommentCreateDto
     public string AvatarUrl { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
 }
+
+

@@ -27,38 +27,61 @@ public class ProjectService : IProjectService
     public ProjectService(
         IUnitOfWork unitOfWork,
         INotificationService notificationService,
-        ILogger<ProjectService> logger)
+        ILogger<ProjectService> logger,
+        GetProjectsQueryHandler getProjectsQueryHandler,
+        GetProjectBySlugQueryHandler getProjectBySlugQueryHandler,
+        GetFeaturedProjectsQueryHandler getFeaturedProjectsQueryHandler,
+        GetRelatedProjectsQueryHandler getRelatedProjectsQueryHandler,
+        SlugExistsQueryHandler slugExistsQueryHandler)
     {
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
         _logger = logger;
         
-        // Initialize query handlers
-        _getProjectsQueryHandler = new GetProjectsQueryHandler(unitOfWork);
-        _getProjectBySlugQueryHandler = new GetProjectBySlugQueryHandler(unitOfWork);
-        _getFeaturedProjectsQueryHandler = new GetFeaturedProjectsQueryHandler(unitOfWork);
-        _getRelatedProjectsQueryHandler = new GetRelatedProjectsQueryHandler(unitOfWork);
-        _slugExistsQueryHandler = new SlugExistsQueryHandler(unitOfWork);
-    }
-
-    public async Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters)
-    {
-        return await _getProjectsQueryHandler.HandleAsync(parameters);
+        _getProjectsQueryHandler = getProjectsQueryHandler;
+        _getProjectBySlugQueryHandler = getProjectBySlugQueryHandler;
+        _getFeaturedProjectsQueryHandler = getFeaturedProjectsQueryHandler;
+        _getRelatedProjectsQueryHandler = getRelatedProjectsQueryHandler;
+        _slugExistsQueryHandler = slugExistsQueryHandler;
     }
 
     /// <summary>
+    /// Retrieves a paged list of projects based on the provided query parameters.
+    /// </summary>
+    /// <param name="parameters">The query parameters for filtering, searching, and pagination.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A paged result containing the list of matching project DTOs.</returns>
+    public async Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
+    {
+        return await _getProjectsQueryHandler.HandleAsync(parameters, cancellationToken);
+    }
+
+    /// <summary>
+<<<<<<< HEAD
+    /// Retrieves a single project by its unique slug.
+    /// </summary>
+    /// <param name="slug">The project's unique URL-friendly slug.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The project DTO if found; otherwise, null.</returns>
+    public async Task<ProjectDto?> GetProjectBySlugAsync(string slug, CancellationToken cancellationToken = default)
+=======
     /// Retrieves the project identified by the given slug and records a view for it.
     /// </summary>
     /// <param name="slug">The unique URL-friendly identifier of the project.</param>
     /// <returns>`ProjectDto` for the matching project, or `null` if no project with the given slug exists. The method also increments the project's view count, updates its UpdatedAt timestamp, persists those changes, and creates a project-view notification.</returns>
     public async Task<ProjectDto?> GetProjectBySlugAsync(string slug)
+>>>>>>> origin/master
     {
         var project = await _unitOfWork.Repository<Project>()
             .Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
             .Include(p => p.Comments)
+<<<<<<< HEAD
+            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
+=======
             .FirstOrDefaultAsync(p => p.Slug == slug);
+>>>>>>> origin/master
 
         if (project == null)
         {
@@ -66,6 +89,8 @@ public class ProjectService : IProjectService
             return null;
         }
 
+<<<<<<< HEAD
+=======
         // Increment view count
         project.Views++;
         project.UpdatedAt = DateTime.UtcNow;
@@ -82,30 +107,84 @@ public class ProjectService : IProjectService
             "Project"
         );
 
+>>>>>>> origin/master
         return ProjectMapper.ToResponse(project);
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Increments the view count for a specific project and creates a notification.
+    /// This method is separated from the GET request to maintain idempotency.
+    /// </summary>
+    /// <param name="slug">The project's slug.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>True if the project was found and updated; otherwise, false.</returns>
+    public async Task<bool> TrackProjectViewAsync(string slug, CancellationToken cancellationToken = default)
+=======
     /// Retrieves the collection of featured projects.
     /// </summary>
     /// <returns>A list of featured ProjectDto objects.</returns>
     public async Task<List<ProjectDto>> GetFeaturedProjectsAsync()
+>>>>>>> origin/master
     {
-        return await _getFeaturedProjectsQueryHandler.HandleAsync();
-    }
+        var project = await _unitOfWork.Repository<Project>().Query().FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
+        if (project == null) return false;
 
-    public async Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug)
-    {
-        return await _getRelatedProjectsQueryHandler.HandleAsync(slug);
+        project.Views++;
+        project.UpdatedAt = DateTime.UtcNow;
+        await _unitOfWork.CompleteAsync(cancellationToken);
+
+        await _notificationService.CreateNotificationAsync(
+            NotificationTypeConstants.ProjectView,
+            "Project Viewed",
+            $"Project '{project.Title}' was viewed",
+            $"/projects/{project.Slug}",
+            "eye",
+            project.Id.ToString(),
+            "Project",
+            "Anonymous"
+        );
+
+        return true;
     }
 
     /// <summary>
+    /// Retrieves a list of featured projects for the portfolio homepage.
+    /// </summary>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A list of featured project DTOs.</returns>
+    public async Task<List<ProjectDto>> GetFeaturedProjectsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _getFeaturedProjectsQueryHandler.HandleAsync(cancellationToken);
+    }
+
+    /// <summary>
+<<<<<<< HEAD
+    /// Retrieves projects related to a given project based on category or featured status.
+    /// </summary>
+    /// <param name="slug">The slug of the source project.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A list of related project DTOs.</returns>
+    public async Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        return await _getRelatedProjectsQueryHandler.HandleAsync(slug, cancellationToken);
+    }
+
+    /// <summary>
+    /// Creates a new project in the database, generating a unique slug and persisting child entities.
+    /// </summary>
+    /// <param name="request">The project creation details.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The created project DTO.</returns>
+    public async Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request, CancellationToken cancellationToken = default)
+=======
     /// Creates a new project from the provided creation data, persists it, and returns the created project.
     /// </summary>
     /// <param name="request">The project creation DTO containing the project's input fields (for example: title, description, summary, tech stack).</param>
     /// <returns>The created project's DTO including assigned Id, Slug, CreatedAt, and UpdatedAt.</returns>
     /// <exception cref="ArgumentException">Thrown when the creation request fails validation; the exception message contains the validation errors.</exception>
     public async Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request)
+>>>>>>> origin/master
     {
         _logger.LogInformation("Creating new project: {Title}", request.Title);
 
@@ -126,6 +205,21 @@ public class ProjectService : IProjectService
         project.CreatedAt = DateTime.UtcNow;
         project.UpdatedAt = DateTime.UtcNow;
 
+        // Map child entities now that we have a valid ProjectId
+        project.KeyFeatures = request.KeyFeatures?.Select(kf => KeyFeatureMapper.ToEntity(kf, project.Id)).ToList() ?? new();
+        project.Changelog = request.Changelog?.Select(cl => ChangelogItemMapper.ToEntity(cl, project.Id)).ToList() ?? new();
+        project.Images = request.Images?.Select(img => new Portfolio.API.Entities.ProjectImage
+        {
+            ProjectId = project.Id,
+            ImageUrl = img.ImageUrl,
+            Title = img.Title,
+            Title_Ar = img.Title_Ar,
+            Type = img.Type,
+            Order = img.Order,
+            Description = img.Description,
+            Description_Ar = img.Description_Ar
+        }).ToList() ?? new();
+
         await _unitOfWork.Repository<Project>().AddAsync(project);
         await _unitOfWork.CompleteAsync();
 
@@ -134,6 +228,15 @@ public class ProjectService : IProjectService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Updates an existing project and its child entities.
+    /// </summary>
+    /// <param name="id">The unique identifier of the project to update.</param>
+    /// <param name="request">The updated project details.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The updated project DTO if found; otherwise, null.</returns>
+    public async Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request, CancellationToken cancellationToken = default)
+=======
     /// Updates an existing project with values from the provided request and persists the changes.
     /// </summary>
     /// <param name="id">The identifier of the project to update.</param>
@@ -141,6 +244,7 @@ public class ProjectService : IProjectService
     /// <returns>The updated ProjectDto if the project was found and updated; `null` if no project with the specified ID exists.</returns>
     /// <exception cref="ArgumentException">Thrown when the update request fails validation; the exception message contains validation errors.</exception>
     public async Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request)
+>>>>>>> origin/master
     {
         _logger.LogInformation("Updating project: {ProjectId}", id);
 
@@ -155,7 +259,7 @@ public class ProjectService : IProjectService
             .Query()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
         if (project == null)
         {
@@ -182,11 +286,20 @@ public class ProjectService : IProjectService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Deletes a project and its associated data from the database.
+    /// </summary>
+    /// <param name="id">The unique identifier of the project to delete.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>True if the project was successfully deleted; otherwise, false.</returns>
+    public async Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken = default)
+=======
     /// Deletes the project with the specified identifier from the repository.
     /// </summary>
     /// <param name="id">The unique identifier of the project to delete.</param>
     /// <returns>True if the project was found and deleted, false otherwise.</returns>
     public async Task<bool> DeleteProjectAsync(Guid id)
+>>>>>>> origin/master
     {
         _logger.LogInformation("Deleting project: {ProjectId}", id);
 
@@ -198,11 +311,20 @@ public class ProjectService : IProjectService
         }
 
         _unitOfWork.Repository<Project>().Delete(project);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
         _logger.LogInformation("Project deleted successfully: {ProjectId}", id);
         return true;
     }
+<<<<<<< HEAD
+    /// <summary>
+    /// Scrapes metadata from a given URL to facilitate project import.
+    /// </summary>
+    /// <param name="request">The import request containing the target URL.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>A populated ProjectDto if metadata extraction was successful; otherwise, null.</returns>
+    public async Task<ProjectDto?> ImportFromUrlAsync(ImportRequest request, CancellationToken cancellationToken = default)
+=======
 
     /// <summary>
     /// Builds a ProjectDto by extracting metadata from the provided URL and mapping relevant fields.
@@ -213,12 +335,19 @@ public class ProjectService : IProjectService
     /// The GitHubUrl is set to the source URL only when it contains "github.com".
     /// </returns>
     public async Task<ProjectDto> ImportFromUrlAsync(ImportRequest request)
+>>>>>>> origin/master
     {
         _logger.LogInformation("Importing project data from URL: {Url}", request.Url);
 
         var extractor = new MetadataExtractor();
         var metadata = await extractor.ExtractMetadata(request.Url);
 
+<<<<<<< HEAD
+        if (metadata == null)
+            return null;
+
+=======
+>>>>>>> origin/master
         // Map metadata to a DTO
         return new ProjectDto
         {

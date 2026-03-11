@@ -11,10 +11,13 @@ public class NotificationsController : ControllerBase
 {
     private readonly INotificationService _notificationService;
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of NotificationsController with the specified notification service.
     /// </summary>
     /// <param name="notificationService">Service used to retrieve and modify notifications.</param>
+>>>>>>> origin/master
     public NotificationsController(INotificationService notificationService)
     {
         _notificationService = notificationService;

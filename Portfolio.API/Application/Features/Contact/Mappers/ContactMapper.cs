@@ -4,11 +4,14 @@ using Portfolio.API.Application.Features.Contact.DTOs;
 namespace Portfolio.API.Application.Features.Contact.Mappers;
 
 public static class ContactMapper{
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Maps a ContactMessage entity to a ContactDto by copying relevant properties.
     /// </summary>
     /// <param name="entity">The source ContactMessage to map from.</param>
     /// <returns>A ContactDto populated with values from the provided entity.</returns>
+>>>>>>> origin/master
     public static ContactDto ToDto(ContactMessage entity)
     {
         return new ContactDto
@@ -26,11 +29,14 @@ public static class ContactMapper{
         };
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Copies relevant fields from a ContactDto into the provided ContactMessage instance, updating the entity in place.
     /// </summary>
     /// <param name="entity">The ContactMessage to modify.</param>
     /// <param name="dto">The source ContactDto whose values will be applied to the entity. Name, Email, Phone, Subject, Message, SentAt and IsRead are copied; UpdatedAt is set to the current UTC time.</param>
+>>>>>>> origin/master
     public static void UpdateEntity(ContactMessage entity, ContactDto dto)
     {
         entity.Name = dto.Name;

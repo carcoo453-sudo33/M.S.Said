@@ -11,10 +11,13 @@ public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of <see cref="CategoriesController"/> with the provided category service.
     /// </summary>
     /// <param name="categoryService">Service used to perform category operations (retrieval, creation, update, deletion).</param>
+>>>>>>> origin/master
     public CategoriesController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
@@ -31,11 +34,14 @@ public class CategoriesController : ControllerBase
         return Ok(categories);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Retrieves a category by its identifier.
     /// </summary>
     /// <param name="id">The GUID of the category to retrieve.</param>
     /// <returns>The requested <see cref="CategoryDto"/> if found; otherwise a 404 NotFound result.</returns>
+>>>>>>> origin/master
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CategoryDto>> GetById(Guid id)
     {
@@ -73,11 +79,14 @@ public class CategoriesController : ControllerBase
         var result = await _categoryService.UpdateCategoryAsync(id, dto);
         return Ok(result);
     }
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Deletes the category identified by the specified GUID.
     /// </summary>
     /// <param name="id">The GUID of the category to delete.</param>
     /// <returns>204 No Content if the category was deleted; 404 Not Found if no category exists with the provided id.</returns>
+>>>>>>> origin/master
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)

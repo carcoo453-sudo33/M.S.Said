@@ -9,41 +9,55 @@ public class ReferenceService : IReferenceService
 {
     private readonly IUnitOfWork _unitOfWork;
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of <see cref="ReferenceService"/> using the provided unit of work.
     /// </summary>
     /// <param name="unitOfWork">The unit-of-work used to access repositories and commit changes.</param>
+>>>>>>> origin/master
     public ReferenceService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Gets all references and returns them as DTOs ordered by PublishedAt descending.
     /// </summary>
     /// <returns>An enumerable of ReferenceDto for all references, ordered by PublishedAt descending.</returns>
+>>>>>>> origin/master
     public async Task<IEnumerable<ReferenceDto>> GetReferencesAsync()
     {
         var references = await _unitOfWork.Repository<Reference>().GetAllAsync();
         return references.OrderByDescending(r => r.PublishedAt).Select(ReferenceMapper.ToDto);
     }
 
+<<<<<<< HEAD
+    /// <inheritdoc />
+=======
     /// <summary>
     /// Retrieve a reference by its identifier.
     /// </summary>
     /// <param name="id">The identifier of the reference to retrieve.</param>
     /// <returns>`ReferenceDto` for the reference if found, `null` otherwise.</returns>
+>>>>>>> origin/master
     public async Task<ReferenceDto?> GetReferenceByIdAsync(Guid id)
     {
         var reference = await _unitOfWork.Repository<Reference>().GetByIdAsync(id);
         return reference == null ? null : ReferenceMapper.ToDto(reference);
     }
 
+<<<<<<< HEAD
+    /// <inheritdoc />
+=======
     /// <summary>
     /// Creates a new Reference entity from the provided DTO, persists it, and returns the created DTO.
     /// </summary>
     /// <param name="dto">Values for the new reference; a new Id is generated if <see cref="Guid.Empty"/> is provided. CreatedAt is set to the current UTC time.</param>
     /// <returns>The persisted Reference represented as a <see cref="ReferenceDto"/>.</returns>
+>>>>>>> origin/master
     public async Task<ReferenceDto> CreateReferenceAsync(ReferenceDto dto)
     {
         var reference = new Reference
@@ -81,11 +95,15 @@ public class ReferenceService : IReferenceService
         return ReferenceMapper.ToDto(reference);
     }
 
+<<<<<<< HEAD
+    /// <inheritdoc />
+=======
     /// <summary>
     /// Deletes the Reference with the specified identifier.
     /// </summary>
     /// <param name="id">The identifier of the reference to delete.</param>
     /// <returns>`true` if the reference was found and deleted, `false` otherwise.</returns>
+>>>>>>> origin/master
     public async Task<bool> DeleteReferenceAsync(Guid id)
     {
         var reference = await _unitOfWork.Repository<Reference>().GetByIdAsync(id);

@@ -4,6 +4,13 @@ namespace Portfolio.API.Application.Features.Services.Services;
 
 public interface IServiceService
 {
+<<<<<<< HEAD
+    Task<IEnumerable<ServiceDto>> GetServicesAsync();
+    Task<ServiceDto?> GetServiceByIdAsync(Guid id);
+    Task<ServiceDto> CreateServiceAsync(ServiceDto dto);
+    Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto);
+    Task<bool> DeleteServiceAsync(Guid id);
+=======
     /// <summary>
 /// Retrieves all service records.
 /// </summary>
@@ -34,6 +41,7 @@ Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto);
 /// <param name="id">The unique identifier of the service to delete.</param>
 /// <returns>True if the service was deleted; false otherwise.</returns>
 Task<bool> DeleteServiceAsync(Guid id);
+>>>>>>> origin/master
 }
 
 

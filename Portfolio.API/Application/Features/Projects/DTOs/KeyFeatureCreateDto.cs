@@ -1,4 +1,6 @@
-namespace Portfolio.API.Features.Projects.DTOs;
+using Portfolio.API.Domain.Enums;
+
+namespace Portfolio.API.Application.Features.Projects.DTOs;
 
 public class KeyFeatureCreateDto
 {
@@ -6,5 +8,8 @@ public class KeyFeatureCreateDto
     public string? Title_Ar { get; set; }
     public string? Link { get; set; }
     public string? Date { get; set; }
-    public string FeatureType { get; set; } = "added";
+    public FeatureType FeatureType { get; set; } = FeatureType.Added;
 }
+
+
+

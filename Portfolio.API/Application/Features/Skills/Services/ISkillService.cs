@@ -4,6 +4,13 @@ namespace Portfolio.API.Application.Features.Skills.Services;
 
 public interface ISkillService
 {
+<<<<<<< HEAD
+    Task<IEnumerable<SkillDto>> GetSkillsAsync();
+    Task<SkillDto?> GetSkillByIdAsync(Guid id);
+    Task<SkillDto> CreateSkillAsync(SkillDto dto);
+    Task<SkillDto> UpdateSkillAsync(Guid id, SkillDto dto);
+    Task<bool> DeleteSkillAsync(Guid id);
+=======
     /// <summary>
 /// Retrieves all skill records.
 /// </summary>
@@ -34,6 +41,7 @@ Task<SkillDto> UpdateSkillAsync(Guid id, SkillDto dto);
 /// <param name="id">The identifier of the skill to delete.</param>
 /// <returns>`true` if the skill was deleted, `false` otherwise.</returns>
 Task<bool> DeleteSkillAsync(Guid id);
+>>>>>>> origin/master
 }
 
 

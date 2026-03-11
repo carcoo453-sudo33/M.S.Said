@@ -11,10 +11,13 @@ public class NichesController : ControllerBase
 {
     private readonly INicheService _nicheService;
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of NichesController with the specified niche service.
     /// </summary>
     /// <param name="nicheService">Service that provides CRUD operations for niches.</param>
+>>>>>>> origin/master
     public NichesController(INicheService nicheService)
     {
         _nicheService = nicheService;
@@ -31,11 +34,14 @@ public class NichesController : ControllerBase
         return Ok(niches);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Retrieves the niche with the specified identifier.
     /// </summary>
     /// <param name="id">The GUID of the niche to retrieve.</param>
     /// <returns>An ActionResult containing the niche DTO when found; a NotFound result if no niche exists with the given id.</returns>
+>>>>>>> origin/master
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<NicheDto>> GetById(Guid id)
     {

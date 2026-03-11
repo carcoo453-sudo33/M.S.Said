@@ -37,9 +37,9 @@ public class ProjectsController : ControllerBase
     /// <param name="parameters">Filters, sorting and pagination options to apply to the project query.</param>
     /// <returns>A paged result containing matching <see cref="ProjectDto"/> items and pagination metadata.</returns>
     [HttpGet]
-    public async Task<ActionResult<PagedResult<ProjectDto>>> GetProjects([FromQuery] ProjectQueryDto parameters)
+    public async Task<ActionResult<PagedResult<ProjectDto>>> GetProjects([FromQuery] ProjectQueryDto parameters, CancellationToken cancellationToken)
     {
-        var result = await _projectService.GetProjectsAsync(parameters);
+        var result = await _projectService.GetProjectsAsync(parameters, cancellationToken);
         return Ok(result);
     }
 
@@ -49,15 +49,26 @@ public class ProjectsController : ControllerBase
     /// <param name="slug">The URL-friendly identifier of the project.</param>
     /// <returns>The requested <see cref="ProjectDto"/> when found; otherwise a NotFound result.</returns>
     [HttpGet("{slug}")]
-    public async Task<ActionResult<ProjectDto>> GetProject(string slug)
+    public async Task<ActionResult<ProjectDto>> GetProject(string slug, CancellationToken cancellationToken)
     {
-        var project = await _projectService.GetProjectBySlugAsync(slug);
+        var project = await _projectService.GetProjectBySlugAsync(slug, cancellationToken);
         if (project == null)
         {
             return NotFound($"Project with slug '{slug}' not found");
         }
 
         return Ok(project);
+    [HttpPost("{slug}/views")]
+    public async Task<IActionResult> TrackProjectView(string slug, CancellationToken cancellationToken)
+    {
+        var success = await _projectService.TrackProjectViewAsync(slug, cancellationToken);
+        if (!success)
+        {
+            return NotFound($"Project with slug '{slug}' not found");
+        }
+
+        return Ok();
+    }
     }
 
     /// <summary>
@@ -65,9 +76,9 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <returns>A list of featured ProjectDto objects.</returns>
     [HttpGet("featured")]
-    public async Task<ActionResult<List<ProjectDto>>> GetFeaturedProjects()
+    public async Task<ActionResult<List<ProjectDto>>> GetFeaturedProjects(CancellationToken cancellationToken)
     {
-        var projects = await _projectService.GetFeaturedProjectsAsync();
+        var projects = await _projectService.GetFeaturedProjectsAsync(cancellationToken);
         return Ok(projects);
     }
 
@@ -77,9 +88,9 @@ public class ProjectsController : ControllerBase
     /// <param name="slug">The unique slug identifying the source project.</param>
     /// <returns>A list of ProjectDto representing projects related to the specified project.</returns>
     [HttpGet("{slug}/related")]
-    public async Task<ActionResult<List<ProjectDto>>> GetRelatedProjects(string slug)
+    public async Task<ActionResult<List<ProjectDto>>> GetRelatedProjects(string slug, CancellationToken cancellationToken)
     {
-        var projects = await _projectService.GetRelatedProjectsAsync(slug);
+        var projects = await _projectService.GetRelatedProjectsAsync(slug, cancellationToken);
         return Ok(projects);
     }
 
@@ -90,9 +101,9 @@ public class ProjectsController : ControllerBase
     /// <returns>The created ProjectDto containing the project's details.</returns>
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProjectDto>> CreateProject(ProjectCreateDto request)
+    public async Task<ActionResult<ProjectDto>> CreateProject(ProjectCreateDto request, CancellationToken cancellationToken)
     {
-        var project = await _projectService.CreateProjectAsync(request);
+        var project = await _projectService.CreateProjectAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetProject), new { slug = project.Slug }, project);
     }
 
@@ -104,11 +115,14 @@ public class ProjectsController : ControllerBase
     /// <returns>The updated ProjectDto when the project is found and updated; otherwise a NotFound result.</returns>
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, ProjectUpdateDto request)
+    public async Task<ActionResult<ProjectDto>> UpdateProject(Guid id, ProjectUpdateDto request, CancellationToken cancellationToken)
     {
         request.Id = id; // Ensure ID matches route
-        var project = await _projectService.UpdateProjectAsync(id, request);
-        if (project == null) return NotFound();
+        var project = await _projectService.UpdateProjectAsync(id, request, cancellationToken);
+        if (project == null)
+        {
+            return NotFound($"Project with ID {id} not found");
+        }
         return Ok(project);
     }
 
@@ -119,10 +133,13 @@ public class ProjectsController : ControllerBase
     /// <returns>No content (204) if the project was deleted; 404 NotFound if no project with the specified ID exists.</returns>
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteProject(Guid id)
+    public async Task<IActionResult> DeleteProject(Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _projectService.DeleteProjectAsync(id);
-        if (!deleted) return NotFound();
+        var result = await _projectService.DeleteProjectAsync(id, cancellationToken);
+        if (!result)
+        {
+            return NotFound($"Project with ID {id} not found");
+        }
         return NoContent();
     }
 

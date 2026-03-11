@@ -1,4 +1,4 @@
-namespace Portfolio.API.Enums;
+namespace Portfolio.API.Domain.Enums;
 
 public enum ProgrammingLanguage
 {

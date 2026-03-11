@@ -1,6 +1,6 @@
-using Portfolio.API.Enums;
+using Portfolio.API.Domain.Enums;
 
-namespace Portfolio.API.Features.Projects.DTOs;
+namespace Portfolio.API.Application.Features.Projects.DTOs;
 
 public class ProjectCreateDto
 {
@@ -28,14 +28,17 @@ public class ProjectCreateDto
     public string? Architecture_Ar { get; set; }
     public ProjectStatus? Status { get; set; }
     public string? Status_Ar { get; set; }
-    public ProjectType? Type { get; set; } = ProjectType.Initial;
+    public ProjectType? Type { get; set; }
     public string? Type_Ar { get; set; }
-    public DevelopmentMethod? DevelopmentMethod { get; set; } = DevelopmentMethod.Manual;
+    public DevelopmentMethod? DevelopmentMethod { get; set; }
     public string? DevelopmentMethod_Ar { get; set; }
     public int Order { get; set; }
     public bool IsFeatured { get; set; }
-    public List<string> Gallery { get; set; } = new();
+    public List<ProjectImageCreateDto> Images { get; set; } = new();
     public List<ResponsibilityCreateDto> Responsibilities { get; set; } = new();
     public List<KeyFeatureCreateDto> KeyFeatures { get; set; } = new();
     public List<ChangelogItemCreateDto> Changelog { get; set; } = new();
 }
+
+
+

@@ -4,6 +4,13 @@ namespace Portfolio.API.Application.Features.Contact.Services;
 
 public interface IContactService
 {
+<<<<<<< HEAD
+    Task<IEnumerable<ContactDto>> GetMessagesAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+    Task<ContactDto?> GetMessageByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ContactDto> CreateMessageAsync(ContactDto dto, CancellationToken cancellationToken = default);
+    Task MarkAsReadAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteMessageAsync(Guid id, CancellationToken cancellationToken = default);
+=======
     /// <summary>
 /// Retrieve a paged collection of contact messages.
 /// </summary>
@@ -34,6 +41,7 @@ Task MarkAsReadAsync(Guid id, CancellationToken cancellationToken = default);
 /// </summary>
 /// <param name="id">The unique identifier of the message to delete.</param>
 Task DeleteMessageAsync(Guid id, CancellationToken cancellationToken = default);
+>>>>>>> origin/master
 }
 
 

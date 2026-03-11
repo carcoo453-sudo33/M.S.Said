@@ -10,5 +10,10 @@ public class Service : BaseEntity
     public string Description { get; set; } = string.Empty;
     public string? Description_Ar { get; set; }
     
-    public string Icon { get; set; } = string.Empty; // CSS class or icon name
+    public string? IconPath { get; set; } // Local upload path for service icon/image
+    
+    public int Order { get; set; }
+    
+    // Navigation Property
+    public virtual Seo? Seo { get; set; }
 }

@@ -27,12 +27,20 @@ public class CommentService : ICommentService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Adds a top-level comment to a specific project and notifies the owner.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <param name="request">The comment creation details.</param>
+    /// <returns>The created comment DTO.</returns>
+=======
     /// Create and persist a new comment for the specified project and emit a notification.
     /// </summary>
     /// <param name="projectId">The project identifier to which the comment will be added.</param>
     /// <param name="request">A CommentCreateDto containing the comment author, content, and optional avatar URL.</param>
     /// <returns>The created comment mapped to a <c>CommentDto</c>.</returns>
     /// <exception cref="ArgumentException">Thrown when a project with the specified <paramref name="projectId"/> does not exist.</exception>
+>>>>>>> origin/master
     public async Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding comment to project: {ProjectId}", projectId);
@@ -78,6 +86,16 @@ public class CommentService : ICommentService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Adds a nested reply to an existing comment. 
+    /// Includes concurrency handling (retry loop) for updates to the RepliesJson blob.
+    /// </summary>
+    /// <param name="projectId">The project identifier.</param>
+    /// <param name="commentId">The parent comment identifier.</param>
+    /// <param name="request">The reply creation details.</param>
+    /// <returns>The updated parent comment DTO containing the new reply.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if concurrent updates fail after multiple retries or data is corrupt.</exception>
+=======
     /// Adds a reply to an existing comment on a project, persists the updated comment, and emits a notification.
     /// </summary>
     /// <param name="projectId">The identifier of the project that contains the comment.</param>
@@ -85,6 +103,7 @@ public class CommentService : ICommentService
     /// <param name="request">The reply data (author, content, avatar URL).</param>
     /// <returns>The updated comment mapped to a <see cref="CommentDto"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the target comment cannot be found.</exception>
+>>>>>>> origin/master
     public async Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding reply to comment: {CommentId} on project: {ProjectId}", commentId, projectId);
@@ -109,7 +128,8 @@ public class CommentService : ICommentService
             }
             catch (JsonException ex)
             {
-                _logger.LogWarning("Failed to deserialize replies JSON: {Error}", ex.Message);
+                _logger.LogError(ex, "Failed to deserialize replies JSON for comment {CommentId}. Aborting to prevent data loss.", commentId);
+                throw new InvalidOperationException("Failed to process existing replies due to data corruption.");
             }
         }
 
@@ -123,14 +143,44 @@ public class CommentService : ICommentService
             Date = DateTime.UtcNow
         };
 
-        replies.Add(reply);
+        const int maxRetries = 3;
+        for (int parseAttempt = 0; parseAttempt < maxRetries; parseAttempt++)
+        {
+            try
+            {
+                // We re-parse inside the loop in case we had to reload the comment
+                var currentReplies = new List<ReplyDto>();
+                if (!string.IsNullOrEmpty(comment.RepliesJson))
+                {
+                    currentReplies = JsonSerializer.Deserialize<List<ReplyDto>>(comment.RepliesJson) ?? new List<ReplyDto>();
+                }
+                currentReplies.Add(reply);
 
-        // Update comment with new replies
-        comment.RepliesJson = JsonSerializer.Serialize(replies);
-        comment.UpdatedAt = DateTime.UtcNow;
+                comment.RepliesJson = JsonSerializer.Serialize(currentReplies);
+                comment.UpdatedAt = DateTime.UtcNow;
 
-        _unitOfWork.Repository<Comment>().Update(comment);
-        await _unitOfWork.CompleteAsync();
+                _unitOfWork.Repository<Comment>().Update(comment);
+                await _unitOfWork.CompleteAsync();
+                break; // Success
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency exception while adding reply to comment {CommentId}. Attempt {Attempt} of {MaxRetries}", commentId, parseAttempt + 1, maxRetries);
+                
+                if (parseAttempt == maxRetries - 1)
+                {
+                    throw new InvalidOperationException("Failed to add reply due to concurrent updates. Please try again.");
+                }
+
+                // Reload the entity from the database to get the latest values including RepliesJson and RowVersion
+                await ex.Entries.Single().ReloadAsync();
+            }
+            catch (JsonException ex)
+            {
+                 _logger.LogError(ex, "Failed to deserialize replies JSON for comment {CommentId} during retry.", commentId);
+                 throw new InvalidOperationException("Failed to process existing replies due to data corruption.");
+            }
+        }
 
         // Get project for notification
         var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
@@ -152,12 +202,21 @@ public class CommentService : ICommentService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Increments the like count for a specific comment.
+    /// Includes concurrency handling (retry loop) to prevent lost updates.
+    /// </summary>
+    /// <param name="projectId">The project identifier.</param>
+    /// <param name="commentId">The comment identifier to like.</param>
+    /// <returns>The updated number of likes.</returns>
+=======
     /// Increments the like count of a comment belonging to the specified project.
     /// </summary>
     /// <param name="projectId">The identifier of the project that contains the comment.</param>
     /// <param name="commentId">The identifier of the comment to like.</param>
     /// <returns>The updated number of likes for the comment.</returns>
     /// <exception cref="ArgumentException">Thrown when a comment with the specified projectId and commentId does not exist.</exception>
+>>>>>>> origin/master
     public async Task<int> LikeCommentAsync(Guid projectId, Guid commentId)
     {
         _logger.LogInformation("Liking comment: {CommentId} on project: {ProjectId}", commentId, projectId);
@@ -171,11 +230,31 @@ public class CommentService : ICommentService
             throw new ArgumentException("Comment not found");
         }
 
-        comment.Likes++;
-        comment.UpdatedAt = DateTime.UtcNow;
+        const int maxRetries = 3;
+        for (int attempt = 0; attempt < maxRetries; attempt++)
+        {
+            try
+            {
+                comment.Likes++;
+                comment.UpdatedAt = DateTime.UtcNow;
 
-        _unitOfWork.Repository<Comment>().Update(comment);
-        await _unitOfWork.CompleteAsync();
+                _unitOfWork.Repository<Comment>().Update(comment);
+                await _unitOfWork.CompleteAsync();
+                break; // Success
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency exception while liking comment {CommentId}. Attempt {Attempt} of {MaxRetries}", commentId, attempt + 1, maxRetries);
+
+                if (attempt == maxRetries - 1)
+                {
+                    throw new InvalidOperationException("Failed to like comment due to concurrent updates. Please try again.");
+                }
+
+                // Reload the entity to get the latest Likes count and RowVersion
+                await ex.Entries.Single().ReloadAsync();
+            }
+        }
 
         _logger.LogInformation("Comment liked successfully. New like count: {Likes}", comment.Likes);
         return comment.Likes;

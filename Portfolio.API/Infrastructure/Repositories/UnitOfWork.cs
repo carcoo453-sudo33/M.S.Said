@@ -30,9 +30,9 @@ public class UnitOfWork : IUnitOfWork
         return (IGenericRepository<T>)_repositories[type]!;
     }
 
-    public async Task<int> CompleteAsync()
+    public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SaveChangesAsync();
+        return await _context.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()

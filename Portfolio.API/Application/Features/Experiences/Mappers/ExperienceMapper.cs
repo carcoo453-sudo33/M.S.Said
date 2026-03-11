@@ -6,11 +6,14 @@ namespace Portfolio.API.Application.Features.Experiences.Mappers;
 
 public class ExperienceMapper
 {
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Maps an EducationEntity to an ExperienceDto by copying corresponding fields.
     /// </summary>
     /// <param name="entity">The education entity to convert.</param>
     /// <returns>An ExperienceDto populated from the entity's fields.</returns>
+>>>>>>> origin/master
     public static ExperienceDto ToDto(EducationEntity entity)
     {
         return new ExperienceDto
@@ -31,11 +34,14 @@ public class ExperienceMapper
         };
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Updates the provided EducationEntity with values from the ExperienceDto and sets the entity's UpdatedAt to the current UTC time.
     /// </summary>
     /// <param name="entity">The EducationEntity to update.</param>
     /// <param name="dto">The ExperienceDto containing new values to apply to the entity.</param>
+>>>>>>> origin/master
     public static void UpdateEntity(EducationEntity entity, ExperienceDto dto)
     {
         entity.Institution = dto.Company;

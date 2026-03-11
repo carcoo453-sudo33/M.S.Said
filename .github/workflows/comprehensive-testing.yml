@@ -1,10 +1,6 @@
 name: Comprehensive Testing Suite
 
 on:
-  pull_request:
-    branches: [ "main" ]
-  push:
-    branches: [ "main" ]
   schedule:
     - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
   workflow_dispatch:
@@ -67,7 +63,7 @@ jobs:
         lighthouse http://localhost:4200 --output=json --output-path=./lighthouse-report.json
         
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-test-results
         path: |
@@ -122,7 +118,7 @@ jobs:
         # Add performance testing tools here
         
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: backend-test-results
         path: ./Portfolio.API/coverage/
@@ -130,6 +126,9 @@ jobs:
   # Security comprehensive testing
   security-comprehensive:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
     steps:
     - uses: actions/checkout@v4
     
@@ -142,20 +141,20 @@ jobs:
         output: 'trivy-results.sarif'
         
     - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: 'trivy-results.sarif'
         
     - name: Run CodeQL Analysis
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: 'csharp,javascript'
         
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+      uses: github/codeql-action/autobuild@v3
       
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
 
   # Cross-browser testing
   cross-browser-testing:
@@ -236,7 +235,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       
     - name: Generate comprehensive report
       run: |
@@ -251,7 +250,7 @@ jobs:
         echo "- Accessibility Tests: ${{ needs.accessibility-comprehensive.result }}" >> test-report.md
         
     - name: Upload comprehensive report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: comprehensive-test-report
         path: test-report.md

@@ -54,60 +54,62 @@ public class UploadsController : ControllerBase
     }
 
     /// <summary>
-        /// Accepts an authenticated user's profile image upload and stores it in the "avatars" uploads folder following the profile image policy.
-        /// </summary>
-        /// <param name="file">The uploaded image file. Allowed extensions: .jpg, .jpeg, .png, .webp. Maximum size: 5 MB.</param>
-        /// <returns>The URL where the uploaded image can be retrieved via the uploads endpoint, or an error response if validation or storage fails.</returns>
-        [Authorize]
+    /// Securely uploads a profile image.
+    /// Validates magic bytes, enforces a 5MB limit, and stores the file outside wwwroot.
+    /// </summary>
+    /// <param name="file">The uploaded image file. Allowed extensions: .jpg, .jpeg, .png, .webp. Maximum size: 5 MB.</param>
+    /// <returns>The URL where the uploaded image can be retrieved via the uploads endpoint, or an error response if validation or storage fails.</returns>
     [HttpPost("profile-image")]
     public async Task<IActionResult> UploadProfileImage(IFormFile file)
         => await ProcessFileUpload(file, "avatars", ProfileImagePolicy);
 
     /// <summary>
-        /// Handles uploading a user's CV and stores it under the "cvs" uploads folder according to the CvPolicy.
-        /// </summary>
-        /// <param name="file">The uploaded CV file to validate and store.</param>
-        /// <returns>
-        /// An <see cref="IActionResult"/> representing the outcome:
-        /// - 200 OK with the URL to access the stored CV on success;
-        /// - 400 Bad Request for missing or invalid upload or disallowed extension;
-        /// - 413 Payload Too Large when the file exceeds the configured maximum size;
-        /// - 422 Unprocessable Entity when the file's binary signature does not match the allowed types.
-        /// </returns>
-        [Authorize]
+    /// Securely uploads a CV (resume).
+    /// Enforces PDF/Docx extensions with signature validation and a 10MB limit.
+    /// </summary>
+    /// <param name="file">The uploaded CV file to validate and store.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> representing the outcome:
+    /// - 200 OK with the URL to access the stored CV on success;
+    /// - 400 Bad Request for missing or invalid upload or disallowed extension;
+    /// - 413 Payload Too Large when the file exceeds the configured maximum size;
+    /// - 422 Unprocessable Entity when the file's binary signature does not match the allowed types.
+    /// </returns>
     [HttpPost("cv")]
     public async Task<IActionResult> UploadCV(IFormFile file)
         => await ProcessFileUpload(file, "cvs", CvPolicy);
 
     /// <summary>
-        /// Receives an uploaded skill icon and stores it under the skills subfolder following the skill icon upload policy.
-        /// </summary>
-        /// <param name="file">The uploaded image file. Allowed extensions: .png, .jpg, .jpeg, .webp; maximum size 2 MB.</param>
-        /// <returns>
-        /// An <see cref="IActionResult"/> with 200 OK and a URL to the stored file on success;
-        /// 400 BadRequest for missing, empty, oversized, or disallowed files;
-        /// 422 UnprocessableEntity if the file's binary signature does not match its extension.
-        /// </returns>
-        [Authorize]
+    /// Securely uploads a skill icon.
+    /// Note: SVG uploads are disabled due to potential XSS/active content risks.
+    /// </summary>
+    /// <param name="file">The uploaded image file. Allowed extensions: .png, .jpg, .jpeg, .webp; maximum size 2 MB.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> with 200 OK and a URL to the stored file on success;
+    /// 400 BadRequest for missing, empty, oversized, or disallowed files;
+    /// 422 UnprocessableEntity if the file's binary signature does not match its extension.
+    /// </returns>
     [HttpPost("skill-icon")]
     public async Task<IActionResult> UploadSkillIcon(IFormFile file)
         => await ProcessFileUpload(file, "skills", SkillIconPolicy);
 
     /// <summary>
-        /// Uploads the provided image as a project image, validates it against the ProjectImagePolicy, and stores it in the "projects" uploads folder.
-        /// </summary>
-        /// <param name="file">The image file uploaded by the client to be stored as a project image.</param>
-        /// <returns>
-        /// An <see cref="IActionResult"/> that is 200 OK containing a URL to the stored file on success; otherwise a 4xx response describing the validation or processing error
-        /// (for example: BadRequest for missing/invalid file, size, or extension violations; UnprocessableEntity for signature mismatches).
-        /// </returns>
-        [Authorize]
+    /// Securely uploads a project showcase image.
+    /// Enforces size limits and randomized filenames for security.
+    /// </summary>
+    /// <param name="file">The image file uploaded by the client to be stored as a project image.</param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> that is 200 OK containing a URL to the stored file on success; otherwise a 4xx response describing the validation or processing error.
+    /// </returns>
     [HttpPost("project-image")]
     public async Task<IActionResult> UploadProjectImage(IFormFile file)
         => await ProcessFileUpload(file, "projects", ProjectImagePolicy);
 
     /// <summary>
     /// Serves files from the secure uploads directory (outside wwwroot).
+<<<<<<< HEAD
+    /// </summary>
+=======
     /// <summary>
     /// Serves a file from the secure uploads directory for the given category and file name.
     /// </summary>
@@ -117,6 +119,7 @@ public class UploadsController : ControllerBase
     /// 400 Bad Request if a path segment contains "..", 404 Not Found if the file does not exist,
     /// or a file response with an appropriate Content-Type and Content-Disposition header on success.
     /// </returns>
+>>>>>>> origin/master
     [HttpGet("{category}/{fileName}")]
     public IActionResult ServeFile(string category, string fileName)
     {
@@ -228,12 +231,9 @@ public class UploadsController : ControllerBase
     }
 
     /// <summary>
-    /// Returns the uploads root directory, which sits OUTSIDE wwwroot
-    /// so the web server cannot serve files directly.
-    /// <summary>
-        /// Gets the filesystem root directory used for storing uploaded files.
-        /// </summary>
-        /// <returns>The absolute path to the application's secure uploads directory (a folder named "secure-uploads" under the application's content root, outside wwwroot).</returns>
+    /// Gets the filesystem root directory used for storing uploaded files. This sits OUTSIDE wwwroot so the web server cannot serve files directly.
+    /// </summary>
+    /// <returns>The absolute path to the application's secure uploads directory (a folder named "secure-uploads" under the application's content root, outside wwwroot).</returns>
     private string GetUploadsRoot()
         => Path.Combine(_environment.ContentRootPath, "secure-uploads");
 }

@@ -4,6 +4,11 @@ namespace Portfolio.API.Application.Features.Comments.Services;
 
 public interface ICommentService
 {
+<<<<<<< HEAD
+    Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request);
+    Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request);
+    Task<int> LikeCommentAsync(Guid projectId, Guid commentId);
+=======
     /// <summary>
 /// Creates a new comment for the specified project.
 /// </summary>
@@ -26,6 +31,7 @@ Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto 
 /// <param name="commentId">The identifier of the comment to like.</param>
 /// <returns>The updated total number of likes for the comment.</returns>
 Task<int> LikeCommentAsync(Guid projectId, Guid commentId);
+>>>>>>> origin/master
 }
 
 

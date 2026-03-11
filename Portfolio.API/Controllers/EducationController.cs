@@ -11,10 +11,13 @@ public class EducationController : ControllerBase
 {
     private readonly IEducationService _educationService;
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Initializes a new instance of the <see cref="EducationController"/> with the specified education service.
     /// </summary>
     /// <param name="educationService">Service used to perform education-related operations (retrieval, creation, update, deletion).</param>
+>>>>>>> origin/master
     public EducationController(IEducationService educationService)
     {
         _educationService = educationService;
@@ -28,6 +31,17 @@ public class EducationController : ControllerBase
     public async Task<ActionResult<IEnumerable<EducationDto>>> GetEducation()
     {
         var education = await _educationService.GetEducationAsync();
+<<<<<<< HEAD
+        return Ok(education);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<EducationDto>> GetEducationById(Guid id)
+    {
+        var education = await _educationService.GetEducationByIdAsync(id);
+        if (education == null) return NotFound();
+=======
+>>>>>>> origin/master
         return Ok(education);
     }
 
@@ -57,12 +71,15 @@ public class EducationController : ControllerBase
         return CreatedAtAction(nameof(GetEducationById), new { id = result.Id }, result);
     }
 
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Updates an existing education record identified by the specified id.
     /// </summary>
     /// <param name="id">The identifier of the education record to update.</param>
     /// <param name="dto">The education data to apply to the record.</param>
     /// <returns>200 OK with the updated EducationDto if the record was updated; 404 NotFound if no record with the specified id exists.</returns>
+>>>>>>> origin/master
     [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateEducation(Guid id, EducationDto dto)
@@ -71,6 +88,8 @@ public class EducationController : ControllerBase
         if (result == null) return NotFound();
         return Ok(result);
     }
+<<<<<<< HEAD
+=======
     /// <summary>
     /// Deletes the education record identified by the provided GUID.
     /// </summary>
@@ -78,6 +97,7 @@ public class EducationController : ControllerBase
     /// <returns>
     /// 204 No Content if the record was deleted; 404 Not Found if no record exists with the given identifier.
     /// </returns>
+>>>>>>> origin/master
     [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteEducation(Guid id)

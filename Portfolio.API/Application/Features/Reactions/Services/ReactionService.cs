@@ -24,6 +24,14 @@ public class ReactionService : IReactionService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Adds a new reaction from a user to a specific project.
+    /// This method enforces a unique constraint so a user cannot react multiple times to the same project.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <param name="request">The details of the reaction being added.</param>
+    /// <returns>A DTO containing the details of the created reaction.</returns>
+    /// <exception cref="ArgumentException">Thrown when the project doesn't exist or if the user has already reacted.</exception>
     public async Task<ReactionDto> AddReactionAsync(Guid projectId, ReactionCreateDto request)
     {
         _logger.LogInformation("Adding reaction to project: {ProjectId} by user: {UserId}", projectId, request.UserId);
@@ -35,25 +43,25 @@ public class ReactionService : IReactionService
             throw new ArgumentException("Project not found");
         }
 
-        // Check if user already reacted
-        var existingReaction = await _unitOfWork.Repository<Reaction>()
-            .Query()
-            .FirstOrDefaultAsync(r => r.ProjectId == projectId && r.UserId == request.UserId);
+        var reaction = ReactionMapper.ToEntity(projectId, request);
+        await _unitOfWork.Repository<Reaction>().AddAsync(reaction);
 
-        if (existingReaction != null)
+        try
         {
+            await _unitOfWork.CompleteAsync();
+            
+            // Only increment the project reactions count *after* the unique reaction insert successfully saves.
+            // This prevents lost updates and dangling counts if the insert fails (e.g., due to duplicate).
+            project.ReactionsCount++;
+            _unitOfWork.Repository<Project>().Update(project);
+            await _unitOfWork.CompleteAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            // The DB Unique Constraint (ProjectId, UserId) will trigger an exception if the user already reacted.
+            _logger.LogWarning(ex, "Failed to add reaction. User {UserId} already reacted to project {ProjectId}", request.UserId, projectId);
             throw new ArgumentException("User has already reacted to this project");
         }
-
-        var reaction = ReactionMapper.ToEntity(projectId, request);
-
-        await _unitOfWork.Repository<Reaction>().AddAsync(reaction);
-        
-        // Increment project reactions count
-        project.ReactionsCount++;
-        _unitOfWork.Repository<Project>().Update(project);
-        
-        await _unitOfWork.CompleteAsync();
 
         // Create notification
         await _notificationService.CreateNotificationAsync(
@@ -71,6 +79,13 @@ public class ReactionService : IReactionService
         return ReactionMapper.ToResponse(reaction);
     }
 
+    /// <summary>
+    /// Removes an existing reaction from a user for a specific project.
+    /// Also decrements the project's total reaction count upon successful removal.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <param name="userId">The unique identifier of the user whose reaction is being removed.</param>
+    /// <returns>True if the reaction was successfully removed; otherwise, false.</returns>
     public async Task<bool> RemoveReactionAsync(Guid projectId, string userId)
     {
         _logger.LogInformation("Removing reaction from project: {ProjectId} by user: {UserId}", projectId, userId);
@@ -100,6 +115,11 @@ public class ReactionService : IReactionService
         return true;
     }
 
+    /// <summary>
+    /// Retrieves a list of all reactions for a specified project.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <returns>A list of reaction DTOs associated with the project.</returns>
     public async Task<List<ReactionDto>> GetProjectReactionsAsync(Guid projectId)
     {
         _logger.LogInformation("Getting reactions for project: {ProjectId}", projectId);
@@ -113,10 +133,17 @@ public class ReactionService : IReactionService
     }
 
     /// <summary>
+<<<<<<< HEAD
+    /// Retrieves the total count of reactions for a specified project.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <returns>The number of reactions on the project.</returns>
+=======
     /// Gets the number of reactions for the specified project.
     /// </summary>
     /// <param name="projectId">The project's unique identifier.</param>
     /// <returns>The number of reactions associated with the project.</returns>
+>>>>>>> origin/master
     public async Task<int> GetReactionCountAsync(Guid projectId)
     {
         _logger.LogInformation("Getting reaction count for project: {ProjectId}", projectId);

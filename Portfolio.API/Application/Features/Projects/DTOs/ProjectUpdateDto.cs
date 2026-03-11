@@ -1,6 +1,8 @@
-namespace Portfolio.API.Features.Projects.DTOs;
+namespace Portfolio.API.Application.Features.Projects.DTOs;
 
 public class ProjectUpdateDto : ProjectCreateDto
 {
     public Guid Id { get; set; }
 }
+
+
