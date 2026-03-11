@@ -2,13 +2,14 @@ name: .NET Core CI with Enhanced Testing
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "master", "develop" ]
     paths:
       - 'Portfolio.API/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
     paths:
       - 'Portfolio.API/**'
+  workflow_dispatch:
 
 env:
   DOTNET_VERSION: '9.0.x'
