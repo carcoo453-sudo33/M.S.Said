@@ -32,6 +32,9 @@
   /* Border Colors */
   --border: 240 5.9% 90%; /* zinc-200 */
   
+  /* Grid Pattern Colors */
+  --grid-dot: 240 5.9% 85%; /* subtle light gray for dots */
+  
   /* ========== BORDER RADIUS ========== */
   --radius: 0.5rem; /* 8px */
   
@@ -66,6 +69,8 @@
   --destructive-foreground: 0 0% 98%; /* zinc-50 */
   
   --border: 240 3.7% 15.9%; /* zinc-800 */
+  
+  --grid-dot: 240 3.7% 25%; /* subtle dark gray for dots */
 }
 
 /* ========== LIGHT THEME ========== */
@@ -89,6 +94,8 @@
   --destructive-foreground: 0 0% 98%; /* zinc-50 */
   
   --border: 240 5.9% 90%; /* zinc-200 */
+  
+  --grid-dot: 240 5.9% 85%; /* subtle light gray for dots */
 }
 
 /* ========== UTILITY CLASSES ========== */
