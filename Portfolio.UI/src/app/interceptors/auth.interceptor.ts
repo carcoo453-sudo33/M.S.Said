@@ -8,11 +8,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router);
     const authService = inject(AuthService);
     
-    // Skip auth for public endpoints
-    const publicEndpoints = ['/api/Auth/login', '/api/projects', '/api/bio'];
-    const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
+    // Skip auth only for public GET endpoints
+    const publicGetEndpoints = ['/api/Auth/login', '/api/projects', '/api/bio'];
+    const isPublicGetEndpoint = publicGetEndpoints.some(endpoint => req.url.includes(endpoint)) && req.method === 'GET';
     
-    if (!isPublicEndpoint) {
+    if (!isPublicGetEndpoint) {
         const token = authService.getToken();
         if (token) {
             // Check if token is about to expire (within 5 minutes)
@@ -37,7 +37,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
-            if (error.status === 401 && !isPublicEndpoint) {
+            if (error.status === 401 && !isPublicGetEndpoint) {
                 // Logout and redirect to login
                 authService.logout();
                 if (!window.location.pathname.includes('/login')) {
