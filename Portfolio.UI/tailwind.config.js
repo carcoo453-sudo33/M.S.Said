@@ -99,6 +99,11 @@ module.exports = {
           color: 'hsl(var(--foreground))',
           fontFamily: 'var(--font-sans)',
           transition: 'background-color var(--duration-normal), color var(--duration-normal)',
+          backgroundImage: `
+            radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0',
         },
         
         // RTL Support
