@@ -4,13 +4,6 @@ namespace Portfolio.API.Application.Features.Experiences.Services;
 
 public interface IExperienceService
 {
-<<<<<<< HEAD
-    Task<IEnumerable<ExperienceDto>> GetExperiencesAsync();
-    Task<ExperienceDto?> GetExperienceByIdAsync(Guid id);
-    Task<ExperienceDto> CreateExperienceAsync(ExperienceDto dto);
-    Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto);
-    Task<bool> DeleteExperienceAsync(Guid id);
-=======
     /// <summary>
 /// Retrieves all experiences.
 /// </summary>
@@ -41,7 +34,6 @@ Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto);
 /// <param name="id">The identifier of the experience to delete.</param>
 /// <returns>`true` if the experience was deleted; `false` otherwise.</returns>
 Task<bool> DeleteExperienceAsync(Guid id);
->>>>>>> origin/master
 }
 
 

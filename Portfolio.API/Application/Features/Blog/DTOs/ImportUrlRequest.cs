@@ -14,12 +14,9 @@ public static class ImportTypes
 
 public class ImportUrlRequest : ImportRequest
 {
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new <see cref="ImportUrlRequest"/> and sets its <c>ImportType</c> to <see cref="ImportTypes.Blog"/>.
     /// </summary>
->>>>>>> origin/master
     public ImportUrlRequest()
     {
         ImportType = ImportTypes.Blog;

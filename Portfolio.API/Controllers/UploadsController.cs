@@ -107,9 +107,6 @@ public class UploadsController : ControllerBase
 
     /// <summary>
     /// Serves files from the secure uploads directory (outside wwwroot).
-<<<<<<< HEAD
-    /// </summary>
-=======
     /// <summary>
     /// Serves a file from the secure uploads directory for the given category and file name.
     /// </summary>
@@ -119,7 +116,6 @@ public class UploadsController : ControllerBase
     /// 400 Bad Request if a path segment contains "..", 404 Not Found if the file does not exist,
     /// or a file response with an appropriate Content-Type and Content-Disposition header on success.
     /// </returns>
->>>>>>> origin/master
     [HttpGet("{category}/{fileName}")]
     public IActionResult ServeFile(string category, string fileName)
     {

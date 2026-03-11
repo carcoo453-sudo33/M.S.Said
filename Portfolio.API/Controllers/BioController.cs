@@ -10,13 +10,10 @@ public class BioController : ControllerBase
 {
     private readonly IBioService _bioService;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of <see cref="BioController"/> with the provided bio service.
     /// </summary>
     /// <param name="bioService">Service used to retrieve and update bio information.</param>
->>>>>>> origin/master
     public BioController(IBioService bioService)
     {
         _bioService = bioService;
@@ -33,9 +30,6 @@ public class BioController : ControllerBase
         
         if (bio == null) 
         {
-<<<<<<< HEAD
-            return NotFound("User profile bio not populated yet");
-=======
             return Ok(new BioDto 
             { 
                 Name = "Default User",
@@ -43,7 +37,6 @@ public class BioController : ControllerBase
                 Email = "email@example.com",
                 Description = "Default description..."
             });
->>>>>>> origin/master
         }
         
         return Ok(bio);
