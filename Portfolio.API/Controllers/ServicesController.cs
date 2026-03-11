@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.API.Entities;
-using Portfolio.API.Repositories;
-using Portfolio.API.DTOs;
+using Portfolio.API.Application.Features.Services.DTOs;
+using Portfolio.API.Application.Features.Services.Services;
 
 namespace Portfolio.API.Controllers;
 
@@ -10,66 +9,79 @@ namespace Portfolio.API.Controllers;
 [Route("api/[controller]")]
 public class ServicesController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IServiceService _serviceService;
 
-    public ServicesController(IUnitOfWork unitOfWork)
+    /// <summary>
+    /// Initializes a new instance of ServicesController with the provided service handler.
+    /// </summary>
+    /// <param name="serviceService">Service layer used to perform CRUD operations for services.</param>
+    public ServicesController(IServiceService serviceService)
     {
-        _unitOfWork = unitOfWork;
+        _serviceService = serviceService;
     }
 
+    /// <summary>
+    /// Retrieves all services.
+    /// </summary>
+    /// <returns>A collection of ServiceDto objects representing all services.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ServiceEntry>>> GetServices()
+    public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
     {
-        var services = await _unitOfWork.Repository<ServiceEntry>().GetAllAsync();
+        var services = await _serviceService.GetServicesAsync();
         return Ok(services);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<ServiceEntry>> CreateService(ServiceDto dto)
+    /// <summary>
+    /// Retrieves a service by its unique identifier.
+    /// </summary>
+    /// <param name="id">The service's unique identifier (GUID).</param>
+    /// <returns>An ActionResult containing the requested <see cref="ServiceDto"/> if found; otherwise a NotFound result.</returns>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ServiceDto>> GetServiceById(Guid id)
     {
-        var entry = new ServiceEntry
-        {
-            Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
-            Title = dto.Title,
-            Title_Ar = dto.Title_Ar,
-            Description = dto.Description,
-            Description_Ar = dto.Description_Ar,
-            Icon = dto.Icon
-        };
-        await _unitOfWork.Repository<ServiceEntry>().AddAsync(entry);
-        await _unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetServices), new { id = entry.Id }, entry);
-    }
-
-    [Authorize]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateService(Guid id, ServiceDto dto)
-    {
-        var repository = _unitOfWork.Repository<ServiceEntry>();
-        var service = await repository.GetByIdAsync(id);
-        
+        var service = await _serviceService.GetServiceByIdAsync(id);
         if (service == null) return NotFound();
-
-        service.Title = dto.Title;
-        service.Title_Ar = dto.Title_Ar;
-        service.Description = dto.Description;
-        service.Description_Ar = dto.Description_Ar;
-        service.Icon = dto.Icon;
-        service.UpdatedAt = DateTime.UtcNow;
-
-        await _unitOfWork.CompleteAsync();
         return Ok(service);
     }
 
+    /// <summary>
+    /// Creates a new service from the supplied DTO and returns the created resource.
+    /// </summary>
+    /// <param name="dto">Data transfer object describing the service to create.</param>
+    /// <returns>The created ServiceDto including its assigned Id; response includes a Location header for GetServiceById.</returns>
     [Authorize]
-    [HttpDelete("{id}")]
+    [HttpPost]
+    public async Task<ActionResult<ServiceDto>> CreateService(ServiceDto dto)
+    {
+        var result = await _serviceService.CreateServiceAsync(dto);
+        return CreatedAtAction(nameof(GetServiceById), new { id = result.Id }, result);
+    }
+
+    /// <summary>
+    /// Updates an existing service identified by the given GUID with values from the provided DTO.
+    /// </summary>
+    /// <param name="id">The GUID of the service to update.</param>
+    /// <param name="dto">A DTO containing the updated service fields.</param>
+    /// <returns>`200 OK` with the updated ServiceDto if the service was found and updated; `404 NotFound` if no service exists with the specified id.</returns>
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateService(Guid id, ServiceDto dto)
+    {
+        var result = await _serviceService.UpdateServiceAsync(id, dto);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+    /// <summary>
+    /// Deletes the service identified by the specified id.
+    /// </summary>
+    /// <param name="id">The GUID of the service to delete.</param>
+    /// <returns>`204 NoContent` if the service was deleted, `404 NotFound` if no service with the specified id exists.</returns>
+    [Authorize]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteService(Guid id)
     {
-        var service = await _unitOfWork.Repository<ServiceEntry>().GetByIdAsync(id);
-        if (service == null) return NotFound();
-        _unitOfWork.Repository<ServiceEntry>().Delete(service);
-        await _unitOfWork.CompleteAsync();
+        var deleted = await _serviceService.DeleteServiceAsync(id);
+        if (!deleted) return NotFound();
         return NoContent();
     }
 }
