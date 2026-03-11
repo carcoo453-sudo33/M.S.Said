@@ -50,21 +50,37 @@ public class UploadsController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// Securely uploads a profile image.
+    /// Validates magic bytes, enforces a 5MB limit, and stores the file outside wwwroot.
+    /// </summary>
     [Authorize]
     [HttpPost("profile-image")]
     public async Task<IActionResult> UploadProfileImage(IFormFile file)
         => await ProcessFileUpload(file, "avatars", ProfileImagePolicy);
 
+    /// <summary>
+    /// Securely uploads a CV (resume).
+    /// Enforces PDF/Docx extensions with signature validation and a 10MB limit.
+    /// </summary>
     [Authorize]
     [HttpPost("cv")]
     public async Task<IActionResult> UploadCV(IFormFile file)
         => await ProcessFileUpload(file, "cvs", CvPolicy);
 
+    /// <summary>
+    /// Securely uploads a skill icon.
+    /// Note: SVG uploads are disabled due to potential XSS/active content risks.
+    /// </summary>
     [Authorize]
     [HttpPost("skill-icon")]
     public async Task<IActionResult> UploadSkillIcon(IFormFile file)
         => await ProcessFileUpload(file, "skills", SkillIconPolicy);
 
+    /// <summary>
+    /// Securely uploads a project showcase image.
+    /// Enforces size limits and randomized filenames for security.
+    /// </summary>
     [Authorize]
     [HttpPost("project-image")]
     public async Task<IActionResult> UploadProjectImage(IFormFile file)

@@ -26,6 +26,12 @@ public class CommentService : ICommentService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Adds a top-level comment to a specific project and notifies the owner.
+    /// </summary>
+    /// <param name="projectId">The unique identifier of the project.</param>
+    /// <param name="request">The comment creation details.</param>
+    /// <returns>The created comment DTO.</returns>
     public async Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding comment to project: {ProjectId}", projectId);
@@ -70,6 +76,15 @@ public class CommentService : ICommentService
         return CommentMapper.ToResponse(comment);
     }
 
+    /// <summary>
+    /// Adds a nested reply to an existing comment. 
+    /// Includes concurrency handling (retry loop) for updates to the RepliesJson blob.
+    /// </summary>
+    /// <param name="projectId">The project identifier.</param>
+    /// <param name="commentId">The parent comment identifier.</param>
+    /// <param name="request">The reply creation details.</param>
+    /// <returns>The updated parent comment DTO containing the new reply.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if concurrent updates fail after multiple retries or data is corrupt.</exception>
     public async Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request)
     {
         _logger.LogInformation("Adding reply to comment: {CommentId} on project: {ProjectId}", commentId, projectId);
@@ -167,6 +182,13 @@ public class CommentService : ICommentService
         return CommentMapper.ToResponse(comment);
     }
 
+    /// <summary>
+    /// Increments the like count for a specific comment.
+    /// Includes concurrency handling (retry loop) to prevent lost updates.
+    /// </summary>
+    /// <param name="projectId">The project identifier.</param>
+    /// <param name="commentId">The comment identifier to like.</param>
+    /// <returns>The updated number of likes.</returns>
     public async Task<int> LikeCommentAsync(Guid projectId, Guid commentId)
     {
         _logger.LogInformation("Liking comment: {CommentId} on project: {ProjectId}", commentId, projectId);

@@ -14,7 +14,7 @@ env:
   NODE_VERSION: '20.x'
 
 jobs:
-  lint-and-format:
+  build-and-test:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,12 +29,24 @@ jobs:
         cache-dependency-path: './Portfolio.UI/package-lock.json'
     - name: Install dependencies
       run: npm ci
-    - name: Run ESLint
-      run: npm run lint --if-present
-    - name: Check Prettier formatting
-      run: npm run format:check --if-present
+    - name: Lint & Format Check
+      run: |
+        npm run lint --if-present
+        npm run format:check --if-present
+    - name: Build Production
+      run: npm run build --if-present
+    - name: Run Unit Tests
+      run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      continue-on-error: true
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        directory: ./Portfolio.UI/coverage
+        flags: frontend
+        name: angular-coverage
 
   security-scan:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,35 +71,8 @@ jobs:
       with:
         args: --severity-threshold=high
 
-  build-and-test:
-    runs-on: ubuntu-latest
-    needs: [lint-and-format, security-scan]
-    defaults:
-      run:
-        working-directory: ./Portfolio.UI
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: './Portfolio.UI/package-lock.json'
-    - name: Install dependencies
-      run: npm ci
-    - name: Build Production
-      run: npm run build --if-present
-    - name: Run Unit Tests
-      run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
-      continue-on-error: true
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
-      with:
-        directory: ./Portfolio.UI/coverage
-        flags: frontend
-        name: angular-coverage
-
   accessibility-test:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-and-test
     defaults:
@@ -110,6 +95,7 @@ jobs:
       continue-on-error: true
 
   lighthouse-audit:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-and-test
     defaults:

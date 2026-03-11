@@ -18,7 +18,7 @@ reviews:
   
   # Tone and global instructions
   tone_instructions: "Be professional, concise, and helpful."
-  instructions: |
+  system_instructions: |
     Review the pull requests for a full-stack portfolio application with Angular 19 frontend and .NET 9 API.
     
     Key Focus Areas:
@@ -31,7 +31,7 @@ reviews:
   # Targeted review guidelines for specific paths
   path_instructions:
     - path: "Portfolio.UI/src/app/components/**"
-      instructions: |
+      system_instructions: |
         Angular Component Review Focus:
         - Standalone component pattern compliance
         - Proper lifecycle hook usage
@@ -39,28 +39,28 @@ reviews:
         - Tailwind CSS class organization (avoid arbitrary values)
         
     - path: "Portfolio.UI/src/app/services/**"
-      instructions: |
+      system_instructions: |
         Angular Service Review Focus:
         - Proper dependency injection patterns
         - HTTP error handling and retry logic
         - Observable stream management and memory leaks
         
     - path: "Portfolio.API/Controllers/**"
-      instructions: |
+      system_instructions: |
         API Controller Review Focus:
         - RESTful API design principles
         - Input validation and sanitization
         - Proper HTTP status codes
         
     - path: "Portfolio.API/Infrastructure/Data/**"
-      instructions: |
+      system_instructions: |
         Data Layer Review Focus:
         - Entity Framework performance (N+1 queries)
         - Database indexing strategies
         - Migration safety and rollback plans
         
     - path: "Portfolio.API/Domain/Entities/**"
-      instructions: |
+      system_instructions: |
         Entity Review Focus:
         - Proper data annotations and constraints
         - Entity relationships and clean domain model
@@ -76,12 +76,8 @@ reviews:
     - "!Portfolio.API/migration-script.sql"
     - "!**/*.json"
     - "!**/*.md"
-    - "!.github/workflows/**"
     - "!docker-compose.yml"
-    - "!Dockerfile*"
-    - "!Portfolio.API/Domain/Enums/**"
     - "!Portfolio.API/Constants/**"
-    - "!Portfolio.API/Application/DTOs/**" # Legacy/Duplicate DTOs
     - "!Portfolio.API/Infrastructure/Data/Configurations/**"
     - "!Portfolio.API/Domain/Events/**"
     - "!Portfolio.API/Portfolio.API.http"
@@ -93,4 +89,3 @@ chat:
 knowledge_base:
   learnings:
     enabled: true
-

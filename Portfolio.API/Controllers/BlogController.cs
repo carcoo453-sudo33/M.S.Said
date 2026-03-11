@@ -43,8 +43,15 @@ public class BlogController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdatePost(Guid id, BlogPostDto dto)
     {
-        var result = await _blogService.UpdatePostAsync(id, dto);
-        return Ok(result);
+        try
+        {
+            var result = await _blogService.UpdatePostAsync(id, dto);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [Authorize]
@@ -60,7 +67,14 @@ public class BlogController : ControllerBase
     [HttpPost("import-from-url")]
     public async Task<ActionResult<BlogPostDto>> ImportFromUrl([FromBody] ImportUrlRequest request)
     {
-        var result = await _blogService.ImportFromUrlAsync(request.Url);
-        return Ok(result);
+        try
+        {
+            var result = await _blogService.ImportFromUrlAsync(request.Url);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
