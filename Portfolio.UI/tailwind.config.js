@@ -98,13 +98,6 @@ module.exports = {
           color: 'hsl(var(--foreground))',
           fontFamily: 'var(--font-sans)',
           transition: 'background-color var(--duration-normal), color var(--duration-normal)',
-          backgroundImage: `
-            radial-gradient(circle, hsl(var(--grid-dot)) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background)))
-          `,
-          backgroundSize: '20px 20px, 100% 100%',
-          backgroundPosition: '0 0, 0 0',
-          backgroundAttachment: 'fixed, scroll',
         },
         
         // RTL Support
