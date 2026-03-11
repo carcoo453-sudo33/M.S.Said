@@ -25,6 +25,7 @@ public class ServicesController : ControllerBase
     /// </summary>
     /// <returns>A collection of ServiceDto objects representing all services.</returns>
     [HttpGet]
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
     public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
     {
         var services = await _serviceService.GetServicesAsync();

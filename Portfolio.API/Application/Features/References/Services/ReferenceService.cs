@@ -2,6 +2,7 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.References.DTOs;
 using Portfolio.API.Application.Features.References.Mappers;
 using Portfolio.API.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.References.Services;
 
@@ -24,8 +25,12 @@ public class ReferenceService : IReferenceService
     /// <returns>An enumerable of ReferenceDto for all references, ordered by PublishedAt descending.</returns>
     public async Task<IEnumerable<ReferenceDto>> GetReferencesAsync()
     {
-        var references = await _unitOfWork.Repository<Reference>().GetAllAsync();
-        return references.OrderByDescending(r => r.PublishedAt).Select(ReferenceMapper.ToDto);
+        var references = await _unitOfWork.Repository<Reference>()
+            .Query()
+            .AsNoTracking()
+            .OrderByDescending(r => r.PublishedAt)
+            .ToListAsync();
+        return references.Select(ReferenceMapper.ToDto);
     }
 
     /// <summary>

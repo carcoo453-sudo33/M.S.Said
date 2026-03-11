@@ -79,6 +79,15 @@ export class ToastService {
     }
 
     private add(message: string, type: ToastType, options?: ToastOptions): number {
+        // Prevent duplicate toasts with the same message and type from appearing multiple times
+        const currentToasts = this.toasts();
+        const isDuplicate = currentToasts.some(t => t.message === message && t.type === type);
+        if (isDuplicate) {
+            // Return existing toast ID or just return a dummy ID
+            const existingToast = currentToasts.find(t => t.message === message && t.type === type);
+            return existingToast?.id ?? -1;
+        }
+
         const id = this.nextId++;
         const duration = options?.duration ?? (type === 'error' ? 6000 : 4000);
 

@@ -6,12 +6,13 @@ namespace Portfolio.API.Configuration;
 public static class ApiConfiguration
 {
     /// <summary>
-    /// Configures MVC controllers, JSON serialization, API behavior, and Swagger services for the application.
+    /// Configures MVC controllers, JSON serialization, API behavior, response caching, and Swagger services for the application.
     /// </summary>
     /// <remarks>
     /// - Enables controllers.
     /// - Configures JSON serialization to use camelCase property names and case-insensitive property matching.
     /// - Configures API behavior to log model validation failures (including request path and validation errors) and return a BadRequest result containing the ModelState.
+    /// - Adds response caching for improved performance.
     /// - Registers Swagger generation services.
     /// </remarks>
     /// <returns>The modified <see cref="IServiceCollection"/> to allow fluent chaining.</returns>
@@ -39,6 +40,13 @@ public static class ApiConfiguration
                     return new BadRequestObjectResult(context.ModelState);
                 };
             });
+
+        // Response caching for performance
+        services.AddResponseCaching(options =>
+        {
+            options.MaximumBodySize = 1024 * 1024; // 1MB
+            options.UseCaseSensitivePaths = false;
+        });
 
         // Swagger
         services.AddSwaggerGen();

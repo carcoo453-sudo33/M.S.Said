@@ -13,6 +13,10 @@ public class PortfolioDbContext : IdentityDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
+        
+        // Performance: Use NoTracking by default for read queries
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        
         // Suppress pending model changes warning temporarily
         optionsBuilder.ConfigureWarnings(warnings => 
             warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));

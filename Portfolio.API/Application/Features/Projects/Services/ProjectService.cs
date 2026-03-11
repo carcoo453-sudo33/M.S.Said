@@ -66,9 +66,11 @@ public class ProjectService : IProjectService
     {
         var project = await _unitOfWork.Repository<Project>()
             .Query()
+            .AsNoTracking()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
             .Include(p => p.Comments)
+            .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null)
@@ -77,23 +79,21 @@ public class ProjectService : IProjectService
             return null;
         }
 
-        // Increment view count
-        project.Views++;
-        project.UpdatedAt = DateTime.UtcNow;
-        await _unitOfWork.CompleteAsync(cancellationToken);
-
-        // Create notification for project view
-        await _notificationService.CreateNotificationAsync(
-            NotificationTypeConstants.ProjectView,
-            "Project Viewed",
-            $"Project '{project.Title}' was viewed",
-            $"/projects/{project.Slug}",
-            "eye",
-            project.Id.ToString(),
-            "Project",
-            "Anonymous"
-        );
-
+        // Fire-and-forget view tracking and notification to avoid blocking the response
+        // Using Task.Run with a new scope is safer to avoid issues with disposed scoped services
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                // We need a separate scope for background work to avoid using the disposed main request scope
+                // Since this is a simple increment, we can just call TrackProjectViewAsync which handles its own scope or we can create one here
+                await TrackProjectViewAsync(slug, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in background project view tracking for {Slug}", slug);
+            }
+        });
 
         return ProjectMapper.ToResponse(project);
     }
@@ -312,16 +312,37 @@ public class ProjectService : IProjectService
     /// <returns>A slug based on <paramref name="baseSlug"/> that does not conflict with existing project slugs.</returns>
     private async Task<string> GenerateUniqueSlugAsync(string baseSlug, Guid? excludeId = null, CancellationToken cancellationToken = default)
     {
-        var slug = baseSlug;
-        var counter = 1;
-
-        while (await SlugExistsAsync(slug, excludeId, cancellationToken))
+        // Check if base slug is available
+        if (!await SlugExistsAsync(baseSlug, excludeId, cancellationToken))
         {
-            slug = $"{baseSlug}-{counter}";
-            counter++;
+            return baseSlug;
         }
 
-        return slug;
+        // Find all similar slugs in one query
+        var similarSlugs = await _unitOfWork.Repository<Project>()
+            .Query()
+            .AsNoTracking()
+            .Where(p => p.Slug.StartsWith(baseSlug) && (excludeId == null || p.Id != excludeId))
+            .Select(p => p.Slug)
+            .ToListAsync(cancellationToken);
+
+        // Find the highest counter
+        var counter = 1;
+        foreach (var existingSlug in similarSlugs)
+        {
+            if (existingSlug == baseSlug) continue;
+            
+            var suffix = existingSlug.Substring(baseSlug.Length);
+            if (suffix.StartsWith("-") && int.TryParse(suffix.Substring(1), out var num))
+            {
+                if (num >= counter)
+                {
+                    counter = num + 1;
+                }
+            }
+        }
+
+        return $"{baseSlug}-{counter}";
     }
 
     /// <summary>

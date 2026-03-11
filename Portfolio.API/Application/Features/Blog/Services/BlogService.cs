@@ -26,19 +26,34 @@ public class BlogService : IBlogService
     }
 
     /// <summary>
-    /// Retrieve all blog posts ordered by published date, newest first.
+    /// Retrieve all blog posts ordered by published date, newest first, with optional pagination.
     /// </summary>
-    /// <returns>A list of BlogPostDto representing all blog posts, ordered by PublishedAt descending.</returns>
-    public async Task<List<BlogPostDto>> GetPostsAsync()
+    /// <param name="page">Page number (1-based). Default is 1.</param>
+    /// <param name="pageSize">Number of posts per page. Default is 10.</param>
+    /// <returns>A PagedResult containing BlogPostDto items, ordered by PublishedAt descending.</returns>
+    public async Task<PagedResult<BlogPostDto>> GetPostsAsync(int page = 1, int pageSize = 10)
     {
-        _logger.LogInformation("Fetching all blog posts");
+        _logger.LogInformation("Fetching blog posts - Page: {Page}, PageSize: {PageSize}", page, pageSize);
 
-        var posts = await _unitOfWork.Repository<BlogPost>()
+        var query = _unitOfWork.Repository<BlogPost>()
             .Query()
-            .OrderByDescending(p => p.PublishedAt)
+            .AsNoTracking()
+            .OrderByDescending(p => p.PublishedAt);
+
+        var totalCount = await query.CountAsync();
+        
+        var posts = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
-        return posts.Select(BlogMapper.ToDto).ToList();
+        return new PagedResult<BlogPostDto>
+        {
+            Items = posts.Select(BlogMapper.ToDto).ToList(),
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     /// <summary>
@@ -51,7 +66,9 @@ public class BlogService : IBlogService
         _logger.LogInformation("Fetching blog post: {PostId}", id);
 
         var post = await _unitOfWork.Repository<BlogPost>()
-            .GetByIdAsync(id);
+            .Query()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (post == null)
         {

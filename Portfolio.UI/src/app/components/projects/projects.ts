@@ -142,6 +142,7 @@ export class ProjectsComponent implements OnInit {
       error: (err) => console.error('Projects: Failed to load experiences', err)
     });
 
+    /* Temporarily commented out as these endpoints don't exist yet
     this.profileService.getClients().subscribe({
       next: (data) => this.clients.set(data),
       error: (err) => console.error('Projects: Failed to load clients', err)
@@ -151,6 +152,7 @@ export class ProjectsComponent implements OnInit {
       next: (data) => this.testimonials.set(data),
       error: (err) => console.error('Projects: Failed to load testimonials', err)
     });
+    */
   }
 
   loadMockData() {

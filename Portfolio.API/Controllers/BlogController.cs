@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.API.Application.Features.Blog.DTOs;
 using Portfolio.API.Application.Features.Blog.Services;
+using Portfolio.API.Application.Common;
 
 namespace Portfolio.API.Controllers;
 
@@ -21,13 +22,15 @@ public class BlogController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all blog posts.
+    /// Retrieves blog posts with pagination support.
     /// </summary>
-    /// <returns>An enumerable of BlogPostDto containing all blog posts.</returns>
+    /// <param name="page">Page number (1-based). Default is 1.</param>
+    /// <param name="pageSize">Number of posts per page. Default is 10.</param>
+    /// <returns>A PagedResult containing BlogPostDto items.</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BlogPostDto>>> GetPosts()
+    public async Task<ActionResult<PagedResult<BlogPostDto>>> GetPosts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var posts = await _blogService.GetPostsAsync();
+        var posts = await _blogService.GetPostsAsync(page, pageSize);
         return Ok(posts);
     }
 

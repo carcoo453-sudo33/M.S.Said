@@ -11,13 +11,12 @@ import { SignalRService } from './signalr.service';
 export class AuthService {
     private http = inject(HttpClient);
     private signalRService = inject(SignalRService);
-    private baseUrl = (environment as any).apiBaseUrl || environment.apiUrl.replace('/api', '');
+    private baseUrl = environment.apiUrl;
 
     private currentUserSubject = new BehaviorSubject<any>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
     private readonly TOKEN_KEY = 'auth_token';
-    private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
     constructor() {
         // Check for existing token on service initialization
@@ -47,16 +46,11 @@ export class AuthService {
             return throwError(() => new Error('Invalid email format'));
         }
 
-        return this.http.post<AuthResponse>(`${this.baseUrl}/identity/login`, credentials).pipe(
+        return this.http.post<AuthResponse>(`${this.baseUrl}/Auth/login`, credentials).pipe(
             tap(response => {
-                if (response.accessToken) {
-                    // Store token securely (consider httpOnly cookies in production)
-                    localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-                    
-                    if (response.refreshToken) {
-                        localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
-                    }
-                    
+                if (response.success && response.token) {
+                    // Store token securely
+                    localStorage.setItem(this.TOKEN_KEY, response.token);
                     this.currentUserSubject.next(response);
                     
                     // Reconnect SignalR with the new token
@@ -73,7 +67,6 @@ export class AuthService {
     logout() {
         // Clear tokens
         localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
         
         // Clear user state
         this.currentUserSubject.next(null);
@@ -86,10 +79,6 @@ export class AuthService {
         return localStorage.getItem(this.TOKEN_KEY);
     }
 
-    getRefreshToken(): string | null {
-        return localStorage.getItem(this.REFRESH_TOKEN_KEY);
-    }
-
     isLoggedIn(): boolean {
         const token = this.getToken();
         return !!token && !this.isTokenExpired(token);
@@ -97,6 +86,9 @@ export class AuthService {
 
     private isTokenExpired(token: string): boolean {
         try {
+            // Check if token is a valid JWT before parsing
+            if (!token.includes('.')) return true;
+            
             const payload = JSON.parse(atob(token.split('.')[1]));
             const currentTime = Math.floor(Date.now() / 1000);
             return payload.exp < currentTime;
@@ -104,29 +96,5 @@ export class AuthService {
             console.error('Error parsing token:', error);
             return true; // Treat invalid tokens as expired
         }
-    }
-
-    refreshToken() {
-        const refreshToken = this.getRefreshToken();
-        if (!refreshToken) {
-            return throwError(() => new Error('No refresh token available'));
-        }
-
-        return this.http.post<AuthResponse>(`${this.baseUrl}/identity/refresh`, { refreshToken }).pipe(
-            tap(response => {
-                if (response.accessToken) {
-                    localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-                    if (response.refreshToken) {
-                        localStorage.setItem(this.REFRESH_TOKEN_KEY, response.refreshToken);
-                    }
-                    this.currentUserSubject.next(response);
-                }
-            }),
-            catchError(error => {
-                // Refresh failed, logout user
-                this.logout();
-                return throwError(() => error);
-            })
-        );
     }
 }

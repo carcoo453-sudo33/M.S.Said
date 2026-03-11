@@ -4,6 +4,7 @@ using Portfolio.API.Application.Features.Bio.DTOs;
 using Portfolio.API.Application.Features.Bio.Mappers;
 using Portfolio.API.Domain.Enums;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using BioEntity = Portfolio.API.Entities.Bio;
 
@@ -32,16 +33,23 @@ public class BioService : IBioService
     /// <returns>The mapped <see cref="BioDto"/> for the first bio found, or <c>null</c> if no bio exists.</returns>
     public async Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default)
     {
-        var bios = await _unitOfWork.Repository<BioEntity>().GetAllAsync();
-        var bio = bios.FirstOrDefault();
+        var bio = await _unitOfWork.Repository<BioEntity>()
+            .Query()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+            
         if (bio == null) return null;
 
-        // Load related entities
-        var signatures = await _unitOfWork.Repository<Signature>().GetAllAsync();
-        var technicalFocuses = await _unitOfWork.Repository<TechnicalFocus>().GetAllAsync();
-        
-        bio.Signature = signatures.FirstOrDefault(s => s.BioId == bio.Id);
-        bio.TechnicalFocus = technicalFocuses.FirstOrDefault(tf => tf.BioId == bio.Id);
+        // Load related entities with targeted queries
+        bio.Signature = await _unitOfWork.Repository<Signature>()
+            .Query()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.BioId == bio.Id, cancellationToken);
+            
+        bio.TechnicalFocus = await _unitOfWork.Repository<TechnicalFocus>()
+            .Query()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(tf => tf.BioId == bio.Id, cancellationToken);
 
         // Calculate dynamic statistics
         bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);
@@ -61,8 +69,7 @@ public class BioService : IBioService
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
         var repository = _unitOfWork.Repository<BioEntity>();
-        var bios = await repository.GetAllAsync();
-        var bio = bios.FirstOrDefault();
+        var bio = await repository.Query().FirstOrDefaultAsync(cancellationToken);
 
         if (bio == null)
         {
@@ -70,12 +77,14 @@ public class BioService : IBioService
             await repository.AddAsync(bio);
         }
 
-        // Load related entities
-        var signatures = await _unitOfWork.Repository<Signature>().GetAllAsync();
-        var technicalFocuses = await _unitOfWork.Repository<TechnicalFocus>().GetAllAsync();
-        
-        bio.Signature = signatures.FirstOrDefault(s => s.BioId == bio.Id);
-        bio.TechnicalFocus = technicalFocuses.FirstOrDefault(tf => tf.BioId == bio.Id);
+        // Load related entities with targeted queries
+        bio.Signature = await _unitOfWork.Repository<Signature>()
+            .Query()
+            .FirstOrDefaultAsync(s => s.BioId == bio.Id, cancellationToken);
+            
+        bio.TechnicalFocus = await _unitOfWork.Repository<TechnicalFocus>()
+            .Query()
+            .FirstOrDefaultAsync(tf => tf.BioId == bio.Id, cancellationToken);
 
         BioMapper.UpdateEntity(bio, dto);
         await _unitOfWork.CompleteAsync();
@@ -112,8 +121,10 @@ public class BioService : IBioService
     {
         try
         {
-            var projects = await _unitOfWork.Repository<Project>().GetAllAsync();
-            var completedCount = projects.Count(p => p.Status == ProjectStatus.Completed);
+            var completedCount = await _unitOfWork.Repository<Project>()
+                .Query()
+                .AsNoTracking()
+                .CountAsync(p => p.Status == ProjectStatus.Completed);
             return completedCount.ToString();
         }
         catch

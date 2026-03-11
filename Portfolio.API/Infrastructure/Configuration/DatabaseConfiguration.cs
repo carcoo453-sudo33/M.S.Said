@@ -54,24 +54,14 @@ public static class DatabaseConfiguration
     /// <param name="logger">Logger used to record informational and warning messages about applied schema changes.</param>
     private static async Task ApplySchemaUpdatesAsync(PortfolioDbContext context, ILogger logger)
     {
-        var schemaUpdates = new[]
+        var allUpdates = new[]
         {
             ("Comments", "RepliesJson", "NVARCHAR(MAX) NULL"),
             ("Projects", "Views", "INT NOT NULL DEFAULT 0"),
             ("Projects", "IsFeatured", "BIT NOT NULL DEFAULT 0"),
             ("Projects", "GalleryJson", "NVARCHAR(MAX) NULL"),
             ("Projects", "ResponsibilitiesJson", "NVARCHAR(MAX) NULL"),
-            ("Projects", "ReactionsCount", "INT NOT NULL DEFAULT 0")
-        };
-
-        foreach (var (table, column, columnType) in schemaUpdates)
-        {
-            await AddColumnIfNotExistsAsync(context, table, column, columnType, logger);
-        }
-
-        // Add Arabic translation columns
-        var translationColumns = new[]
-        {
+            ("Projects", "ReactionsCount", "INT NOT NULL DEFAULT 0"),
             ("Projects", "Title_Ar", "NVARCHAR(500) NULL"),
             ("Projects", "Description_Ar", "NVARCHAR(MAX) NULL"),
             ("Projects", "Summary_Ar", "NVARCHAR(MAX) NULL"),
@@ -89,9 +79,18 @@ public static class DatabaseConfiguration
             ("ChangelogItems", "Description_Ar", "NVARCHAR(MAX) NULL")
         };
 
-        foreach (var (table, column, columnType) in translationColumns)
+        // Group by table to reduce SQL calls
+        var groupedUpdates = allUpdates.GroupBy(u => u.Item1);
+
+        foreach (var group in groupedUpdates)
         {
-            await AddColumnIfNotExistsAsync(context, table, column, columnType, logger);
+            var table = group.Key;
+            var columns = group.Select(u => new { Name = u.Item2, Type = u.Item3 }).ToList();
+            
+            foreach (var col in columns)
+            {
+                await AddColumnIfNotExistsAsync(context, table, col.Name, col.Type, logger);
+            }
         }
     }
 

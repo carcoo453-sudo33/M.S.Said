@@ -147,10 +147,10 @@ export class ToastComponent {
         const baseClasses = 'relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg backdrop-blur-sm transition-all duration-300 animate-toast-enter';
 
         const typeClasses = {
-            success: 'border-l-4 border-l-green-500',
-            error: 'border-l-4 border-l-red-500',
-            warning: 'border-l-4 border-l-yellow-500',
-            info: 'border-l-4 border-l-blue-500'
+            success: '',
+            error: '',
+            warning: '',
+            info: ''
         };
 
         // Add stacking effect like Sonner

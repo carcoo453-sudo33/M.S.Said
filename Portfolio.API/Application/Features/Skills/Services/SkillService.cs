@@ -2,6 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Skills.DTOs;
 using Portfolio.API.Application.Features.Skills.Mappers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Skills.Services;
 
@@ -23,8 +24,12 @@ public class SkillService : ISkillService
     /// <returns>An enumerable of SkillDto objects ordered by the Skill.Order value.</returns>
     public async Task<IEnumerable<SkillDto>> GetSkillsAsync()
     {
-        var skills = await _unitOfWork.Repository<Skill>().GetAllAsync();
-        return skills.OrderBy(s => s.Order).Select(SkillMapper.ToDto);
+        var skills = await _unitOfWork.Repository<Skill>()
+            .Query()
+            .AsNoTracking()
+            .OrderBy(s => s.Order)
+            .ToListAsync();
+        return skills.Select(SkillMapper.ToDto);
     }
 
     /// <summary>

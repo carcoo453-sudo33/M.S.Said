@@ -2,6 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Services.DTOs;
 using Portfolio.API.Application.Features.Services.Mappers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Services.Services;
 
@@ -24,7 +25,11 @@ public class ServiceService : IServiceService
     /// <returns>A collection of ServiceDto objects representing all services.</returns>
     public async Task<IEnumerable<ServiceDto>> GetServicesAsync()
     {
-        var services = await _unitOfWork.Repository<Service>().GetAllAsync();
+        var services = await _unitOfWork.Repository<Service>()
+            .Query()
+            .AsNoTracking()
+            .OrderBy(s => s.Order)
+            .ToListAsync();
         return services.Select(ServiceMapper.ToDto);
     }
 

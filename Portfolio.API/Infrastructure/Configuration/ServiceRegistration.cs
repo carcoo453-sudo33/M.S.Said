@@ -13,6 +13,7 @@ using Portfolio.API.Application.Features.Niches.Services;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Application.Features.Projects.Services;
 using Portfolio.API.Application.Features.References.Services;
+using Portfolio.API.Application.Features.Services.Services;
 using Portfolio.API.Application.Features.Skills.Services;
 using Portfolio.API.Application.Features.Comments.Services;
 using Portfolio.API.Application.Features.Reactions.Services;
@@ -38,7 +39,8 @@ public static class ServiceRegistration
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         services.AddDbContext<PortfolioDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(connectionString, o => 
+                o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
         // Identity
         services.AddIdentityApiEndpoints<IdentityUser>()
@@ -67,6 +69,7 @@ public static class ServiceRegistration
         services.AddScoped<GetRelatedProjectsQueryHandler>();
         services.AddScoped<SlugExistsQueryHandler>();
         services.AddScoped<IReferenceService, ReferenceService>();
+        services.AddScoped<IServiceService, ServiceService>();
         services.AddScoped<ISkillService, SkillService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IReactionService, ReactionService>();

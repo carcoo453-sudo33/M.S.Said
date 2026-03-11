@@ -25,6 +25,7 @@ public class CategoriesController : ControllerBase
     /// </summary>
     /// <returns>An ActionResult containing the collection of CategoryDto objects; on success returns 200 OK with the list.</returns>
     [HttpGet]
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
     {
         var categories = await _categoryService.GetCategoriesAsync();

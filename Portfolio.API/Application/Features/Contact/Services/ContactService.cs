@@ -3,6 +3,7 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Contact.DTOs;
 using Portfolio.API.Application.Features.Contact.Mappers;
 using Portfolio.API.Application.Features.Notifications.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Contact.Services;
 
@@ -31,11 +32,14 @@ public class ContactService : IContactService
     /// <returns>A sequence of ContactDto for the requested page ordered by SentAt descending.</returns>
     public async Task<IEnumerable<ContactDto>> GetMessagesAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        var messages = await _unitOfWork.Repository<ContactMessage>().GetAllAsync();
-        return messages.OrderByDescending(m => m.SentAt)
+        var messages = await _unitOfWork.Repository<ContactMessage>()
+            .Query()
+            .AsNoTracking()
+            .OrderByDescending(m => m.SentAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(ContactMapper.ToDto);
+            .ToListAsync(cancellationToken);
+        return messages.Select(ContactMapper.ToDto);
     }
 
     /// <summary>

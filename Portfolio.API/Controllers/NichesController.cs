@@ -25,6 +25,7 @@ public class NichesController : ControllerBase
     /// </summary>
     /// <returns>A collection of all niches as NicheDto objects.</returns>
     [HttpGet]
+    [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)] // Cache for 5 minutes
     public async Task<ActionResult<IEnumerable<NicheDto>>> GetAll()
     {
         var niches = await _nicheService.GetNichesAsync();

@@ -2,6 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Education.DTOs;
 using Portfolio.API.Application.Features.Education.Mappers;
+using Microsoft.EntityFrameworkCore;
 using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Education.Services;
@@ -25,8 +26,12 @@ public class EducationService : IEducationService
     /// <returns>An IEnumerable&lt;EducationDto&gt; containing all education records mapped to DTOs, ordered by Duration descending.</returns>
     public async Task<IEnumerable<EducationDto>> GetEducationAsync()
     {
-        var education = await _unitOfWork.Repository<EducationEntity>().GetAllAsync();
-        return education.OrderByDescending(e => e.Duration).Select(EducationMapper.ToDto);
+        var education = await _unitOfWork.Repository<EducationEntity>()
+            .Query()
+            .AsNoTracking()
+            .OrderByDescending(e => e.Duration)
+            .ToListAsync();
+        return education.Select(EducationMapper.ToDto);
     }
 
     /// <summary>

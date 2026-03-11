@@ -90,7 +90,7 @@ public class NotificationService : INotificationService
     /// <returns>A list of NotificationDto ordered by creation time descending, containing up to <paramref name="limit"/> items; if <paramref name="unreadOnly"/> is true, only unread notifications are included.</returns>
     public async Task<List<NotificationDto>> GetNotificationsAsync(int limit = 50, bool unreadOnly = false)
     {
-        var query = _context.Notifications.AsQueryable();
+        var query = _context.Notifications.AsNoTracking().AsQueryable();
         
         if (unreadOnly)
             query = query.Where(n => !n.IsRead);
@@ -141,16 +141,9 @@ public class NotificationService : INotificationService
     /// </summary>
     public async Task MarkAllAsReadAsync()
     {
-        var unreadNotifications = await _context.Notifications
+        await _context.Notifications
             .Where(n => !n.IsRead)
-            .ToListAsync();
-        
-        foreach (var notification in unreadNotifications)
-        {
-            notification.IsRead = true;
-        }
-        
-        await _context.SaveChangesAsync();
+            .ExecuteUpdateAsync(setters => setters.SetProperty(n => n.IsRead, true));
     }
 
     /// <summary>
@@ -178,9 +171,7 @@ public class NotificationService : INotificationService
     /// </remarks>
     public async Task ClearAllAsync()
     {
-        var allNotifications = await _context.Notifications.ToListAsync();
-        _context.Notifications.RemoveRange(allNotifications);
-        await _context.SaveChangesAsync();
+        await _context.Notifications.ExecuteDeleteAsync();
     }
 
     /// <summary>

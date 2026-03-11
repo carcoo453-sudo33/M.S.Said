@@ -1,14 +1,17 @@
 using Portfolio.API.Application.Features.Blog.DTOs;
+using Portfolio.API.Application.Common;
 
 namespace Portfolio.API.Application.Features.Blog.Services;
 
 public interface IBlogService
 {
     /// <summary>
-/// Retrieves all blog posts.
+/// Retrieves blog posts with pagination.
 /// </summary>
-/// <returns>A list of BlogPostDto objects representing all blog posts.</returns>
-Task<List<BlogPostDto>> GetPostsAsync();
+/// <param name="page">Page number (1-based). Default is 1.</param>
+/// <param name="pageSize">Number of posts per page. Default is 10.</param>
+/// <returns>A PagedResult containing BlogPostDto objects.</returns>
+Task<PagedResult<BlogPostDto>> GetPostsAsync(int page = 1, int pageSize = 10);
     /// <summary>
 /// Get a blog post by its identifier.
 /// </summary>
