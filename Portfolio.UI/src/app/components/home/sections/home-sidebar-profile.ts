@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -342,7 +342,7 @@ import { SignalRService } from '../../../services/signalr.service';
     `,
     styles: []
 })
-export class HomeSidebarProfileComponent {
+export class HomeSidebarProfileComponent implements OnChanges {
     public auth = inject(AuthService);
     private profileService = inject(ProfileService);
     private toast = inject(ToastService);
@@ -372,6 +372,10 @@ export class HomeSidebarProfileComponent {
     isUploadingCV = false;
     avatarPreview: string | null = null;
     editForm: BioEntry = this.getEmptyBio();
+    
+    // Cached URLs to prevent ExpressionChangedAfterItHasBeenCheckedError
+    cachedAvatarUrl: string = '';
+    cachedCVUrl: string | null = null;
 
     get translatedName(): string {
         return this.translationHelper.getTranslatedField(this.bio, 'name');
@@ -412,6 +416,14 @@ export class HomeSidebarProfileComponent {
             cvUrl: '',
             twitterUrl: ''
         };
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // Reset cached URLs when bio changes to ensure they're recalculated
+        if (changes['bio']) {
+            this.cachedAvatarUrl = '';
+            this.cachedCVUrl = null;
+        }
     }
 
     openEditModal() {
@@ -490,6 +502,9 @@ export class HomeSidebarProfileComponent {
         this.profileService.updateBio(this.editForm.id, this.editForm).subscribe({
             next: () => {
                 this.bio = { ...this.editForm };
+                // Reset cached URLs after bio update
+                this.cachedAvatarUrl = '';
+                this.cachedCVUrl = null;
                 this.bioUpdated.emit(this.bio);
                 this.showEditModal = false;
                 this.isSaving = false;
@@ -503,13 +518,24 @@ export class HomeSidebarProfileComponent {
     }
 
     getAvatarUrl() {
+        // Return cached URL to prevent ExpressionChangedAfterItHasBeenCheckedError
+        if (this.cachedAvatarUrl) {
+            return this.cachedAvatarUrl;
+        }
+        
         const avatar = this.bio?.avatarUrl;
-        if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
-        if (avatar.startsWith('http')) return avatar;
-        // Clean up leading slashes to avoid double slashes
-        const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
-        const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
-        return `${baseUrl}/${cleanPath}`;
+        if (!avatar) {
+            this.cachedAvatarUrl = 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
+        } else if (avatar.startsWith('http')) {
+            this.cachedAvatarUrl = avatar;
+        } else {
+            // Clean up leading slashes to avoid double slashes
+            const cleanPath = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+            const baseUrl = environment.apiUrl.replace('/api', '').replace(/\/$/, '');
+            this.cachedAvatarUrl = `${baseUrl}/${cleanPath}`;
+        }
+        
+        return this.cachedAvatarUrl;
     }
 
     getCVUrl() {
