@@ -97,4 +97,21 @@ export class AuthService {
             return true; // Treat invalid tokens as expired
         }
     }
+
+    isTokenExpiringSoon(token: string): boolean {
+        try {
+            // Check if token is a valid JWT before parsing
+            if (!token.includes('.')) return true;
+            
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Math.floor(Date.now() / 1000);
+            const expirationThreshold = 5 * 60; // 5 minutes in seconds
+            
+            // Return true if token expires within 5 minutes
+            return (payload.exp - currentTime) < expirationThreshold;
+        } catch (error) {
+            console.error('Error parsing token:', error);
+            return true; // Treat invalid tokens as expiring soon
+        }
+    }
 }

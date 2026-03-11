@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError, switchMap, filter, take } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -15,6 +15,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     if (!isPublicEndpoint) {
         const token = authService.getToken();
         if (token) {
+            // Check if token is about to expire (within 5 minutes)
+            if (authService.isTokenExpiringSoon(token)) {
+                // Token is expiring soon, logout and redirect to login
+                authService.logout();
+                if (!window.location.pathname.includes('/login')) {
+                    router.navigate(['/login'], { 
+                        queryParams: { returnUrl: window.location.pathname }
+                    });
+                }
+                return throwError(() => new Error('Session expired. Please log in again.'));
+            }
+            
             req = req.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`
