@@ -17,11 +17,15 @@
 /* ============================================
    DOTTED GRID BACKGROUND - PERSISTENT
    ============================================ */
-body {
+html {
   background-image: 
     radial-gradient(circle, hsl(var(--grid-dot)) 1px, transparent 1px),
     linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background))) !important;
   background-size: 20px 20px, 100% 100% !important;
   background-position: 0 0, 0 0 !important;
   background-attachment: fixed, scroll !important;
+}
+
+body {
+  background: transparent !important;
 }
