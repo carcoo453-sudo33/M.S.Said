@@ -58,6 +58,8 @@ public class ProjectsController : ControllerBase
         }
 
         return Ok(project);
+    }
+
     [HttpPost("{slug}/views")]
     public async Task<IActionResult> TrackProjectView(string slug, CancellationToken cancellationToken)
     {
@@ -69,7 +71,7 @@ public class ProjectsController : ControllerBase
 
         return Ok();
     }
-    }
+
 
     /// <summary>
     /// Retrieves the collection of featured projects.

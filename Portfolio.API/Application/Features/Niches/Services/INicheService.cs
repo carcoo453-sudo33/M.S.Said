@@ -4,13 +4,6 @@ namespace Portfolio.API.Application.Features.Niches.Services;
 
 public interface INicheService
 {
-<<<<<<< HEAD
-    Task<IEnumerable<NicheDto>> GetNichesAsync(CancellationToken cancellationToken = default);
-    Task<NicheDto?> GetNicheByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<NicheDto> CreateNicheAsync(NicheDto dto, CancellationToken cancellationToken = default);
-    Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto, CancellationToken cancellationToken = default);
-    Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default);
-=======
     /// <summary>
 /// Retrieves all niches.
 /// </summary>
@@ -42,7 +35,6 @@ Task<NicheDto> UpdateNicheAsync(Guid id, NicheDto dto, CancellationToken cancell
 /// <param name="id">The unique identifier of the niche to delete.</param>
 /// <param name="cancellationToken">Optional token to cancel the operation.</param>
 Task DeleteNicheAsync(Guid id, CancellationToken cancellationToken = default);
->>>>>>> origin/master
 }
 
 

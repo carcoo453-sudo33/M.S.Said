@@ -11,13 +11,10 @@ public class BlogController : ControllerBase
 {
     private readonly IBlogService _blogService;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of the <see cref="BlogController"/> class with the provided blog service.
     /// </summary>
     /// <param name="blogService">The service used to handle blog post operations.</param>
->>>>>>> origin/master
     public BlogController(IBlogService blogService)
     {
         _blogService = blogService;
@@ -70,20 +67,8 @@ public class BlogController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdatePost(Guid id, BlogPostDto dto)
     {
-<<<<<<< HEAD
-        try
-        {
-            var result = await _blogService.UpdatePostAsync(id, dto);
-            return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(ex.Message);
-        }
-=======
         var result = await _blogService.UpdatePostAsync(id, dto);
         return Ok(result);
->>>>>>> origin/master
     }
 
     /// <summary>
@@ -109,19 +94,7 @@ public class BlogController : ControllerBase
     [HttpPost("import-from-url")]
     public async Task<ActionResult<BlogPostDto>> ImportFromUrl([FromBody] ImportUrlRequest request)
     {
-<<<<<<< HEAD
-        try
-        {
-            var result = await _blogService.ImportFromUrlAsync(request.Url);
-            return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-=======
         var result = await _blogService.ImportFromUrlAsync(request.Url);
         return Ok(result);
->>>>>>> origin/master
     }
 }

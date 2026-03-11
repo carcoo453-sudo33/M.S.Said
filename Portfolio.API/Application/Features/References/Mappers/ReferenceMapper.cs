@@ -5,15 +5,12 @@ namespace Portfolio.API.Application.Features.References.Mappers;
 
 public class ReferenceMapper
 {
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Create a ReferenceDto whose properties mirror the provided Reference entity.
     /// </summary>
     /// <param name="entity">The source Reference entity to map from.</param>
     /// <returns>A ReferenceDto with values copied from the entity.</returns>
     /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="entity"/> is null.</exception>
->>>>>>> origin/master
     public static ReferenceDto ToDto(Reference entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
@@ -38,15 +35,12 @@ public class ReferenceMapper
         };
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Updates an existing Reference entity's mutable fields from a ReferenceDto and refreshes its UpdatedAt timestamp.
     /// </summary>
     /// <param name="entity">The target Reference entity to be updated.</param>
     /// <param name="dto">The ReferenceDto providing new values for the entity's fields.</param>
     /// <remarks>Sets UpdatedAt to DateTime.UtcNow. CreatedAt is not modified.</remarks>
->>>>>>> origin/master
     public static void UpdateEntity(Reference entity, ReferenceDto dto)
     {
         entity.Name = dto.Name;

@@ -9,9 +9,6 @@ public static class ContactEmailTemplate
     /// <summary>
     /// Generates the HTML email template for contact form submissions
     /// Maps Tailwind theme colors to email-safe hex values
-<<<<<<< HEAD
-    /// </summary>
-=======
     /// <summary>
     /// Generates an HTML document for a contact form submission email using the provided sender details and message.
     /// </summary>
@@ -20,7 +17,6 @@ public static class ContactEmailTemplate
     /// <param name="subject">The subject provided in the contact form.</param>
     /// <param name="message">The message body provided in the contact form; preserved with whitespace.</param>
     /// <returns>An HTML string representing a complete email (inline styles and color constants applied) for the given contact information.</returns>
->>>>>>> origin/master
     public static string GetContactEmailHtml(string senderName, string senderEmail, string subject, string message)
     {
         // Tailwind theme color mappings (from variables.css)

@@ -4,10 +4,6 @@ namespace Portfolio.API.Application.Features.Bio.Services;
 
 public interface IBioService
 {
-<<<<<<< HEAD
-    Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default);
-    Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default);
-=======
     /// <summary>
 /// Retrieves the current bio data.
 /// </summary>
@@ -21,7 +17,6 @@ Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default);
 /// <param name="cancellationToken">An optional token to cancel the operation.</param>
 /// <returns>The updated <see cref="BioDto"/>.</returns>
 Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default);
->>>>>>> origin/master
 }
 
 

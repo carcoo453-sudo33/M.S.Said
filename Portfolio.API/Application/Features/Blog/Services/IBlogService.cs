@@ -4,14 +4,6 @@ namespace Portfolio.API.Application.Features.Blog.Services;
 
 public interface IBlogService
 {
-<<<<<<< HEAD
-    Task<List<BlogPostDto>> GetPostsAsync();
-    Task<BlogPostDto?> GetPostByIdAsync(Guid id);
-    Task<BlogPostDto> CreatePostAsync(BlogPostDto dto);
-    Task<BlogPostDto> UpdatePostAsync(Guid id, BlogPostDto dto);
-    Task<bool> DeletePostAsync(Guid id);
-    Task<BlogPostDto> ImportFromUrlAsync(string url);
-=======
     /// <summary>
 /// Retrieves all blog posts.
 /// </summary>
@@ -48,7 +40,6 @@ Task<bool> DeletePostAsync(Guid id);
 /// <param name="url">The HTTP or HTTPS URL of the external blog post to import.</param>
 /// <returns>The created BlogPostDto representing the imported post.</returns>
 Task<BlogPostDto> ImportFromUrlAsync(string url);
->>>>>>> origin/master
 }
 
 
