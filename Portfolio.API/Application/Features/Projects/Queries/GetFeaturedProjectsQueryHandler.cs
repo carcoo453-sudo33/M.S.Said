@@ -15,7 +15,8 @@ public class GetFeaturedProjectsQueryHandler : BaseQueryHandler
     /// Retrieve featured projects ordered by their Order and map each to a ProjectDto.
     /// </summary>
     /// <returns>A list of ProjectDto representing featured projects ordered by the project's Order value.</returns>
-    public async Task<List<ProjectDto>> HandleAsync()
+    public async Task<List<ProjectDto>> HandleAsync(CancellationToken cancellationToken = default)
+
     {
         var projects = await GetBaseQuery()
             .Where(p => p.IsFeatured)
