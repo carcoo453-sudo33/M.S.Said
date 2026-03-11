@@ -18,7 +18,8 @@ public class GetProjectBySlugQueryHandler : BaseQueryHandler
     /// <returns>
     /// The <see cref="ProjectDto"/> for the matching project, or <c>null</c> if no project exists with the provided slug.
     /// </returns>
-    public async Task<ProjectDto?> HandleAsync(string slug)
+    public async Task<ProjectDto?> HandleAsync(string slug, CancellationToken cancellationToken = default)
+
     {
         var project = await GetBaseQuery()
             .Include(p => p.KeyFeatures)

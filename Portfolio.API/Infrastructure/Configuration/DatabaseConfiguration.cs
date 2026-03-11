@@ -21,13 +21,20 @@ public static class DatabaseConfiguration
         {
             var context = services.GetRequiredService<PortfolioDbContext>();
             
-            // Only run migrations automatically in development
-            if (app.Environment.IsDevelopment())
+            // Apply any pending migrations to the database
+            logger.LogInformation("Starting database migration process...");
+            try 
             {
                 context.Database.Migrate();
+                logger.LogInformation("Database migration completed successfully.");
+            }
+            catch (Exception migrateEx)
+            {
+                logger.LogError(migrateEx, "Critical error during EF migration. Tables may not be created correctly.");
+                // We continue to schema updates in case some direct SQL can still work
             }
             
-            // Apply database schema updates
+            // Apply database schema updates (direct SQL for missing columns)
             await ApplySchemaUpdatesAsync(context, logger);
             
             // Seed admin user
@@ -35,8 +42,9 @@ public static class DatabaseConfiguration
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+            logger.LogError(ex, "An error occurred during overall database initialization.");
         }
+
     }
 
     /// <summary>

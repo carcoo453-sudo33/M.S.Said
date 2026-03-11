@@ -37,7 +37,7 @@ public static class EducationMapper
     }
 
     /// <summary>
-    —Updates an EducationEntity's mutable fields with values taken from an EducationDto.
+    /// Updates an EducationEntity's mutable fields with values taken from an EducationDto.
     /// </summary>
     /// <param name="entity">The EducationEntity to update; fields are modified in place.</param>
     /// <param name="dto">The source EducationDto containing new values to apply.</param>
