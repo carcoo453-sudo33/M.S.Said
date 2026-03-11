@@ -243,3 +243,600 @@ SELECT @result
 2026-03-11 00:09:50.187 +02:00 [INF] Application started. Press Ctrl+C to shut down.
 2026-03-11 00:09:50.189 +02:00 [INF] Hosting environment: Development
 2026-03-11 00:09:50.193 +02:00 [INF] Content root path: C:\Users\Memo\Desktop\Projects\Portfolio\Portfolio.API
+2026-03-11 09:01:08.070 +02:00 [INF] Executed DbCommand (106ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-11 09:01:08.196 +02:00 [INF] Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+2026-03-11 09:01:08.311 +02:00 [INF] Executed DbCommand (107ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-03-11 09:01:08.730 +02:00 [INF] Executed DbCommand (82ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-03-11 09:01:08.963 +02:00 [INF] Executed DbCommand (72ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-03-11 09:01:09.041 +02:00 [INF] Executed DbCommand (72ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-03-11 09:01:09.133 +02:00 [INF] Executed DbCommand (84ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-03-11 09:01:09.153 +02:00 [INF] Applying migration '20260310182254_InitialCreate'.
+2026-03-11 09:01:09.463 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetRoles] (
+    [Id] nvarchar(450) NOT NULL,
+    [Name] nvarchar(256) NULL,
+    [NormalizedName] nvarchar(256) NULL,
+    [ConcurrencyStamp] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetRoles] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.546 +02:00 [INF] Executed DbCommand (78ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetUsers] (
+    [Id] nvarchar(450) NOT NULL,
+    [UserName] nvarchar(256) NULL,
+    [NormalizedUserName] nvarchar(256) NULL,
+    [Email] nvarchar(256) NULL,
+    [NormalizedEmail] nvarchar(256) NULL,
+    [EmailConfirmed] bit NOT NULL,
+    [PasswordHash] nvarchar(max) NULL,
+    [SecurityStamp] nvarchar(max) NULL,
+    [ConcurrencyStamp] nvarchar(max) NULL,
+    [PhoneNumber] nvarchar(max) NULL,
+    [PhoneNumberConfirmed] bit NOT NULL,
+    [TwoFactorEnabled] bit NOT NULL,
+    [LockoutEnd] datetimeoffset NULL,
+    [LockoutEnabled] bit NOT NULL,
+    [AccessFailedCount] int NOT NULL,
+    CONSTRAINT [PK_AspNetUsers] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.628 +02:00 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Bios] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Name_Ar] nvarchar(max) NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [Location] nvarchar(max) NOT NULL,
+    [Location_Ar] nvarchar(max) NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [Phone] nvarchar(max) NOT NULL,
+    [AvatarUrl] nvarchar(max) NULL,
+    [LinkedInUrl] nvarchar(max) NULL,
+    [GitHubUrl] nvarchar(max) NULL,
+    [WhatsAppUrl] nvarchar(max) NULL,
+    [CVUrl] nvarchar(max) NULL,
+    [TwitterUrl] nvarchar(max) NULL,
+    [FacebookUrl] nvarchar(max) NULL,
+    [DevToUrl] nvarchar(max) NULL,
+    [PinterestUrl] nvarchar(max) NULL,
+    [StackOverflowUrl] nvarchar(max) NULL,
+    [CareerStartDate] datetime2 NOT NULL,
+    [GitHubUsername] nvarchar(max) NULL,
+    [YearsOfExperience] nvarchar(max) NOT NULL,
+    [ProjectsCompleted] nvarchar(max) NOT NULL,
+    [CodeCommits] nvarchar(max) NOT NULL,
+    [EducationQuote] nvarchar(max) NULL,
+    [EducationQuote_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Bios] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.723 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [BlogPosts] (
+    [Id] uniqueidentifier NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Summary] nvarchar(max) NULL,
+    [Summary_Ar] nvarchar(max) NULL,
+    [Content] nvarchar(max) NULL,
+    [Content_Ar] nvarchar(max) NULL,
+    [ImageUrl] nvarchar(max) NULL,
+    [SocialUrl] nvarchar(max) NULL,
+    [SocialType] nvarchar(max) NULL,
+    [PublishedAt] datetime2 NOT NULL,
+    [Tags] nvarchar(max) NULL,
+    [Tags_Ar] nvarchar(max) NULL,
+    [Author] nvarchar(max) NULL,
+    [LikesCount] int NOT NULL,
+    [CommentsCount] int NOT NULL,
+    [StarsCount] int NOT NULL,
+    [ForksCount] int NOT NULL,
+    [Version] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_BlogPosts] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.804 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Categories] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Name_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Categories] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.886 +02:00 [INF] Executed DbCommand (78ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Education] (
+    [Id] uniqueidentifier NOT NULL,
+    [Institution] nvarchar(max) NOT NULL,
+    [Institution_Ar] nvarchar(max) NULL,
+    [Degree] nvarchar(max) NOT NULL,
+    [Degree_Ar] nvarchar(max) NULL,
+    [Duration] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [Location] nvarchar(max) NULL,
+    [Location_Ar] nvarchar(max) NULL,
+    [ImageUrl] nvarchar(max) NULL,
+    [IsCompleted] bit NOT NULL,
+    [Category] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Education] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:09.967 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Niches] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Name_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Niches] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.048 +02:00 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Notifications] (
+    [Id] uniqueidentifier NOT NULL,
+    [Type] int NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Message] nvarchar(max) NOT NULL,
+    [Link] nvarchar(max) NULL,
+    [Icon] nvarchar(max) NULL,
+    [IsRead] bit NOT NULL,
+    [RelatedEntityId] nvarchar(max) NULL,
+    [RelatedEntityType] nvarchar(max) NULL,
+    [SenderName] nvarchar(max) NULL,
+    [SenderEmail] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Notifications] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.134 +02:00 [INF] Executed DbCommand (79ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Projects] (
+    [Id] uniqueidentifier NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Slug] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [Summary] nvarchar(max) NULL,
+    [Summary_Ar] nvarchar(max) NULL,
+    [TechStack] nvarchar(max) NULL,
+    [Category] int NULL,
+    [Category_Ar] nvarchar(max) NULL,
+    [Niche] nvarchar(max) NULL,
+    [Niche_Ar] nvarchar(max) NULL,
+    [Company] nvarchar(max) NULL,
+    [Company_Ar] nvarchar(max) NULL,
+    [ImageUrl] nvarchar(max) NULL,
+    [DemoUrl] nvarchar(max) NULL,
+    [RepoUrl] nvarchar(max) NULL,
+    [Duration] nvarchar(max) NULL,
+    [Duration_Ar] nvarchar(max) NULL,
+    [Language] int NULL,
+    [Language_Ar] nvarchar(max) NULL,
+    [Architecture] int NULL,
+    [Architecture_Ar] nvarchar(max) NULL,
+    [Status] int NULL,
+    [Status_Ar] nvarchar(max) NULL,
+    [Type] int NULL,
+    [Type_Ar] nvarchar(max) NULL,
+    [DevelopmentMethod] int NULL,
+    [DevelopmentMethod_Ar] nvarchar(max) NULL,
+    [Order] int NOT NULL,
+    [IsFeatured] bit NOT NULL,
+    [Views] int NOT NULL,
+    [ReactionsCount] int NOT NULL,
+    [ResponsibilitiesJson] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Projects] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.217 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [References] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Name_Ar] nvarchar(max) NULL,
+    [Role] nvarchar(max) NULL,
+    [Role_Ar] nvarchar(max) NULL,
+    [Company] nvarchar(max) NULL,
+    [Company_Ar] nvarchar(max) NULL,
+    [Content] nvarchar(max) NOT NULL,
+    [Content_Ar] nvarchar(max) NULL,
+    [ImagePath] nvarchar(max) NULL,
+    [Phone] nvarchar(max) NULL,
+    [Email] nvarchar(max) NULL,
+    [SocialLink] nvarchar(max) NULL,
+    [PublishedAt] datetime2 NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_References] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.301 +02:00 [INF] Executed DbCommand (78ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Services] (
+    [Id] uniqueidentifier NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [IconPath] nvarchar(max) NULL,
+    [Order] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Services] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.388 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Skills] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [IconPath] nvarchar(max) NULL,
+    [Order] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Skills] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:10.468 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetRoleClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [RoleId] nvarchar(450) NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetRoleClaims] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.549 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetUserClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] nvarchar(450) NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetUserClaims] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.635 +02:00 [INF] Executed DbCommand (81ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetUserLogins] (
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [ProviderKey] nvarchar(450) NOT NULL,
+    [ProviderDisplayName] nvarchar(max) NULL,
+    [UserId] nvarchar(450) NOT NULL,
+    CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY ([LoginProvider], [ProviderKey]),
+    CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.719 +02:00 [INF] Executed DbCommand (80ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetUserRoles] (
+    [UserId] nvarchar(450) NOT NULL,
+    [RoleId] nvarchar(450) NOT NULL,
+    CONSTRAINT [PK_AspNetUserRoles] PRIMARY KEY ([UserId], [RoleId]),
+    CONSTRAINT [FK_AspNetUserRoles_AspNetRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AspNetRoles] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.802 +02:00 [INF] Executed DbCommand (78ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [AspNetUserTokens] (
+    [UserId] nvarchar(450) NOT NULL,
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [Name] nvarchar(450) NOT NULL,
+    [Value] nvarchar(max) NULL,
+    CONSTRAINT [PK_AspNetUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name]),
+    CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.884 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Signatures] (
+    [Id] uniqueidentifier NOT NULL,
+    [BioId] uniqueidentifier NOT NULL,
+    [Role] nvarchar(max) NULL,
+    [Role_Ar] nvarchar(max) NULL,
+    [Name] nvarchar(max) NULL,
+    [Name_Ar] nvarchar(max) NULL,
+    [Subtitle] nvarchar(max) NULL,
+    [Subtitle_Ar] nvarchar(max) NULL,
+    [VerifiedText] nvarchar(max) NULL,
+    [VerifiedText_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Signatures] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Signatures_Bios_BioId] FOREIGN KEY ([BioId]) REFERENCES [Bios] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:10.966 +02:00 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [TechnicalFocuses] (
+    [Id] uniqueidentifier NOT NULL,
+    [BioId] uniqueidentifier NOT NULL,
+    [Title] nvarchar(max) NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Description] nvarchar(max) NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [Items] nvarchar(max) NULL,
+    [Items_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_TechnicalFocuses] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_TechnicalFocuses_Bios_BioId] FOREIGN KEY ([BioId]) REFERENCES [Bios] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.051 +02:00 [INF] Executed DbCommand (79ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [ChangelogItems] (
+    [Id] uniqueidentifier NOT NULL,
+    [ProjectId] uniqueidentifier NOT NULL,
+    [Date] nvarchar(max) NOT NULL,
+    [Version] nvarchar(max) NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_ChangelogItems] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_ChangelogItems_Projects_ProjectId] FOREIGN KEY ([ProjectId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.132 +02:00 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Comments] (
+    [Id] uniqueidentifier NOT NULL,
+    [ProjectId] uniqueidentifier NOT NULL,
+    [Author] nvarchar(max) NOT NULL,
+    [AvatarUrl] nvarchar(max) NULL,
+    [Date] nvarchar(max) NOT NULL,
+    [Content] nvarchar(max) NOT NULL,
+    [Likes] int NOT NULL,
+    [RepliesJson] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Comments] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Comments_Projects_ProjectId] FOREIGN KEY ([ProjectId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.221 +02:00 [INF] Executed DbCommand (81ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [KeyFeatures] (
+    [Id] uniqueidentifier NOT NULL,
+    [ProjectId] uniqueidentifier NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Link] nvarchar(max) NULL,
+    [Date] nvarchar(max) NULL,
+    [FeatureType] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_KeyFeatures] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_KeyFeatures_Projects_ProjectId] FOREIGN KEY ([ProjectId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.314 +02:00 [INF] Executed DbCommand (77ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [ProjectImages] (
+    [Id] uniqueidentifier NOT NULL,
+    [ProjectId] uniqueidentifier NOT NULL,
+    [ImageUrl] nvarchar(max) NOT NULL,
+    [Title] nvarchar(max) NOT NULL,
+    [Title_Ar] nvarchar(max) NULL,
+    [Type] int NOT NULL,
+    [Order] int NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [Description_Ar] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_ProjectImages] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_ProjectImages_Projects_ProjectId] FOREIGN KEY ([ProjectId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.398 +02:00 [INF] Executed DbCommand (79ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Reactions] (
+    [Id] uniqueidentifier NOT NULL,
+    [ProjectId] uniqueidentifier NOT NULL,
+    [UserId] nvarchar(max) NOT NULL,
+    [ReactionType] int NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Reactions] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Reactions_Projects_ProjectId] FOREIGN KEY ([ProjectId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.484 +02:00 [INF] Executed DbCommand (82ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [Seos] (
+    [Id] uniqueidentifier NOT NULL,
+    [EntityId] uniqueidentifier NOT NULL,
+    [EntityType] nvarchar(max) NOT NULL,
+    [Slug] nvarchar(max) NULL,
+    [MetaTitle] nvarchar(max) NULL,
+    [MetaDescription] nvarchar(max) NULL,
+    [MetaKeywords] nvarchar(max) NULL,
+    [OgImage] nvarchar(max) NULL,
+    [OgTitle] nvarchar(max) NULL,
+    [OgDescription] nvarchar(max) NULL,
+    [CanonicalUrl] nvarchar(max) NULL,
+    [StructuredData] nvarchar(max) NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_Seos] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Seos_BlogPosts_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [BlogPosts] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Seos_Projects_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [Projects] ([Id]) ON DELETE CASCADE,
+    CONSTRAINT [FK_Seos_Services_EntityId] FOREIGN KEY ([EntityId]) REFERENCES [Services] ([Id]) ON DELETE CASCADE
+);
+2026-03-11 09:01:11.562 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_AspNetRoleClaims_RoleId] ON [AspNetRoleClaims] ([RoleId]);
+2026-03-11 09:01:11.644 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [RoleNameIndex] ON [AspNetRoles] ([NormalizedName]) WHERE [NormalizedName] IS NOT NULL;
+2026-03-11 09:01:11.724 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_AspNetUserClaims_UserId] ON [AspNetUserClaims] ([UserId]);
+2026-03-11 09:01:11.805 +02:00 [INF] Executed DbCommand (73ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_AspNetUserLogins_UserId] ON [AspNetUserLogins] ([UserId]);
+2026-03-11 09:01:11.883 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_AspNetUserRoles_RoleId] ON [AspNetUserRoles] ([RoleId]);
+2026-03-11 09:01:11.961 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [EmailIndex] ON [AspNetUsers] ([NormalizedEmail]);
+2026-03-11 09:01:12.040 +02:00 [INF] Executed DbCommand (73ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [UserNameIndex] ON [AspNetUsers] ([NormalizedUserName]) WHERE [NormalizedUserName] IS NOT NULL;
+2026-03-11 09:01:12.127 +02:00 [INF] Executed DbCommand (76ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_ChangelogItems_ProjectId] ON [ChangelogItems] ([ProjectId]);
+2026-03-11 09:01:12.531 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Comments_ProjectId] ON [Comments] ([ProjectId]);
+2026-03-11 09:01:12.617 +02:00 [INF] Executed DbCommand (73ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_KeyFeatures_ProjectId] ON [KeyFeatures] ([ProjectId]);
+2026-03-11 09:01:12.698 +02:00 [INF] Executed DbCommand (73ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_ProjectImages_ProjectId] ON [ProjectImages] ([ProjectId]);
+2026-03-11 09:01:12.777 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Reactions_ProjectId] ON [Reactions] ([ProjectId]);
+2026-03-11 09:01:12.857 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Seos_EntityId] ON [Seos] ([EntityId]);
+2026-03-11 09:01:12.935 +02:00 [INF] Executed DbCommand (75ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Signatures_BioId] ON [Signatures] ([BioId]);
+2026-03-11 09:01:13.014 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_TechnicalFocuses_BioId] ON [TechnicalFocuses] ([BioId]);
+2026-03-11 09:01:13.092 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260310182254_InitialCreate', N'9.0.13');
+2026-03-11 09:01:13.099 +02:00 [INF] Applying migration '20260310184833_AddContactMessage'.
+2026-03-11 09:01:13.307 +02:00 [INF] Executed DbCommand (78ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE [ContactMessages] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [Phone] nvarchar(max) NULL,
+    [Subject] nvarchar(max) NOT NULL,
+    [Message] nvarchar(max) NOT NULL,
+    [SentAt] datetime2 NOT NULL,
+    [IsRead] bit NOT NULL,
+    [CreatedAt] datetime2 NOT NULL,
+    [UpdatedAt] datetime2 NOT NULL,
+    [IsDeleted] bit NOT NULL,
+    CONSTRAINT [PK_ContactMessages] PRIMARY KEY ([Id])
+);
+2026-03-11 09:01:13.385 +02:00 [INF] Executed DbCommand (72ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260310184833_AddContactMessage', N'9.0.13');
+2026-03-11 09:01:13.389 +02:00 [INF] Applying migration '20260310234630_AddCommentAndReactionConcurrency'.
+2026-03-11 09:01:13.610 +02:00 [INF] Executed DbCommand (74ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DROP INDEX [IX_Reactions_ProjectId] ON [Reactions];
+2026-03-11 09:01:13.731 +02:00 [INF] Executed DbCommand (115ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var sysname;
+SELECT @var = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Reactions]') AND [c].[name] = N'UserId');
+IF @var IS NOT NULL EXEC(N'ALTER TABLE [Reactions] DROP CONSTRAINT [' + @var + '];');
+ALTER TABLE [Reactions] ALTER COLUMN [UserId] nvarchar(450) NOT NULL;
+2026-03-11 09:01:13.863 +02:00 [INF] Executed DbCommand (110ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var1 sysname;
+SELECT @var1 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Projects]') AND [c].[name] = N'TechStack');
+IF @var1 IS NOT NULL EXEC(N'ALTER TABLE [Projects] DROP CONSTRAINT [' + @var1 + '];');
+ALTER TABLE [Projects] ALTER COLUMN [TechStack] nvarchar(450) NULL;
+2026-03-11 09:01:13.977 +02:00 [INF] Executed DbCommand (111ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var2 sysname;
+SELECT @var2 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Projects]') AND [c].[name] = N'Slug');
+IF @var2 IS NOT NULL EXEC(N'ALTER TABLE [Projects] DROP CONSTRAINT [' + @var2 + '];');
+ALTER TABLE [Projects] ALTER COLUMN [Slug] nvarchar(450) NOT NULL;
+2026-03-11 09:01:14.093 +02:00 [INF] Executed DbCommand (110ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var3 sysname;
+SELECT @var3 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'Title');
+IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var3 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [Title] nvarchar(250) NOT NULL;
+2026-03-11 09:01:14.210 +02:00 [INF] Executed DbCommand (111ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var4 sysname;
+SELECT @var4 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'SenderName');
+IF @var4 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var4 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [SenderName] nvarchar(200) NULL;
+2026-03-11 09:01:14.327 +02:00 [INF] Executed DbCommand (109ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var5 sysname;
+SELECT @var5 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'SenderEmail');
+IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var5 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [SenderEmail] nvarchar(320) NULL;
+2026-03-11 09:01:14.447 +02:00 [INF] Executed DbCommand (114ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var6 sysname;
+SELECT @var6 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'RelatedEntityType');
+IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var6 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [RelatedEntityType] nvarchar(100) NULL;
+2026-03-11 09:01:14.564 +02:00 [INF] Executed DbCommand (111ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var7 sysname;
+SELECT @var7 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'RelatedEntityId');
+IF @var7 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var7 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [RelatedEntityId] nvarchar(100) NULL;
+2026-03-11 09:01:14.681 +02:00 [INF] Executed DbCommand (112ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var8 sysname;
+SELECT @var8 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'Message');
+IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var8 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [Message] nvarchar(2000) NOT NULL;
+2026-03-11 09:01:14.840 +02:00 [INF] Executed DbCommand (154ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var9 sysname;
+SELECT @var9 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'Link');
+IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var9 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [Link] nvarchar(2000) NULL;
+2026-03-11 09:01:15.009 +02:00 [INF] Executed DbCommand (160ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @var10 sysname;
+SELECT @var10 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Notifications]') AND [c].[name] = N'Icon');
+IF @var10 IS NOT NULL EXEC(N'ALTER TABLE [Notifications] DROP CONSTRAINT [' + @var10 + '];');
+ALTER TABLE [Notifications] ALTER COLUMN [Icon] nvarchar(100) NULL;
+2026-03-11 09:01:15.174 +02:00 [INF] Executed DbCommand (159ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+ALTER TABLE [Comments] ADD [RowVersion] rowversion NOT NULL;
+2026-03-11 09:01:15.335 +02:00 [INF] Executed DbCommand (147ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Reactions_ProjectId_UserId] ON [Reactions] ([ProjectId], [UserId]);
+2026-03-11 09:01:15.474 +02:00 [INF] Executed DbCommand (135ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Projects_Category] ON [Projects] ([Category]);
+2026-03-11 09:01:15.608 +02:00 [INF] Executed DbCommand (130ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Projects_CreatedAt] ON [Projects] ([CreatedAt]);
+2026-03-11 09:01:15.748 +02:00 [INF] Executed DbCommand (134ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX [IX_Projects_Slug] ON [Projects] ([Slug]);
+2026-03-11 09:01:15.888 +02:00 [INF] Executed DbCommand (136ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX [IX_Projects_TechStack] ON [Projects] ([TechStack]);
+2026-03-11 09:01:16.015 +02:00 [INF] Executed DbCommand (121ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20260310234630_AddCommentAndReactionConcurrency', N'9.0.13');
+2026-03-11 09:01:16.289 +02:00 [INF] Executed DbCommand (135ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
