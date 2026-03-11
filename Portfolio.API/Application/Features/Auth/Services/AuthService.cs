@@ -13,22 +13,17 @@ public class AuthService : IAuthService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfigurationService _configService;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of <see cref="AuthService"/> with its required dependencies.
     /// </summary>
     /// <param name="userManager">The ASP.NET Identity user manager used to find and validate users.</param>
     /// <param name="configService">Service that provides JWT configuration values (secret, expiry, issuer, audience).</param>
->>>>>>> origin/master
     public AuthService(UserManager<IdentityUser> userManager, IConfigurationService configService)
     {
         _userManager = userManager;
         _configService = configService;
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Authenticates a user using the provided email and password and returns a login result containing a JWT on success.
     /// </summary>
@@ -37,7 +32,6 @@ public class AuthService : IAuthService
     /// <returns>
     /// A LoginResponse: on success, Success = true with Token (JWT), Email, and UserId; on failure, Success = false with an error Message.
     /// </returns>
->>>>>>> origin/master
     public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
@@ -81,14 +75,11 @@ public class AuthService : IAuthService
         };
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Generate a signed JSON Web Token containing the user's identifier, email, and username.
     /// </summary>
     /// <param name="user">The user whose Id, Email, and UserName are included as claims (Email/UserName are treated as empty strings if null).</param>
     /// <returns>The serialized signed JWT containing claims for the user's id, email, and username.</returns>
->>>>>>> origin/master
     private string GenerateJwtToken(IdentityUser user)
     {
         var key = Encoding.UTF8.GetBytes(_configService.GetJwtSecretKey());

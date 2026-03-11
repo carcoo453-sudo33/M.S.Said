@@ -9,20 +9,15 @@ public class EmailService : IEmailService
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of <see cref="EmailService"/> with the application's configuration and a logger.
     /// </summary>
->>>>>>> origin/master
     public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
     {
         _configuration = configuration;
         _logger = logger;
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Sends a contact email using SMTP settings from configuration with the provided sender details and message.
     /// </summary>
@@ -35,7 +30,6 @@ public class EmailService : IEmailService
     /// If required SMTP settings or the recipient address are missing, the method logs a warning and exits without sending.
     /// On failure, the method logs the error and suppresses exceptions so failures do not propagate to callers.
     /// </remarks>
->>>>>>> origin/master
     public async Task SendContactEmailAsync(string senderName, string senderEmail, string subject, string message, CancellationToken cancellationToken = default)
     {
         try

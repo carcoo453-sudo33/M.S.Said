@@ -4,13 +4,6 @@ namespace Portfolio.API.Application.Features.Education.Services;
 
 public interface IEducationService
 {
-<<<<<<< HEAD
-    Task<IEnumerable<EducationDto>> GetEducationAsync();
-    Task<EducationDto?> GetEducationByIdAsync(Guid id);
-    Task<EducationDto> CreateEducationAsync(EducationDto dto);
-    Task<EducationDto> UpdateEducationAsync(Guid id, EducationDto dto);
-    Task<bool> DeleteEducationAsync(Guid id);
-=======
     /// <summary>
 /// Retrieves all education entries.
 /// </summary>
@@ -41,7 +34,6 @@ Task<EducationDto> UpdateEducationAsync(Guid id, EducationDto dto);
 /// <param name="id">The identifier of the education entry to delete.</param>
 /// <returns>true if the education entry was deleted, false otherwise.</returns>
 Task<bool> DeleteEducationAsync(Guid id);
->>>>>>> origin/master
 }
 
 

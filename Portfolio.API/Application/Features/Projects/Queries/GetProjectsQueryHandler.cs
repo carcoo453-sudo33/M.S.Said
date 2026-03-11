@@ -13,16 +13,12 @@ public class GetProjectsQueryHandler : BaseQueryHandler
     {
     }
 
-<<<<<<< HEAD
-    public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
-=======
     /// <summary>
     /// Retrieves a paged list of projects using the provided query parameters, applying category, featured, and search filters, sorting, and pagination.
     /// </summary>
     /// <param name="parameters">Query and pagination options (Category, IsFeatured, Search, SortBy, SortDirection, Page, PageSize).</param>
     /// <returns>A PagedResult&lt;ProjectDto&gt; containing the mapped project items, the total item count, current page, page size, and total pages.</returns>
     public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters)
->>>>>>> origin/master
     {
         var query = GetBaseQuery();
 

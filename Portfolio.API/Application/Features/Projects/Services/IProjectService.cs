@@ -5,17 +5,6 @@ namespace Portfolio.API.Application.Features.Projects.Services;
 
 public interface IProjectService
 {
-<<<<<<< HEAD
-    Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default);
-    Task<ProjectDto?> GetProjectBySlugAsync(string slug, CancellationToken cancellationToken = default);
-    Task<bool> TrackProjectViewAsync(string slug, CancellationToken cancellationToken = default);
-    Task<List<ProjectDto>> GetFeaturedProjectsAsync(CancellationToken cancellationToken = default);
-    Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug, CancellationToken cancellationToken = default);
-    Task<ProjectDto> CreateProjectAsync(ProjectCreateDto request, CancellationToken cancellationToken = default);
-    Task<ProjectDto?> UpdateProjectAsync(Guid id, ProjectUpdateDto request, CancellationToken cancellationToken = default);
-    Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<ProjectDto> ImportFromUrlAsync(ImportRequest request, CancellationToken cancellationToken = default);
-=======
     Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters);
     Task<ProjectDto?> GetProjectBySlugAsync(string slug);
     /// <summary>
@@ -54,7 +43,6 @@ Task<bool> DeleteProjectAsync(Guid id);
 /// <param name="request">The import request containing the source URL and any import options.</param>
 /// <returns>The imported project as a <see cref="ProjectDto"/>.</returns>
 Task<ProjectDto> ImportFromUrlAsync(ImportRequest request);
->>>>>>> origin/master
 }
 
 

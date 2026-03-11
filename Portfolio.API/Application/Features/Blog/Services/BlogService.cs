@@ -13,12 +13,9 @@ public class BlogService : IBlogService
     private readonly ILogger<BlogService> _logger;
     private readonly MetadataExtractor _metadataExtractor;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of the BlogService class with the specified unit of work and logger and creates a MetadataExtractor.
     /// </summary>
->>>>>>> origin/master
     public BlogService(
         IUnitOfWork unitOfWork,
         ILogger<BlogService> logger)
@@ -28,13 +25,10 @@ public class BlogService : IBlogService
         _metadataExtractor = new MetadataExtractor();
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve all blog posts ordered by published date, newest first.
     /// </summary>
     /// <returns>A list of BlogPostDto representing all blog posts, ordered by PublishedAt descending.</returns>
->>>>>>> origin/master
     public async Task<List<BlogPostDto>> GetPostsAsync()
     {
         _logger.LogInformation("Fetching all blog posts");
@@ -47,14 +41,11 @@ public class BlogService : IBlogService
         return posts.Select(BlogMapper.ToDto).ToList();
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve a blog post by its identifier.
     /// </summary>
     /// <param name="id">The identifier of the blog post to retrieve.</param>
     /// <returns>The mapped BlogPostDto for the specified post, or null if no post exists with the given identifier.</returns>
->>>>>>> origin/master
     public async Task<BlogPostDto?> GetPostByIdAsync(Guid id)
     {
         _logger.LogInformation("Fetching blog post: {PostId}", id);
@@ -71,14 +62,11 @@ public class BlogService : IBlogService
         return BlogMapper.ToDto(post);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Creates a new blog post from the provided DTO and persists it to the data store.
     /// </summary>
     /// <param name="dto">The DTO containing values for the new blog post.</param>
     /// <returns>The created blog post represented as a <see cref="BlogPostDto"/>.</returns>
->>>>>>> origin/master
     public async Task<BlogPostDto> CreatePostAsync(BlogPostDto dto)
     {
         _logger.LogInformation("Creating new blog post: {Title}", dto.Title);
@@ -115,8 +103,6 @@ public class BlogService : IBlogService
         return BlogMapper.ToDto(post);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Update the blog post with the given id using values from the provided DTO.
     /// </summary>
@@ -124,7 +110,6 @@ public class BlogService : IBlogService
     /// <param name="dto">A DTO containing the updated values to apply to the post.</param>
     /// <returns>The updated BlogPostDto.</returns>
     /// <exception cref="ArgumentException">Thrown when a blog post with the specified id does not exist.</exception>
->>>>>>> origin/master
     public async Task<BlogPostDto> UpdatePostAsync(Guid id, BlogPostDto dto)
     {
         _logger.LogInformation("Updating blog post: {PostId}", id);
@@ -147,14 +132,11 @@ public class BlogService : IBlogService
         return BlogMapper.ToDto(post);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Deletes the blog post with the specified identifier if it exists.
     /// </summary>
     /// <param name="id">The identifier of the blog post to delete.</param>
     /// <returns>`true` if the post was found and deleted, `false` otherwise.</returns>
->>>>>>> origin/master
     public async Task<bool> DeletePostAsync(Guid id)
     {
         _logger.LogInformation("Deleting blog post: {PostId}", id);
@@ -175,15 +157,12 @@ public class BlogService : IBlogService
         return true;
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Imports a blog post from the specified web URL into the datastore.
     /// </summary>
     /// <param name="url">The web URL to extract metadata and create the blog post from.</param>
     /// <returns>The created BlogPostDto representing the imported post.</returns>
     /// <exception cref="System.ArgumentException">Thrown when <paramref name="url"/> is null, empty, or whitespace.</exception>
->>>>>>> origin/master
     public async Task<BlogPostDto> ImportFromUrlAsync(string url)
     {
         _logger.LogInformation("Importing blog post from URL: {Url}", url);

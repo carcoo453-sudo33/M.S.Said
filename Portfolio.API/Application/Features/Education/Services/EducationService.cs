@@ -10,53 +10,41 @@ public class EducationService : IEducationService
 {
     private readonly IUnitOfWork _unitOfWork;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of <see cref="EducationService"/> with the specified unit of work.
     /// </summary>
     /// <param name="unitOfWork">Unit of work used to access repositories and persist changes.</param>
->>>>>>> origin/master
     public EducationService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve all education records ordered by Duration descending and map them to DTOs.
     /// </summary>
     /// <returns>An IEnumerable&lt;EducationDto&gt; containing all education records mapped to DTOs, ordered by Duration descending.</returns>
->>>>>>> origin/master
     public async Task<IEnumerable<EducationDto>> GetEducationAsync()
     {
         var education = await _unitOfWork.Repository<EducationEntity>().GetAllAsync();
         return education.OrderByDescending(e => e.Duration).Select(EducationMapper.ToDto);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve a single education record by its identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the education record to retrieve.</param>
     /// <returns>The <see cref="EducationDto"/> for the specified id, or <c>null</c> if no matching record exists.</returns>
->>>>>>> origin/master
     public async Task<EducationDto?> GetEducationByIdAsync(Guid id)
     {
         var education = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
         return education == null ? null : EducationMapper.ToDto(education);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Creates a new education entry from the provided DTO and persists it to the repository.
     /// </summary>
     /// <param name="dto">DTO containing the education data; if <see cref="Guid.Empty"/> is provided for Id, a new Id will be generated.</param>
     /// <returns>The created education as an <see cref="EducationDto"/> reflecting the persisted entity.</returns>
->>>>>>> origin/master
     public async Task<EducationDto> CreateEducationAsync(EducationDto dto)
     {
         var entity = new EducationEntity
@@ -69,8 +57,6 @@ public class EducationService : IEducationService
         return EducationMapper.ToDto(entity);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Updates an existing Education entity identified by the specified id with values from the provided DTO.
     /// </summary>
@@ -78,7 +64,6 @@ public class EducationService : IEducationService
     /// <param name="dto">DTO containing the new values to apply to the Education.</param>
     /// <returns>The updated Education mapped to an EducationDto.</returns>
     /// <exception cref="KeyNotFoundException">Thrown if no Education with the specified id exists.</exception>
->>>>>>> origin/master
     public async Task<EducationDto> UpdateEducationAsync(Guid id, EducationDto dto)
     {
         var education = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
@@ -90,13 +75,10 @@ public class EducationService : IEducationService
         return EducationMapper.ToDto(education);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Deletes the education entity with the specified id.
     /// </summary>
     /// <returns>True if the entity was found and deleted; false otherwise.</returns>
->>>>>>> origin/master
     public async Task<bool> DeleteEducationAsync(Guid id)
     {
         var education = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);

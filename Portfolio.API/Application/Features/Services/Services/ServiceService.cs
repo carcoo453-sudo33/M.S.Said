@@ -9,53 +9,41 @@ public class ServiceService : IServiceService
 {
     private readonly IUnitOfWork _unitOfWork;
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Initializes a new instance of ServiceService with the specified unit of work.
     /// </summary>
     /// <param name="unitOfWork">Unit-of-work used for repository access and transaction control.</param>
->>>>>>> origin/master
     public ServiceService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve all service entities and return them as DTOs.
     /// </summary>
     /// <returns>A collection of ServiceDto objects representing all services.</returns>
->>>>>>> origin/master
     public async Task<IEnumerable<ServiceDto>> GetServicesAsync()
     {
         var services = await _unitOfWork.Repository<Service>().GetAllAsync();
         return services.Select(ServiceMapper.ToDto);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Retrieve a service by its identifier and map it to a DTO.
     /// </summary>
     /// <param name="id">The identifier of the service to retrieve.</param>
     /// <returns>`ServiceDto` for the matching service, or `null` if no service exists with the specified id.</returns>
->>>>>>> origin/master
     public async Task<ServiceDto?> GetServiceByIdAsync(Guid id)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         return service == null ? null : ServiceMapper.ToDto(service);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Creates a new Service from the provided DTO, persists it, and returns the created service as a DTO.
     /// </summary>
     /// <param name="dto">Service data used to create the entity. If <see cref="Guid"/> in <c>dto.Id</c> is empty, a new identifier is generated.</param>
     /// <returns>The created Service mapped to a <see cref="ServiceDto"/>.</returns>
->>>>>>> origin/master
     public async Task<ServiceDto> CreateServiceAsync(ServiceDto dto)
     {
         var service = new Service
@@ -73,8 +61,6 @@ public class ServiceService : IServiceService
         return ServiceMapper.ToDto(service);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Updates the Service identified by the specified id with values from the provided DTO.
     /// </summary>
@@ -82,7 +68,6 @@ public class ServiceService : IServiceService
     /// <param name="dto">The DTO containing updated Service values.</param>
     /// <returns>The updated Service represented as a ServiceDto.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no Service with the specified id exists.</exception>
->>>>>>> origin/master
     public async Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
@@ -94,14 +79,11 @@ public class ServiceService : IServiceService
         return ServiceMapper.ToDto(service);
     }
 
-<<<<<<< HEAD
-=======
     /// <summary>
     /// Deletes the service with the specified identifier.
     /// </summary>
     /// <param name="id">The identifier of the service to delete.</param>
     /// <returns>`true` if a service was found and deleted, `false` otherwise.</returns>
->>>>>>> origin/master
     public async Task<bool> DeleteServiceAsync(Guid id)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
