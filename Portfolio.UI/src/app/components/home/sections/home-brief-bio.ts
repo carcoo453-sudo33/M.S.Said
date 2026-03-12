@@ -1,18 +1,19 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule, Code2, Zap, Edit3, X, Save, AlertTriangle, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, Zap, Edit3 } from 'lucide-angular';
 import { BioEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
-import { ProfileService } from '../../../services/profile.service';
+import { HomeService } from '../../../services/home.service';
 import { ToastService } from '../../../services/toast.service';
-import { TranslationHelperService } from '../../../services/translation-helper.service';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslationUtil } from '../../../utils';
+import { HomeBriefBioModalComponent } from './home-brief-bio-modal';
 
 @Component({
     selector: 'app-home-brief-bio',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, FormsModule, TranslateModule],
+    imports: [CommonModule, LucideAngularModule, TranslateModule, HomeBriefBioModalComponent],
     template: `
     <section class="animate-fade-in-up">
         <div class="flex items-center gap-4 mb-6 relative">
@@ -46,101 +47,39 @@ import { TranslationHelperService } from '../../../services/translation-helper.s
         </div>
     </section>
 
-    <!-- Edit Modal -->
-    <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
-        <div class="modal-content max-w-lg" (click)="$event.stopPropagation()">
-            <!-- Modal Header -->
-            <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
-                <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.bio.editTitle' | translate }}</h3>
-                <button (click)="closeEditModal()"
-                    class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
-                    <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
-                <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (EN)</label>
-                    <textarea [(ngModel)]="editForm.description" rows="5"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (AR)</label>
-                    <textarea [ngModel]="editForm.description_Ar" (ngModelChange)="editForm.description_Ar = $event" rows="5" dir="rtl"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                </div>
-                <div class="grid grid-cols-3 gap-6 pb-4">
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.yearsLabel' | translate }}</label>
-                        <input [(ngModel)]="editForm.yearsOfExperience" type="text"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.projectsLabel' | translate }}</label>
-                        <input [(ngModel)]="editForm.projectsCompleted" type="text"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.commitsLabel' | translate }}</label>
-                        <input [(ngModel)]="editForm.codeCommits" type="text"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
-                <button (click)="closeEditModal()"
-                    class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
-                    {{ 'common.cancel' | translate }}
-                </button>
-                <button (click)="saveBio()" [disabled]="isSaving"
-                    class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
-                    <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
-                    {{ isSaving ? ('common.saving' | translate) : ('common.saveChanges' | translate) }}
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Edit Modal Component -->
+    <app-home-brief-bio-modal
+        [isOpen]="showEditModal"
+        [bio]="bio"
+        [isSaving]="isSaving"
+        (close)="closeEditModal()"
+        (save)="saveBio($event)">
+    </app-home-brief-bio-modal>
   `
 })
 export class HomeBriefBioComponent {
-    public auth = inject(AuthService);
-    private profileService = inject(ProfileService);
-    private toast = inject(ToastService);
-    public translationHelper = inject(TranslationHelperService);
+    public readonly auth = inject(AuthService);
+    private readonly homeService = inject(HomeService);
+    private readonly toast = inject(ToastService);
+    private readonly translationService = inject(TranslationService);
 
     @Input() bio?: BioEntry;
     @Output() bioUpdated = new EventEmitter<BioEntry>();
 
     // Icons
-    Code2Icon = Code2;
     ZapIcon = Zap;
     EditIcon = Edit3;
-    XIcon = X;
-    SaveIcon = Save;
-    AlertIcon = AlertTriangle;
-    CheckIcon = CheckCircle;
 
     // Edit modal state
     showEditModal = false;
     isSaving = false;
-    editForm: BioEntry = {} as BioEntry;
 
     get translatedDescription(): string {
-        return this.translationHelper.getTranslatedField(this.bio, 'description');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(this.bio, 'description', currentLang);
     }
 
     openEditModal() {
-        if (this.bio) {
-            console.log('Bio data received (Brief):', this.bio);
-            // Reconcile ID casing
-            const id = this.bio.id || (this.bio as any).Id || (this.bio as any).ID || crypto.randomUUID();
-            this.editForm = { ...this.bio, id } as BioEntry;
-        } else {
-            this.editForm = { id: crypto.randomUUID() } as BioEntry;
-        }
         this.showEditModal = true;
     }
 
@@ -148,21 +87,21 @@ export class HomeBriefBioComponent {
         this.showEditModal = false;
     }
 
-    saveBio() {
-        if (!this.editForm.id) {
+    saveBio(editForm: BioEntry) {
+        if (!editForm.id) {
             this.toast.error('System error: Bio ID is missing. Please refresh.');
             return;
         }
         this.isSaving = true;
-        this.profileService.updateBio(this.editForm.id, this.editForm as BioEntry).subscribe({
+        this.homeService.updateBio(editForm.id, editForm).subscribe({
             next: () => {
-                this.bio = { ...this.editForm } as BioEntry;
+                this.bio = { ...editForm };
                 this.bioUpdated.emit(this.bio);
                 this.showEditModal = false;
                 this.isSaving = false;
                 this.toast.success('Bio section updated successfully');
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.isSaving = false;
                 this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
             }

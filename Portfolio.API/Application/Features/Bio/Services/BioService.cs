@@ -27,29 +27,21 @@ public class BioService : IBioService
     }
 
     /// <summary>
-    /// Retrieves the primary bio, loads its related signature and technical focus, updates runtime statistics, and returns the mapped DTO.
+    /// Retrieves the primary bio with eager-loaded related entities, updates runtime statistics, and returns the mapped DTO.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The mapped <see cref="BioDto"/> for the first bio found, or <c>null</c> if no bio exists.</returns>
     public async Task<BioDto?> GetBioAsync(CancellationToken cancellationToken = default)
     {
+        // Single query with eager loading of related entities
         var bio = await _unitOfWork.Repository<BioEntity>()
             .Query()
             .AsNoTracking()
+            .Include(b => b.Signature)
+            .Include(b => b.TechnicalFocus)
             .FirstOrDefaultAsync(cancellationToken);
             
         if (bio == null) return null;
-
-        // Load related entities with targeted queries
-        bio.Signature = await _unitOfWork.Repository<Signature>()
-            .Query()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.BioId == bio.Id, cancellationToken);
-            
-        bio.TechnicalFocus = await _unitOfWork.Repository<TechnicalFocus>()
-            .Query()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(tf => tf.BioId == bio.Id, cancellationToken);
 
         // Calculate dynamic statistics
         bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);
@@ -69,25 +61,35 @@ public class BioService : IBioService
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
         var repository = _unitOfWork.Repository<BioEntity>();
-        var bio = await repository.Query().FirstOrDefaultAsync(cancellationToken);
+        
+        // Single query with eager loading of related entities
+        var bio = await repository.Query()
+            .AsTracking()
+            .Include(b => b.Signature)
+            .Include(b => b.TechnicalFocus)
+            .FirstOrDefaultAsync(cancellationToken);
 
+        bool isNew = bio == null;
         if (bio == null)
         {
             bio = new BioEntity { Id = id };
-            await repository.AddAsync(bio);
         }
 
-        // Load related entities with targeted queries
-        bio.Signature = await _unitOfWork.Repository<Signature>()
-            .Query()
-            .FirstOrDefaultAsync(s => s.BioId == bio.Id, cancellationToken);
-            
-        bio.TechnicalFocus = await _unitOfWork.Repository<TechnicalFocus>()
-            .Query()
-            .FirstOrDefaultAsync(tf => tf.BioId == bio.Id, cancellationToken);
-
         BioMapper.UpdateEntity(bio, dto);
-        await _unitOfWork.CompleteAsync();
+        
+        // Add new bio or update existing
+        if (isNew)
+        {
+            await repository.AddAsync(bio);
+        }
+        else
+        {
+            repository.Update(bio);
+        }
+        
+        // Save changes to database
+        var saveResult = await _unitOfWork.CompleteAsync(cancellationToken);
+        System.Diagnostics.Debug.WriteLine($"✅ Bio saved successfully. Changes: {saveResult}");
 
         // Recalculate dynamic statistics after update
         bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);

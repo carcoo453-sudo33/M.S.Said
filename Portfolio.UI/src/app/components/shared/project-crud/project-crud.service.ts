@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ProjectService } from '../../../services/project.service';
+import { ProjectsPageService } from '../../../services/projects-page.service';
 import { ToastService } from '../../../services/toast.service';
 import { ProjectEntry } from '../../../models';
 import { KeyFeature, ChangelogItem, Responsibility } from '../../../models/project.model';
@@ -57,6 +58,7 @@ export interface ProjectFormData {
 })
 export class ProjectCrudService {
   private projectService = inject(ProjectService);
+  private projectsPageService = inject(ProjectsPageService);
   private toast = inject(ToastService);
 
   /**
@@ -65,7 +67,7 @@ export class ProjectCrudService {
   async createProject(formData: ProjectFormData): Promise<ProjectEntry> {
     try {
       const projectData = this.prepareProjectData(formData, true) as any;
-      const result = await this.projectService.createProject(projectData).toPromise();
+      const result = await this.projectsPageService.createProject(projectData).toPromise();
       this.toast.success('Project created successfully');
       return result!;
     } catch (error) {
@@ -80,7 +82,7 @@ export class ProjectCrudService {
   async updateProject(id: string, formData: ProjectFormData): Promise<ProjectEntry> {
     try {
       const projectData = this.prepareProjectData(formData, false);
-      const result = await this.projectService.updateProject(id, { ...projectData, id } as ProjectEntry).toPromise();
+      const result = await this.projectsPageService.updateProject(id, { ...projectData, id } as ProjectEntry).toPromise();
       this.toast.success('Project updated successfully');
       return result!;
     } catch (error) {
@@ -94,7 +96,7 @@ export class ProjectCrudService {
    */
   async deleteProject(id: string): Promise<void> {
     try {
-      await this.projectService.deleteProject(id).toPromise();
+      await this.projectsPageService.deleteProject(id).toPromise();
       this.toast.success('Project deleted successfully');
     } catch (error) {
       this.toast.error('Failed to delete project');

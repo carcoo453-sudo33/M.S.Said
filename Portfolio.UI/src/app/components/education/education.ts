@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { ProfileService } from '../../services/profile.service';
+import { EducationService } from '../../services/education.service';
+import { HomeService } from '../../services/home.service';
 import { AuthService } from '../../services/auth.service';
 import { EducationEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
@@ -44,13 +45,14 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     templateUrl: './education.html'
 })
 export class EducationComponent implements OnInit {
-    private profileService = inject(ProfileService);
-    private router = inject(Router);
-    public auth = inject(AuthService);
-    public translationService = inject(TranslationService);
-    private translate = inject(TranslateService);
-    private titleService = inject(Title);
-    private metaService = inject(Meta);
+    private readonly educationService = inject(EducationService);
+    private readonly homeService = inject(HomeService);
+    private readonly router = inject(Router);
+    public readonly auth = inject(AuthService);
+    public readonly translationService = inject(TranslationService);
+    private readonly translate = inject(TranslateService);
+    private readonly titleService = inject(Title);
+    private readonly metaService = inject(Meta);
     allEducation = signal<EducationEntry[]>([]);
     bio = signal<BioEntry | null>(null);
     isLoading = signal(true);
@@ -86,9 +88,9 @@ export class EducationComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.profileService.getBio().subscribe({
+        this.homeService.getBio().subscribe({
             next: (bio) => this.bio.set(bio),
-            error: (err) => console.error('Education: Failed to load bio', err)
+            error: (err: any) => console.error('Education: Failed to load bio', err)
         });
         this.loadEducation();
         this.updateSeoTags();
@@ -128,15 +130,15 @@ export class EducationComponent implements OnInit {
     loadEducation() {
         this.isLoading.set(true);
         this.hasError.set(false);
-        this.profileService.getEducation().subscribe({
-            next: (data) => {
+        this.educationService.getEducation().subscribe({
+            next: (data: any) => {
                 const categoryOrder: Record<string, number> = { 'Education': 1, 'Training': 2, 'Certification': 3, 'Achievement': 4 };
-                this.allEducation.set(data.sort((a, b) =>
+                this.allEducation.set(data.sort((a: any, b: any) =>
                     (categoryOrder[a.category] || 999) - (categoryOrder[b.category] || 999)
                 ));
                 this.isLoading.set(false);
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Education: Failed to load education entries', err);
                 this.isLoading.set(false);
                 this.hasError.set(true);

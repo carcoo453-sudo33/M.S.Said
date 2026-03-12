@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { LucideAngularModule, CheckCircle, Edit3, X, Save } from 'lucide-angular';
 import { BioEntry } from '../../../models';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
-import { ProfileService } from '../../../services/profile.service';
+import { HomeService } from '../../../services/home.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 
@@ -124,42 +125,42 @@ import { TranslationService } from '../../../services/translation.service';
             <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role/Badge (EN)</label>
-                    <input [(ngModel)]="editForm.signatureRole" placeholder="e.g., Strategic Lead"
+                    <input [(ngModel)]="editForm['signatureRole']" placeholder="e.g., Strategic Lead"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role/Badge (AR)</label>
-                    <input [(ngModel)]="editForm.signatureRole_Ar" placeholder="e.g., قائد استراتيجي" dir="rtl"
+                    <input [(ngModel)]="editForm['signatureRole_Ar']" placeholder="e.g., قائد استراتيجي" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (EN)</label>
-                    <input [(ngModel)]="editForm.signatureName" placeholder="e.g., Mostafa Samir Said"
+                    <input [(ngModel)]="editForm['signatureName']" placeholder="e.g., Mostafa Samir Said"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (AR)</label>
-                    <input [(ngModel)]="editForm.signatureName_Ar" placeholder="e.g., مصطفى سمير سعيد" dir="rtl"
+                    <input [(ngModel)]="editForm['signatureName_Ar']" placeholder="e.g., مصطفى سمير سعيد" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Subtitle (EN)</label>
-                    <input [(ngModel)]="editForm.signatureSubtitle" placeholder="e.g., Arch. Design"
+                    <input [(ngModel)]="editForm['signatureSubtitle']" placeholder="e.g., Arch. Design"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Subtitle (AR)</label>
-                    <input [(ngModel)]="editForm.signatureSubtitle_Ar" placeholder="e.g., تصميم معماري" dir="rtl"
+                    <input [(ngModel)]="editForm['signatureSubtitle_Ar']" placeholder="e.g., تصميم معماري" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Verified Text (EN)</label>
-                    <input [(ngModel)]="editForm.signatureVerifiedText" placeholder="e.g., Verified Origin"
+                    <input [(ngModel)]="editForm['signatureVerifiedText']" placeholder="e.g., Verified Origin"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Verified Text (AR)</label>
-                    <input [(ngModel)]="editForm.signatureVerifiedText_Ar" placeholder="e.g., أصل موثق" dir="rtl"
+                    <input [(ngModel)]="editForm['signatureVerifiedText_Ar']" placeholder="e.g., أصل موثق" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
@@ -317,9 +318,9 @@ export class SharedSignatureComponent {
     @Output() bioUpdated = new EventEmitter<BioEntry>();
     
     public auth = inject(AuthService);
-    private profileService = inject(ProfileService);
-    private toast = inject(ToastService);
-    private translationService = inject(TranslationService);
+    private readonly homeService = inject(HomeService);
+    private readonly toast = inject(ToastService);
+    private readonly translationService = inject(TranslationService);
     
     CheckIcon = CheckCircle;
     EditIcon = Edit3;
@@ -352,41 +353,41 @@ export class SharedSignatureComponent {
     getSignatureRole(): string {
         const currentLang = this.translationService.currentLang$();
         
-        if (currentLang === 'ar' && this.bio?.signatureRole_Ar) {
-            return this.bio.signatureRole_Ar;
+        if (currentLang === 'ar' && this.bio?.['signatureRole_Ar']) {
+            return this.bio['signatureRole_Ar'];
         }
         
-        return this.bio?.signatureRole || 'Strategic Lead';
+        return this.bio?.['signatureRole'] || 'Strategic Lead';
     }
 
     getSignatureName(): string {
         const currentLang = this.translationService.currentLang$();
         
-        if (currentLang === 'ar' && this.bio?.signatureName_Ar) {
-            return this.bio.signatureName_Ar;
+        if (currentLang === 'ar' && this.bio?.['signatureName_Ar']) {
+            return this.bio['signatureName_Ar'];
         }
         
-        return this.bio?.signatureName || this.bio?.name || 'Mostafa Samir Said';
+        return this.bio?.['signatureName'] || this.bio?.name || 'Mostafa Samir Said';
     }
 
     getSignatureSubtitle(): string {
         const currentLang = this.translationService.currentLang$();
         
-        if (currentLang === 'ar' && this.bio?.signatureSubtitle_Ar) {
-            return this.bio.signatureSubtitle_Ar;
+        if (currentLang === 'ar' && this.bio?.['signatureSubtitle_Ar']) {
+            return this.bio['signatureSubtitle_Ar'];
         }
         
-        return this.bio?.signatureSubtitle || 'Arch. Design';
+        return this.bio?.['signatureSubtitle'] || 'Arch. Design';
     }
 
     getVerifiedText(): string {
         const currentLang = this.translationService.currentLang$();
         
-        if (currentLang === 'ar' && this.bio?.signatureVerifiedText_Ar) {
-            return this.bio.signatureVerifiedText_Ar;
+        if (currentLang === 'ar' && this.bio?.['signatureVerifiedText_Ar']) {
+            return this.bio['signatureVerifiedText_Ar'];
         }
         
-        return this.bio?.signatureVerifiedText || 'Verified Origin';
+        return this.bio?.['signatureVerifiedText'] || 'Verified Origin';
     }
 
     isArabic(): boolean {
@@ -413,7 +414,7 @@ export class SharedSignatureComponent {
         }
 
         this.isSaving = true;
-        this.profileService.updateBio(this.bio.id, this.editForm as BioEntry).subscribe({
+        this.homeService.updateBio(this.bio.id, this.editForm as BioEntry).subscribe({
             next: (updatedBio: BioEntry) => {
                 this.bio = updatedBio;
                 this.bioUpdated.emit(updatedBio);
@@ -421,9 +422,9 @@ export class SharedSignatureComponent {
                 this.isSaving = false;
                 this.toast.success('Signature quote updated successfully');
             },
-            error: (err) => {
+            error: (err: HttpErrorResponse) => {
                 this.isSaving = false;
-                this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+                this.toast.error('Failed to save: ' + (err.error?.message || err.message || 'Server error'));
             }
         });
     }

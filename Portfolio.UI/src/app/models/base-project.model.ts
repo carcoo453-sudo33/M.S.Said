@@ -1,0 +1,47 @@
+import { ProjectImage } from './project-image.model';
+import { KeyFeature } from './key-feature.model';
+import { ChangelogItem } from './changelog-item.model';
+import { Responsibility } from './responsibility.model';
+import { Comment } from './comment.model';
+
+export interface BaseProject {
+    title: string;
+    title_Ar?: string;
+    description: string;
+    description_Ar?: string;
+    summary?: string;
+    summary_Ar?: string;
+    category: string;
+    category_Ar?: string;
+    tags?: string;
+    tags_Ar?: string;
+    niche?: string;
+    niche_Ar?: string;
+    company?: string;
+    company_Ar?: string;
+    imageUrl?: string;
+    gallery?: string[];
+    images?: ProjectImage[];
+    projectUrl?: string;
+    gitHubUrl?: string;
+    duration?: string;
+    duration_Ar?: string;
+    language?: string;
+    language_Ar?: string;
+    architecture?: string;
+    architecture_Ar?: string;
+    status?: string;
+    status_Ar?: string;
+    type?: string;
+    type_Ar?: string;
+    developmentMethod?: string;
+    developmentMethod_Ar?: string;
+    techStack?: string;
+    keyFeatures?: KeyFeature[];
+    changelog?: ChangelogItem[];
+    responsibilities?: Responsibility[];
+    comments?: Comment[];
+    reactionsCount?: number;
+    views: number;
+    [key: string]: any;
+}

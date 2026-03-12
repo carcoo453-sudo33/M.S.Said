@@ -5,7 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LucideAngularModule, Edit3, X, Save, Plus, Trash2 } from 'lucide-angular';
 import { BioEntry } from '../../../models/bio.model';
 import { AuthService } from '../../../services/auth.service';
-import { ProfileService } from '../../../services/profile.service';
+import { HomeService } from '../../../services/home.service';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({
@@ -50,23 +50,23 @@ import { ToastService } from '../../../services/toast.service';
             <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)</label>
-                    <input [(ngModel)]="editForm.technicalFocusTitle" placeholder="e.g., Technical Focus"
+                    <input [(ngModel)]="editForm['technicalFocusTitle']" placeholder="e.g., Technical Focus"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
-                    <input [(ngModel)]="editForm.technicalFocusTitle_Ar" placeholder="e.g., التركيز التقني" dir="rtl"
+                    <input [(ngModel)]="editForm['technicalFocusTitle_Ar']" placeholder="e.g., التركيز التقني" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (EN)</label>
-                    <textarea [(ngModel)]="editForm.technicalFocusDescription" rows="3"
+                    <textarea [(ngModel)]="editForm['technicalFocusDescription']" rows="3"
                         placeholder="Describe your technical focus..."
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Description (AR)</label>
-                    <textarea [(ngModel)]="editForm.technicalFocusDescription_Ar" rows="3" dir="rtl"
+                    <textarea [(ngModel)]="editForm['technicalFocusDescription_Ar']" rows="3" dir="rtl"
                         placeholder="صف تركيزك التقني..."
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                 </div>
@@ -91,7 +91,7 @@ import { ToastService } from '../../../services/toast.service';
                 </div>
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Focus Items (AR) - Comma Separated</label>
-                    <textarea [(ngModel)]="editForm.technicalFocusItems_Ar" rows="2" dir="rtl"
+                    <textarea [(ngModel)]="editForm['technicalFocusItems_Ar']" rows="2" dir="rtl"
                         placeholder="e.g., ASP.NET Core, Angular, أنظمة موزعة"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                 </div>
@@ -118,7 +118,7 @@ export class EducationSpecializationsComponent {
     
     public auth = inject(AuthService);
     private translate = inject(TranslateService);
-    private profileService = inject(ProfileService);
+    private homeService = inject(HomeService);
     private toast = inject(ToastService);
 
     // Icons
@@ -140,10 +140,10 @@ export class EducationSpecializationsComponent {
         const currentLang = this.translate.currentLang || 'en';
         let title = '';
         
-        if (currentLang === 'ar' && this.bio?.technicalFocusTitle_Ar) {
-            title = this.bio.technicalFocusTitle_Ar;
-        } else if (this.bio?.technicalFocusTitle) {
-            title = this.bio.technicalFocusTitle;
+        if (currentLang === 'ar' && this.bio?.['technicalFocusTitle_Ar']) {
+            title = this.bio['technicalFocusTitle_Ar'];
+        } else if (this.bio?.['technicalFocusTitle']) {
+            title = this.bio['technicalFocusTitle'];
         } else {
             title = this.translate.instant('education.technicalFocusTitle');
         }
@@ -159,21 +159,21 @@ export class EducationSpecializationsComponent {
     getDescription(): string {
         const currentLang = this.translate.currentLang || 'en';
         
-        if (currentLang === 'ar' && this.bio?.technicalFocusDescription_Ar) {
-            return this.bio.technicalFocusDescription_Ar;
+        if (currentLang === 'ar' && this.bio?.['technicalFocusDescription_Ar']) {
+            return this.bio['technicalFocusDescription_Ar'];
         }
-        return this.bio?.technicalFocusDescription || this.translate.instant('education.technicalFocusDescription');
+        return this.bio?.['technicalFocusDescription'] || this.translate.instant('education.technicalFocusDescription');
     }
 
     getFocusItems(): string[] {
         const currentLang = this.translate.currentLang || 'en';
         
-        if (currentLang === 'ar' && this.bio?.technicalFocusItems_Ar) {
-            return this.bio.technicalFocusItems_Ar.split(',').map(item => item.trim());
+        if (currentLang === 'ar' && this.bio?.['technicalFocusItems_Ar']) {
+            return (this.bio['technicalFocusItems_Ar'] as string).split(',').map((item: string) => item.trim());
         }
         
-        if (this.bio?.technicalFocusItems) {
-            return this.bio.technicalFocusItems.split(',').map(item => item.trim());
+        if (this.bio?.['technicalFocusItems']) {
+            return (this.bio['technicalFocusItems'] as string).split(',').map((item: string) => item.trim());
         }
         return this.defaultItems;
     }
@@ -215,7 +215,7 @@ export class EducationSpecializationsComponent {
             .join(', ');
 
         this.isSaving = true;
-        this.profileService.updateBio(this.bio.id, this.editForm as BioEntry).subscribe({
+        this.homeService.updateBio(this.bio.id, this.editForm as BioEntry).subscribe({
             next: (updatedBio: BioEntry) => {
                 this.bio = updatedBio;
                 this.bioUpdated.emit(updatedBio);
@@ -223,7 +223,7 @@ export class EducationSpecializationsComponent {
                 this.isSaving = false;
                 this.toast.success('Technical Focus updated successfully');
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.isSaving = false;
                 this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
             }

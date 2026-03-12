@@ -4,13 +4,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
-import { ProfileService } from '../../services/profile.service';
+import { ProjectDetailsService } from '../../services/project-details.service';
+import { HomeService } from '../../services/home.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { ProjectEntry, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { LucideAngularModule } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
+import { ProjectUtil } from '../../utils';
 
 // Section Components
 import { ProjectDetailsHeaderComponent } from './sections/project-details-header';
@@ -69,17 +71,18 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
   templateUrl: './project-details.html'
 })
 export class ProjectDetailsComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private projectService = inject(ProjectService);
-  private profileService = inject(ProfileService);
-  private authService = inject(AuthService);
-  private crudService = inject(ProjectCrudService);
-  private toast = inject(ToastService);
-  public translationService = inject(TranslationService);
-  private meta = inject(Meta);
-  private titleService = inject(Title);
-  private translate = inject(TranslateService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly projectService = inject(ProjectService);
+  private readonly projectDetailsService = inject(ProjectDetailsService);
+  private readonly homeService = inject(HomeService);
+  private readonly authService = inject(AuthService);
+  private readonly crudService = inject(ProjectCrudService);
+  private readonly toast = inject(ToastService);
+  public readonly translationService = inject(TranslationService);
+  private readonly meta = inject(Meta);
+  private readonly titleService = inject(Title);
+  private readonly translate = inject(TranslateService);
 
   project = signal<ProjectEntry | undefined>(undefined);
   bio = signal<BioEntry | null>(null);
@@ -91,9 +94,9 @@ export class ProjectDetailsComponent implements OnInit {
   triggerShareModal = signal(false);
 
   ngOnInit() {
-    this.profileService.getBio().subscribe({
+    this.homeService.getBio().subscribe({
       next: (bio) => this.bio.set(bio),
-      error: (err) => console.error('ProjectDetails: Failed to load bio', err)
+      error: (err: any) => console.error('ProjectDetails: Failed to load bio', err)
     });
     this.checkAuth();
     this.loadProject();
@@ -140,7 +143,7 @@ export class ProjectDetailsComponent implements OnInit {
     const currentProject = this.project();
     if (currentProject && currentProject.id) {
       console.log('Reacting to project:', currentProject.id);
-      this.projectService.reactToProject(currentProject.id).subscribe({
+      this.projectDetailsService.reactToProject(currentProject.id).subscribe({
         next: (newCount) => {
           console.log('React successful, new count:', newCount);
           this.project.set({ ...currentProject, reactionsCount: newCount });
@@ -179,11 +182,11 @@ export class ProjectDetailsComponent implements OnInit {
         },
         error: () => {
           // Fallback to the returned project if reload fails
-          this.project.set(this.projectService.normalizeProject(updatedProject));
+          this.project.set(ProjectUtil.normalizeProject(updatedProject));
         }
       });
     } else {
-      this.project.set(this.projectService.normalizeProject(updatedProject));
+      this.project.set(ProjectUtil.normalizeProject(updatedProject));
     }
     this.showEditModal.set(false);
   }
@@ -206,7 +209,7 @@ export class ProjectDetailsComponent implements OnInit {
     const isAr = this.translationService.isRTL();
     const title = isAr && project.title_Ar ? project.title_Ar : project.title;
     const description = isAr && project.summary_Ar ? project.summary_Ar : (project.summary || project.description);
-    const imageUrl = project.imageUrl ? this.projectService.getFullImageUrl(project.imageUrl) : '';
+    const imageUrl = project.imageUrl ? ProjectUtil.getFullImageUrl(project.imageUrl) : '';
     const siteTitle = `Mostafa.Dev | ${title}`;
 
     this.titleService.setTitle(siteTitle);

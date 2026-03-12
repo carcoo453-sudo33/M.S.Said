@@ -1,11 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, ArrowRight } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 import { ProjectEntry } from '../../../models';
-import { TranslationHelperService } from '../../../services/translation-helper.service';
-import { inject } from '@angular/core';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslationUtil } from '../../../utils';
 import { ProjectCardComponent } from '../../shared/project-card/project-card';
 
 @Component({
@@ -56,12 +56,13 @@ import { ProjectCardComponent } from '../../shared/project-card/project-card';
   `
 })
 export class HomeFeaturedProjectsComponent {
-    public translationHelper = inject(TranslationHelperService);
+    private readonly translationService = inject(TranslationService);
     
     @Input() projects: ProjectEntry[] = [];
     ArrowRightIcon = ArrowRight;
 
     get translatedProjects(): ProjectEntry[] {
-        return this.translationHelper.translateArray(this.projects, ['title', 'description', 'summary']);
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.translateArray(this.projects, ['title', 'description', 'summary'], currentLang);
     }
 }

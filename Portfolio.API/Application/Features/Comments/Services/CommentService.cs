@@ -31,15 +31,20 @@ public class CommentService : ICommentService
     /// </summary>
     /// <param name="projectId">The project identifier to which the comment will be added.</param>
     /// <param name="request">A CommentCreateDto containing the comment author, content, and optional avatar URL.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The created comment mapped to a <c>CommentDto</c>.</returns>
     /// <exception cref="ArgumentException">Thrown when a project with the specified <paramref name="projectId"/> does not exist.</exception>
-    public async Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request)
+    public async Task<CommentDto> AddCommentAsync(Guid projectId, CommentCreateDto request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Adding comment to project: {ProjectId}", projectId);
 
-        // Check if project exists
-        var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
-        if (project == null)
+        // Check if project exists using Any() instead of GetByIdAsync for better performance
+        var projectExists = await _unitOfWork.Repository<Project>()
+            .Query()
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == projectId, cancellationToken);
+
+        if (!projectExists)
         {
             throw new ArgumentException("Project not found");
         }
@@ -59,19 +64,30 @@ public class CommentService : ICommentService
         };
 
         await _unitOfWork.Repository<Comment>().AddAsync(comment);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
-        // Create notification
-        await _notificationService.CreateNotificationAsync(
-            NotificationTypeConstants.Comment,
-            "New Comment",
-            $"{request.Author} commented on project '{project.Title}'",
-            $"/projects/{project.Slug}",
-            "message-circle",
-            projectId.ToString(),
-            "Project",
-            request.Author
-        );
+        // Get project details for notification (only when needed)
+        var project = await _unitOfWork.Repository<Project>()
+            .Query()
+            .AsNoTracking()
+            .Select(p => new { p.Title, p.Slug })
+            .FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
+
+        if (project != null)
+        {
+            // Create notification
+            await _notificationService.CreateNotificationAsync(
+                NotificationTypeConstants.Comment,
+                "New Comment",
+                $"{request.Author} commented on project '{project.Title}'",
+                $"/projects/{project.Slug}",
+                "message-circle",
+                projectId.ToString(),
+                "Project",
+                request.Author,
+                cancellationToken
+            );
+        }
 
         _logger.LogInformation("Comment added successfully: {CommentId}", comment.Id);
         return CommentMapper.ToResponse(comment);
@@ -83,16 +99,17 @@ public class CommentService : ICommentService
     /// <param name="projectId">The identifier of the project that contains the comment.</param>
     /// <param name="commentId">The identifier of the comment to reply to.</param>
     /// <param name="request">The reply data (author, content, avatar URL).</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The updated comment mapped to a <see cref="CommentDto"/>.</returns>
     /// <exception cref="ArgumentException">Thrown when the target comment cannot be found.</exception>
-    public async Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request)
+    public async Task<CommentDto> AddReplyAsync(Guid projectId, Guid commentId, CommentCreateDto request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Adding reply to comment: {CommentId} on project: {ProjectId}", commentId, projectId);
 
         // Get the comment
         var comment = await _unitOfWork.Repository<Comment>()
             .Query()
-            .FirstOrDefaultAsync(c => c.Id == commentId && c.ProjectId == projectId);
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.ProjectId == projectId, cancellationToken);
 
         if (comment == null)
         {
@@ -141,7 +158,7 @@ public class CommentService : ICommentService
                 comment.UpdatedAt = DateTime.UtcNow;
 
                 _unitOfWork.Repository<Comment>().Update(comment);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CompleteAsync(cancellationToken);
                 break; // Success
             }
             catch (DbUpdateConcurrencyException ex)
@@ -154,7 +171,7 @@ public class CommentService : ICommentService
                 }
 
                 // Reload the entity from the database to get the latest values including RepliesJson and RowVersion
-                await ex.Entries.Single().ReloadAsync();
+                await ex.Entries.Single().ReloadAsync(cancellationToken);
             }
             catch (JsonException ex)
             {
@@ -163,20 +180,28 @@ public class CommentService : ICommentService
             }
         }
 
-        // Get project for notification
-        var project = await _unitOfWork.Repository<Project>().GetByIdAsync(projectId);
+        // Get project details for notification (only when needed, with null safety)
+        var project = await _unitOfWork.Repository<Project>()
+            .Query()
+            .AsNoTracking()
+            .Select(p => new { p.Title, p.Slug })
+            .FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
 
-        // Create notification
-        await _notificationService.CreateNotificationAsync(
-            NotificationTypeConstants.Reply,
-            "New Reply",
-            $"{request.Author} replied to a comment on project '{project?.Title}'",
-            $"/projects/{project?.Slug}",
-            "corner-down-right",
-            projectId.ToString(),
-            "Project",
-            request.Author
-        );
+        if (project != null)
+        {
+            // Create notification
+            await _notificationService.CreateNotificationAsync(
+                NotificationTypeConstants.Reply,
+                "New Reply",
+                $"{request.Author} replied to a comment on project '{project.Title}'",
+                $"/projects/{project.Slug}",
+                "corner-down-right",
+                projectId.ToString(),
+                "Project",
+                request.Author,
+                cancellationToken
+            );
+        }
 
         _logger.LogInformation("Reply added successfully: {ReplyId}", reply.Id);
         return CommentMapper.ToResponse(comment);
@@ -187,15 +212,16 @@ public class CommentService : ICommentService
     /// </summary>
     /// <param name="projectId">The identifier of the project that contains the comment.</param>
     /// <param name="commentId">The identifier of the comment to like.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The updated number of likes for the comment.</returns>
     /// <exception cref="ArgumentException">Thrown when a comment with the specified projectId and commentId does not exist.</exception>
-    public async Task<int> LikeCommentAsync(Guid projectId, Guid commentId)
+    public async Task<int> LikeCommentAsync(Guid projectId, Guid commentId, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Liking comment: {CommentId} on project: {ProjectId}", commentId, projectId);
 
         var comment = await _unitOfWork.Repository<Comment>()
             .Query()
-            .FirstOrDefaultAsync(c => c.Id == commentId && c.ProjectId == projectId);
+            .FirstOrDefaultAsync(c => c.Id == commentId && c.ProjectId == projectId, cancellationToken);
 
         if (comment == null)
         {
@@ -211,7 +237,7 @@ public class CommentService : ICommentService
                 comment.UpdatedAt = DateTime.UtcNow;
 
                 _unitOfWork.Repository<Comment>().Update(comment);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CompleteAsync(cancellationToken);
                 break; // Success
             }
             catch (DbUpdateConcurrencyException ex)
@@ -224,7 +250,7 @@ public class CommentService : ICommentService
                 }
 
                 // Reload the entity to get the latest Likes count and RowVersion
-                await ex.Entries.Single().ReloadAsync();
+                await ex.Entries.Single().ReloadAsync(cancellationToken);
             }
         }
 

@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 px-6 overflow-hidden relative transition-colors duration-500 space-y-32">
+    class="min-h-screen text-zinc-900 dark:text-zinc-50 px-6 overflow-hidden relative transition-colors duration-500 space-y-32">
 
     <!-- Animated Background Elements -->
     <div class="absolute inset-0 z-0 pointer-events-none">
@@ -53,48 +53,8 @@
             </div>
 
             <!-- Social Links at Bottom -->
-            <div class="flex justify-center gap-6 mt-16 flex-wrap">
-                <!-- GitHub -->
-                <a href="https://github.com/Mostafa-SAID7" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#333] hover:border-[#333] hover:shadow-[0_0_20px_rgba(51,51,51,0.5)]">
-                    <lucide-icon [img]="GithubIcon" class="w-7 h-7"></lucide-icon>
-                </a>
-                <!-- LinkedIn -->
-                <a href="https://www.linkedin.com/in/mostafasamirsaid" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:shadow-[0_0_20px_rgba(10,102,194,0.5)]">
-                    <lucide-icon [img]="LinkedinIcon" class="w-7 h-7"></lucide-icon>
-                </a>
-                <!-- Facebook -->
-                <a href="https://www.facebook.com/mostafa.samir.1994" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#1877F2] hover:border-[#1877F2] hover:shadow-[0_0_20px_rgba(24,119,242,0.5)]">
-                    <lucide-icon [img]="FacebookIcon" class="w-7 h-7"></lucide-icon>
-                </a>
-                <!-- Dev.to -->
-                <a href="https://dev.to/mostafa_samir" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#0A0A0A] hover:border-[#0A0A0A] hover:shadow-[0_0_20px_rgba(10,10,10,0.5)]">
-                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.42 10.05c-.18-.16-.46-.23-.84-.23H6l.02 2.44.04 2.45.56-.02c.41 0 .63-.07.83-.26.24-.24.26-.36.26-2.2 0-1.91-.02-1.96-.29-2.18zM0 4.94v14.12h24V4.94H0zM8.56 15.3c-.44.58-1.06.77-2.53.77H4.71V8.53h1.4c1.67 0 2.16.18 2.6.9.27.43.29.6.32 2.57.05 2.23-.02 2.73-.47 3.3zm5.09-5.47h-2.47v1.77h1.52v1.28l-.72.04-.75.03v1.77l1.22.03 1.2.04v1.28h-1.6c-1.53 0-1.6-.01-1.87-.3l-.3-.28v-3.16c0-3.02.01-3.18.25-3.48.23-.31.25-.31 1.88-.31h1.64v1.3zm4.68 5.45c-.17.43-.64.79-1 .79-.18 0-.45-.15-.67-.39-.32-.32-.45-.63-.82-2.08l-.9-3.39-.45-1.67h.76c.4 0 .75.02.75.05 0 .06 1.16 4.54 1.26 4.83.04.15.32-.7.73-2.3l.66-2.52.74-.04c.4-.02.73 0 .73.04 0 .14-1.67 6.38-1.8 6.68z"/>
-                    </svg>
-                </a>
-                <!-- X (Twitter) -->
-                <a href="https://x.com/mostafa41226132" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#000000] hover:border-[#000000] hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                    <lucide-icon [img]="TwitterIcon" class="w-7 h-7"></lucide-icon>
-                </a>
-                <!-- Pinterest -->
-                <a href="https://www.pinterest.com/MSaid356" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:-rotate-12 hover:scale-110 hover:bg-[#E60023] hover:border-[#E60023] hover:shadow-[0_0_20px_rgba(230,0,35,0.5)]">
-                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/>
-                    </svg>
-                </a>
-                <!-- Stack Overflow -->
-                <a href="https://stackoverflow.com/users/21488881/mostafa-said" target="_blank"
-                    class="group w-16 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-500 border border-zinc-200 dark:border-zinc-800 hover:rotate-12 hover:scale-110 hover:bg-[#F58025] hover:border-[#F58025] hover:shadow-[0_0_20px_rgba(245,128,37,0.5)]">
-                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.725 0l-1.72 1.277 6.39 8.588 1.716-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.465l-.905 1.94 9.702 4.517.904-1.94-9.701-4.517zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154Z"/>
-                    </svg>
-                </a>
+            <div class="mt-16">
+                <app-contact-social-links></app-contact-social-links>
             </div>
 
             <!-- Signature Section -->

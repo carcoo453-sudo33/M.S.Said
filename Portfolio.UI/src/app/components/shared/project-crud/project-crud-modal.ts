@@ -6,6 +6,7 @@ import { LucideAngularModule, X, Save, Loader } from 'lucide-angular';
 import { ProjectEntry, Responsibility } from '../../../models';
 import { ProjectCrudService, ProjectFormData } from './project-crud.service';
 import { ProjectService } from '../../../services/project.service';
+import { ProjectsListService } from '../../../services/projects-list.service';
 import { AuthService } from '../../../services/auth.service';
 
 // Import all the existing form components
@@ -171,6 +172,7 @@ import {
 export class ProjectCrudModalComponent implements OnChanges {
   private crudService = inject(ProjectCrudService);
   private projectService = inject(ProjectService);
+  private projectsListService = inject(ProjectsListService);
   public auth = inject(AuthService);
 
   @Input() project?: ProjectEntry | null = null;
@@ -245,7 +247,7 @@ export class ProjectCrudModalComponent implements OnChanges {
 
   private loadCategoriesAndNiches() {
     // Load categories
-    this.projectService.getCategories().subscribe({
+    this.projectsListService.getCategories().subscribe({
       next: (categories) => {
         this.managedCategories = categories;
         console.log('Categories loaded:', categories);
@@ -257,7 +259,7 @@ export class ProjectCrudModalComponent implements OnChanges {
     });
 
     // Load niches
-    this.projectService.getNiches().subscribe({
+    this.projectsListService.getNiches().subscribe({
       next: (niches) => {
         this.managedNiches = niches;
         console.log('Niches loaded:', niches);
@@ -270,7 +272,7 @@ export class ProjectCrudModalComponent implements OnChanges {
   }
 
   private loadTagSuggestions() {
-    this.projectService.getTagSuggestions().subscribe({
+    this.projectsListService.getTagSuggestions().subscribe({
       next: (tags) => {
         this.tagSuggestions = tags;
         console.log('Tag suggestions loaded:', tags);
@@ -356,9 +358,9 @@ export class ProjectCrudModalComponent implements OnChanges {
 
   onSuggestionsUpdated() {
     if (this.suggestionType() === 'category') {
-      this.projectService.getCategories().subscribe(cats => this.managedCategories = cats);
+      this.projectsListService.getCategories().subscribe(cats => this.managedCategories = cats);
     } else {
-      this.projectService.getNiches().subscribe(niches => this.managedNiches = niches);
+      this.projectsListService.getNiches().subscribe(niches => this.managedNiches = niches);
     }
   }
 

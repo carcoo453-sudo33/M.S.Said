@@ -40,9 +40,10 @@ public class NotificationService : INotificationService
     /// <param name="relatedEntityType">Optional type name of the related entity.</param>
     /// <param name="senderName">Optional display name of the notification sender.</param>
     /// <param name="senderEmail">Optional email address of the notification sender.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     public async Task CreateNotificationAsync(string type, string title, string message, string? link = null, 
         string? icon = null, string? relatedEntityId = null, string? relatedEntityType = null,
-        string? senderName = null, string? senderEmail = null)
+        string? senderName = null, string? senderEmail = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -69,11 +70,11 @@ public class NotificationService : INotificationService
             };
 
             _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             // Send real-time notification via SignalR
             var notificationDto = NotificationMapper.ToDto(notification);
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notificationDto);
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notificationDto, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -87,8 +88,9 @@ public class NotificationService : INotificationService
     /// </summary>
     /// <param name="limit">Maximum number of notifications to return.</param>
     /// <param name="unreadOnly">If true, only include notifications that have not been read.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>A list of NotificationDto ordered by creation time descending, containing up to <paramref name="limit"/> items; if <paramref name="unreadOnly"/> is true, only unread notifications are included.</returns>
-    public async Task<List<NotificationDto>> GetNotificationsAsync(int limit = 50, bool unreadOnly = false)
+    public async Task<List<NotificationDto>> GetNotificationsAsync(int limit = 50, bool unreadOnly = false, CancellationToken cancellationToken = default)
     {
         var query = _context.Notifications.AsNoTracking().AsQueryable();
         
@@ -98,7 +100,7 @@ public class NotificationService : INotificationService
         var notifications = await query
             .OrderByDescending(n => n.CreatedAt)
             .Take(limit)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         
         return notifications.Select(NotificationMapper.ToDto).ToList();
     }
@@ -106,11 +108,12 @@ public class NotificationService : INotificationService
     /// <summary>
     /// Retrieves the total number of notifications and the number of unread notifications.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>A <see cref="NotificationStatsDto"/> where <c>TotalCount</c> is the total notifications and <c>UnreadCount</c> is the number of notifications with <c>IsRead</c> equal to false.</returns>
-    public async Task<NotificationStatsDto> GetStatsAsync()
+    public async Task<NotificationStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
     {
-        var total = await _context.Notifications.CountAsync();
-        var unread = await _context.Notifications.CountAsync(n => !n.IsRead);
+        var total = await _context.Notifications.CountAsync(cancellationToken);
+        var unread = await _context.Notifications.CountAsync(n => !n.IsRead, cancellationToken);
         
         return new NotificationStatsDto
         {
@@ -123,55 +126,59 @@ public class NotificationService : INotificationService
     /// Marks the notification identified by <paramref name="id"/> as read and persists the change to the database.
     /// </summary>
     /// <param name="id">The notification identifier as a GUID string; if the value is not a valid GUID or no matching notification exists, no action is taken.</param>
-    public async Task MarkAsReadAsync(string id)
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    public async Task MarkAsReadAsync(string id, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(id, out var notificationId))
             return;
         
-        var notification = await _context.Notifications.FindAsync(notificationId);
+        var notification = await _context.Notifications.FindAsync(new object[] { notificationId }, cancellationToken: cancellationToken);
         if (notification != null)
         {
             notification.IsRead = true;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
     /// <summary>
     /// Marks all notifications that are currently unread as read and saves the changes to the data store.
     /// </summary>
-    public async Task MarkAllAsReadAsync()
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    public async Task MarkAllAsReadAsync(CancellationToken cancellationToken = default)
     {
         await _context.Notifications
             .Where(n => !n.IsRead)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(n => n.IsRead, true));
+            .ExecuteUpdateAsync(setters => setters.SetProperty(n => n.IsRead, true), cancellationToken);
     }
 
     /// <summary>
     /// Deletes the notification with the specified GUID string from the database if it exists.
     /// </summary>
     /// <param name="id">The notification's GUID as a string; if the value is not a valid GUID no action is taken.</param>
-    public async Task DeleteNotificationAsync(string id)
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    public async Task DeleteNotificationAsync(string id, CancellationToken cancellationToken = default)
     {
         if (!Guid.TryParse(id, out var notificationId))
             return;
         
-        var notification = await _context.Notifications.FindAsync(notificationId);
+        var notification = await _context.Notifications.FindAsync(new object[] { notificationId }, cancellationToken: cancellationToken);
         if (notification != null)
         {
             _context.Notifications.Remove(notification);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
     /// <summary>
     /// Deletes all notifications from the persistent store.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <remarks>
     /// All Notification records are removed and the change is persisted to the database.
     /// </remarks>
-    public async Task ClearAllAsync()
+    public async Task ClearAllAsync(CancellationToken cancellationToken = default)
     {
-        await _context.Notifications.ExecuteDeleteAsync();
+        await _context.Notifications.ExecuteDeleteAsync(cancellationToken);
     }
 
     /// <summary>

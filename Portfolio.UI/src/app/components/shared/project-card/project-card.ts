@@ -5,8 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Edit3, Trash2, ArrowRight } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
-import { TranslationHelperService } from '../../../services/translation-helper.service';
-import { ImageUtilsService } from '../../../services/image-utils.service';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslationUtil, ImageUtil } from '../../../utils';
 import { OptimizedImageComponent } from '../optimized-image/optimized-image';
 
 @Component({
@@ -136,8 +136,7 @@ import { OptimizedImageComponent } from '../optimized-image/optimized-image';
 })
 export class ProjectCardComponent implements OnInit {
     public auth = inject(AuthService);
-    private translationHelper = inject(TranslationHelperService);
-    private imageUtils = inject(ImageUtilsService);
+    private translationService = inject(TranslationService);
 
     @Input() project!: ProjectEntry;
     @Input() showAdminActions = true; // Show edit/delete buttons
@@ -196,18 +195,21 @@ export class ProjectCardComponent implements OnInit {
     }
 
     getProjectTitle(project: ProjectEntry): string {
-        return this.translationHelper.getTranslatedField(project, 'title');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(project, 'title', currentLang);
     }
 
     getProjectDescription(project: ProjectEntry): string {
-        return this.translationHelper.getTranslatedField(project, 'description');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(project, 'description', currentLang);
     }
 
     getProjectNiche(project: ProjectEntry): string {
-        return this.translationHelper.getTranslatedField(project, 'niche');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(project, 'niche', currentLang);
     }
 
     getFullImageUrl(url: string): string {
-        return this.imageUtils.getFullImageUrl(url);
+        return ImageUtil.getFullImageUrl(url);
     }
 }

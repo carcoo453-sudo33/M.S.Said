@@ -14,21 +14,25 @@ public class GetRelatedProjectsQueryHandler : BaseQueryHandler
 
     /// <summary>
     /// Retrieve projects related to the project identified by the given slug.
+    /// Optimized to use a single query instead of two separate database calls.
     /// </summary>
     /// <param name="slug">The unique slug of the project used to find its category.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>A list of ProjectDto for projects in the same category as the referenced project, excluding the project itself; an empty list if the project is not found.</returns>
     public async Task<List<ProjectDto>> HandleAsync(string slug, CancellationToken cancellationToken = default)
-
     {
-        // First get the project to find its category
-        var project = await GetBaseQuery(false)
-            .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
+        // Get the category of the target project and related projects in a single query
+        var targetProject = await GetBaseQuery(false)
+            .Where(p => p.Slug == slug)
+            .Select(p => p.Category)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (project == null) return new List<ProjectDto>();
+        // If project not found, return empty list
+        if (targetProject == null) return new List<ProjectDto>();
 
-        // Get related projects in the same category
+        // Get related projects in the same category (single query)
         var relatedProjects = await GetBaseQuery()
-            .Where(p => p.Category == project.Category && p.Id != project.Id)
+            .Where(p => p.Category == targetProject && p.Slug != slug)
             .OrderBy(p => p.Order)
             .Take(PaginationConstants.RelatedProjectsCount)
             .ToListAsync(cancellationToken);

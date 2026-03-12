@@ -22,14 +22,15 @@ public class ServiceService : IServiceService
     /// <summary>
     /// Retrieve all service entities and return them as DTOs.
     /// </summary>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>A collection of ServiceDto objects representing all services.</returns>
-    public async Task<IEnumerable<ServiceDto>> GetServicesAsync()
+    public async Task<IEnumerable<ServiceDto>> GetServicesAsync(CancellationToken cancellationToken = default)
     {
         var services = await _unitOfWork.Repository<Service>()
             .Query()
             .AsNoTracking()
             .OrderBy(s => s.Order)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return services.Select(ServiceMapper.ToDto);
     }
 
@@ -37,8 +38,9 @@ public class ServiceService : IServiceService
     /// Retrieve a service by its identifier and map it to a DTO.
     /// </summary>
     /// <param name="id">The identifier of the service to retrieve.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>`ServiceDto` for the matching service, or `null` if no service exists with the specified id.</returns>
-    public async Task<ServiceDto?> GetServiceByIdAsync(Guid id)
+    public async Task<ServiceDto?> GetServiceByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         return service == null ? null : ServiceMapper.ToDto(service);
@@ -48,8 +50,9 @@ public class ServiceService : IServiceService
     /// Creates a new Service from the provided DTO, persists it, and returns the created service as a DTO.
     /// </summary>
     /// <param name="dto">Service data used to create the entity. If <see cref="Guid"/> in <c>dto.Id</c> is empty, a new identifier is generated.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The created Service mapped to a <see cref="ServiceDto"/>.</returns>
-    public async Task<ServiceDto> CreateServiceAsync(ServiceDto dto)
+    public async Task<ServiceDto> CreateServiceAsync(ServiceDto dto, CancellationToken cancellationToken = default)
     {
         var service = new Service
         {
@@ -62,7 +65,7 @@ public class ServiceService : IServiceService
             Order = dto.Order
         };
         await _unitOfWork.Repository<Service>().AddAsync(service);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
         return ServiceMapper.ToDto(service);
     }
 
@@ -71,16 +74,17 @@ public class ServiceService : IServiceService
     /// </summary>
     /// <param name="id">The identifier of the Service to update.</param>
     /// <param name="dto">The DTO containing updated Service values.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The updated Service represented as a ServiceDto.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no Service with the specified id exists.</exception>
-    public async Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto)
+    public async Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto, CancellationToken cancellationToken = default)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         if (service == null)
             throw new KeyNotFoundException($"Service with id {id} not found");
 
         ServiceMapper.UpdateEntity(service, dto);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
         return ServiceMapper.ToDto(service);
     }
 
@@ -88,15 +92,16 @@ public class ServiceService : IServiceService
     /// Deletes the service with the specified identifier.
     /// </summary>
     /// <param name="id">The identifier of the service to delete.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>`true` if a service was found and deleted, `false` otherwise.</returns>
-    public async Task<bool> DeleteServiceAsync(Guid id)
+    public async Task<bool> DeleteServiceAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         if (service == null)
             return false;
 
         _unitOfWork.Repository<Service>().Delete(service);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync(cancellationToken);
         return true;
     }
 }

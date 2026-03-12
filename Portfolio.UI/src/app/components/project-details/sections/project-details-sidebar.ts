@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectEntry, ChangelogItem } from '../../../models';
 import { TranslationService } from '../../../services/translation.service';
+import { ImageUtil } from '../../../utils';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -93,18 +94,6 @@ export class ProjectDetailsSidebarComponent {
         }
     }
 
-    getFullImageUrl(imageUrl: string | undefined): string {
-        if (!imageUrl) return '';
-
-        // If it's already a full URL (starts with http:// or https://), return as is
-        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-            return imageUrl;
-        }
-
-        // If it starts with /, remove it to avoid double slashes
-        const cleanPath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-
-        // Construct full URL using the API base URL
-        return `${environment.apiBaseUrl}/${cleanPath}`;
-    }
+    // Use ImageUtil.getFullImageUrl() directly in template via method binding
+    getFullImageUrl = ImageUtil.getFullImageUrl;
 }

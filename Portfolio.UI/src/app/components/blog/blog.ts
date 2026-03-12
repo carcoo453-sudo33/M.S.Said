@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { BlogService } from '../../services/blog.service';
-import { ProfileService } from '../../services/profile.service';
+import { HomeService } from '../../services/home.service';
 import { AuthService } from '../../services/auth.service';
 import { BlogPost, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
@@ -58,11 +58,11 @@ import { SharedPageHeaderComponent } from '../shared/page-header/page-header';
   templateUrl: './blog.html'
 })
 export class BlogComponent implements OnInit {
-  private blogService = inject(BlogService);
-  private profileService = inject(ProfileService);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  public translationService = inject(TranslationService);
+  private readonly blogService = inject(BlogService);
+  private readonly homeService = inject(HomeService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  public readonly translationService = inject(TranslationService);
 
   posts = signal<BlogPost[]>([]);
   bio = signal<BioEntry | null>(null);
@@ -93,9 +93,9 @@ export class BlogComponent implements OnInit {
     this.isLoading.set(true);
 
     // Fetch Bio for Sidebar
-    this.profileService.getBio().subscribe({
+    this.homeService.getBio().subscribe({
       next: (data) => this.bio.set(data),
-      error: (err) => console.error('Blog: Failed to load bio', err)
+      error: (err: any) => console.error('Blog: Failed to load bio', err)
     });
 
     // Fetch Posts

@@ -2,7 +2,7 @@ import { Component, inject, Input, Output, EventEmitter, ChangeDetectorRef } fro
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ProjectService } from '../../../../services/project.service';
+import { ProjectsListService } from '../../../../services/projects-list.service';
 import { ToastService } from '../../../../services/toast.service';
 
 @Component({
@@ -77,9 +77,9 @@ import { ToastService } from '../../../../services/toast.service';
     `]
 })
 export class ProjectSuggestionManagerComponent {
-    private projectService = inject(ProjectService);
-    private toast = inject(ToastService);
-    private cdr = inject(ChangeDetectorRef);
+    private readonly projectsListService = inject(ProjectsListService);
+    private readonly toast = inject(ToastService);
+    private readonly cdr = inject(ChangeDetectorRef);
 
     @Input() title = 'Item';
     @Input() type: 'category' | 'niche' = 'category';
@@ -99,8 +99,8 @@ export class ProjectSuggestionManagerComponent {
         };
 
         const request = this.type === 'category'
-            ? this.projectService.createCategory(payload)
-            : this.projectService.createNiche(payload);
+            ? this.projectsListService.createCategory(payload)
+            : this.projectsListService.createNiche(payload);
 
         request.subscribe({
             next: (item) => {
@@ -123,8 +123,8 @@ export class ProjectSuggestionManagerComponent {
         if (!id) return;
 
         const request = this.type === 'category'
-            ? this.projectService.deleteCategory(id)
-            : this.projectService.deleteNiche(id);
+            ? this.projectsListService.deleteCategory(id)
+            : this.projectsListService.deleteNiche(id);
 
         request.subscribe({
             next: () => {
@@ -136,7 +136,7 @@ export class ProjectSuggestionManagerComponent {
                 this.updated.emit();
                 this.cdr.detectChanges();
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error(`Failed to delete ${this.type}:`, err);
                 this.toast.error(`Failed to remove ${this.type}`);
             }

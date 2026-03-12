@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
 <main [attr.dir]="translationService.isRTL() ? 'rtl' : 'ltr'"
-    class="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
+    class="min-h-screen text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
 
     <div class="max-w-7xl mx-auto px-6 relative z-10">
 
@@ -82,7 +82,7 @@
             class="pb-16 space-y-12 relative before:absolute before:top-0 before:bottom-0 before:ltr:left-1/2 before:rtl:right-1/2 before:ltr:-translate-x-1/2 before:rtl:translate-x-1/2 before:w-0.5 before:bg-gradient-to-b before:from-zinc-200 before:via-zinc-300 before:to-zinc-200 dark:before:from-zinc-800 dark:before:via-zinc-700 dark:before:to-zinc-800">
             <!-- Education Section -->
             <div class="relative">
-                <app-education-timeline [education]="educationList" sectionCategory="Education" [continuousMode]="true"
+                <app-education-timeline [allEducation]="allEducation()" sectionCategory="Education" [continuousMode]="true"
                     [sectionTitle]="'education.educationTitle' | translate"
                     [sectionDesc]="'education.educationDesc' | translate"
                     (educationUpdated)="onEducationUpdated($event)"></app-education-timeline>
@@ -90,7 +90,7 @@
 
             <!-- Training Section -->
             <div class="relative" *ngIf="trainingList.length > 0 || auth.isLoggedIn()">
-                <app-education-timeline [education]="trainingList" sectionCategory="Training" [limitItems]="1"
+                <app-education-timeline [allEducation]="allEducation()" sectionCategory="Training" [limitItems]="1"
                     [layoutStartIndex]="trainingStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.trainingTitle' | translate"
                     [sectionDesc]="'education.trainingDesc' | translate" [hasViewListBtn]="trainingList.length > 1"
@@ -100,7 +100,7 @@
 
             <!-- Certification Section -->
             <div class="relative" *ngIf="certificationList.length > 0 || auth.isLoggedIn()">
-                <app-education-timeline [education]="certificationList" sectionCategory="Certification" [limitItems]="1"
+                <app-education-timeline [allEducation]="allEducation()" sectionCategory="Certification" [limitItems]="1"
                     [layoutStartIndex]="certificationStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.certificationTitle' | translate"
                     [sectionDesc]="'education.certificationDesc' | translate"
@@ -111,7 +111,7 @@
 
             <!-- Achievements Section -->
             <div class="relative" *ngIf="achievementList.length > 0 || auth.isLoggedIn()">
-                <app-education-timeline [education]="achievementList" sectionCategory="Achievement" [limitItems]="1"
+                <app-education-timeline [allEducation]="allEducation()" sectionCategory="Achievement" [limitItems]="1"
                     [layoutStartIndex]="achievementStartIndex" [continuousMode]="true"
                     [sectionTitle]="'education.achievementTitle' | translate"
                     [sectionDesc]="'education.achievementDesc' | translate"

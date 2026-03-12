@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ExperienceEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
-import { ProfileService } from '../../../services/profile.service';
+import { ProjectsPageService } from '../../../services/projects-page.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 import { Router } from '@angular/router';
@@ -179,11 +179,11 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
   `
 })
 export class ProjectsWorkHistoryComponent {
-    public auth = inject(AuthService);
-    private profileService = inject(ProfileService);
-    private toast = inject(ToastService);
-    private translationService = inject(TranslationService);
-    private router = inject(Router);
+    public readonly auth = inject(AuthService);
+    private readonly projectsPageService = inject(ProjectsPageService);
+    private readonly toast = inject(ToastService);
+    private readonly translationService = inject(TranslationService);
+    private readonly router = inject(Router);
 
     @Input() experiences: ExperienceEntry[] = [];
     @Output() experiencesUpdated = new EventEmitter<ExperienceEntry[]>();
@@ -295,8 +295,8 @@ export class ProjectsWorkHistoryComponent {
         };
 
         const request = this.isCreating
-            ? this.profileService.createExperience(experienceData)
-            : this.profileService.updateExperience(this.editingExperience.id!, experienceData);
+            ? this.projectsPageService.createExperience(experienceData)
+            : this.projectsPageService.updateExperience(this.editingExperience.id!, experienceData);
 
         request.subscribe({
             next: (savedExperience: ExperienceEntry) => {
@@ -314,7 +314,7 @@ export class ProjectsWorkHistoryComponent {
                 this.showEditModal = false;
                 this.toast.success(`Experience ${this.isCreating ? 'created' : 'updated'} successfully`);
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.isSaving = false;
                 this.toast.error(`Failed to ${this.isCreating ? 'create' : 'update'} experience`);
                 console.error('Experience Save Error:', err);
@@ -326,7 +326,7 @@ export class ProjectsWorkHistoryComponent {
         if (!this.deleteExperience?.id) return;
 
         this.isDeleting = true;
-        this.profileService.deleteExperience(this.deleteExperience.id).subscribe({
+        this.projectsPageService.deleteExperience(this.deleteExperience.id).subscribe({
             next: () => {
                 this.experiences = this.experiences.filter(e => e.id !== this.deleteExperience!.id);
                 this.experiencesUpdated.emit(this.experiences);
@@ -334,7 +334,7 @@ export class ProjectsWorkHistoryComponent {
                 this.isDeleting = false;
                 this.toast.success('Experience deleted successfully');
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.isDeleting = false;
                 this.deleteExperience = null;
                 if (err.status === 401) {

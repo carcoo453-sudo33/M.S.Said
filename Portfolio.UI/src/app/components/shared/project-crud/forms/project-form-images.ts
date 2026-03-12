@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Upload, Image, X } from 'lucide-angular';
 import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
-import { ImageUtilsService } from '../../../../services/image-utils.service';
+import { ImageUtil } from '../../../../utils';
 import { environment } from '../../../../../environments/environment';
 
 @Component({
@@ -80,11 +80,10 @@ import { environment } from '../../../../../environments/environment';
     `
 })
 export class ProjectFormImagesComponent {
-    private auth = inject(AuthService);
-    private http = inject(HttpClient);
-    private toast = inject(ToastService);
-    private cdr = inject(ChangeDetectorRef);
-    private imageUtils = inject(ImageUtilsService);
+    private readonly auth = inject(AuthService);
+    private readonly http = inject(HttpClient);
+    private readonly toast = inject(ToastService);
+    private readonly cdr = inject(ChangeDetectorRef);
 
     @Input() imageUrl: string | undefined = '';
     @Input() galleryImages: string[] = [];
@@ -223,6 +222,6 @@ export class ProjectFormImagesComponent {
     }
 
     getFullImageUrl(url: string): string {
-        return this.imageUtils.getFullImageUrl(url);
+        return ImageUtil.getFullImageUrl(url);
     }
 }

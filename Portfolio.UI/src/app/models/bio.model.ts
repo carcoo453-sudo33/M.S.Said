@@ -1,19 +1,22 @@
+import { SignatureDto } from './signature.model';
+import { TechnicalFocusDto } from './technical-focus.model';
+
 export interface BioEntry {
     id: string;
     name: string;
     name_Ar?: string;
-    title: string;
+    title?: string;
     title_Ar?: string;
-    description: string;
+    description?: string;
     description_Ar?: string;
-    location: string;
+    location?: string;
     location_Ar?: string;
-    email: string;
-    phone: string;
+    email?: string;
+    phone?: string;
     avatarUrl?: string;
-    yearsOfExperience: string;
-    projectsCompleted: string;
-    codeCommits: string;
+    yearsOfExperience?: string;
+    projectsCompleted?: string;
+    codeCommits?: string;
     linkedInUrl?: string;
     gitHubUrl?: string;
     whatsAppUrl?: string;
@@ -25,19 +28,8 @@ export interface BioEntry {
     stackOverflowUrl?: string;
     educationQuote?: string;
     educationQuote_Ar?: string;
-    signatureRole?: string;
-    signatureRole_Ar?: string;
-    signatureName?: string;
-    signatureName_Ar?: string;
-    signatureSubtitle?: string;
-    signatureSubtitle_Ar?: string;
-    signatureVerifiedText?: string;
-    signatureVerifiedText_Ar?: string;
-    technicalFocusTitle?: string;
-    technicalFocusTitle_Ar?: string;
-    technicalFocusDescription?: string;
-    technicalFocusDescription_Ar?: string;
-    technicalFocusItems?: string;
-    technicalFocusItems_Ar?: string;
+    signature?: SignatureDto;
+    technicalFocus?: TechnicalFocusDto;
+    technicalFocusItems?: string; // Convenience field for comma-separated items
     [key: string]: any; // Allow dynamic property access for translation fields
 }

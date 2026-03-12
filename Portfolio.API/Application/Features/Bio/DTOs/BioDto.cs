@@ -19,6 +19,10 @@ public class BioDto
     public string? WhatsAppUrl { get; set; }
     public string? CVUrl { get; set; }
     public string? TwitterUrl { get; set; }
+    public string? FacebookUrl { get; set; }
+    public string? DevToUrl { get; set; }
+    public string? PinterestUrl { get; set; }
+    public string? StackOverflowUrl { get; set; }
     public string? YearsOfExperience { get; set; }
     public string? ProjectsCompleted { get; set; }
     public string? CodeCommits { get; set; }

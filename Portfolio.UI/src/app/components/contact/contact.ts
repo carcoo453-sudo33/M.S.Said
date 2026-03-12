@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContactService } from '../../services/contact.service';
-import { ProfileService } from '../../services/profile.service';
+import { HomeService } from '../../services/home.service';
 import { ContactMessage, BioEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
-import { LucideAngularModule, Github, Linkedin, Facebook, Twitter } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
 
 // Section Components
 import { ContactInfoComponent } from './sections/contact-info';
 import { ContactMapComponent } from './sections/contact-map';
 import { ContactFormComponent } from './sections/contact-form';
+import { ContactSocialLinksComponent } from './sections/contact-social-links';
 
 // Skeleton Components
 import { ContactInfoSkeletonComponent } from './sections/contact-info-skeleton';
@@ -36,6 +37,7 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
     ContactInfoComponent,
     ContactMapComponent,
     ContactFormComponent,
+    ContactSocialLinksComponent,
     ContactInfoSkeletonComponent,
     ContactMapSkeletonComponent,
     ContactFormSkeletonComponent,
@@ -46,10 +48,10 @@ import { SharedSignatureComponent } from '../shared/signature/signature';
   templateUrl: './contact.html'
 })
 export class ContactComponent implements OnInit, AfterViewInit {
-  private contactService = inject(ContactService);
-  private profileService = inject(ProfileService);
-  public translationService = inject(TranslationService);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly contactService = inject(ContactService);
+  private readonly homeService = inject(HomeService);
+  public readonly translationService = inject(TranslationService);
+  private readonly cdr = inject(ChangeDetectorRef);
   
   model = signal<ContactMessage>({ name: '', email: '', subject: '', message: '' });
   loading = signal(false);
@@ -57,11 +59,6 @@ export class ContactComponent implements OnInit, AfterViewInit {
   error = signal(false);
   bio = signal<BioEntry | null>(null);
   viewInitialized = signal(false);
-  
-  GithubIcon = Github;
-  LinkedinIcon = Linkedin;
-  FacebookIcon = Facebook;
-  TwitterIcon = Twitter;
 
   ngOnInit() {
     this.loadBio();
@@ -76,11 +73,11 @@ export class ContactComponent implements OnInit, AfterViewInit {
   }
 
   loadBio() {
-    this.profileService.getBio().subscribe({
+    this.homeService.getBio().subscribe({
       next: (data) => {
         this.bio.set(data);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load bio:', err);
       }
     });

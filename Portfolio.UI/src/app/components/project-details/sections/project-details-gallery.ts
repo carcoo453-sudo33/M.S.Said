@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Play, Rocket, Github, Heart, Share2, Eye, MessageCircle, X, ChevronLeft, ChevronRight, Maximize2, Layers, Box, Code, Wrench } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
 import { TranslationService } from '../../../services/translation.service';
+import { ImageUtil } from '../../../utils';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -362,20 +363,8 @@ export class ProjectDetailsGalleryComponent {
         setTimeout(() => this.slideDirection = null, 300);
     }
 
-    getFullImageUrl(url?: string): string {
-        if (!url) return 'assets/project-placeholder.svg';
-
-        if (url.startsWith('http://') || url.startsWith('https://')) {
-            return url;
-        }
-
-        const baseUrl = environment.apiUrl.replace('/api', '');
-        if (url.startsWith('/')) {
-            return `${baseUrl}${url}`;
-        }
-
-        return `${baseUrl}/${url}`;
-    }
+    // Use ImageUtil.getFullImageUrl() directly in template via method binding
+    getFullImageUrl = ImageUtil.getFullImageUrl;
 
     @HostListener('window:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent) {

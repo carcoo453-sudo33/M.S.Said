@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Linkedin, Github, MessageSquare } from 'lucide-angular';
 import { BioEntry } from '../../../models';
-import { TranslationHelperService } from '../../../services/translation-helper.service';
-import { environment } from '../../../../environments/environment';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslationUtil, ImageUtil } from '../../../utils';
 
 @Component({
     selector: 'app-blog-profile-card',
@@ -48,7 +48,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class BlogProfileCardComponent {
     @Input() bio: BioEntry | null = null;
-    private translationHelper = inject(TranslationHelperService);
+    private readonly translationService = inject(TranslationService);
     
     LinkedinIcon = Linkedin;
     GithubIcon = Github;
@@ -56,25 +56,24 @@ export class BlogProfileCardComponent {
 
     getName(): string {
         if (!this.bio) return 'Mostafa Samir Said';
-        return this.translationHelper.getTranslatedField(this.bio, 'name');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(this.bio, 'name', currentLang);
     }
 
     getTitle(): string {
         if (!this.bio) return 'Full Stack Developer';
-        return this.translationHelper.getTranslatedField(this.bio, 'title');
+        const currentLang = this.translationService.currentLang$();
+        return TranslationUtil.getTranslatedField(this.bio, 'title', currentLang);
     }
 
     getDescriptionPreview(): string {
         if (!this.bio) return 'Sharing insights on API integration, responsive design, and web performance.';
-        const description = this.translationHelper.getTranslatedField(this.bio, 'description');
+        const currentLang = this.translationService.currentLang$();
+        const description = TranslationUtil.getTranslatedField(this.bio, 'description', currentLang);
         return description.length > 100 ? description.slice(0, 100) + '...' : description;
     }
 
-    getAvatarUrl() {
-        const avatar = this.bio?.avatarUrl;
-        if (!avatar) return 'https://ui-avatars.com/api/?name=' + (this.bio?.name || 'User') + '&background=f20d0d&color=fff';
-        if (avatar.startsWith('http')) return avatar;
-        const baseUrl = environment.apiUrl.replace('/api', '');
-        return `${baseUrl}${avatar}`;
+    getAvatarUrl(): string {
+        return ImageUtil.getFullImageUrl(this.bio?.avatarUrl);
     }
 }

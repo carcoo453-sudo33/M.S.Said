@@ -4,24 +4,23 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectService } from '../../services/project.service';
-import { ProjectEntry, ExperienceEntry, Testimonial, Client } from '../../models';
+import { ProjectsPageService } from '../../services/projects-page.service';
+import { ProjectsListService } from '../../services/projects-list.service';
+import { ProjectEntry, ExperienceEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
-import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { LucideAngularModule, Plus, ArrowRight } from 'lucide-angular';
 import { TranslationService } from '../../services/translation.service';
-import { ImageUtilsService } from '../../services/image-utils.service';
+import { ProjectUtil } from '../../utils';
 
 // Section Components
 import { ProjectsWorkHistoryComponent } from './sections/projects-work-history';
-import { ProjectsBrandSliderComponent } from './sections/projects-brand-slider';
 import { ProjectsReferencesComponent } from './sections/projects-references';
 import { ProjectsBottomCTAComponent } from './sections/projects-bottom-cta';
 
 // Skeleton Components
 import { ProjectsGridSkeletonComponent } from './sections/projects-grid-skeleton';
 import { ProjectsWorkHistorySkeletonComponent } from './sections/projects-work-history-skeleton';
-import { ProjectsBrandSliderSkeletonComponent } from './sections/projects-brand-slider-skeleton';
 import { ProjectsReferencesSkeletonComponent } from './sections/projects-references-skeleton';
 import { ProjectsBottomCTASkeletonComponent } from './sections/projects-bottom-cta-skeleton';
 
@@ -49,12 +48,10 @@ import { ProjectCrudService } from '../shared/project-crud/project-crud.service'
     NavbarComponent,
     LucideAngularModule,
     ProjectsWorkHistoryComponent,
-    ProjectsBrandSliderComponent,
     ProjectsReferencesComponent,
     ProjectsBottomCTAComponent,
     ProjectsGridSkeletonComponent,
     ProjectsWorkHistorySkeletonComponent,
-    ProjectsBrandSliderSkeletonComponent,
     ProjectsReferencesSkeletonComponent,
     ProjectsBottomCTASkeletonComponent,
     SharedFooterComponent,
@@ -68,21 +65,20 @@ import { ProjectCrudService } from '../shared/project-crud/project-crud.service'
   templateUrl: './projects.html'
 })
 export class ProjectsComponent implements OnInit {
-  private projectService = inject(ProjectService);
-  private profileService = inject(ProfileService);
-  private crudService = inject(ProjectCrudService);
-  public auth = inject(AuthService);
-  public translationService = inject(TranslationService);
-  private imageUtils = inject(ImageUtilsService);
-  private titleService = inject(Title);
-  private meta = inject(Meta);
+  private readonly projectService = inject(ProjectService);
+  private readonly projectsPageService = inject(ProjectsPageService);
+  private readonly projectsListService = inject(ProjectsListService);
+  private readonly crudService = inject(ProjectCrudService);
+  public readonly auth = inject(AuthService);
+  public readonly translationService = inject(TranslationService);
+  private readonly titleService = inject(Title);
+  private readonly meta = inject(Meta);
   PlusIcon = Plus;
   ArrowRightIcon = ArrowRight;
 
   projects = signal<ProjectEntry[]>([]);
   experiences = signal<ExperienceEntry[]>([]);
-  testimonials = signal<Testimonial[]>([]);
-  clients = signal<Client[]>([]);
+  references = signal<any[]>([]);
   totalProjectCount = signal(0);
   isLoading = signal(true);
   hasError = signal(false);
@@ -94,7 +90,7 @@ export class ProjectsComponent implements OnInit {
 
   // Computed
   highlightedProjects = computed(() => {
-    return this.projectService.getProjectHighlights(this.projects());
+    return ProjectUtil.getProjectHighlights(this.projects());
   });
 
   ngOnInit() {
@@ -116,10 +112,10 @@ export class ProjectsComponent implements OnInit {
 
   loadData() {
     // Load all projects for highlight logic and grid
-    this.projectService.getProjects().subscribe({
-      next: (data: ProjectEntry[]) => {
-        console.log('Projects loaded:', data.length);
-        this.projects.set(data);
+    this.projectsListService.getProjects().subscribe({
+      next: (data: any) => {
+        console.log('Projects loaded:', data.items?.length || 0);
+        this.projects.set(data.items || []);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -130,29 +126,22 @@ export class ProjectsComponent implements OnInit {
     });
 
     // Load total project count
-    this.projectService.getProjects().subscribe({
-      next: (data: ProjectEntry[]) => {
-        this.totalProjectCount.set(data.length);
+    this.projectsListService.getProjects().subscribe({
+      next: (data: any) => {
+        this.totalProjectCount.set(data.items?.length || 0);
       },
       error: (err) => console.error('Projects: Failed to load project count', err)
     });
 
-    this.profileService.getExperiences().subscribe({
+    this.projectsPageService.getExperiences().subscribe({
       next: (data) => this.experiences.set(data),
       error: (err) => console.error('Projects: Failed to load experiences', err)
     });
 
-    /* Temporarily commented out as these endpoints don't exist yet
-    this.profileService.getClients().subscribe({
-      next: (data) => this.clients.set(data),
-      error: (err) => console.error('Projects: Failed to load clients', err)
+    this.projectsPageService.getReferences().subscribe({
+      next: (data) => this.references.set(data),
+      error: (err) => console.error('Projects: Failed to load references', err)
     });
-
-    this.profileService.getTestimonials().subscribe({
-      next: (data) => this.testimonials.set(data),
-      error: (err) => console.error('Projects: Failed to load testimonials', err)
-    });
-    */
   }
 
   loadMockData() {
@@ -211,18 +200,9 @@ export class ProjectsComponent implements OnInit {
     console.log('Experiences list updated:', this.experiences().length);
   }
 
-  onClientsUpdated(updatedClients: Client[]) {
-    this.clients.set(updatedClients);
-    console.log('Clients list updated:', this.clients().length);
-  }
-
-  onTestimonialsUpdated(updatedTestimonials: Testimonial[]) {
-    this.testimonials.set(updatedTestimonials);
-    console.log('Testimonials list updated:', this.testimonials().length);
-  }
-
-  getFullImageUrl(url: string): string {
-    return this.imageUtils.getFullImageUrl(url);
+  onReferencesUpdated(updatedReferences: any[]) {
+    this.references.set(updatedReferences);
+    console.log('References list updated:', this.references().length);
   }
 
   private updateSeoTags() {
@@ -236,7 +216,7 @@ export class ProjectsComponent implements OnInit {
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
-    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    this.meta.updateTag({ property: 'og:url', content: globalThis.location.href });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
 
@@ -247,6 +227,6 @@ export class ProjectsComponent implements OnInit {
         link.setAttribute('rel', 'canonical');
         document.head.appendChild(link);
     }
-    link.setAttribute('href', window.location.href);
+    link.setAttribute('href', globalThis.location.href);
   }
 }

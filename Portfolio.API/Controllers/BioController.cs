@@ -20,29 +20,6 @@ public class BioController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves the current bio information for the site; if no bio exists, returns a default bio.
-    /// </summary>
-    /// <returns>The retrieved BioDto, or a default BioDto when none is available.</returns>
-    [HttpGet]
-    public async Task<ActionResult<BioDto>> GetBio()
-    {
-        var bio = await _bioService.GetBioAsync();
-        
-        if (bio == null) 
-        {
-            return Ok(new BioDto 
-            { 
-                Name = "Default User",
-                Title = "Please edit profile to update",
-                Email = "email@example.com",
-                Description = "Default description..."
-            });
-        }
-        
-        return Ok(bio);
-    }
-
-    /// <summary>
     /// Updates an existing bio entry identified by the given id.
     /// </summary>
     /// <param name="id">The identifier of the bio to update.</param>
@@ -54,5 +31,16 @@ public class BioController : ControllerBase
     {
         var result = await _bioService.UpdateBioAsync(id, dto);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Retrieves the current bio information for the site.
+    /// </summary>
+    /// <returns>The retrieved BioDto, or null if no bio exists.</returns>
+    [HttpGet]
+    public async Task<ActionResult<BioDto?>> GetBio()
+    {
+        var bio = await _bioService.GetBioAsync();
+        return Ok(bio);
     }
 }

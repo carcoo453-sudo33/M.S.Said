@@ -2,17 +2,16 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { LucideAngularModule, Quote, Plus, Edit3, Trash2, X, Save, AlertTriangle, Upload } from 'lucide-angular';
+import { AuthService } from '../../../services/auth.service';
+import { ProjectsPageService } from '../../../services/projects-page.service';
+import { ToastService } from '../../../services/toast.service';
 import { HttpClient } from '@angular/common/http';
+import { TranslationService } from '../../../services/translation.service';
+import { ImageUtil } from '../../../utils/image.util';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
-import { LucideAngularModule, Quote, Edit3, Trash2, X, Save, Plus, AlertTriangle, Upload, User } from 'lucide-angular';
-import { Testimonial } from '../../../models';
-import { AuthService } from '../../../services/auth.service';
-import { ProfileService } from '../../../services/profile.service';
-import { ToastService } from '../../../services/toast.service';
-import { TranslationService } from '../../../services/translation.service';
-import { ImageUtilsService } from '../../../services/image-utils.service';
-import { handleAuthError } from '../../../utils/error-handler.util';
+import { Reference } from '../../../models';
 
 @Component({
     selector: 'app-projects-references',
@@ -30,21 +29,21 @@ import { handleAuthError } from '../../../utils/error-handler.util';
             <button *ngIf="auth.isLoggedIn()" (click)="openCreateModal()"
                 class="ms-auto px-6 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 flex items-center gap-2">
                 <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-                {{ 'projects.references.addTestimonial' | translate }}
+                {{ 'projects.references.addReference' | translate }}
             </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div *ngFor="let testimonial of testimonials"
+            <div *ngFor="let reference of references"
                 class="group bg-zinc-50 dark:bg-zinc-900/40 p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600 hover:shadow-xl hover:shadow-red-600/10 hover:-translate-y-2 transition-all duration-500 relative">
                 
                 <!-- Admin Actions -->
                 <div *ngIf="auth.isLoggedIn()" class="absolute top-4 right-4 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button (click)="onEdit(testimonial)"
+                    <button (click)="onEdit(reference)"
                         class="w-8 h-8 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-500 border border-white/10 transition-all">
                         <lucide-icon [img]="EditIcon" class="w-3.5 h-3.5"></lucide-icon>
                     </button>
-                    <button (click)="onDelete(testimonial)"
+                    <button (click)="onDelete(reference)"
                         class="w-8 h-8 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center text-white hover:text-red-600 border border-white/10 transition-all">
                         <lucide-icon [img]="DeleteIcon" class="w-3.5 h-3.5"></lucide-icon>
                     </button>
@@ -55,21 +54,21 @@ import { handleAuthError } from '../../../utils/error-handler.util';
                 </div>
 
                 <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed mb-8 italic">
-                    "{{ getTestimonialContent(testimonial) }}"
+                    "{{ getReferenceContent(reference) }}"
                 </p>
 
                 <div class="flex items-center gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-pink-600 flex items-center justify-center text-white font-black text-lg overflow-hidden">
-                        <img *ngIf="testimonial.avatarUrl" 
-                             [src]="getFullImageUrl(testimonial.avatarUrl)" 
-                             alt="{{ testimonial.name }}" 
+                        <img *ngIf="reference.imagePath" 
+                             [src]="getFullImageUrl(reference.imagePath)" 
+                             alt="{{ reference.name }}" 
                              class="w-full h-full object-cover"
                              (error)="onImageError($event)">
-                        <span *ngIf="!testimonial.avatarUrl">{{ testimonial.name.charAt(0) }}</span>
+                        <span *ngIf="!reference.imagePath">{{ reference.name.charAt(0) }}</span>
                     </div>
                     <div>
-                        <h4 class="font-bold text-zinc-900 dark:text-white text-sm">{{ testimonial.name }}</h4>
-                        <p class="text-zinc-500 text-xs">{{ getTestimonialRole(testimonial) }}<span *ngIf="getTestimonialCompany(testimonial)"> at {{ getTestimonialCompany(testimonial) }}</span></p>
+                        <h4 class="font-bold text-zinc-900 dark:text-white text-sm">{{ reference.name }}</h4>
+                        <p class="text-zinc-500 text-xs">{{ getReferenceRole(reference) }}<span *ngIf="getReferenceCompany(reference)"> at {{ getReferenceCompany(reference) }}</span></p>
                     </div>
                 </div>
             </div>
@@ -80,7 +79,7 @@ import { handleAuthError } from '../../../utils/error-handler.util';
     <div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
         <div class="modal-content max-w-2xl max-h-[90vh]" (click)="$event.stopPropagation()">
             <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-10">
-                <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Add Testimonial' : 'Edit Testimonial' }}</h3>
+                <h3 class="text-base font-black dark:text-white text-zinc-900">{{ isCreating ? 'Add Reference' : 'Edit Reference' }}</h3>
                 <button (click)="closeEditModal()"
                     class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-red-500 transition-all">
                     <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
@@ -91,58 +90,76 @@ import { handleAuthError } from '../../../utils/error-handler.util';
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name *</label>
-                        <input [(ngModel)]="editingTestimonial.name" placeholder="Full name"
-                            [class]="submitted && editingTestimonial.name && !editingTestimonial.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                        <input [(ngModel)]="editingReference.name" placeholder="Full name"
+                            [class]="submitted && editingReference.name && !editingReference.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && editingTestimonial.name && !editingTestimonial.name.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Name is required</p>
+                        <p *ngIf="submitted && editingReference.name && !editingReference.name.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Name is required</p>
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (EN) *</label>
-                        <input [(ngModel)]="editingTestimonial.role" placeholder="e.g. Senior Developer"
-                            [class]="submitted && editingTestimonial.role && !editingTestimonial.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                        <input [(ngModel)]="editingReference.role" placeholder="e.g. Senior Developer"
+                            [class]="submitted && editingReference.role && !editingReference.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border">
-                        <p *ngIf="submitted && editingTestimonial.role && !editingTestimonial.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
+                        <p *ngIf="submitted && editingReference.role && !editingReference.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Role is required</p>
                     </div>
 
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Role (AR)</label>
-                        <input [(ngModel)]="editingTestimonial.role_Ar" placeholder="مثال: مطور أول" dir="rtl"
+                        <input [(ngModel)]="editingReference.role_Ar" placeholder="مثال: مطور أول" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (EN)</label>
-                        <input [(ngModel)]="editingTestimonial.company" placeholder="Company name (optional)"
+                        <input [(ngModel)]="editingReference.company" placeholder="Company name (optional)"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div>
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Company (AR)</label>
-                        <input [(ngModel)]="editingTestimonial.company_Ar" placeholder="اسم الشركة (اختياري)" dir="rtl"
+                        <input [(ngModel)]="editingReference.company_Ar" placeholder="اسم الشركة (اختياري)" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     </div>
 
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content (EN) *</label>
-                        <textarea [(ngModel)]="editingTestimonial.content" placeholder="What they said about you..." rows="4"
-                            [class]="submitted && editingTestimonial.content && !editingTestimonial.content.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Reference Content (EN) *</label>
+                        <textarea [(ngModel)]="editingReference.content" placeholder="What they said about you..." rows="4"
+                            [class]="submitted && editingReference.content && !editingReference.content.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700'"
                             class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all border resize-none"></textarea>
-                        <p *ngIf="submitted && editingTestimonial.content && !editingTestimonial.content.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Content is required</p>
+                        <p *ngIf="submitted && editingReference.content && !editingReference.content.trim()" class="text-red-500 text-[10px] font-bold mt-1.5">Content is required</p>
                     </div>
 
                     <div class="col-span-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Testimonial Content (AR)</label>
-                        <textarea [(ngModel)]="editingTestimonial.content_Ar" placeholder="ما قالوه عنك..." rows="4" dir="rtl"
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Reference Content (AR)</label>
+                        <textarea [(ngModel)]="editingReference.content_Ar" placeholder="ما قالوه عنك..." rows="4" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
 
-                    <!-- Avatar Upload Section -->
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
+                        <input [(ngModel)]="editingReference.phone" placeholder="Phone number (optional)"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email</label>
+                        <input [(ngModel)]="editingReference.email" placeholder="Email (optional)"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Social Link</label>
+                        <input [(ngModel)]="editingReference.socialLink" placeholder="LinkedIn, Twitter, etc. (optional)"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                    </div>
+
+                    <!-- Image Upload Section -->
                     <div class="col-span-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Avatar Image</label>
                         <div class="flex gap-3">
                             <div class="flex-1">
-                                <input [(ngModel)]="editingTestimonial.avatarUrl" placeholder="Avatar URL or upload below"
+                                <input [(ngModel)]="editingReference.imagePath" placeholder="Avatar URL or upload below"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                             </div>
                             <label [class.opacity-50]="isUploading" [class.pointer-events-none]="isUploading"
@@ -153,16 +170,16 @@ import { handleAuthError } from '../../../utils/error-handler.util';
                             </label>
                         </div>
                         <!-- Avatar Preview -->
-                        <div *ngIf="editingTestimonial.avatarUrl" class="mt-3 flex items-center gap-3">
+                        <div *ngIf="editingReference.imagePath" class="mt-3 flex items-center gap-3">
                             <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
-                                <img [src]="getFullImageUrl(editingTestimonial.avatarUrl)" 
+                                <img [src]="getFullImageUrl(editingReference.imagePath)" 
                                      alt="Avatar preview" 
                                      class="w-full h-full object-cover"
                                      (error)="onImageError($event)">
                             </div>
                             <div class="flex-1">
                                 <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Avatar Preview</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">This will appear next to the testimonial</p>
+                                <p class="text-xs text-zinc-500 mt-0.5">This will appear next to the reference</p>
                             </div>
                         </div>
                     </div>
@@ -172,7 +189,7 @@ import { handleAuthError } from '../../../utils/error-handler.util';
             <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-end gap-3">
                 <button (click)="closeEditModal()"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">Cancel</button>
-                <button (click)="saveTestimonial()" [disabled]="isSaving"
+                <button (click)="saveReference()" [disabled]="isSaving"
                     class="px-8 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 flex items-center gap-2">
                     <lucide-icon [img]="SaveIcon" class="w-3.5 h-3.5"></lucide-icon>
                     {{ isSaving ? 'Saving...' : 'Save' }}
@@ -182,16 +199,16 @@ import { handleAuthError } from '../../../utils/error-handler.util';
     </div>
 
     <!-- Delete Confirmation -->
-    <div *ngIf="deleteTestimonial" class="modal-overlay">
+    <div *ngIf="deleteReference" class="modal-overlay">
         <div class="modal-content max-w-sm" (click)="$event.stopPropagation()">
             <div class="p-6 text-center">
             <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <lucide-icon [img]="AlertIcon" class="w-7 h-7 text-red-500"></lucide-icon>
             </div>
-            <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Testimonial?</h4>
-            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete the testimonial from <strong class="text-zinc-900 dark:text-white">{{ deleteTestimonial.name }}</strong>?</p>
+            <h4 class="text-base font-black dark:text-white text-zinc-900 mb-2">Delete Reference?</h4>
+            <p class="text-sm text-zinc-500 mb-6">Are you sure you want to delete the reference from <strong class="text-zinc-900 dark:text-white">{{ deleteReference.name }}</strong>?</p>
             <div class="flex items-center justify-center gap-3">
-                <button (click)="deleteTestimonial = null"
+                <button (click)="deleteReference = null"
                     class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200 dark:border-zinc-700 transition-all">Cancel</button>
                 <button (click)="executeDelete()" [disabled]="isDeleting"
                     class="px-6 py-2.5 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50">
@@ -203,16 +220,15 @@ import { handleAuthError } from '../../../utils/error-handler.util';
   `
 })
 export class ProjectsReferencesComponent {
-    public auth = inject(AuthService);
-    private profileService = inject(ProfileService);
-    private toast = inject(ToastService);
-    private http = inject(HttpClient);
-    private translationService = inject(TranslationService);
-    private imageUtils = inject(ImageUtilsService);
-    private router = inject(Router);
+    readonly auth = inject(AuthService);
+    private readonly projectsPageService = inject(ProjectsPageService);
+    private readonly toast = inject(ToastService);
+    private readonly http = inject(HttpClient);
+    private readonly translationService = inject(TranslationService);
+    private readonly router = inject(Router);
 
-    @Input() testimonials: Testimonial[] = [];
-    @Output() testimonialsUpdated = new EventEmitter<Testimonial[]>();
+    @Input() references: Reference[] = [];
+    @Output() referencesUpdated = new EventEmitter<Reference[]>();
 
     QuoteIcon = Quote;
     EditIcon = Edit3;
@@ -222,7 +238,6 @@ export class ProjectsReferencesComponent {
     PlusIcon = Plus;
     AlertIcon = AlertTriangle;
     UploadIcon = Upload;
-    UserIcon = User;
 
     showEditModal = false;
     isSaving = false;
@@ -230,46 +245,46 @@ export class ProjectsReferencesComponent {
     isUploading = false;
     submitted = false;
     isCreating = false;
-    deleteTestimonial: Testimonial | null = null;
-    editingTestimonial: Partial<Testimonial> = {};
+    deleteReference: Reference | null = null;
+    editingReference: Partial<Reference> = {};
 
-    getTestimonialRole(testimonial: Testimonial): string {
+    getReferenceRole(reference: Reference): string {
         const currentLang = this.translationService.currentLang$();
-        if (currentLang === 'ar' && testimonial.role_Ar) {
-            return testimonial.role_Ar;
+        if (currentLang === 'ar' && reference.role_Ar) {
+            return reference.role_Ar;
         }
-        return testimonial.role;
+        return reference.role || '';
     }
 
-    getTestimonialCompany(testimonial: Testimonial): string {
+    getReferenceCompany(reference: Reference): string {
         const currentLang = this.translationService.currentLang$();
-        if (currentLang === 'ar' && testimonial.company_Ar) {
-            return testimonial.company_Ar;
+        if (currentLang === 'ar' && reference.company_Ar) {
+            return reference.company_Ar;
         }
-        return testimonial.company || '';
+        return reference.company || '';
     }
 
-    getTestimonialContent(testimonial: Testimonial): string {
+    getReferenceContent(reference: Reference): string {
         const currentLang = this.translationService.currentLang$();
-        if (currentLang === 'ar' && testimonial.content_Ar) {
-            return testimonial.content_Ar;
+        if (currentLang === 'ar' && reference.content_Ar) {
+            return reference.content_Ar;
         }
-        return testimonial.content;
+        return reference.content;
     }
 
-    onEdit(testimonial: Testimonial) {
-        this.editingTestimonial = { ...testimonial };
+    onEdit(reference: Reference) {
+        this.editingReference = { ...reference };
         this.isCreating = false;
         this.submitted = false;
         this.showEditModal = true;
     }
 
-    onDelete(testimonial: Testimonial) {
-        this.deleteTestimonial = testimonial;
+    onDelete(reference: Reference) {
+        this.deleteReference = reference;
     }
 
     openCreateModal() {
-        this.editingTestimonial = {
+        this.editingReference = {
             name: '',
             role: '',
             role_Ar: '',
@@ -277,7 +292,10 @@ export class ProjectsReferencesComponent {
             company_Ar: '',
             content: '',
             content_Ar: '',
-            avatarUrl: ''
+            imagePath: '',
+            phone: '',
+            email: '',
+            socialLink: ''
         };
         this.isCreating = true;
         this.submitted = false;
@@ -286,7 +304,7 @@ export class ProjectsReferencesComponent {
 
     closeEditModal() {
         this.showEditModal = false;
-        this.editingTestimonial = {};
+        this.editingReference = {};
     }
 
     onAvatarFileSelected(event: Event) {
@@ -295,13 +313,11 @@ export class ProjectsReferencesComponent {
 
         const file = input.files[0];
         
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             this.toast.error('Please select an image file');
             return;
         }
 
-        // Validate file size (max 2MB for avatars)
         if (file.size > 2 * 1024 * 1024) {
             this.toast.error('Image size must be less than 2MB');
             return;
@@ -311,7 +327,6 @@ export class ProjectsReferencesComponent {
     }
 
     uploadAvatar(file: File) {
-        // Check if user is logged in
         if (!this.auth.isLoggedIn()) {
             this.toast.error('You must be logged in to upload images');
             return;
@@ -324,18 +339,18 @@ export class ProjectsReferencesComponent {
         this.http.post<{ url: string }>(`${environment.apiUrl}/uploads/profile-image`, formData)
             .subscribe({
                 next: (response) => {
-                    this.editingTestimonial.avatarUrl = response.url;
+                    this.editingReference.imagePath = response.url;
                     this.isUploading = false;
                     this.toast.success('Avatar uploaded successfully');
                 },
-                error: (err) => {
+                error: (err: any) => {
                     this.isUploading = false;
                     console.error('Avatar Upload Error:', err);
                     
                     if (err.status === 401) {
                         this.toast.error('Authentication failed. Please log in again.');
                         this.auth.logout();
-                        window.location.href = '/login';
+                        globalThis.location.href = '/login';
                     } else if (err.status === 400) {
                         this.toast.error(err.error?.message || 'Invalid file. Please check file type and size.');
                     } else if (err.status === 500) {
@@ -347,88 +362,95 @@ export class ProjectsReferencesComponent {
             });
     }
 
-    saveTestimonial() {
+    saveReference() {
         this.submitted = true;
 
-        if (!this.editingTestimonial.name || !this.editingTestimonial.name.trim() || 
-            !this.editingTestimonial.role || !this.editingTestimonial.role.trim() || 
-            !this.editingTestimonial.content || !this.editingTestimonial.content.trim()) {
+        if (!this.editingReference.name?.trim() || 
+            !this.editingReference.role?.trim() || 
+            !this.editingReference.content?.trim()) {
             this.toast.error('Please fill in all required fields');
             return;
         }
 
         this.isSaving = true;
 
-        const testimonialData: any = {
-            id: this.editingTestimonial.id || crypto.randomUUID(),
-            name: this.editingTestimonial.name,
-            role: this.editingTestimonial.role,
-            role_Ar: this.editingTestimonial.role_Ar,
-            company: this.editingTestimonial.company || '',
-            company_Ar: this.editingTestimonial.company_Ar || '',
-            content: this.editingTestimonial.content,
-            content_Ar: this.editingTestimonial.content_Ar,
-            avatarUrl: this.editingTestimonial.avatarUrl || ''
+        const referenceData: Reference = {
+            id: this.editingReference.id || crypto.randomUUID(),
+            name: this.editingReference.name || '',
+            role: this.editingReference.role || '',
+            role_Ar: this.editingReference.role_Ar,
+            company: this.editingReference.company || '',
+            company_Ar: this.editingReference.company_Ar,
+            content: this.editingReference.content || '',
+            content_Ar: this.editingReference.content_Ar,
+            imagePath: this.editingReference.imagePath,
+            phone: this.editingReference.phone,
+            email: this.editingReference.email,
+            socialLink: this.editingReference.socialLink,
+            publishedAt: this.editingReference.publishedAt || new Date(),
+            createdAt: this.editingReference.createdAt || new Date(),
+            updatedAt: new Date()
         };
 
         const request = this.isCreating
-            ? this.profileService.createTestimonial(testimonialData)
-            : this.profileService.updateTestimonial(this.editingTestimonial.id!, testimonialData);
+            ? this.projectsPageService.createReference(referenceData)
+            : this.projectsPageService.updateReference(this.editingReference.id as string, referenceData);
 
         request.subscribe({
-            next: (savedTestimonial: Testimonial) => {
+            next: (savedReference: Reference) => {
                 if (this.isCreating) {
-                    this.testimonials = [...this.testimonials, savedTestimonial];
+                    this.references = [...this.references, savedReference];
                 } else {
-                    const index = this.testimonials.findIndex(t => t.id === savedTestimonial.id);
+                    const index = this.references.findIndex(r => r.id === savedReference.id);
                     if (index !== -1) {
-                        this.testimonials[index] = savedTestimonial;
-                        this.testimonials = [...this.testimonials];
+                        this.references[index] = savedReference;
+                        this.references = [...this.references];
                     }
                 }
-                this.testimonialsUpdated.emit(this.testimonials);
+                this.referencesUpdated.emit(this.references);
                 this.isSaving = false;
                 this.showEditModal = false;
-                this.toast.success(`Testimonial ${this.isCreating ? 'created' : 'updated'} successfully`);
+                this.toast.success(`Reference ${this.isCreating ? 'created' : 'updated'} successfully`);
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.isSaving = false;
-                this.toast.error(`Failed to ${this.isCreating ? 'create' : 'update'} testimonial`);
-                console.error('Testimonial Save Error:', err);
+                this.toast.error(`Failed to ${this.isCreating ? 'create' : 'update'} reference`);
+                console.error('Reference Save Error:', err);
             }
         });
     }
 
     executeDelete() {
-            if (!this.deleteTestimonial?.id) return;
+        if (!this.deleteReference?.id) return;
 
-            this.isDeleting = true;
-            this.profileService.deleteTestimonial(this.deleteTestimonial.id).subscribe({
-                next: () => {
-                    this.testimonials = this.testimonials.filter(t => t.id !== this.deleteTestimonial!.id);
-                    this.testimonialsUpdated.emit(this.testimonials);
-                    this.deleteTestimonial = null;
-                    this.isDeleting = false;
-                    this.toast.success('Testimonial deleted successfully');
-                },
-                error: (err) => {
-                    this.isDeleting = false;
-                    this.deleteTestimonial = null;
-                    if (err.status === 401) {
-                        handleAuthError(err, this.toast, this.auth, this.router);
-                    } else {
-                        this.toast.error('Failed to delete testimonial');
-                    }
-                    console.error('Testimonial Delete Error:', err);
+        this.isDeleting = true;
+        this.projectsPageService.deleteReference(this.deleteReference.id).subscribe({
+            next: () => {
+                this.references = this.references.filter(r => r.id !== this.deleteReference!.id);
+                this.referencesUpdated.emit(this.references);
+                this.deleteReference = null;
+                this.isDeleting = false;
+                this.toast.success('Reference deleted successfully');
+            },
+            error: (err: any) => {
+                this.isDeleting = false;
+                this.deleteReference = null;
+                if (err.status === 401) {
+                    this.toast.error('Authentication failed. Please log in again.');
+                    this.auth.logout();
+                    globalThis.location.href = '/login';
+                } else {
+                    this.toast.error('Failed to delete reference');
                 }
-            });
-        }
-
-        getFullImageUrl(url: string): string {
-            return this.imageUtils.getFullImageUrl(url);
-        }
-
-        onImageError(event: Event) {
-            this.imageUtils.onImageErrorHide(event);
-        }
+                console.error('Reference Delete Error:', err);
+            }
+        });
     }
+
+    onImageError(event: Event) {
+        ImageUtil.onImageErrorHide(event);
+    }
+
+    // Use ImageUtil.getFullImageUrl() directly in template via method binding
+    getFullImageUrl = ImageUtil.getFullImageUrl;
+}

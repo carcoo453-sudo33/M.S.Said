@@ -32,6 +32,10 @@ public static class BioMapper
             WhatsAppUrl = bio.WhatsAppUrl,
             CVUrl = bio.CVUrl,
             TwitterUrl = bio.TwitterUrl,
+            FacebookUrl = bio.FacebookUrl,
+            DevToUrl = bio.DevToUrl,
+            PinterestUrl = bio.PinterestUrl,
+            StackOverflowUrl = bio.StackOverflowUrl,
             YearsOfExperience = bio.YearsOfExperience,
             ProjectsCompleted = bio.ProjectsCompleted,
             CodeCommits = bio.CodeCommits,
@@ -72,6 +76,10 @@ public static class BioMapper
         bio.WhatsAppUrl = dto.WhatsAppUrl;
         bio.CVUrl = dto.CVUrl;
         bio.TwitterUrl = dto.TwitterUrl;
+        bio.FacebookUrl = dto.FacebookUrl;
+        bio.DevToUrl = dto.DevToUrl;
+        bio.PinterestUrl = dto.PinterestUrl;
+        bio.StackOverflowUrl = dto.StackOverflowUrl;
         // Note: YearsOfExperience, ProjectsCompleted, and CodeCommits are calculated dynamically in the service
         bio.EducationQuote = dto.EducationQuote;
         bio.EducationQuote_Ar = dto.EducationQuote_Ar;

@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Search, SlidersHorizontal, Grid3x3, List, ChevronLeft, ChevronRight, Eye, Star, Rocket, Clock, Image, Plus } from 'lucide-angular';
-import { ProjectService } from '../../services/project.service';
+import { ProjectsListService } from '../../services/projects-list.service';
 import { ProjectEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
 import { SharedFooterComponent } from '../shared/footer/footer';
 import { TranslationService } from '../../services/translation.service';
-import { ImageUtilsService } from '../../services/image-utils.service';
 import { AuthService } from '../../services/auth.service';
-import { TranslationHelperService } from '../../services/translation-helper.service';
+import { TranslationUtil, ImageUtil, ProjectUtil } from '../../utils';
 
 // Centralized CRUD
 import { ProjectCrudModalComponent } from '../shared/project-crud/project-crud-modal';
@@ -38,12 +37,10 @@ import { ProjectCrudService } from '../shared/project-crud/project-crud.service'
   templateUrl: './projects-list.html'
 })
 export class ProjectsListComponent implements OnInit {
-  private projectService = inject(ProjectService);
+  private projectsListService = inject(ProjectsListService);
   private crudService = inject(ProjectCrudService);
   public translationService = inject(TranslationService);
-  private translationHelper = inject(TranslationHelperService);
   private route = inject(ActivatedRoute);
-  private imageUtils = inject(ImageUtilsService);
   public auth = inject(AuthService);
   private titleService = inject(Title);
   private meta = inject(Meta);
@@ -97,7 +94,7 @@ export class ProjectsListComponent implements OnInit {
   // Computed
   highlightedProjects = computed(() => {
     const projects = this.allProjects();
-    const highlights = this.projectService.getProjectHighlights(projects);
+    const highlights = ProjectUtil.getProjectHighlights(projects);
     if (highlights.length === 0) return [];
 
     const result = [];
@@ -210,25 +207,25 @@ export class ProjectsListComponent implements OnInit {
   }
 
   loadData() {
-    this.projectService.getProjects().subscribe({
-      next: (projects) => {
-        this.allProjects.set(projects);
+    this.projectsListService.getProjects().subscribe({
+      next: (response: any) => {
+        this.allProjects.set(response.items || response);
         this.isLoading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to load projects:', err);
         this.isLoading.set(false);
       }
     });
 
-    this.projectService.getCategories().subscribe({
-      next: (cats) => this.categories.set(cats),
-      error: (err) => console.error('Failed to load categories:', err)
+    this.projectsListService.getCategories().subscribe({
+      next: (cats: any) => this.categories.set(cats),
+      error: (err: any) => console.error('Failed to load categories:', err)
     });
 
-    this.projectService.getNiches().subscribe({
-      next: (niches) => this.niches.set(niches),
-      error: (err) => console.error('Failed to load niches:', err)
+    this.projectsListService.getNiches().subscribe({
+      next: (niches: any) => this.niches.set(niches),
+      error: (err: any) => console.error('Failed to load niches:', err)
     });
   }
 
@@ -310,25 +307,30 @@ export class ProjectsListComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  // Helper methods for template to use TranslationHelperService
+  // Helper methods for template to use TranslationUtil
   getTitle(project: ProjectEntry): string {
-    return this.translationHelper.getTranslatedField(project, 'title');
+    const currentLang = this.translationService.currentLang$();
+    return TranslationUtil.getTranslatedField(project, 'title', currentLang);
   }
 
   getDescription(project: ProjectEntry): string {
-    return this.translationHelper.getTranslatedField(project, 'description');
+    const currentLang = this.translationService.currentLang$();
+    return TranslationUtil.getTranslatedField(project, 'description', currentLang);
   }
 
   getCategory(project: ProjectEntry): string {
-    return this.translationHelper.getTranslatedField(project, 'category');
+    const currentLang = this.translationService.currentLang$();
+    return TranslationUtil.getTranslatedField(project, 'category', currentLang);
   }
 
   getNiche(project: ProjectEntry): string {
-    return this.translationHelper.getTranslatedField(project, 'niche');
+    const currentLang = this.translationService.currentLang$();
+    return TranslationUtil.getTranslatedField(project, 'niche', currentLang);
   }
 
   getCompany(project: ProjectEntry): string {
-    return this.translationHelper.getTranslatedField(project, 'company');
+    const currentLang = this.translationService.currentLang$();
+    return TranslationUtil.getTranslatedField(project, 'company', currentLang);
   }
 
   isFeatured(project: ProjectEntry): boolean {
@@ -336,7 +338,7 @@ export class ProjectsListComponent implements OnInit {
   }
 
   getFullImageUrl(url: string): string {
-    return this.imageUtils.getFullImageUrl(url);
+    return ImageUtil.getFullImageUrl(url);
   }
 
   onImageError(event: Event): void {

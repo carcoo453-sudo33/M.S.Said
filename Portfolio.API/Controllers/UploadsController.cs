@@ -229,9 +229,9 @@ public class UploadsController : ControllerBase
     /// <summary>
     /// Gets the filesystem root directory used for storing uploaded files. This sits OUTSIDE wwwroot so the web server cannot serve files directly.
     /// </summary>
-    /// <returns>The absolute path to the application's secure uploads directory (a folder named "secure-uploads" under the application's content root, outside wwwroot).</returns>
+    /// <returns>The absolute path to the application's uploads directory (a folder named "uploads" at the root level, outside wwwroot).</returns>
     private string GetUploadsRoot()
-        => Path.Combine(_environment.ContentRootPath, "secure-uploads");
+        => Path.Combine(Directory.GetParent(_environment.ContentRootPath)?.FullName ?? _environment.ContentRootPath, "uploads");
 }
 
 /// <summary>Per-endpoint upload policy.</summary>

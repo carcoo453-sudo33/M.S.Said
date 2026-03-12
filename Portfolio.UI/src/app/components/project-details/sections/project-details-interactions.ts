@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, Heart, Share2, User, X, Facebook, Twitter, Linkedin, Link, MessageCircle, CheckCircle, AlertCircle, Eye } from 'lucide-angular';
 import { ProjectEntry } from '../../../models';
-import { ProjectService } from '../../../services/project.service';
+import { ProjectDetailsService } from '../../../services/project-details.service';
 
 @Component({
     selector: 'app-project-details-interactions',
@@ -257,7 +257,7 @@ import { ProjectService } from '../../../services/project.service';
   `
 })
 export class ProjectDetailsInteractionsComponent implements OnChanges {
-    private projectService = inject(ProjectService);
+    private projectDetailsService = inject(ProjectDetailsService);
     
     @Input() project?: ProjectEntry;
     @Input() triggerShare: boolean = false;
@@ -441,7 +441,7 @@ export class ProjectDetailsInteractionsComponent implements OnChanges {
         console.log('Posting comment to project ID:', this.project.id);
         console.log('Comment data:', comment);
 
-        this.projectService.addComment(this.project.id, comment).subscribe({
+        this.projectDetailsService.addComment(this.project.id, comment).subscribe({
             next: (newComment) => {
                 console.log('Comment posted successfully:', newComment);
                 if (this.project) {
@@ -481,7 +481,7 @@ export class ProjectDetailsInteractionsComponent implements OnChanges {
         if (!this.project || this.likingComments.has(commentId)) return;
 
         this.likingComments.add(commentId);
-        this.projectService.likeComment(this.project.id, commentId).subscribe({
+        this.projectDetailsService.likeComment(this.project.id, commentId).subscribe({
             next: (updatedComment) => {
                 if (this.project) {
                     const comment = this.project.comments?.find(c => c.id === commentId);
@@ -520,7 +520,7 @@ export class ProjectDetailsInteractionsComponent implements OnChanges {
             content: this.replyText.trim()
         };
 
-        this.projectService.addReply(this.project.id, commentId, reply).subscribe({
+        this.projectDetailsService.addReply(this.project.id, commentId, reply).subscribe({
             next: (updatedComment) => {
                 console.log('Reply posted successfully:', updatedComment);
                 if (this.project) {

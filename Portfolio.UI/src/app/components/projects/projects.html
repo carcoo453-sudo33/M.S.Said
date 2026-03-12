@@ -25,9 +25,6 @@
             <!-- Work History Skeleton -->
             <app-projects-work-history-skeleton></app-projects-work-history-skeleton>
 
-            <!-- Brand Slider Skeleton -->
-            <app-projects-brand-slider-skeleton></app-projects-brand-slider-skeleton>
-
             <!-- References Skeleton -->
             <app-projects-references-skeleton></app-projects-references-skeleton>
 
@@ -126,14 +123,10 @@
                     (experiencesUpdated)="onExperiencesUpdated($event)"></app-projects-work-history>
             </div>
 
-            <!-- Brand Slider Section -->
-            <app-projects-brand-slider [clients]="clients()"
-                (clientsUpdated)="onClientsUpdated($event)"></app-projects-brand-slider>
-
             <!-- References Section -->
             <div class="py-16">
-                <app-projects-references [testimonials]="testimonials()"
-                    (testimonialsUpdated)="onTestimonialsUpdated($event)"></app-projects-references>
+                <app-projects-references [references]="references()"
+                    (referencesUpdated)="onReferencesUpdated($event)"></app-projects-references>
             </div>
 
         </div>
