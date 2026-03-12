@@ -210,7 +210,7 @@ export class ProjectDetailsComponent implements OnInit {
     const title = isAr && project.title_Ar ? project.title_Ar : project.title;
     const description = isAr && project.summary_Ar ? project.summary_Ar : (project.summary || project.description);
     const imageUrl = project.imageUrl ? ProjectUtil.getFullImageUrl(project.imageUrl) : '';
-    const siteTitle = `Mostafa.Dev | ${title}`;
+    const siteTitle = `Dev.M.Said | ${title}`;
 
     this.titleService.setTitle(siteTitle);
 

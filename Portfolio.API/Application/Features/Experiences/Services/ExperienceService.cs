@@ -2,7 +2,7 @@ using Portfolio.API.Entities;
 using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Experiences.DTOs;
 using Portfolio.API.Application.Features.Experiences.Mappers;
-using EducationEntity = Portfolio.API.Entities.Education;
+using Microsoft.EntityFrameworkCore;
 
 namespace Portfolio.API.Application.Features.Experiences.Services;
 
@@ -20,14 +20,14 @@ public class ExperienceService : IExperienceService
     }
 
     /// <summary>
-    /// Retrieve all experiences, ordered with completed items first, then by year extracted from the duration (descending), then by duration (descending), and map them to DTOs.
+    /// Retrieve all experiences, ordered with current items first, then by year extracted from the duration (descending), then by duration (descending), and map them to DTOs.
     /// </summary>
-    /// <returns>An <see cref="IEnumerable{ExperienceDto}"/> of all experiences mapped to DTOs, ordered by completion status, extracted year (descending), and duration (descending).</returns>
+    /// <returns>An <see cref="IEnumerable{ExperienceDto}"/> of all experiences mapped to DTOs, ordered by current status, extracted year (descending), and duration (descending).</returns>
     public async Task<IEnumerable<ExperienceDto>> GetExperiencesAsync()
     {
-        var experiences = await _unitOfWork.Repository<EducationEntity>().GetAllAsync();
+        var experiences = await _unitOfWork.Repository<Experience>().GetAllAsync();
         return experiences
-            .OrderByDescending(e => e.IsCompleted)
+            .OrderByDescending(e => e.IsCurrent)
             .ThenByDescending(e => ExtractYear(e.Duration))
             .ThenByDescending(e => e.Duration)
             .Select(ExperienceMapper.ToDto);
@@ -39,7 +39,7 @@ public class ExperienceService : IExperienceService
     /// <returns>The matching ExperienceDto if found, or null if no experience exists with the given id.</returns>
     public async Task<ExperienceDto?> GetExperienceByIdAsync(Guid id)
     {
-        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<Experience>().GetByIdAsync(id);
         return experience == null ? null : ExperienceMapper.ToDto(experience);
     }
 
@@ -50,12 +50,12 @@ public class ExperienceService : IExperienceService
     /// <returns>The created <see cref="ExperienceDto"/> reflecting persisted values, including the assigned Id.</returns>
     public async Task<ExperienceDto> CreateExperienceAsync(ExperienceDto dto)
     {
-        var entity = new EducationEntity
+        var entity = new Experience
         {
             Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid()
         };
         ExperienceMapper.UpdateEntity(entity, dto);
-        await _unitOfWork.Repository<EducationEntity>().AddAsync(entity);
+        await _unitOfWork.Repository<Experience>().AddAsync(entity);
         await _unitOfWork.CompleteAsync();
         return ExperienceMapper.ToDto(entity);
     }
@@ -69,7 +69,7 @@ public class ExperienceService : IExperienceService
     /// <exception cref="KeyNotFoundException">Thrown when no experience with the specified <paramref name="id"/> exists.</exception>
     public async Task<ExperienceDto> UpdateExperienceAsync(Guid id, ExperienceDto dto)
     {
-        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<Experience>().GetByIdAsync(id);
         if (experience == null)
             throw new KeyNotFoundException($"Experience with id {id} not found");
 
@@ -85,11 +85,11 @@ public class ExperienceService : IExperienceService
     /// <returns>`true` if an experience with the given id was found and deleted, `false` otherwise.</returns>
     public async Task<bool> DeleteExperienceAsync(Guid id)
     {
-        var experience = await _unitOfWork.Repository<EducationEntity>().GetByIdAsync(id);
+        var experience = await _unitOfWork.Repository<Experience>().GetByIdAsync(id);
         if (experience == null)
             return false;
 
-        _unitOfWork.Repository<EducationEntity>().Delete(experience);
+        _unitOfWork.Repository<Experience>().Delete(experience);
         await _unitOfWork.CompleteAsync();
         return true;
     }

@@ -50,29 +50,6 @@ export class HomeService {
         );
     }
 
-    // Skills
-    getSkills() {
-        return this.http.get<SkillEntry[]>(`${this.apiUrl}/skills`).pipe(
-            map(skills => skills.map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID })))
-        );
-    }
-
-    createSkill(skill: SkillEntry) {
-        return this.http.post<SkillEntry>(`${this.apiUrl}/skills`, skill).pipe(
-            map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID }))
-        );
-    }
-
-    updateSkill(id: string, skill: SkillEntry) {
-        return this.http.put<SkillEntry>(`${this.apiUrl}/skills/${id}`, skill).pipe(
-            map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID }))
-        );
-    }
-
-    deleteSkill(id: string) {
-        return this.http.delete(`${this.apiUrl}/skills/${id}`);
-    }
-
     // Services
     getServices() {
         return this.http.get<ServiceEntry[]>(`${this.apiUrl}/services`).pipe(

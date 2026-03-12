@@ -156,10 +156,14 @@ export class HomeTimelineModalComponent implements OnChanges {
         this.editList.push({ 
             id: crypto.randomUUID(), 
             role: '', 
+            role_Ar: '',
             company: '', 
+            company_Ar: '',
             duration: '', 
             description: '', 
+            description_Ar: '',
             location: '', 
+            location_Ar: '',
             isCurrent: false 
         });
     }

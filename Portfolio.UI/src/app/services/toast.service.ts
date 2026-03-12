@@ -83,9 +83,8 @@ export class ToastService {
         const currentToasts = this.toasts();
         const isDuplicate = currentToasts.some(t => t.message === message && t.type === type);
         if (isDuplicate) {
-            // Return existing toast ID or just return a dummy ID
-            const existingToast = currentToasts.find(t => t.message === message && t.type === type);
-            return existingToast?.id ?? -1;
+            // Return existing toast ID
+            return currentToasts.find(t => t.message === message && t.type === type)?.id ?? -1;
         }
 
         const id = this.nextId++;
@@ -101,9 +100,7 @@ export class ToastService {
             persistent: options?.persistent ?? false
         };
 
-        setTimeout(() => {
-            this.toasts.update(current => [...current, toast]);
-        });
+        this.toasts.update(current => [...current, toast]);
 
         // Auto remove after duration (unless persistent)
         if (!toast.persistent) {
@@ -114,21 +111,15 @@ export class ToastService {
     }
 
     remove(id: number) {
-        setTimeout(() => {
-            this.toasts.update(current => current.filter(t => t.id !== id));
-        });
+        this.toasts.update(current => current.filter(t => t.id !== id));
     }
 
     clear() {
-        setTimeout(() => {
-            this.toasts.set([]);
-        });
+        this.toasts.set([]);
     }
 
     // Dismiss all non-persistent toasts
     dismissAll() {
-        setTimeout(() => {
-            this.toasts.update(current => current.filter(t => t.persistent));
-        });
+        this.toasts.update(current => current.filter(t => t.persistent));
     }
 }

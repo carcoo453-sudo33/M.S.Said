@@ -4,118 +4,45 @@ import { Observable, tap, interval } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../environments/environment';
 import { Notification as AppNotification, NotificationStats } from '../models/notification.model';
+import { SignalRService } from './signalr.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
   private http = inject(HttpClient);
+  private signalR = inject(SignalRService);
   private apiUrl = `${environment.apiUrl}/notifications`;
-  private hubConnection: signalR.HubConnection | null = null;
 
   // Signals for reactive state
-  notifications = signal<AppNotification[]>([]);
+  // Read-only signals mapping to SignalRService
+  notifications = this.signalR.notifications;
   unreadCount = signal(0);
   isLoading = signal(false);
-  isConnected = signal(false);
+  isConnected = this.signalR.adminOnlineStatus; // Simplified connection status
 
   constructor() {
-    // Initialize SignalR connection
-    this.initializeSignalRConnection();
+    // Initial stats load
+    this.loadStats();
 
-    // Poll for new notifications every 30 seconds as fallback
+    // Poll for new notifications every 3x seconds as fallback
     interval(30000).subscribe(() => {
       const token = localStorage.getItem('auth_token');
-      if (token && !this.isConnected()) {
+      if (token) {
         this.loadStats();
       }
     });
   }
 
-  private initializeSignalRConnection(): void {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      console.log('[NotificationService] No auth token, skipping SignalR connection');
-      return;
-    }
-
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${environment.apiUrl.replace('/api', '')}/hubs/notifications`, {
-        accessTokenFactory: () => token,
-        skipNegotiation: false,
-        transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling
-      })
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
-
-    // Handle incoming notifications
-    this.hubConnection.on('ReceiveNotification', (notification: AppNotification) => {
-      console.log('[NotificationService] ✅ Received notification:', notification);
-      
-      // Add to notifications list at the beginning
-      const currentNotifications = this.notifications();
-      this.notifications.set([notification, ...currentNotifications]);
-      
-      // Increment unread count
-      if (!notification.isRead) {
-        const newCount = this.unreadCount() + 1;
-        this.unreadCount.set(newCount);
-        console.log('[NotificationService] 📊 Unread count updated:', newCount);
-      }
-      
-      // Show browser notification if permission granted
-      this.showBrowserNotification(notification);
-    });
-
-    // Handle reconnection
-    this.hubConnection.onreconnected(() => {
-      console.log('[NotificationService] 🔄 SignalR reconnected');
-      this.isConnected.set(true);
-      this.loadStats(); // Reload stats after reconnection
-    });
-
-    this.hubConnection.onclose(() => {
-      console.log('[NotificationService] 🔌 SignalR connection closed');
-      this.isConnected.set(false);
-    });
-
-    // Start connection
-    this.startConnection();
-  }
-
-  private async startConnection(): Promise<void> {
-    if (!this.hubConnection) return;
-
-    try {
-      await this.hubConnection.start();
-      console.log('[NotificationService] SignalR connected');
-      this.isConnected.set(true);
-      
-      // Load initial stats after connection
-      this.loadStats();
-    } catch (err) {
-      console.error('[NotificationService] SignalR connection error:', err);
-      this.isConnected.set(false);
-      
-      // Retry connection after 5 seconds
-      setTimeout(() => this.startConnection(), 5000);
-    }
-  }
-
   public reconnect(): void {
     const token = localStorage.getItem('auth_token');
-    if (token && !this.isConnected()) {
-      this.initializeSignalRConnection();
+    if (token) {
+      this.signalR.reconnectWithAuth();
     }
   }
 
   public disconnect(): void {
-    if (this.hubConnection) {
-      this.hubConnection.stop();
-      this.isConnected.set(false);
-      console.log('[NotificationService] SignalR disconnected');
-    }
+    this.signalR.stopConnection();
   }
 
   getNotifications(limit: number = 50, unreadOnly: boolean = false): Observable<AppNotification[]> {

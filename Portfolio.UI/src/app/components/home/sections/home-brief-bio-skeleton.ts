@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-    <section class="animate-pulse space-y-8">
+    <section class="animate-pulse space-y-8 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md p-6 rounded-2xl">
         <!-- Badge -->
         <div class="h-8 bg-zinc-200 dark:bg-zinc-800 rounded-full w-48"></div>
 

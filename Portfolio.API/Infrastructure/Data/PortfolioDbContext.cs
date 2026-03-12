@@ -14,9 +14,6 @@ public class PortfolioDbContext : IdentityDbContext
     {
         base.OnConfiguring(optionsBuilder);
         
-        // Performance: Use NoTracking by default for read queries
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-        
         // Suppress pending model changes warning temporarily
         optionsBuilder.ConfigureWarnings(warnings => 
             warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
@@ -41,6 +38,7 @@ public class PortfolioDbContext : IdentityDbContext
     public DbSet<Niche> Niches { get; set; }
     public DbSet<BlogPost> BlogPosts { get; set;}
     public DbSet<ContactMessage> ContactMessages { get; set; }
+    public DbSet<Experience> Experiences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

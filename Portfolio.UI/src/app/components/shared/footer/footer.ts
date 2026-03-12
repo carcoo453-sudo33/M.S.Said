@@ -16,8 +16,8 @@ import { TranslationService } from '../../../services/translation.service';
                 <!-- Column 1: Brand -->
                 <div class="space-y-2">
                     <a routerLink="/" class="text-2xl font-black tracking-tighter flex items-center gap-1 text-zinc-900 dark:text-white group">
-                        <div class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20" [class.mr-2]="!translationService.isRTL()" [class.ml-2]="translationService.isRTL()">M</div>
-                        Mostafa<span class="text-red-600">.Dev</span>
+                        <div class="bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/20" [class.mr-2]="!translationService.isRTL()" [class.ml-2]="translationService.isRTL()">DS</div>
+                        Dev.M<span class="text-red-600">.Said</span>
                     </a>
                     <p class="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed font-bold">
                         {{ 'footer.description' | translate }}
@@ -62,7 +62,7 @@ import { TranslationService } from '../../../services/translation.service';
 
             <div class="pt-10 border-t border-zinc-200 dark:border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-6">
                 <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest">
-                    © 2024{{ currentYear > 2024 ? '-' + currentYear : '' }} {{ translationService.isRTL() ? 'مصطفى سمير سعيد. جميع الحقوق محفوظة' : 'Mostafa Samir Said. All rights reserved' }}
+                    © 2024{{ currentYear > 2024 ? '-' + currentYear : '' }} {{ translationService.isRTL() ? 'م. مصطفى سعيد. جميع الحقوق محفوظة' : 'Eng. Mostafa Said. All rights reserved' }}
                 </p>
                 <div class="flex items-center gap-2">
                     <span class="text-zinc-400 text-[9px] font-black uppercase">{{ 'footer.madeWith' | translate }}</span>

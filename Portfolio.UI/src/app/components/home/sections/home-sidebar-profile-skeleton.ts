@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <aside class="md:sticky md:top-24 animate-pulse">
-        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8 space-y-8">
+        <div class="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-8 space-y-8">
             <!-- Avatar -->
             <div class="flex justify-center">
                 <div class="w-32 h-32 bg-zinc-200 dark:bg-zinc-800 rounded-full"></div>

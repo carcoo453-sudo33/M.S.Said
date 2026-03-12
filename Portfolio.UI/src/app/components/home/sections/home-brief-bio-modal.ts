@@ -67,13 +67,13 @@ import { TranslationService } from '../../../services/translation.service';
                                 <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
                                 <input [(ngModel)]="editForm.careerStartDate" type="date"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                                <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to calculate years of experience</p>
+                                <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to calculate years of experience. Auto-derived from work history if unconfigured.</p>
                             </div>
                             <div>
                                 <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
                                 <input [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., octocat"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                                <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to fetch public repository count from GitHub</p>
+                                <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to fetch total authored commit count from GitHub</p>
                             </div>
                         </div>
                     </div>

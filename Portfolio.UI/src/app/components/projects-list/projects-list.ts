@@ -395,7 +395,7 @@ export class ProjectsListComponent implements OnInit {
 
   private updateSeoTags() {
     const isAr = this.translationService.isRTL();
-    const title = isAr ? 'كل المشاريع | معرض الأعمال الكامل | Mostafa.Dev' : 'All Projects | Complete Portfolio | Mostafa.Dev';
+    const title = isAr ? 'كل المشاريع | معرض الأعمال الكامل | Dev.M.Said' : 'All Projects | Complete Portfolio | Dev.M.Said';
     const description = isAr 
         ? 'استكشف معرض الأعمال الكامل للمهندس مصطفى سعيد. مشاريع في هندسة البرمجيات، تطوير المواقع، والحلول التقنية المبتكرة.' 
         : 'Explore the complete portfolio of Eng. Mostafa Said. Projects in software engineering, web development, and innovative technical solutions.';

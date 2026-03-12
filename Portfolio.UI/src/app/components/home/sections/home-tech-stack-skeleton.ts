@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
                 <!-- Skills Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     <div *ngFor="let _ of [].constructor(4)" 
-                         class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 space-y-3">
+                         class="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 space-y-3">
                         <!-- Icon -->
                         <div class="w-10 h-10 bg-zinc-200 dark:bg-zinc-800 rounded-lg"></div>
                         

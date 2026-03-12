@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule, X, Save, Plus, Trash2, Image as LucideImage, AlertTriangle } from 'lucide-angular';
 import { SkillEntry } from '../../../models';
-import { ProfileService } from '../../../services/profile.service';
+import { SkillService } from '../../../services/skill.service';
 import { ToastService } from '../../../services/toast.service';
 import { ImageUtil } from '../../../utils';
 
@@ -99,7 +99,7 @@ import { ImageUtil } from '../../../utils';
     `
 })
 export class HomeTechStackModalComponent implements OnChanges {
-    private readonly profileService = inject(ProfileService);
+    private readonly skillService = inject(SkillService);
     private readonly toast = inject(ToastService);
 
     @Input() isOpen = false;
@@ -141,18 +141,23 @@ export class HomeTechStackModalComponent implements OnChanges {
     onSave(): void {
         this.submitted = true;
         if (this.editList.some(item => !item.name.trim())) {
+            this.toast.error('Please fill in all required skill names.');
             return;
         }
         
-        // Map frontend 'icon' field to backend 'iconPath' field
-        const skillsToSave = this.editList.map(skill => ({
-            ...skill,
-            iconPath: skill.icon || skill.iconPath, // Use icon if set, otherwise use iconPath
-            icon: undefined // Remove the frontend-only field
-        }));
+        // Map frontend 'icon' field to backend 'iconPath' field and clean up
+        const skillsToSave = this.editList.map(skill => {
+            const finalIconPath = skill.iconPath || skill.icon || '';
+            const { icon, ...rest } = skill; // Remove frontend-only 'icon' property
+            return {
+                ...rest,
+                name: skill.name.trim(),
+                iconPath: finalIconPath
+            };
+        });
         
         console.log('📤 Sending skills to backend:', skillsToSave);
-        this.save.emit(skillsToSave);
+        this.save.emit(skillsToSave as SkillEntry[]);
     }
 
     isImageUrl(icon?: string): boolean {
@@ -169,15 +174,15 @@ export class HomeTechStackModalComponent implements OnChanges {
         if (!file) return;
 
         this.uploadingIndex = index;
-        this.profileService.uploadSkillIcon(file).subscribe({
-            next: (res) => {
+        this.skillService.uploadIcon(file).subscribe({
+            next: (res: { url: string }) => {
                 this.editList[index].icon = res.url;
                 this.editList[index].iconPath = res.url; // Also set iconPath for backend
                 this.uploadIcon.emit({ index, url: res.url });
                 this.uploadingIndex = null;
                 this.toast.success('Icon uploaded! Click Save to persist changes.');
             },
-            error: (err) => {
+            error: (err: any) => {
                 this.uploadingIndex = null;
                 this.toast.error('Upload failed: ' + (err.error?.message || 'Server error'));
             }
@@ -185,7 +190,12 @@ export class HomeTechStackModalComponent implements OnChanges {
     }
 
     addNewSkill(): void {
-        const newItem = { id: crypto.randomUUID(), name: '', icon: '' };
+        const newItem: SkillEntry = { 
+            id: crypto.randomUUID(), 
+            name: '', 
+            icon: '',
+            iconPath: '' 
+        };
         this.editList.push(newItem);
         this.submitted = false;
     }

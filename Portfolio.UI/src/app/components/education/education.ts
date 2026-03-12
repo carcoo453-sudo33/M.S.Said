@@ -98,7 +98,7 @@ export class EducationComponent implements OnInit {
 
     private updateSeoTags() {
         const isAr = this.translationService.isRTL();
-        const title = isAr ? 'التعليم والخبرة الأكاديمية | Mostafa.Dev' : 'Education & Academic Specialization | Mostafa.Dev';
+        const title = isAr ? 'التعليم والخبرة الأكاديمية | Dev.M.Said' : 'Education & Academic Specialization | Dev.M.Said';
         const description = isAr 
             ? 'اكتشف الرحلة الأكاديمية والشهادات والتدريب التقني لـ مصطفى صادق. تخصص في هندسة البرمجيات والأنظمة الموزعة.'
             : 'Explore the academic journey, certifications, and technical training of Mostafa Said. Specializing in Software Engineering and Distributed Systems.';

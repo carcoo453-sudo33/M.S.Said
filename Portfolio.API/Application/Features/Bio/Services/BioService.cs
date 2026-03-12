@@ -46,7 +46,7 @@ public class BioService : IBioService
         if (bio == null) return null;
 
         // Calculate dynamic statistics
-        bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);
+        bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
         bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
         bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
 
@@ -100,7 +100,7 @@ public class BioService : IBioService
         System.Diagnostics.Debug.WriteLine($"✅ Bio saved successfully. Changes: {saveResult}");
 
         // Recalculate dynamic statistics after update
-        bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);
+        bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
         bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
         bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
 
@@ -110,19 +110,58 @@ public class BioService : IBioService
     }
 
     /// <summary>
-    /// Calculate the number of full years since the specified career start date and format the result with a trailing '+'.
+    /// Calculate the number of full years since the specified career start date or earliest experience entry.
     /// </summary>
-    /// <param name="careerStartDate">The UTC date when the career began; used as the reference point for computing full years of experience.</param>
-    /// <returns>A string in the format "&lt;years&gt;+" where &lt;years&gt; is the number of full years since <paramref name="careerStartDate"/>, with a minimum of 0.</returns>
-    private static string CalculateYearsOfExperience(DateTime careerStartDate)
+    private async Task<string> CalculateYearsOfExperienceAsync(DateTime careerStartDate)
     {
-        var years = DateTime.UtcNow.Year - careerStartDate.Year;
-        if (DateTime.UtcNow.Month < careerStartDate.Month ||
-            (DateTime.UtcNow.Month == careerStartDate.Month && DateTime.UtcNow.Day < careerStartDate.Day))
+        var referenceDate = careerStartDate;
+        
+        // If CareerStartDate is the default (2021-01-01) or uninitialized, try to find the earliest experience
+        var defaultDate = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        if (careerStartDate <= defaultDate)
         {
-            years--;
+            var earliestExperience = await _unitOfWork.Repository<Experience>()
+                .Query()
+                .AsNoTracking()
+                .OrderBy(e => e.Duration) // Simple alphabetical sort on duration string often yields years first
+                .ToListAsync();
+
+            if (earliestExperience.Any())
+            {
+                // Try to extract the minimum year from all durations
+                var years = earliestExperience
+                    .Select(e => ExtractYear(e.Duration))
+                    .Where(y => y > 0)
+                    .ToList();
+
+                if (years.Any())
+                {
+                    referenceDate = new DateTime(years.Min(), 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                }
+            }
         }
-        return $"{Math.Max(years, 0)}+";
+
+        var experienceYears = DateTime.UtcNow.Year - referenceDate.Year;
+        if (DateTime.UtcNow.Month < referenceDate.Month ||
+            (DateTime.UtcNow.Month == referenceDate.Month && DateTime.UtcNow.Day < referenceDate.Day))
+        {
+            experienceYears--;
+        }
+        
+        // Return 0+ if no experience found, else return calculated years
+        return $"{Math.Max(experienceYears, 0)}+";
+    }
+
+    private static int ExtractYear(string duration)
+    {
+        if (string.IsNullOrEmpty(duration)) return 0;
+        var parts = duration.Split(new[] { '-', '/', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var part in parts)
+        {
+            if (int.TryParse(part.Trim(), out int year) && year >= 2000 && year <= 2100)
+                return year;
+        }
+        return 0;
     }
 
     /// <summary>
@@ -139,12 +178,17 @@ public class BioService : IBioService
 
         try
         {
-            var completedCount = await _unitOfWork.Repository<Project>()
-                .Query()
-                .AsNoTracking()
-                .CountAsync(p => p.Status == ProjectStatus.Completed);
+            var query = _unitOfWork.Repository<Project>().Query().AsNoTracking();
+            var completedCount = await query.CountAsync(p => p.Status == ProjectStatus.Completed);
             
-            var result = completedCount.ToString();
+            // If zero completed, count InProgress too to avoid showing "0" to visitors
+            var totalCount = completedCount;
+            if (totalCount == 0)
+            {
+                totalCount = await query.CountAsync(p => p.Status == ProjectStatus.Completed || p.Status == ProjectStatus.InProgress);
+            }
+            
+            var result = totalCount.ToString();
             
             _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
             {
@@ -181,26 +225,31 @@ public class BioService : IBioService
             if (string.IsNullOrEmpty(gitHubToken))
                 return "0";
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/users/{gitHubUsername}");
+            // Use the Search Commits API to get an actual commit count
+            // Reference: https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-commits
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/search/commits?q=author:{gitHubUsername}");
             request.Headers.Add("Authorization", $"Bearer {gitHubToken}");
-            request.Headers.Add("Accept", "application/vnd.github.v3+json");
+            request.Headers.Add("Accept", "application/vnd.github.cloak-preview"); // Required for commit search
             request.Headers.Add("User-Agent", "Portfolio-API");
 
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
-                return "0";
+            {
+                // Fallback to repo count if search is restricted or fails
+                return await GetGitHubRepoCountAsync(gitHubUsername, gitHubToken);
+            }
 
             var content = await response.Content.ReadAsStringAsync();
             var jsonDoc = System.Text.Json.JsonDocument.Parse(content);
             var root = jsonDoc.RootElement;
 
-            if (root.TryGetProperty("public_repos", out var publicRepos))
+            if (root.TryGetProperty("total_count", out var totalCount))
             {
-                var result = publicRepos.GetInt32().ToString();
+                var result = totalCount.GetInt32().ToString();
                 
                 _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6) // Commit count doesn't change that fast
                 });
                 
                 return result;
@@ -212,6 +261,24 @@ public class BioService : IBioService
         {
             return "0";
         }
+    }
+
+    private async Task<string> GetGitHubRepoCountAsync(string username, string token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/users/{username}");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        request.Headers.Add("Accept", "application/vnd.github.v3+json");
+        request.Headers.Add("User-Agent", "Portfolio-API");
+
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode) return "0";
+
+        var content = await response.Content.ReadAsStringAsync();
+        using var jsonDoc = System.Text.Json.JsonDocument.Parse(content);
+        if (jsonDoc.RootElement.TryGetProperty("public_repos", out var repos))
+            return repos.GetInt32().ToString();
+
+        return "0";
     }
 }
 

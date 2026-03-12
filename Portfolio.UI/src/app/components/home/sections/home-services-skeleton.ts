@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div *ngFor="let _ of [].constructor(4)" 
-                 class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
+                 class="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
                 <!-- Icon -->
                 <div class="w-12 h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl"></div>
                 

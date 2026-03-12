@@ -110,9 +110,9 @@ export class HomeBriefBioComponent {
     }
 
     formatCodeCommits(commits?: string): string {
-        if (!commits) return '0k';
+        if (!commits || commits === '0') return '0';
         const num = Number.parseInt(commits, 10);
-        if (Number.isNaN(num)) return '0k';
+        if (Number.isNaN(num) || num <= 0) return '0';
         if (num >= 1000) {
             return (num / 1000).toFixed(1) + 'k';
         }

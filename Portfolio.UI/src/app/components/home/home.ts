@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectService } from '../../services/project.service';
 import { HomeService } from '../../services/home.service';
+import { ExperienceService } from '../../services/experience.service';
+import { SkillService } from '../../services/skill.service';
 import { ProjectsPageService } from '../../services/projects-page.service';
 import { BioEntry, ServiceEntry, ProjectEntry, ExperienceEntry, SkillEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
@@ -60,6 +62,8 @@ import { SharedFooterComponent } from '../shared/footer/footer';
 export class HomeComponent implements OnInit {
     private readonly projectService = inject(ProjectService);
     private readonly homeService = inject(HomeService);
+    private readonly experienceService = inject(ExperienceService);
+    private readonly skillService = inject(SkillService);
     private readonly projectsPageService = inject(ProjectsPageService);
     private readonly toast = inject(ToastService);
     public readonly translationService = inject(TranslationService);
@@ -100,8 +104,8 @@ export class HomeComponent implements OnInit {
         });
         
         // Load skills data
-        this.homeService.getSkills().subscribe({
-            next: (data: any) => {
+        this.skillService.getSkills().subscribe({
+            next: (data: SkillEntry[]) => {
                 this.skills.set(data);
                 console.log('✅ Skills loaded successfully');
             },
@@ -112,8 +116,8 @@ export class HomeComponent implements OnInit {
         });
         
         // Load experiences data
-        this.projectsPageService.getExperiences().subscribe({
-            next: (data: any) => {
+        this.experienceService.getExperiences().subscribe({
+            next: (data: ExperienceEntry[]) => {
                 this.experiences.set(data.slice(0, 2));
                 console.log('✅ Experiences loaded successfully');
             },

@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     template: `
     <section class="max-w-7xl mx-auto px-6 pb-24 animate-pulse">
-        <div class="bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-900 dark:to-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16">
+        <div class="bg-gradient-to-br from-zinc-100/40 to-zinc-50/40 dark:from-zinc-900/40 dark:to-zinc-950/40 backdrop-blur-md rounded-xl border border-zinc-200 dark:border-zinc-800 p-12 md:p-16">
             <div class="max-w-3xl mx-auto text-center space-y-8">
                 <!-- Icon -->
                 <div class="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 rounded-xl mx-auto"></div>

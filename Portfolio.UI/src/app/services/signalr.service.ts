@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../environments/environment';
+import { Notification as AppNotification } from '../models/notification.model';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import { environment } from '../../environments/environment';
 export class SignalRService {
   private hubConnection?: signalR.HubConnection;
   public adminOnlineStatus = signal<boolean>(false);
+  public notifications = signal<AppNotification[]>([]);
 
   constructor() {}
 
@@ -37,6 +39,7 @@ export class SignalRService {
       .then(() => {
         console.log('✅ SignalR Connected');
         this.registerAdminStatusListener();
+        this.registerNotificationListener(); // Added notification listener
         this.checkAdminStatus();
       })
       .catch(() => {
@@ -78,6 +81,16 @@ export class SignalRService {
       this.hubConnection.on('AdminStatusChanged', (data: { isOnline: boolean }) => {
         console.log('📡 Admin status changed:', data.isOnline ? 'ONLINE ✅' : 'OFFLINE ⭕');
         this.adminOnlineStatus.set(data.isOnline);
+      });
+    }
+  }
+
+  private registerNotificationListener(): void {
+    if (this.hubConnection) {
+      this.hubConnection.on('ReceiveNotification', (notification: AppNotification) => {
+        console.log('📡 Notification received via SignalRService:', notification);
+        const current = this.notifications();
+        this.notifications.set([notification, ...current]);
       });
     }
   }

@@ -10,5 +10,6 @@ export interface ExperienceEntry {
     location?: string;
     location_Ar?: string;
     isCurrent: boolean;
-    [key: string]: any; // Allow dynamic property access for translation fields
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
 }

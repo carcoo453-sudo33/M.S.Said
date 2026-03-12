@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ExperienceEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
+import { ExperienceService } from '../../../services/experience.service';
 import { ProjectsPageService } from '../../../services/projects-page.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
@@ -180,6 +181,7 @@ import { LucideAngularModule, Edit3, Trash2, X, Save, Plus, AlertTriangle } from
 })
 export class ProjectsWorkHistoryComponent {
     public readonly auth = inject(AuthService);
+    private readonly experienceService = inject(ExperienceService);
     private readonly projectsPageService = inject(ProjectsPageService);
     private readonly toast = inject(ToastService);
     private readonly translationService = inject(TranslationService);
@@ -295,8 +297,8 @@ export class ProjectsWorkHistoryComponent {
         };
 
         const request = this.isCreating
-            ? this.projectsPageService.createExperience(experienceData)
-            : this.projectsPageService.updateExperience(this.editingExperience.id!, experienceData);
+            ? this.experienceService.createExperience(experienceData)
+            : this.experienceService.updateExperience(this.editingExperience.id!, experienceData);
 
         request.subscribe({
             next: (savedExperience: ExperienceEntry) => {
@@ -326,7 +328,7 @@ export class ProjectsWorkHistoryComponent {
         if (!this.deleteExperience?.id) return;
 
         this.isDeleting = true;
-        this.projectsPageService.deleteExperience(this.deleteExperience.id).subscribe({
+        this.experienceService.deleteExperience(this.deleteExperience.id).subscribe({
             next: () => {
                 this.experiences = this.experiences.filter(e => e.id !== this.deleteExperience!.id);
                 this.experiencesUpdated.emit(this.experiences);

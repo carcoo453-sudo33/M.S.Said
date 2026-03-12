@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs';
 import { LucideAngularModule, Edit3 } from 'lucide-angular';
 import { ExperienceEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
-import { ProjectsPageService } from '../../../services/projects-page.service';
+import { ExperienceService } from '../../../services/experience.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 import { TranslationUtil } from '../../../utils';
@@ -61,7 +61,7 @@ import { HomeTimelineModalComponent } from './home-timeline-modal';
 })
 export class HomeTimelineComponent {
     public readonly auth = inject(AuthService);
-    private readonly projectsPageService = inject(ProjectsPageService);
+    private readonly experienceService = inject(ExperienceService);
     private readonly toast = inject(ToastService);
     private readonly translationService = inject(TranslationService);
 
@@ -89,7 +89,7 @@ export class HomeTimelineComponent {
 
     deleteExperience(experienceId: string) {
         this.isDeleting = true;
-        this.projectsPageService.deleteExperience(experienceId).subscribe({
+        this.experienceService.deleteExperience(experienceId).subscribe({
             next: () => {
                 this.experiences = this.experiences.filter(e => e.id !== experienceId);
                 this.experiencesUpdated.emit(this.experiences);
@@ -117,8 +117,8 @@ export class HomeTimelineComponent {
         const requests = editList.map(item => {
             const isExisting = this.experiences.some(e => e.id === item.id);
             return isExisting
-                ? this.projectsPageService.updateExperience(item.id, item)
-                : this.projectsPageService.createExperience(item);
+                ? this.experienceService.updateExperience(item.id, item)
+                : this.experienceService.createExperience(item);
         });
 
         forkJoin(requests).subscribe({

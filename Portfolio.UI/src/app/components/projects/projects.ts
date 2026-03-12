@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProjectService } from '../../services/project.service';
 import { ProjectsPageService } from '../../services/projects-page.service';
+import { ExperienceService } from '../../services/experience.service';
 import { ProjectsListService } from '../../services/projects-list.service';
 import { ProjectEntry, ExperienceEntry } from '../../models';
 import { NavbarComponent } from '../shared/navbar/navbar';
@@ -67,6 +68,7 @@ import { ProjectCrudService } from '../shared/project-crud/project-crud.service'
 export class ProjectsComponent implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly projectsPageService = inject(ProjectsPageService);
+  private readonly experienceService = inject(ExperienceService);
   private readonly projectsListService = inject(ProjectsListService);
   private readonly crudService = inject(ProjectCrudService);
   public readonly auth = inject(AuthService);
@@ -133,9 +135,9 @@ export class ProjectsComponent implements OnInit {
       error: (err) => console.error('Projects: Failed to load project count', err)
     });
 
-    this.projectsPageService.getExperiences().subscribe({
-      next: (data) => this.experiences.set(data),
-      error: (err) => console.error('Projects: Failed to load experiences', err)
+    this.experienceService.getExperiences().subscribe({
+      next: (data: ExperienceEntry[]) => this.experiences.set(data),
+      error: (err: any) => console.error('Projects: Failed to load experiences', err)
     });
 
     this.projectsPageService.getReferences().subscribe({
@@ -207,7 +209,7 @@ export class ProjectsComponent implements OnInit {
 
   private updateSeoTags() {
     const isAr = this.translationService.isRTL();
-    const title = isAr ? 'المشاريع | رحلة الابتكار والتميز التقني | Mostafa.Dev' : 'Projects | Journey of Innovation & Technical Excellence | Mostafa.Dev';
+    const title = isAr ? 'المشاريع | رحلة الابتكار والتميز التقني | Dev.M.Said' : 'Projects | Journey of Innovation & Technical Excellence | Dev.M.Said';
     const description = isAr 
         ? 'اكتشف أبرز المشاريع والحلول التقنية التي قمت بتطويرها. من تطبيقات الويب المعقدة إلى الأنظمة الهندسية المبتكرة.' 
         : 'Discover featured projects and technical solutions I have developed. From complex web applications to innovative engineering systems.';

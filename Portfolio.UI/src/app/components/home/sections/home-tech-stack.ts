@@ -6,6 +6,7 @@ import { LucideAngularModule, Edit3, Image as LucideImage } from 'lucide-angular
 import { SkillEntry } from '../../../models';
 import { AuthService } from '../../../services/auth.service';
 import { HomeService } from '../../../services/home.service';
+import { SkillService } from '../../../services/skill.service';
 import { ToastService } from '../../../services/toast.service';
 import { TranslationService } from '../../../services/translation.service';
 import { ImageUtil, TranslationUtil } from '../../../utils';
@@ -48,6 +49,7 @@ import { HomeTechStackModalComponent } from './home-tech-stack-modal';
 export class HomeTechStackComponent {
     public readonly auth = inject(AuthService);
     private readonly homeService = inject(HomeService);
+    private readonly skillService = inject(SkillService);
     private readonly toast = inject(ToastService);
     private readonly translationService = inject(TranslationService);
 
@@ -88,8 +90,21 @@ export class HomeTechStackComponent {
     }
 
     deleteSkill(skillId: string) {
+        // Check if the skill is already persisted in the database
+        // We know it's persistent if we have its ID in our initial list (which came from backend)
+        // Note: New skills in the modal have temporary UUIDs, but aren't in this.skills yet.
+        const isPersistent = this.skills.some(s => s.id === skillId);
+
+        if (!isPersistent) {
+            // Local-only skill, just filter it out
+            this.skills = this.skills.filter(s => s.id !== skillId);
+            this.skillsUpdated.emit(this.skills);
+            this.toast.success('Unsaved skill removed');
+            return;
+        }
+
         this.isDeleting = true;
-        this.homeService.deleteSkill(skillId).subscribe({
+        this.skillService.deleteSkill(skillId).subscribe({
             next: () => {
                 this.skills = this.skills.filter(s => s.id !== skillId);
                 this.skillsUpdated.emit(this.skills);
@@ -120,11 +135,11 @@ export class HomeTechStackComponent {
             console.log(`📝 ${isExisting ? 'Updating' : 'Creating'} skill:`, item.name, 'ID:', item.id);
             
             if (isExisting) {
-                return this.homeService.updateSkill(item.id, item);
+                return this.skillService.updateSkill(item.id, item);
             } else {
                 // For new items, strip out the fake frontend UUID so the backend generates a real one
                 const { id, ...newItem } = item;
-                return this.homeService.createSkill(newItem as SkillEntry);
+                return this.skillService.createSkill(newItem as SkillEntry);
             }
         });
 

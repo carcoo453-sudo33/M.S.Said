@@ -13,29 +13,6 @@ export class ProjectsPageService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = environment.apiUrl;
 
-    // Experiences
-    getExperiences() {
-        return this.http.get<ExperienceEntry[]>(`${this.apiUrl}/experiences`).pipe(
-            map(exps => exps.map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID })))
-        );
-    }
-
-    createExperience(exp: ExperienceEntry) {
-        return this.http.post<ExperienceEntry>(`${this.apiUrl}/experiences`, exp).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
-    }
-
-    updateExperience(id: string, exp: ExperienceEntry) {
-        return this.http.put<ExperienceEntry>(`${this.apiUrl}/experiences/${id}`, exp).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
-    }
-
-    deleteExperience(id: string) {
-        return this.http.delete(`${this.apiUrl}/experiences/${id}`);
-    }
-
     // References
     getReferences() {
         return this.http.get<Reference[]>(`${this.apiUrl}/references`).pipe(

@@ -32,16 +32,10 @@ export class ProfileService {
         return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/cv`, formData);
     }
 
-    uploadSkillIcon(file: File) {
+    uploadImage(file: File, type: 'education' | 'project' = 'education') {
         const formData = new FormData();
         formData.append('file', file);
-        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/skill-icon`, formData);
-    }
-
-    uploadImage(file: File, type: 'education' | 'project' | 'skill' = 'education') {
-        const formData = new FormData();
-        formData.append('file', file);
-        const endpoint = type === 'skill' ? 'skill-icon' : 'project-image';
+        const endpoint = 'project-image';
         return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/${endpoint}`, formData);
     }
 }

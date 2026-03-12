@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
         <!-- Timeline Items -->
         <div class="space-y-6">
             <div *ngFor="let _ of [].constructor(2)" 
-                 class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
+                 class="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
                 <!-- Header -->
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-4">
