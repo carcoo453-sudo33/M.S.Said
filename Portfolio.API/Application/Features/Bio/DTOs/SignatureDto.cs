@@ -1,13 +1,12 @@
+
 using System.Text.Json.Serialization;
 
 namespace Portfolio.API.Application.Features.Bio.DTOs;
 
 public class SignatureDto
 {
-    [JsonRequired]
     public Guid Id { get; set; }
     
-    [JsonRequired]
     public Guid BioId { get; set; }
     
     public string? Role { get; set; }

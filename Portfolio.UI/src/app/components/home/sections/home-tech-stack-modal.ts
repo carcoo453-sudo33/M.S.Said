@@ -15,7 +15,7 @@ import { ImageUtil } from '../../../utils';
     template: `
         <!-- Edit Modal -->
         <div *ngIf="isOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
-            <div class="relative bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter" (click)="$event.stopPropagation()">
+            <div class="relative bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-2/3 max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter mt-20" (click)="$event.stopPropagation()">
                 <!-- Header -->
                 <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-20">
                     <h3 class="text-base font-black dark:text-white text-zinc-900">{{ 'home.techStack.manageTitle' | translate }}</h3>
@@ -132,7 +132,11 @@ export class HomeTechStackModalComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['isOpen'] && this.isOpen && this.skills) {
-            this.editList = this.skills.map(s => ({ ...s }));
+            // Map iconPath from backend to icon for frontend display
+            this.editList = this.skills.map(s => ({ 
+                ...s, 
+                icon: s.iconPath || s.icon // Use iconPath from backend, fallback to icon
+            }));
             this.submitted = false;
         }
     }
@@ -146,7 +150,16 @@ export class HomeTechStackModalComponent implements OnChanges {
         if (this.editList.some(item => !item.name.trim())) {
             return;
         }
-        this.save.emit(this.editList);
+        
+        // Map frontend 'icon' field to backend 'iconPath' field
+        const skillsToSave = this.editList.map(skill => ({
+            ...skill,
+            iconPath: skill.icon || skill.iconPath, // Use icon if set, otherwise use iconPath
+            icon: undefined // Remove the frontend-only field
+        }));
+        
+        console.log('📤 Sending skills to backend:', skillsToSave);
+        this.save.emit(skillsToSave);
     }
 
     isImageUrl(icon?: string): boolean {
@@ -166,9 +179,10 @@ export class HomeTechStackModalComponent implements OnChanges {
         this.profileService.uploadSkillIcon(file).subscribe({
             next: (res) => {
                 this.editList[index].icon = res.url;
+                this.editList[index].iconPath = res.url; // Also set iconPath for backend
                 this.uploadIcon.emit({ index, url: res.url });
                 this.uploadingIndex = null;
-                this.toast.success('Icon uploaded!');
+                this.toast.success('Icon uploaded! Click Save to persist changes.');
             },
             error: (err) => {
                 this.uploadingIndex = null;

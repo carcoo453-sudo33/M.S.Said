@@ -33,7 +33,7 @@ import { HomeBriefBioModalComponent } from './home-brief-bio-modal';
 
         <div class="grid grid-cols-3 gap-6 md:gap-6 max-w-xl">
             <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
-                <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.yearsOfExperience }}+</div>
+                <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.yearsOfExperience }}</div>
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.yearsExp' | translate }}</div>
             </div>
             <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
@@ -41,7 +41,7 @@ import { HomeBriefBioModalComponent } from './home-brief-bio-modal';
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.projectsCompleted' | translate }}</div>
             </div>
             <div class="p-6 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-red-600/20 transition-all group">
-                <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ bio?.codeCommits }}k</div>
+                <div class="text-2xl md:text-3xl font-black text-[#f20d0d] mb-1 group-hover:scale-110 transition-transform origin-left">{{ formatCodeCommits(bio?.codeCommits) }}</div>
                 <div class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'home.bio.codeCommits' | translate }}</div>
             </div>
         </div>
@@ -52,7 +52,7 @@ import { HomeBriefBioModalComponent } from './home-brief-bio-modal';
         [isOpen]="showEditModal"
         [bio]="bio"
         [isSaving]="isSaving"
-        (close)="closeEditModal()"
+        (closeModal)="closeEditModal()"
         (save)="saveBio($event)">
     </app-home-brief-bio-modal>
   `
@@ -94,8 +94,9 @@ export class HomeBriefBioComponent {
         }
         this.isSaving = true;
         this.homeService.updateBio(editForm.id, editForm).subscribe({
-            next: () => {
-                this.bio = { ...editForm };
+            next: (updatedBio: BioEntry) => {
+                // Merge API response with local form data to ensure all fields are present
+                this.bio = { ...editForm, ...updatedBio };
                 this.bioUpdated.emit(this.bio);
                 this.showEditModal = false;
                 this.isSaving = false;
@@ -106,5 +107,15 @@ export class HomeBriefBioComponent {
                 this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
             }
         });
+    }
+
+    formatCodeCommits(commits?: string): string {
+        if (!commits) return '0k';
+        const num = Number.parseInt(commits, 10);
+        if (Number.isNaN(num)) return '0k';
+        if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'k';
+        }
+        return num.toString();
     }
 }

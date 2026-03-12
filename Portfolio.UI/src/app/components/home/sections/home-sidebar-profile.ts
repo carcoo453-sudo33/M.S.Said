@@ -65,37 +65,55 @@ import { EditProfileModalComponent } from './edit-profile-modal';
 
             
 
-            <!-- Contact Info - Icons with Image Replacement on Hover -->
+            <!-- Contact Info - Square Icons with Animated Tooltips -->
             <div class="px-6 pb-6 flex items-center justify-center gap-3">
                 <!-- Email Icon -->
-                <a *ngIf="bio?.email" [href]="'mailto:' + bio?.email" 
-                    class="group w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden"
-                    [title]="bio?.email">
-                    <!-- Default Icon -->
-                    <lucide-icon [img]="MailIcon" class="w-4 h-4 transition-all duration-300 group-hover:translate-x-full group-focus:translate-x-full"></lucide-icon>
-                    <!-- Hover Image -->
-                    <img src="/social/imgs/email.png" alt="Email" class="w-4 h-4 absolute transition-all duration-300 -translate-x-full group-hover:translate-x-0 group-focus:translate-x-0" onerror="this.style.display='none'">
-                </a>
+                <div *ngIf="bio?.email" class="group relative">
+                    <a [href]="'mailto:' + bio?.email" 
+                        class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden">
+                        <!-- Default Icon -->
+                        <lucide-icon [img]="MailIcon" class="w-4 h-4 transition-all duration-300 group-hover:scale-0"></lucide-icon>
+                        <!-- Hover Image -->
+                        <img src="/Social/email.png" alt="Email" class="w-4 h-4 absolute transition-all duration-300 scale-0 group-hover:scale-100">
+                    </a>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-semibold rounded-md whitespace-nowrap opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none">
+                        Email
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 dark:bg-white transform rotate-45"></div>
+                    </div>
+                </div>
 
                 <!-- Location Icon - Navigate to Contact Page -->
-                <button *ngIf="bio?.location || bio?.location_Ar" (click)="navigateToContact()"
-                    class="group w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden"
-                    [title]="translatedLocation || 'Location'">
-                    <!-- Default Icon -->
-                    <lucide-icon [img]="MapPinIcon" class="w-4 h-4 transition-all duration-300 group-hover:translate-x-full group-focus:translate-x-full"></lucide-icon>
-                    <!-- Hover Image -->
-                    <img src="/social/imgs/map.png" alt="Location" class="w-4 h-4 absolute transition-all duration-300 -translate-x-full group-hover:translate-x-0 group-focus:translate-x-0" onerror="this.style.display='none'">
-                </button>
+                <div *ngIf="bio?.location || bio?.location_Ar" class="group relative">
+                    <button (click)="navigateToContact()"
+                        class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden">
+                        <!-- Default Icon -->
+                        <lucide-icon [img]="MapPinIcon" class="w-4 h-4 transition-all duration-300 group-hover:scale-0"></lucide-icon>
+                        <!-- Hover Image -->
+                        <img src="/Social/maps.png" alt="Location" class="w-4 h-4 absolute transition-all duration-300 scale-0 group-hover:scale-100">
+                    </button>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-semibold rounded-md whitespace-nowrap opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none">
+                        Location
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 dark:bg-white transform rotate-45"></div>
+                    </div>
+                </div>
 
                 <!-- WhatsApp Icon -->
-                <a *ngIf="bio?.whatsAppUrl" [href]="getWhatsAppUrl()" target="_blank"
-                    class="group w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden"
-                    [title]="bio?.whatsAppUrl || 'WhatsApp'">
-                    <!-- Default Icon -->
-                    <lucide-icon [img]="MessageCircleIcon" class="w-4 h-4 transition-all duration-300 group-hover:translate-x-full group-focus:translate-x-full"></lucide-icon>
-                    <!-- Hover Image -->
-                    <img src="/social/imgs/whatsapp.png" alt="WhatsApp" class="w-4 h-4 absolute transition-all duration-300 -translate-x-full group-hover:translate-x-0 group-focus:translate-x-0" onerror="this.style.display='none'">
-                </a>
+                <div *ngIf="bio?.whatsAppUrl" class="group relative">
+                    <a [href]="getWhatsAppUrl()" target="_blank"
+                        class="w-10 h-10 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-300 border border-zinc-200 dark:border-zinc-700 hover:bg-red-500 hover:border-red-500 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] relative overflow-hidden">
+                        <!-- Default Icon -->
+                        <lucide-icon [img]="MessageCircleIcon" class="w-4 h-4 transition-all duration-300 group-hover:scale-0"></lucide-icon>
+                        <!-- Hover Image -->
+                        <img src="/Social/waht'sapp.png" alt="WhatsApp" class="w-4 h-4 absolute transition-all duration-300 scale-0 group-hover:scale-100">
+                    </a>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs font-semibold rounded-md whitespace-nowrap opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 pointer-events-none">
+                        WhatsApp
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-900 dark:bg-white transform rotate-45"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Footer Socials -->

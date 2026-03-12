@@ -48,6 +48,8 @@ public class BioService : IBioService
         bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
         bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
 
+        System.Diagnostics.Debug.WriteLine($"📊 Bio Statistics - Years: {bio.YearsOfExperience}, Projects: {bio.ProjectsCompleted}, Commits: {bio.CodeCommits}");
+
         return BioMapper.ToDto(bio);
     }
 
@@ -60,6 +62,9 @@ public class BioService : IBioService
     /// <returns>The updated <see cref="BioDto"/> reflecting persisted changes and recalculated dynamic fields (years of experience, projects completed, code commits).</returns>
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
+        System.Diagnostics.Debug.WriteLine($"🔍 UpdateBioAsync called with ID: {id}");
+        System.Diagnostics.Debug.WriteLine($"📥 Received DTO - CareerStartDate: {dto.CareerStartDate}, GitHubUsername: {dto.GitHubUsername}");
+        
         var repository = _unitOfWork.Repository<BioEntity>();
         
         // Single query with eager loading of related entities
@@ -76,6 +81,7 @@ public class BioService : IBioService
         }
 
         BioMapper.UpdateEntity(bio, dto);
+        System.Diagnostics.Debug.WriteLine($"🔄 After mapping - CareerStartDate: {bio.CareerStartDate}, GitHubUsername: {bio.GitHubUsername}");
         
         // Add new bio or update existing
         if (isNew)
@@ -95,6 +101,8 @@ public class BioService : IBioService
         bio.YearsOfExperience = CalculateYearsOfExperience(bio.CareerStartDate);
         bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
         bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
+
+        System.Diagnostics.Debug.WriteLine($"📊 Updated Bio Statistics - Years: {bio.YearsOfExperience}, Projects: {bio.ProjectsCompleted}, Commits: {bio.CodeCommits}, CareerStartDate: {bio.CareerStartDate}, GitHubUsername: {bio.GitHubUsername}");
 
         return BioMapper.ToDto(bio);
     }

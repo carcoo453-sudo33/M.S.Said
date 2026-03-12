@@ -1,0 +1,235 @@
+{
+  "projectName": "Portfolio Application",
+  "description": "Comprehensive test suite for Portfolio API and Frontend",
+  "baseUrl": "http://localhost:5283/api",
+  "frontendUrl": "http://localhost:4200",
+  "testCredentials": {
+    "email": "m.ssaid356@gmail.com",
+    "password": "Memo@3560"
+  },
+  "testSuites": [
+    {
+      "name": "Authentication Tests",
+      "description": "Test login and authentication flows",
+      "tests": [
+        {
+          "name": "Login with valid credentials",
+          "method": "POST",
+          "endpoint": "/auth/login",
+          "body": {
+            "email": "m.ssaid356@gmail.com",
+            "password": "Memo@3560"
+          },
+          "expectedStatus": 200,
+          "assertions": [
+            "response.token exists",
+            "response.token is not empty"
+          ]
+        },
+        {
+          "name": "Login with invalid credentials",
+          "method": "POST",
+          "endpoint": "/auth/login",
+          "body": {
+            "email": "m.ssaid356@gmail.com",
+            "password": "wrongpassword"
+          },
+          "expectedStatus": 401
+        }
+      ]
+    },
+    {
+      "name": "Bio Endpoints",
+      "description": "Test bio retrieval and updates",
+      "tests": [
+        {
+          "name": "Get bio information",
+          "method": "GET",
+          "endpoint": "/bio",
+          "expectedStatus": 200,
+          "assertions": [
+            "response.id exists",
+            "response.title exists"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Projects Endpoints",
+      "description": "Test project CRUD operations",
+      "tests": [
+        {
+          "name": "Get all projects",
+          "method": "GET",
+          "endpoint": "/projects",
+          "expectedStatus": 200,
+          "assertions": [
+            "response is array or has items property"
+          ]
+        },
+        {
+          "name": "Get paginated projects",
+          "method": "GET",
+          "endpoint": "/projects?pageNumber=1&pageSize=10",
+          "expectedStatus": 200,
+          "assertions": [
+            "response.items exists"
+          ]
+        },
+        {
+          "name": "Create project",
+          "method": "POST",
+          "endpoint": "/projects",
+          "requiresAuth": true,
+          "body": {
+            "title": "Test Project",
+            "description": "A test project",
+            "category": "Web Development",
+            "startDate": "2024-01-01T00:00:00Z",
+            "isActive": true
+          },
+          "expectedStatus": 201,
+          "assertions": [
+            "response.id exists"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blog Endpoints",
+      "description": "Test blog post operations",
+      "tests": [
+        {
+          "name": "Get all blog posts",
+          "method": "GET",
+          "endpoint": "/blog",
+          "expectedStatus": 200
+        },
+        {
+          "name": "Create blog post",
+          "method": "POST",
+          "endpoint": "/blog",
+          "requiresAuth": true,
+          "body": {
+            "title": "Test Blog Post",
+            "content": "Test content",
+            "excerpt": "Test excerpt",
+            "category": "Technology"
+          },
+          "expectedStatus": 201
+        }
+      ]
+    },
+    {
+      "name": "Education Endpoints",
+      "description": "Test education records",
+      "tests": [
+        {
+          "name": "Get all education records",
+          "method": "GET",
+          "endpoint": "/education",
+          "expectedStatus": 200
+        },
+        {
+          "name": "Create education record",
+          "method": "POST",
+          "endpoint": "/education",
+          "requiresAuth": true,
+          "body": {
+            "institution": "Test University",
+            "degree": "Bachelor",
+            "field": "Computer Science",
+            "startDate": "2020-01-01T00:00:00Z",
+            "isActive": true
+          },
+          "expectedStatus": 201
+        }
+      ]
+    },
+    {
+      "name": "Skills Endpoints",
+      "description": "Test skills management",
+      "tests": [
+        {
+          "name": "Get all skills",
+          "method": "GET",
+          "endpoint": "/skills",
+          "expectedStatus": 200
+        }
+      ]
+    },
+    {
+      "name": "Services Endpoints",
+      "description": "Test services listing",
+      "tests": [
+        {
+          "name": "Get all services",
+          "method": "GET",
+          "endpoint": "/services",
+          "expectedStatus": 200
+        }
+      ]
+    },
+    {
+      "name": "Categories Endpoints",
+      "description": "Test categories",
+      "tests": [
+        {
+          "name": "Get all categories",
+          "method": "GET",
+          "endpoint": "/categories",
+          "expectedStatus": 200
+        }
+      ]
+    },
+    {
+      "name": "Contact Endpoints",
+      "description": "Test contact form submission",
+      "tests": [
+        {
+          "name": "Send contact message",
+          "method": "POST",
+          "endpoint": "/contact",
+          "body": {
+            "name": "Test User",
+            "email": "test@example.com",
+            "subject": "Test Subject",
+            "message": "Test message"
+          },
+          "expectedStatus": 200
+        }
+      ]
+    },
+    {
+      "name": "Frontend Tests",
+      "description": "Test frontend application",
+      "tests": [
+        {
+          "name": "Frontend loads successfully",
+          "method": "GET",
+          "endpoint": "http://localhost:4200",
+          "expectedStatus": 200,
+          "assertions": [
+            "response contains HTML"
+          ]
+        },
+        {
+          "name": "Login page is accessible",
+          "method": "GET",
+          "endpoint": "http://localhost:4200/login",
+          "expectedStatus": 200
+        }
+      ]
+    }
+  ],
+  "performanceThresholds": {
+    "apiResponseTime": 2000,
+    "frontendLoadTime": 5000
+  },
+  "reportSettings": {
+    "format": "json",
+    "includeScreenshots": true,
+    "includeLogs": true,
+    "generateHtmlReport": true
+  }
+}

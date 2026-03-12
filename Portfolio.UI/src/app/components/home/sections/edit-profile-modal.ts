@@ -14,8 +14,8 @@ import { environment } from '../../../../environments/environment';
     imports: [CommonModule, FormsModule, LucideAngularModule],
     template: `
     <!-- Edit Modal -->
-    <div *ngIf="isOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
-        <div class="relative bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter" (click)="$event.stopPropagation()">
+    <div *ngIf="isOpen" class="modal-overall fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
+        <div class="relative bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-2/3 max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter" (click)="$event.stopPropagation()">
             <!-- Modal Header -->
             <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-20">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Edit Profile</h3>
@@ -82,6 +82,45 @@ import { environment } from '../../../../environments/environment';
                     <input [ngModel]="editForm.location_Ar" (ngModelChange)="editForm.location_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
+                    <input [(ngModel)]="editForm.email" type="email"
+                        [class]="submitted && !editForm.email?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
+                        class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
+                    <p *ngIf="submitted && !editForm.email?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
+                    <input [(ngModel)]="editForm.phone" type="tel"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
+
+                <!-- Statistics Configuration -->
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">Statistics Configuration</label>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
+                            <input [(ngModel)]="editForm.careerStartDate" type="date"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                            <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to calculate years of experience</p>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
+                            <input [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., Mostafa-SAID7"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                            <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to fetch public repository count from GitHub</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-zinc-200 dark:border-zinc-800"></div>
+
+                <!-- Tech Stack -->
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Tech Stack (comma-separated)</label>
                     <input [(ngModel)]="editForm.technicalFocusItems" type="text" placeholder="e.g., .NET, Angular, EF, MVC"
@@ -268,6 +307,16 @@ export class EditProfileModalComponent implements OnChanges {
         
         // Prepare data for backend - create TechnicalFocusDto if items exist
         const bioToSave = { ...this.editForm };
+        
+        // Convert careerStartDate to ISO 8601 format if it's a date string
+        if (bioToSave.careerStartDate && typeof bioToSave.careerStartDate === 'string') {
+            // If it's in YYYY-MM-DD format, convert to ISO 8601 with time
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (dateRegex.exec(bioToSave.careerStartDate)) {
+                bioToSave.careerStartDate = new Date(bioToSave.careerStartDate + 'T00:00:00Z').toISOString();
+            }
+        }
+        
         if (bioToSave.technicalFocusItems) {
             bioToSave.technicalFocus = {
                 items: bioToSave.technicalFocusItems
@@ -276,10 +325,14 @@ export class EditProfileModalComponent implements OnChanges {
             bioToSave.technicalFocus = undefined;
         }
         
+        console.log('📤 Sending bio to backend:', bioToSave);
+        
         this.isSaving = true;
         this.homeService.updateBio(this.editForm.id, bioToSave).subscribe({
             next: (updatedBio: BioEntry) => {
-                const bio = updatedBio || { ...this.editForm };
+                console.log('📥 Received bio from backend:', updatedBio);
+                // Merge API response with local form data to ensure all fields are present
+                const bio = { ...this.editForm, ...updatedBio };
                 this.bioUpdated.emit(bio);
                 this.onClose();
                 this.isSaving = false;
@@ -317,6 +370,10 @@ export class EditProfileModalComponent implements OnChanges {
     }
 
     private getEmptyBio(): BioEntry {
+        // Default career start date to 3 years ago for new bios
+        const threeYearsAgo = new Date();
+        threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+        
         return {
             id: '',
             name: '',
@@ -325,6 +382,8 @@ export class EditProfileModalComponent implements OnChanges {
             location: '',
             email: '',
             phone: '',
+            careerStartDate: threeYearsAgo.toISOString().split('T')[0],
+            gitHubUsername: '',
             yearsOfExperience: '',
             projectsCompleted: '',
             codeCommits: '',

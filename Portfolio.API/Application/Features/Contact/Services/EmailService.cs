@@ -41,6 +41,7 @@ public class EmailService : IEmailService
             var smtpPassword = smtpSettings["SmtpPassword"];
             var fromEmail = smtpSettings["FromEmail"];
             var toEmail = smtpSettings["ToEmail"];
+            
             if (string.IsNullOrEmpty(toEmail))
             {
                 _logger.LogWarning("ToEmail not configured. Skipping email send.");
@@ -56,6 +57,12 @@ public class EmailService : IEmailService
                 return;
             }
 
+            // Use SMTP username as fallback for from email
+            if (string.IsNullOrWhiteSpace(fromEmail))
+            {
+                fromEmail = smtpUsername;
+            }
+
             using var client = new SmtpClient(smtpHost, smtpPort)
             {
                 Credentials = new NetworkCredential(smtpUsername, smtpPassword),
@@ -64,18 +71,19 @@ public class EmailService : IEmailService
 
             using var mailMessage = new MailMessage
             {
-                From = new MailAddress(fromEmail ?? smtpUsername, "Portfolio Contact Form"),
+                From = new MailAddress(fromEmail, "Portfolio Contact Form"),
                 To = { toEmail },
                 Subject = $"New Contact Message: {subject}",
                 Body = ContactEmailTemplate.GetContactEmailHtml(senderName, senderEmail, subject, message),
                 IsBodyHtml = true
             };
+            
             await client.SendMailAsync(mailMessage, cancellationToken);            
             _logger.LogInformation("Contact email sent successfully to {ToEmail} from {SenderEmail}", toEmail, senderEmail);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to send contact email: {ex.Message}");
+            _logger.LogError(ex, "Failed to send contact email: {ExceptionMessage}", ex.Message);
             // Don't throw - email failure shouldn't break the contact form
         }
     }

@@ -47,7 +47,7 @@ import {
   template: `
     <!-- Main Modal -->
     <div *ngIf="isOpen()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="close()">
-      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-2/3 max-h-[90vh] flex flex-col mt-20" (click)="$event.stopPropagation()">
         
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">

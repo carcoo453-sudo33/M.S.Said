@@ -105,6 +105,7 @@ export class HomeTechStackComponent {
 
     saveSkills(editList: SkillEntry[]) {
         this.isSaving = true;
+        console.log('💾 saveSkills called with:', editList);
 
         if (editList.length === 0) {
             this.skills = [];
@@ -116,6 +117,7 @@ export class HomeTechStackComponent {
 
         const requests = editList.map(item => {
             const isExisting = this.skills.some(s => s.id === item.id);
+            console.log(`📝 ${isExisting ? 'Updating' : 'Creating'} skill:`, item.name, 'ID:', item.id);
             return isExisting
                 ? this.homeService.updateSkill(item.id, item)
                 : this.homeService.createSkill(item);
@@ -123,7 +125,12 @@ export class HomeTechStackComponent {
 
         forkJoin(requests).subscribe({
             next: (savedSkills) => {
-                this.skills = [...savedSkills].sort((a, b) => a.order - b.order);
+                console.log('✅ Saved skills response:', savedSkills);
+                // Map iconPath back to icon for frontend display
+                this.skills = savedSkills.map(skill => ({
+                    ...skill,
+                    icon: skill.iconPath || skill.icon // Use iconPath from backend, fallback to icon
+                })).sort((a, b) => a.order - b.order);
                 this.skillsUpdated.emit(this.skills);
                 this.isSaving = false;
                 this.showEditModal = false;

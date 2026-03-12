@@ -23,6 +23,12 @@ export class HomeService {
                     bio.technicalFocusItems = bio.technicalFocus.items;
                 }
                 
+                // Convert careerStartDate from ISO string to YYYY-MM-DD format for date input
+                if (bio.careerStartDate && typeof bio.careerStartDate === 'string') {
+                    const dateObj = new Date(bio.careerStartDate);
+                    bio.careerStartDate = dateObj.toISOString().split('T')[0];
+                }
+                
                 return {
                     ...bio,
                     id: bio.id || (bio as any).Id || (bio as any).ID
@@ -32,7 +38,16 @@ export class HomeService {
     }
 
     updateBio(id: string, bio: BioEntry) {
-        return this.http.put<BioEntry>(`${this.apiUrl}/bio/${id}`, bio);
+        return this.http.put<BioEntry>(`${this.apiUrl}/bio/${id}`, bio).pipe(
+            map(updatedBio => {
+                // Convert careerStartDate from ISO string to YYYY-MM-DD format for date input
+                if (updatedBio.careerStartDate && typeof updatedBio.careerStartDate === 'string') {
+                    const dateObj = new Date(updatedBio.careerStartDate);
+                    updatedBio.careerStartDate = dateObj.toISOString().split('T')[0];
+                }
+                return updatedBio;
+            })
+        );
     }
 
     // Skills

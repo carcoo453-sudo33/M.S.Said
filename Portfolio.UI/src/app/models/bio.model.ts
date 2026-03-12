@@ -14,6 +14,8 @@ export interface BioEntry {
     email?: string;
     phone?: string;
     avatarUrl?: string;
+    careerStartDate?: string | Date;
+    gitHubUsername?: string;
     yearsOfExperience?: string;
     projectsCompleted?: string;
     codeCommits?: string;

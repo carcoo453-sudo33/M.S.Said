@@ -26,6 +26,8 @@ public class BioDto
     public string? DevToUrl { get; set; }
     public string? PinterestUrl { get; set; }
     public string? StackOverflowUrl { get; set; }
+    public DateTime CareerStartDate { get; set; }
+    public string? GitHubUsername { get; set; }
     public string? YearsOfExperience { get; set; }
     public string? ProjectsCompleted { get; set; }
     public string? CodeCommits { get; set; }

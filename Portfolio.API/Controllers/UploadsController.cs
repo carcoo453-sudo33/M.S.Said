@@ -55,7 +55,7 @@ public class UploadsController : ControllerBase
 
     /// <summary>
     /// Securely uploads a profile image.
-    /// Validates magic bytes, enforces a 5MB limit, and stores the file outside wwwroot.
+    /// Validates magic bytes, enforces a 5MB limit, and stores the file in wwwroot/uploads/avatars.
     /// </summary>
     /// <param name="file">The uploaded image file. Allowed extensions: .jpg, .jpeg, .png, .webp. Maximum size: 5 MB.</param>
     /// <returns>The URL where the uploaded image can be retrieved via the uploads endpoint, or an error response if validation or storage fails.</returns>
@@ -106,15 +106,14 @@ public class UploadsController : ControllerBase
         => await ProcessFileUpload(file, "projects", ProjectImagePolicy);
 
     /// <summary>
-    /// Serves files from the secure uploads directory (outside wwwroot).
-    /// <summary>
-    /// Serves a file from the secure uploads directory for the given category and file name.
+    /// Redirects legacy <c>/api/uploads/{category}/{fileName}</c> requests to the static-file URL
+    /// <c>/uploads/{category}/{fileName}</c> served directly by the wwwroot middleware.
     /// </summary>
     /// <param name="category">A single path segment identifying the upload subfolder; must not contain "..".</param>
     /// <param name="fileName">The file name within the category folder; must not contain "..".</param>
     /// <returns>
     /// 400 Bad Request if a path segment contains "..", 404 Not Found if the file does not exist,
-    /// or a file response with an appropriate Content-Type and Content-Disposition header on success.
+    /// or a permanent redirect to the static file URL on success.
     /// </returns>
     [HttpGet("{category}/{fileName}")]
     public IActionResult ServeFile(string category, string fileName)
@@ -123,30 +122,12 @@ public class UploadsController : ControllerBase
         if (category.Contains("..") || fileName.Contains(".."))
             return BadRequest();
 
-        var uploadsRoot = GetUploadsRoot();
-        var filePath = Path.Combine(uploadsRoot, category, fileName);
-
+        var filePath = Path.Combine(GetUploadsRoot(), category, fileName);
         if (!System.IO.File.Exists(filePath))
             return NotFound();
 
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
-        var contentType = ext switch
-        {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png"            => "image/png",
-            ".webp"           => "image/webp",
-            ".gif"            => "image/gif",
-            ".pdf"            => "application/pdf",
-            ".doc"            => "application/msword",
-            ".docx"           => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            _                 => "application/octet-stream"
-        };
-
-        // Force download for documents; inline display for images
-        var cd = ext is ".pdf" or ".doc" or ".docx" ? "attachment" : "inline";
-        Response.Headers.Append("Content-Disposition", $"{cd}; filename=\"{fileName}\"");
-
-        return PhysicalFile(filePath, contentType);
+        // Files in wwwroot/uploads are served directly by UseStaticFiles — redirect there
+        return RedirectPermanent($"/uploads/{category}/{fileName}");
     }
 
     /// <summary>
@@ -198,8 +179,8 @@ public class UploadsController : ControllerBase
             await file.CopyToAsync(stream);
         }
 
-        // Return a URL pointing to the serving endpoint (not a raw wwwroot path)
-        var url = Url.Action(nameof(ServeFile), "Uploads", new { category = subFolder, fileName = safeFileName });
+        // Files are in wwwroot/uploads — return the direct static-file URL
+        var url = $"/uploads/{subFolder}/{safeFileName}";
         return Ok(new { url });
     }
 
@@ -227,11 +208,12 @@ public class UploadsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets the filesystem root directory used for storing uploaded files. This sits OUTSIDE wwwroot so the web server cannot serve files directly.
+    /// Gets the filesystem root for uploaded files: <c>wwwroot/uploads</c> inside the web root.
+    /// Files stored here are served directly by the <c>UseStaticFiles</c> middleware.
     /// </summary>
-    /// <returns>The absolute path to the application's uploads directory (a folder named "uploads" at the root level, outside wwwroot).</returns>
+    /// <returns>The absolute path to <c>wwwroot/uploads</c>.</returns>
     private string GetUploadsRoot()
-        => Path.Combine(Directory.GetParent(_environment.ContentRootPath)?.FullName ?? _environment.ContentRootPath, "uploads");
+        => Path.Combine(_environment.WebRootPath, "uploads");
 }
 
 /// <summary>Per-endpoint upload policy.</summary>

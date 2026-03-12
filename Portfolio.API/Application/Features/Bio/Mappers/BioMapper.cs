@@ -36,6 +36,8 @@ public static class BioMapper
             DevToUrl = bio.DevToUrl,
             PinterestUrl = bio.PinterestUrl,
             StackOverflowUrl = bio.StackOverflowUrl,
+            CareerStartDate = bio.CareerStartDate,
+            GitHubUsername = bio.GitHubUsername,
             YearsOfExperience = bio.YearsOfExperience,
             ProjectsCompleted = bio.ProjectsCompleted,
             CodeCommits = bio.CodeCommits,
@@ -80,38 +82,26 @@ public static class BioMapper
         bio.DevToUrl = dto.DevToUrl;
         bio.PinterestUrl = dto.PinterestUrl;
         bio.StackOverflowUrl = dto.StackOverflowUrl;
+        bio.CareerStartDate = dto.CareerStartDate;
+        bio.GitHubUsername = dto.GitHubUsername;
         // Note: YearsOfExperience, ProjectsCompleted, and CodeCommits are calculated dynamically in the service
         bio.EducationQuote = dto.EducationQuote;
         bio.EducationQuote_Ar = dto.EducationQuote_Ar;
         
-        // Handle Signature
+        // Handle Signature - always replace instead of updating to avoid concurrency issues
         if (dto.Signature != null)
         {
-            if (bio.Signature == null)
-            {
-                bio.Signature = SignatureMapper.ToEntity(dto.Signature, bio.Id);
-            }
-            else
-            {
-                SignatureMapper.UpdateEntity(bio.Signature, dto.Signature);
-            }
+            bio.Signature = SignatureMapper.ToEntity(dto.Signature, bio.Id);
         }
         else
         {
             bio.Signature = null;
         }
 
-        // Handle TechnicalFocus
+        // Handle TechnicalFocus - always replace instead of updating to avoid concurrency issues
         if (dto.TechnicalFocus != null)
         {
-            if (bio.TechnicalFocus == null)
-            {
-                bio.TechnicalFocus = TechnicalFocusMapper.ToEntity(dto.TechnicalFocus, bio.Id);
-            }
-            else
-            {
-                TechnicalFocusMapper.UpdateEntity(bio.TechnicalFocus, dto.TechnicalFocus);
-            }
+            bio.TechnicalFocus = TechnicalFocusMapper.ToEntity(dto.TechnicalFocus, bio.Id);
         }
         else
         {
