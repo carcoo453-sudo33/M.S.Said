@@ -104,7 +104,7 @@ public class BioService : IBioService
     /// </summary>
     /// <param name="careerStartDate">The UTC date when the career began; used as the reference point for computing full years of experience.</param>
     /// <returns>A string in the format "&lt;years&gt;+" where &lt;years&gt; is the number of full years since <paramref name="careerStartDate"/>, with a minimum of 0.</returns>
-    private string CalculateYearsOfExperience(DateTime careerStartDate)
+    private static string CalculateYearsOfExperience(DateTime careerStartDate)
     {
         var years = DateTime.UtcNow.Year - careerStartDate.Year;
         if (DateTime.UtcNow.Month < careerStartDate.Month ||
