@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Portfolio.API.Application.Features.Bio.DTOs;
 
 public class BioDto
 {
+    [JsonRequired]
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Name_Ar { get; set; }
