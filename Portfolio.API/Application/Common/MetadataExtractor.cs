@@ -44,7 +44,7 @@ public class MetadataExtractor
         ValidateUrl(url);
         try
         {
-            var platformType = DetectPlatformType(url);
+            var platformType = MetadataExtractor.DetectPlatformType(url);
             var html = await FetchHtmlAsync(url);
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -97,7 +97,7 @@ public class MetadataExtractor
     /// </summary>
     /// <param name="url">The URL to classify; may be any string. If the URL is not a valid absolute URI or the host is not recognized, the method treats it as a generic blog.</param>
     /// <returns>The platform name: "StackOverflow", "Medium", "DevTo", "LinkedIn", or "Blog" when the host is unrecognized or the URL is invalid.</returns>
-    public string DetectPlatformType(string url)
+    public static string DetectPlatformType(string url)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
             return "Blog";
