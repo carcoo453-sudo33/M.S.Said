@@ -112,13 +112,19 @@ public class NotificationService : INotificationService
     /// <returns>A <see cref="NotificationStatsDto"/> where <c>TotalCount</c> is the total notifications and <c>UnreadCount</c> is the number of notifications with <c>IsRead</c> equal to false.</returns>
     public async Task<NotificationStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
     {
-        var total = await _context.Notifications.CountAsync(cancellationToken);
-        var unread = await _context.Notifications.CountAsync(n => !n.IsRead, cancellationToken);
-        
+        var stats = await _context.Notifications
+            .GroupBy(n => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Unread = g.Count(n => !n.IsRead)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
         return new NotificationStatsDto
         {
-            TotalCount = total,
-            UnreadCount = unread
+            TotalCount = stats?.Total ?? 0,
+            UnreadCount = stats?.Unread ?? 0
         };
     }
 

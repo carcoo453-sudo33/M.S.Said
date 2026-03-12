@@ -41,10 +41,7 @@ import { ImageUtil } from '../../../utils';
                                     class="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                                 <p *ngIf="submitted && !item.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">{{ 'home.techStack.skillLabel' | translate }} {{ 'common.requiredField' | translate }}</p>
                             </div>
-                            <div>
-                                <input [ngModel]="item.name_Ar" (ngModelChange)="item.name_Ar = $event" placeholder="Skill Name (AR)" dir="rtl"
-                                    class="w-full px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                            </div>
+
                             
                             <div class="flex flex-col gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
                                 <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-1">{{ 'home.techStack.skillIcon' | translate }}</span>
@@ -61,11 +58,7 @@ import { ImageUtil } from '../../../utils';
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ 'home.techStack.displayOrder' | translate }}</span>
-                                <input [(ngModel)]="item.order" type="number"
-                                    class="w-16 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 text-center">
-                            </div>
+
                         </div>
                         <button (click)="confirmDelete(i)"
                             class="w-7 h-7 rounded-lg bg-red-600/10 text-red-500 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shrink-0">
@@ -163,7 +156,7 @@ export class HomeTechStackModalComponent implements OnChanges {
     }
 
     isImageUrl(icon?: string): boolean {
-        if (!icon) return false;
+        if (!icon || typeof icon !== 'string' || icon.trim() === '') return false;
         return icon.includes('/') || icon.includes('.') || icon.startsWith('http');
     }
 
@@ -192,8 +185,9 @@ export class HomeTechStackModalComponent implements OnChanges {
     }
 
     addNewSkill(): void {
-        const newItem = { id: crypto.randomUUID(), name: '', icon: '', order: this.editList.length };
+        const newItem = { id: crypto.randomUUID(), name: '', icon: '' };
         this.editList.push(newItem);
+        this.submitted = false;
     }
 
     confirmDelete(index: number): void {

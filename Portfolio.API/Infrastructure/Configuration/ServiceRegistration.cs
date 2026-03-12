@@ -53,6 +53,7 @@ public static class ServiceRegistration
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddHttpClient();
+        services.AddMemoryCache();
 
         // Feature Services
         services.AddScoped<IBioService, BioService>();

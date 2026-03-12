@@ -27,7 +27,6 @@ public class SkillService : ISkillService
         var skills = await _unitOfWork.Repository<Skill>()
             .Query()
             .AsNoTracking()
-            .OrderBy(s => s.Order)
             .ToListAsync();
         return skills.Select(SkillMapper.ToDto);
     }
@@ -52,10 +51,10 @@ public class SkillService : ISkillService
     {
         var skill = new Skill
         {
-            Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
+            // Always generate a new ID on the backend regardless of what the frontend sent
+            Id = Guid.NewGuid(),
             Name = dto.Name,
-            IconPath = dto.IconPath,
-            Order = dto.Order
+            IconPath = dto.IconPath
         };
         await _unitOfWork.Repository<Skill>().AddAsync(skill);
         await _unitOfWork.CompleteAsync();

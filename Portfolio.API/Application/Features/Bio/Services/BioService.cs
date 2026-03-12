@@ -5,7 +5,7 @@ using Portfolio.API.Application.Features.Bio.Mappers;
 using Portfolio.API.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
 using BioEntity = Portfolio.API.Entities.Bio;
 
 namespace Portfolio.API.Application.Features.Bio.Services;
@@ -15,15 +15,17 @@ public class BioService : IBioService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BioService"/> class with its required dependencies.
     /// </summary>
-    public BioService(IUnitOfWork unitOfWork, IConfiguration configuration, HttpClient httpClient)
+    public BioService(IUnitOfWork unitOfWork, IConfiguration configuration, HttpClient httpClient, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
         _configuration = configuration;
         _httpClient = httpClient;
+        _cache = cache;
     }
 
     /// <summary>
@@ -129,13 +131,27 @@ public class BioService : IBioService
     /// <returns>The count of projects whose Status equals <c>ProjectStatus.Completed</c>, returned as a string; returns "0" if an error occurs.</returns>
     private async Task<string> GetProjectsCompletedCountAsync()
     {
+        var cacheKey = "ProjectsCompletedCount";
+        if (_cache.TryGetValue(cacheKey, out string? cachedCount) && cachedCount != null)
+        {
+            return cachedCount;
+        }
+
         try
         {
             var completedCount = await _unitOfWork.Repository<Project>()
                 .Query()
                 .AsNoTracking()
                 .CountAsync(p => p.Status == ProjectStatus.Completed);
-            return completedCount.ToString();
+            
+            var result = completedCount.ToString();
+            
+            _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+            });
+
+            return result;
         }
         catch
         {
@@ -152,6 +168,12 @@ public class BioService : IBioService
     {
         if (string.IsNullOrEmpty(gitHubUsername))
             return "0";
+
+        var cacheKey = $"GitHubCommits_{gitHubUsername}";
+        if (_cache.TryGetValue(cacheKey, out string? cachedCommits) && cachedCommits != null)
+        {
+            return cachedCommits;
+        }
 
         try
         {
@@ -174,7 +196,14 @@ public class BioService : IBioService
 
             if (root.TryGetProperty("public_repos", out var publicRepos))
             {
-                return publicRepos.GetInt32().ToString();
+                var result = publicRepos.GetInt32().ToString();
+                
+                _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                });
+                
+                return result;
             }
 
             return "0";

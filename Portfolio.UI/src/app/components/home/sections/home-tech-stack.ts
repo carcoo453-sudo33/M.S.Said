@@ -118,9 +118,14 @@ export class HomeTechStackComponent {
         const requests = editList.map(item => {
             const isExisting = this.skills.some(s => s.id === item.id);
             console.log(`📝 ${isExisting ? 'Updating' : 'Creating'} skill:`, item.name, 'ID:', item.id);
-            return isExisting
-                ? this.homeService.updateSkill(item.id, item)
-                : this.homeService.createSkill(item);
+            
+            if (isExisting) {
+                return this.homeService.updateSkill(item.id, item);
+            } else {
+                // For new items, strip out the fake frontend UUID so the backend generates a real one
+                const { id, ...newItem } = item;
+                return this.homeService.createSkill(newItem as SkillEntry);
+            }
         });
 
         forkJoin(requests).subscribe({
@@ -130,7 +135,7 @@ export class HomeTechStackComponent {
                 this.skills = savedSkills.map(skill => ({
                     ...skill,
                     icon: skill.iconPath || skill.icon // Use iconPath from backend, fallback to icon
-                })).sort((a, b) => a.order - b.order);
+                }));
                 this.skillsUpdated.emit(this.skills);
                 this.isSaving = false;
                 this.showEditModal = false;
