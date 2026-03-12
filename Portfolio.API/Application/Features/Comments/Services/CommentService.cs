@@ -70,7 +70,7 @@ public class CommentService : ICommentService
         var project = await _unitOfWork.Repository<Project>()
             .Query()
             .AsNoTracking()
-            .Select(p => new { p.Title, p.Slug })
+            .Select(p => new { p.Id, p.Title, p.Slug })
             .FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
 
         if (project != null)
@@ -85,6 +85,7 @@ public class CommentService : ICommentService
                 projectId.ToString(),
                 "Project",
                 request.Author,
+                null,
                 cancellationToken
             );
         }
@@ -184,7 +185,7 @@ public class CommentService : ICommentService
         var project = await _unitOfWork.Repository<Project>()
             .Query()
             .AsNoTracking()
-            .Select(p => new { p.Title, p.Slug })
+            .Select(p => new { p.Id, p.Title, p.Slug })
             .FirstOrDefaultAsync(p => p.Id == projectId, cancellationToken);
 
         if (project != null)
@@ -199,6 +200,7 @@ public class CommentService : ICommentService
                 projectId.ToString(),
                 "Project",
                 request.Author,
+                null,
                 cancellationToken
             );
         }
