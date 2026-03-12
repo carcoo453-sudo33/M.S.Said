@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "testsprite": {
+      "command": "npx",
+      "args": [
+        "@testsprite/mcp-server"
+      ],
+      "env": {
+        "TESTSPRITE_API_KEY": "sk-user-XSTuBvjiRdrhC7FLAU12GpP7prGewgJoKnDC8WO8ziRA-H6QMEs_FsuErRgb8-y4YIJy4euF73ifG3p01UdsPfUBF_WNo7PFKaTlXRp-aN2gsQZSrqECYoP50Kt9uiy9Eaw"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  },
+  "testCredentials": {
+    "portfolio": {
+      "baseUrl": "http://localhost:5000/api",
+      "frontendUrl": "http://localhost:4200",
+      "auth": {
+        "email": "m.ssaid356@gmail.com",
+        "password": "Memo@3560"
+      },
+      "jwt": {
+        "issuer": "PortfolioAPI",
+        "audience": "PortfolioClient",
+        "expiryInMinutes": 1440,
+        "secretKey": "YourSuperSecretKeyForDevelopmentAtLeast32Characters!"
+      },
+      "endpoints": {
+        "login": "/auth/login",
+        "projects": "/projects",
+        "blog": "/blog",
+        "education": "/education",
+        "skills": "/skills",
+        "services": "/services",
+        "bio": "/bio",
+        "experiences": "/experiences",
+        "niches": "/niches",
+        "categories": "/categories",
+        "references": "/references",
+        "notifications": "/notifications",
+        "contact": "/contact",
+        "uploads": "/uploads"
+      }
+    }
+  }
+}
