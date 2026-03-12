@@ -70,7 +70,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'postgres' }}
           POSTGRES_DB: portfolio_test
         options: >-
           --health-cmd pg_isready
@@ -95,7 +95,7 @@ jobs:
     - name: Run Integration Tests
       run: dotnet test --no-build --verbosity normal --configuration ${{ env.BUILD_CONFIGURATION }} --filter "Category=Integration"
       env:
-        ConnectionStrings__DefaultConnection: "Host=localhost;Database=portfolio_test;Username=postgres;Password=postgres"
+        ConnectionStrings__DefaultConnection: "Host=localhost;Database=portfolio_test;Username=postgres;Password=${{ secrets.POSTGRES_PASSWORD || 'postgres' }}"
       continue-on-error: true
 
   api-security-test:
