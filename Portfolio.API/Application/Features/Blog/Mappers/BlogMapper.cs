@@ -3,7 +3,7 @@ using Portfolio.API.Application.Features.Blog.DTOs;
 
 namespace Portfolio.API.Application.Features.Blog.Mappers;
 
-public class BlogMapper
+public static class BlogMapper
 {
     /// <summary>
     /// Create a BlogPostDto populated from the provided BlogPost entity.
