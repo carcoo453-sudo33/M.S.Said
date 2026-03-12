@@ -1344,3 +1344,15 @@ WHERE [n].[IsDeleted] = CAST(0 AS bit) AND [n].[IsRead] = CAST(0 AS bit)
 2026-03-12 06:23:34.556 +02:00 [INF] Executed action Portfolio.API.Controllers.NotificationsController.GetStats (Portfolio.API) in 33.6296ms
 2026-03-12 06:23:34.560 +02:00 [INF] Executed endpoint 'Portfolio.API.Controllers.NotificationsController.GetStats (Portfolio.API)'
 2026-03-12 06:23:34.563 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/api/notifications/stats - 200 null application/json; charset=utf-8 85.8764ms
+2026-03-12 06:40:14.617 +02:00 [INF] Connection id "0HNJVTKLCPDKU", Request id "0HNJVTKLCPDKU:00000001": the application aborted the connection.
+2026-03-12 06:40:14.625 +02:00 [INF] Connection id "0HNJVTKLCPDKP", Request id "0HNJVTKLCPDKP:00000001": the application aborted the connection.
+2026-03-12 06:40:14.638 +02:00 [INF] Connection id "0HNJVTKLCPDKV", Request id "0HNJVTKLCPDKV:00000001": the application aborted the connection.
+2026-03-12 06:40:14.931 +02:00 [INF] Executed endpoint '/hubs/notifications'
+2026-03-12 06:40:14.988 +02:00 [INF] The response could not be cached for this request.
+2026-03-12 06:40:14.991 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/hubs/notifications?id=yd_st_P2sKhQ9kSDu5pQ2A&access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJkMWI3MmUxNC0yYWJjLTRmMGEtYjJmYS05ZTk5MmFlMjQwNDYiLCJlbWFpbCI6Im0uc3NhaWQzNTZAZ21haWwuY29tIiwidW5pcXVlX25hbWUiOiJtLnNzYWlkMzU2QGdtYWlsLmNvbSIsIm5iZiI6MTc3MzIzNTQ0MSwiZXhwIjoxNzczMzIxODQxLCJpYXQiOjE3NzMyMzU0NDEsImlzcyI6IlBvcnRmb2xpb0FQSSIsImF1ZCI6IlBvcnRmb2xpb0NsaWVudCJ9.8JuPCFBctaNkBdzTIIIHfmuPMEMFY23hGH4VAs6csEU - 101 null null 1000823.2662ms
+2026-03-12 06:40:14.943 +02:00 [INF] Executed endpoint '/hubs/notifications'
+2026-03-12 06:40:14.976 +02:00 [INF] Executed endpoint '/hubs/notifications'
+2026-03-12 06:40:15.038 +02:00 [INF] The response could not be cached for this request.
+2026-03-12 06:40:15.040 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/hubs/notifications?id=AGhuoWsl1wPo2zxWC7Orvg&access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJkMWI3MmUxNC0yYWJjLTRmMGEtYjJmYS05ZTk5MmFlMjQwNDYiLCJlbWFpbCI6Im0uc3NhaWQzNTZAZ21haWwuY29tIiwidW5pcXVlX25hbWUiOiJtLnNzYWlkMzU2QGdtYWlsLmNvbSIsIm5iZiI6MTc3MzIzNTQ0MSwiZXhwIjoxNzczMzIxODQxLCJpYXQiOjE3NzMyMzU0NDEsImlzcyI6IlBvcnRmb2xpb0FQSSIsImF1ZCI6IlBvcnRmb2xpb0NsaWVudCJ9.8JuPCFBctaNkBdzTIIIHfmuPMEMFY23hGH4VAs6csEU - 101 null null 1000811.8329ms
+2026-03-12 06:40:15.010 +02:00 [INF] The response could not be cached for this request.
+2026-03-12 06:40:15.054 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5283/hubs/notifications?id=O3T2XjoYuVgK9CQuT-x5lA&access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJkMWI3MmUxNC0yYWJjLTRmMGEtYjJmYS05ZTk5MmFlMjQwNDYiLCJlbWFpbCI6Im0uc3NhaWQzNTZAZ21haWwuY29tIiwidW5pcXVlX25hbWUiOiJtLnNzYWlkMzU2QGdtYWlsLmNvbSIsIm5iZiI6MTc3MzIzNTQ0MSwiZXhwIjoxNzczMzIxODQxLCJpYXQiOjE3NzMyMzU0NDEsImlzcyI6IlBvcnRmb2xpb0FQSSIsImF1ZCI6IlBvcnRmb2xpb0NsaWVudCJ9.8JuPCFBctaNkBdzTIIIHfmuPMEMFY23hGH4VAs6csEU - 101 null null 1454821.9077ms
