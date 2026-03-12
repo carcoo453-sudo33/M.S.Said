@@ -112,7 +112,7 @@ export class ProjectsListComponent implements OnInit {
         project.tags.split(',').forEach(tag => tags.add(tag.trim()));
       }
     });
-    return Array.from(tags).sort();
+    return Array.from(tags).sort((a, b) => a.localeCompare(b));
   });
 
   availableCompanies = computed(() => {
@@ -122,7 +122,7 @@ export class ProjectsListComponent implements OnInit {
         companies.add(project.company.trim());
       }
     });
-    return Array.from(companies).sort();
+    return Array.from(companies).sort((a, b) => a.localeCompare(b));
   });
 
   filteredProjects = computed(() => {
