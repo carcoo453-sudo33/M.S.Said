@@ -62,13 +62,8 @@ public class MetadataExtractor
                 PlatformType = platformType
             };
 
-            // Extract common metadata
-            metadata.Title = ExtractTitleTag(doc) ?? ExtractMetaTag(doc, "og:title") ?? "Untitled";
-            metadata.Description = ExtractMetaTag(doc, "og:description") ?? ExtractMetaTag(doc, "description");
-            metadata.ImageUrl = ExtractMetaTag(doc, "og:image");
-            metadata.Author = ExtractMetaTag(doc, "author");
-
-            // Platform-specific extraction
+            // Platform-specific extraction FIRST (before common metadata)
+            // This ensures GitHub repos get proper title/description from README
             if (platformType == "StackOverflow")
             {
                 var question = ExtractStackOverflowQuestion(doc);
@@ -78,16 +73,38 @@ public class MetadataExtractor
             }
             else if (platformType == "Medium")
             {
+                metadata.Title = ExtractTitleTag(doc) ?? ExtractMetaTag(doc, "og:title") ?? "Untitled";
+                metadata.Description = ExtractMetaTag(doc, "og:description") ?? ExtractMetaTag(doc, "description");
                 metadata.Content = ExtractArticleContent(doc);
             }
             else if (platformType == "DevTo")
             {
+                metadata.Title = ExtractTitleTag(doc) ?? ExtractMetaTag(doc, "og:title") ?? "Untitled";
+                metadata.Description = ExtractMetaTag(doc, "og:description") ?? ExtractMetaTag(doc, "description");
                 metadata.Content = ExtractArticleContent(doc);
             }
             else if (platformType == "GitHub")
             {
+                // For GitHub, extract from README first, then fall back to HTML metadata
                 await ExtractGitHubDataAsync(url, metadata);
+                // Only set from HTML if not already set by GitHub extraction
+                if (string.IsNullOrEmpty(metadata.Title))
+                    metadata.Title = ExtractTitleTag(doc) ?? "Untitled";
+                if (string.IsNullOrEmpty(metadata.Description))
+                    metadata.Description = ExtractMetaTag(doc, "og:description") ?? ExtractMetaTag(doc, "description");
             }
+            else
+            {
+                // Generic blog/website extraction
+                metadata.Title = ExtractTitleTag(doc) ?? ExtractMetaTag(doc, "og:title") ?? "Untitled";
+                metadata.Description = ExtractMetaTag(doc, "og:description") ?? ExtractMetaTag(doc, "description");
+            }
+
+            // Extract common metadata if not already set
+            if (string.IsNullOrEmpty(metadata.ImageUrl))
+                metadata.ImageUrl = ExtractMetaTag(doc, "og:image");
+            if (string.IsNullOrEmpty(metadata.Author))
+                metadata.Author = ExtractMetaTag(doc, "author");
 
             // Try to extract published date
             metadata.PublishedDate = ExtractPublishedDate(doc);
@@ -289,11 +306,8 @@ public class MetadataExtractor
             var owner = match.Groups[1].Value;
             var repo = match.Groups[2].Value.Replace(".git", "");
             
-            // Set title to repository name if not already set or if it's the generic GitHub page title
-            if (string.IsNullOrEmpty(metadata.Title) || metadata.Title.Contains("GitHub") || metadata.Title.EndsWith("· GitHub"))
-            {
-                metadata.Title = repo;
-            }
+            // ALWAYS set title to repository name for GitHub repos
+            metadata.Title = repo;
             
             // Try fetching from docs folder (common convention) - Priority 1
             metadata.KeyFeatures = await FetchAndParseListAsync(owner, repo, "docs/key-features.md", line => new Portfolio.API.Application.Features.Projects.DTOs.KeyFeatureCreateDto { Title = line, FeatureType = Portfolio.API.Domain.Enums.FeatureType.Added });
@@ -318,22 +332,32 @@ public class MetadataExtractor
 
         if (string.IsNullOrEmpty(readme)) return;
 
-        // 1. Extract Title (First # header)
-        var titleMatch = Regex.Match(readme, @"^#\s+(.+)$", RegexOptions.Multiline);
-        if (titleMatch.Success && (string.IsNullOrEmpty(metadata.Title) || metadata.Title == "Untitled" || metadata.Title.Contains("GitHub")))
+        // 1. Extract Title (First # header) - only if not already set
+        if (string.IsNullOrEmpty(metadata.Title) || metadata.Title == "Untitled")
         {
-            metadata.Title = titleMatch.Groups[1].Value.Trim();
+            var titleMatch = Regex.Match(readme, @"^#\s+(.+)$", RegexOptions.Multiline);
+            if (titleMatch.Success)
+            {
+                metadata.Title = titleMatch.Groups[1].Value.Trim();
+            }
         }
 
-        // 2. Extract Description (Content between title and next header) - PRIORITY: Override generic GitHub description
-        var descriptionMatch = Regex.Match(readme, @"^#\s+.+?\n\n?([^#\n][\s\S]+?)(?=\n#|$)", RegexOptions.Multiline);
-        if (descriptionMatch.Success)
+        // 2. Extract Description (First paragraph after title, before any ## headers or code blocks)
+        // This gets just the intro paragraph, not the entire content
+        if (string.IsNullOrEmpty(metadata.Description))
         {
-            var extractedDesc = descriptionMatch.Groups[1].Value.Trim();
-            if (extractedDesc.Length > 2000) extractedDesc = extractedDesc.Substring(0, 1997) + "...";
-            
-            // Always use README description if found, as it's more accurate than generic GitHub page description
-            metadata.Description = extractedDesc;
+            // Match content between first # and first ## or code block
+            var descriptionMatch = Regex.Match(readme, @"^#\s+.+?\n\n?([^\n#`]+(?:\n(?!##|```)[^\n#`]+)*)", RegexOptions.Multiline);
+            if (descriptionMatch.Success)
+            {
+                var extractedDesc = descriptionMatch.Groups[1].Value.Trim();
+                // Clean up the description - remove extra whitespace and limit length
+                extractedDesc = Regex.Replace(extractedDesc, @"\s+", " ");
+                if (extractedDesc.Length > 500) 
+                    extractedDesc = extractedDesc.Substring(0, 497) + "...";
+                
+                metadata.Description = extractedDesc;
+            }
         }
 
         // 3. Extract Tags/Tech Stack
