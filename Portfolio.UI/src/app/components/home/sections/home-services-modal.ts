@@ -43,21 +43,32 @@ import { DeleteConfirmationModalComponent } from '../../shared/modals/delete-con
                             </button>
                         </div>
                         <div>
-                            <input [(ngModel)]="item.title" placeholder="Title (EN) *"
+                            <label [attr.for]="'service-title-' + i" class="hidden">Service Title</label>
+                            <input [id]="'service-title-' + i" [name]="'service-title-' + i" [(ngModel)]="item.title" placeholder="Title (EN) *"
                                 [class]="submitted && !item.title.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                 class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                             <p *ngIf="submitted && !item.title.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">Title is required</p>
                         </div>
                         <div>
-                            <input [ngModel]="item.title_Ar" (ngModelChange)="item.title_Ar = $event" placeholder="Title (AR)" dir="rtl"
+                            <label [attr.for]="'service-title-ar-' + i" class="hidden">Service Title (AR)</label>
+                            <input [id]="'service-title-ar-' + i" [name]="'service-title-ar-' + i" [ngModel]="item.title_Ar" (ngModelChange)="item.title_Ar = $event" placeholder="Title (AR)" dir="rtl"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
-                        <textarea [(ngModel)]="item.description" placeholder="Description (EN)" rows="2"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                        <textarea [ngModel]="item.description_Ar" (ngModelChange)="item.description_Ar = $event" placeholder="Description (AR)" rows="2" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                        <input [(ngModel)]="item.icon" placeholder="Icon (e.g. code, zap, monitor)"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        <div>
+                            <label [attr.for]="'service-desc-' + i" class="hidden">Service Description</label>
+                            <textarea [id]="'service-desc-' + i" [name]="'service-desc-' + i" [(ngModel)]="item.description" placeholder="Description (EN)" rows="2"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label [attr.for]="'service-desc-ar-' + i" class="hidden">Service Description (AR)</label>
+                            <textarea [id]="'service-desc-ar-' + i" [name]="'service-desc-ar-' + i" [ngModel]="item.description_Ar" (ngModelChange)="item.description_Ar = $event" placeholder="Description (AR)" rows="2" dir="rtl"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label [attr.for]="'service-icon-' + i" class="hidden">Service Icon</label>
+                            <input [id]="'service-icon-' + i" [name]="'service-icon-' + i" [(ngModel)]="item.icon" placeholder="Icon (e.g. code, zap, monitor)"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                        </div>
                     </div>
                 </div>
 

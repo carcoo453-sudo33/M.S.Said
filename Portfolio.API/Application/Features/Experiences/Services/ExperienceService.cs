@@ -3,20 +3,23 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Experiences.DTOs;
 using Portfolio.API.Application.Features.Experiences.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.Experiences.Services;
 
 public class ExperienceService : IExperienceService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExperienceService"/> class with the specified unit-of-work.
     /// </summary>
     /// <param name="unitOfWork">The unit-of-work used for repository access and committing data changes.</param>
-    public ExperienceService(IUnitOfWork unitOfWork)
+    public ExperienceService(IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <summary>
@@ -25,12 +28,26 @@ public class ExperienceService : IExperienceService
     /// <returns>An <see cref="IEnumerable{ExperienceDto}"/> of all experiences mapped to DTOs, ordered by current status, extracted year (descending), and duration (descending).</returns>
     public async Task<IEnumerable<ExperienceDto>> GetExperiencesAsync()
     {
+        var cacheKey = "Experiences_All";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<ExperienceDto>? cachedExperiences) && cachedExperiences != null)
+        {
+            return cachedExperiences;
+        }
+
         var experiences = await _unitOfWork.Repository<Experience>().GetAllAsync();
-        return experiences
+        var result = experiences
             .OrderByDescending(e => e.IsCurrent)
             .ThenByDescending(e => ExtractYear(e.Duration))
             .ThenByDescending(e => e.Duration)
-            .Select(ExperienceMapper.ToDto);
+            .Select(ExperienceMapper.ToDto)
+            .ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -57,6 +74,9 @@ public class ExperienceService : IExperienceService
         ExperienceMapper.UpdateEntity(entity, dto);
         await _unitOfWork.Repository<Experience>().AddAsync(entity);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Experiences_All");
+        
         return ExperienceMapper.ToDto(entity);
     }
 
@@ -75,6 +95,9 @@ public class ExperienceService : IExperienceService
 
         ExperienceMapper.UpdateEntity(experience, dto);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Experiences_All");
+        
         return ExperienceMapper.ToDto(experience);
     }
 
@@ -91,6 +114,9 @@ public class ExperienceService : IExperienceService
 
         _unitOfWork.Repository<Experience>().Delete(experience);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Experiences_All");
+        
         return true;
     }
 

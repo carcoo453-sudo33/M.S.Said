@@ -13,21 +13,15 @@ export class EducationService {
 
     // Education
     getEducation() {
-        return this.http.get<EducationEntry[]>(`${this.apiUrl}/education`).pipe(
-            map(education => education.map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID })))
-        );
+        return this.http.get<EducationEntry[]>(`${this.apiUrl}/education`);
     }
 
     createEducation(education: EducationEntry) {
-        return this.http.post<EducationEntry>(`${this.apiUrl}/education`, education).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
+        return this.http.post<EducationEntry>(`${this.apiUrl}/education`, education);
     }
 
     updateEducation(id: string, education: EducationEntry) {
-        return this.http.put<EducationEntry>(`${this.apiUrl}/education/${id}`, education).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
+        return this.http.put<EducationEntry>(`${this.apiUrl}/education/${id}`, education);
     }
 
     deleteEducation(id: string) {
@@ -37,6 +31,6 @@ export class EducationService {
     uploadImage(file: File) {
         const formData = new FormData();
         formData.append('file', file);
-        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/skill-icon`, formData);
+        return this.http.post<{ url: string }>(`${this.apiUrl}/uploads/education-image`, formData);
     }
 }

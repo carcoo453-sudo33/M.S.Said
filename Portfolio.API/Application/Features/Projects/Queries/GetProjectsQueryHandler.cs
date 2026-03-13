@@ -19,9 +19,8 @@ public class GetProjectsQueryHandler : BaseQueryHandler
     /// <param name="parameters">Query and pagination options (Category, IsFeatured, Search, SortBy, SortDirection, Page, PageSize).</param>
     /// <returns>A PagedResult&lt;ProjectDto&gt; containing the mapped project items, the total item count, current page, page size, and total pages.</returns>
     public async Task<PagedResult<ProjectDto>> HandleAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
-
     {
-        var query = GetBaseQuery();
+        var query = GetBaseQuery(includeRelations: false);
 
         // Apply filters
         if (!string.IsNullOrEmpty(parameters.Category))

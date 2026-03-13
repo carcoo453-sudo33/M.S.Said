@@ -53,7 +53,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   public readonly translationService = inject(TranslationService);
   private readonly cdr = inject(ChangeDetectorRef);
   
-  model = signal<ContactMessage>({ name: '', email: '', subject: '', message: '' });
+  model = signal<ContactMessage>({ name: '', email: '', phone: '', subject: '', message: '' });
   loading = signal(false);
   success = signal(false);
   error = signal(false);
@@ -90,7 +90,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
       next: () => {
         this.loading.set(false);
         this.success.set(true);
-        this.model.set({ name: '', email: '', subject: '', message: '' });
+        this.model.set({ name: '', email: '', phone: '', subject: '', message: '' });
         setTimeout(() => this.success.set(false), 5000);
       },
       error: () => {

@@ -16,35 +16,35 @@ public static class BioMapper
         return new BioDto
         {
             Id = bio.Id,
-            Name = bio.Name,
-            Name_Ar = bio.Name_Ar,
-            Title = bio.Title,
-            Title_Ar = bio.Title_Ar,
-            Description = bio.Description,
-            Description_Ar = bio.Description_Ar,
-            Location = bio.Location,
-            Location_Ar = bio.Location_Ar,
-            Email = bio.Email,
-            Phone = bio.Phone,
-            AvatarUrl = bio.AvatarUrl,
-            LinkedInUrl = bio.LinkedInUrl,
-            GitHubUrl = bio.GitHubUrl,
-            WhatsAppUrl = bio.WhatsAppUrl,
-            CVUrl = bio.CVUrl,
-            TwitterUrl = bio.TwitterUrl,
-            FacebookUrl = bio.FacebookUrl,
-            DevToUrl = bio.DevToUrl,
-            PinterestUrl = bio.PinterestUrl,
-            StackOverflowUrl = bio.StackOverflowUrl,
+            Name = bio.Name ?? string.Empty,
+            Name_Ar = bio.Name_Ar ?? string.Empty,
+            Title = bio.Title ?? string.Empty,
+            Title_Ar = bio.Title_Ar ?? string.Empty,
+            Description = bio.Description ?? string.Empty,
+            Description_Ar = bio.Description_Ar ?? string.Empty,
+            Location = bio.Location ?? string.Empty,
+            Location_Ar = bio.Location_Ar ?? string.Empty,
+            Email = bio.Email ?? string.Empty,
+            Phone = bio.Phone ?? string.Empty,
+            AvatarUrl = bio.AvatarUrl ?? string.Empty,
+            LinkedInUrl = bio.LinkedInUrl ?? string.Empty,
+            GitHubUrl = bio.GitHubUrl ?? string.Empty,
+            WhatsAppUrl = bio.WhatsAppUrl ?? string.Empty,
+            CVUrl = bio.CVUrl ?? string.Empty,
+            TwitterUrl = bio.TwitterUrl ?? string.Empty,
+            FacebookUrl = bio.FacebookUrl ?? string.Empty,
+            DevToUrl = bio.DevToUrl ?? string.Empty,
+            PinterestUrl = bio.PinterestUrl ?? string.Empty,
+            StackOverflowUrl = bio.StackOverflowUrl ?? string.Empty,
             CareerStartDate = bio.CareerStartDate,
-            GitHubUsername = bio.GitHubUsername,
-            YearsOfExperience = bio.YearsOfExperience,
-            ProjectsCompleted = bio.ProjectsCompleted,
-            CodeCommits = bio.CodeCommits,
-            EducationQuote = bio.EducationQuote,
-            EducationQuote_Ar = bio.EducationQuote_Ar,
-            Signature = bio.Signature != null ? SignatureMapper.ToDto(bio.Signature) : null,
-            TechnicalFocus = bio.TechnicalFocus != null ? TechnicalFocusMapper.ToDto(bio.TechnicalFocus) : null
+            GitHubUsername = bio.GitHubUsername ?? string.Empty,
+            YearsOfExperience = bio.YearsOfExperience ?? string.Empty,
+            ProjectsCompleted = bio.ProjectsCompleted ?? string.Empty,
+            CodeCommits = bio.CodeCommits ?? string.Empty,
+            EducationQuote = bio.EducationQuote ?? string.Empty,
+            EducationQuote_Ar = bio.EducationQuote_Ar ?? string.Empty,
+            Signature = bio.Signature != null ? SignatureMapper.ToDto(bio.Signature) : new SignatureDto(),
+            TechnicalFocus = bio.TechnicalFocus != null ? TechnicalFocusMapper.ToDto(bio.TechnicalFocus) : new TechnicalFocusDto()
         };
     }
 
@@ -88,20 +88,34 @@ public static class BioMapper
         bio.EducationQuote = dto.EducationQuote;
         bio.EducationQuote_Ar = dto.EducationQuote_Ar;
         
-        // Handle Signature - always replace instead of updating to avoid concurrency issues
+        // Handle Signature - update in-place if exists, otherwise create new
         if (dto.Signature != null)
         {
-            bio.Signature = SignatureMapper.ToEntity(dto.Signature, bio.Id);
+            if (bio.Signature != null)
+            {
+                SignatureMapper.UpdateEntity(bio.Signature, dto.Signature);
+            }
+            else
+            {
+                bio.Signature = SignatureMapper.ToEntity(dto.Signature, bio.Id);
+            }
         }
         else
         {
             bio.Signature = null;
         }
 
-        // Handle TechnicalFocus - always replace instead of updating to avoid concurrency issues
+        // Handle TechnicalFocus - update in-place if exists, otherwise create new
         if (dto.TechnicalFocus != null)
         {
-            bio.TechnicalFocus = TechnicalFocusMapper.ToEntity(dto.TechnicalFocus, bio.Id);
+            if (bio.TechnicalFocus != null)
+            {
+                TechnicalFocusMapper.UpdateEntity(bio.TechnicalFocus, dto.TechnicalFocus);
+            }
+            else
+            {
+                bio.TechnicalFocus = TechnicalFocusMapper.ToEntity(dto.TechnicalFocus, bio.Id);
+            }
         }
         else
         {

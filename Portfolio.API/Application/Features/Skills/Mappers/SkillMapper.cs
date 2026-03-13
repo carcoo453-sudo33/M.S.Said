@@ -16,7 +16,7 @@ public class SkillMapper
         {
             Id = entity.Id,
             Name = entity.Name,
-            IconPath = entity.IconPath
+            IconPath = entity.IconPath ?? string.Empty
         };
     }
 

@@ -140,9 +140,14 @@ export class NotificationService {
     );
   }
 
-  getTimeAgo(date: Date): string {
+  getTimeAgo(date: Date | string): string {
     const now = new Date();
-    const notificationDate = new Date(date);
+    // Ensure Date considers this as UTC, as the .NET backend sends UTC without a Z trailing character sometimes
+    let dateStr = date instanceof Date ? date.toISOString() : date.toString();
+    if (!dateStr.endsWith('Z') && !dateStr.includes('+')) {
+      dateStr += 'Z';
+    }
+    const notificationDate = new Date(dateStr);
     const seconds = Math.floor((now.getTime() - notificationDate.getTime()) / 1000);
 
     if (seconds < 60) return 'Just now';

@@ -4,6 +4,8 @@ using Portfolio.API.Application.Features.Contact.DTOs;
 using Portfolio.API.Application.Features.Contact.Mappers;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Portfolio.API.Application.Features.Contact.Services;
 
@@ -12,15 +14,27 @@ public class ContactService : IContactService
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotificationService _notificationService;
     private readonly IEmailService _emailService;
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<ContactService> _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ContactService"/> with its required dependencies.
     /// </summary>
-    public ContactService(IUnitOfWork unitOfWork, INotificationService notificationService, IEmailService emailService)
+    public ContactService(
+        IUnitOfWork unitOfWork, 
+        INotificationService notificationService, 
+        IEmailService emailService,
+        IMemoryCache cache,
+        ILogger<ContactService> logger,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
         _emailService = emailService;
+        _cache = cache;
+        _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     /// <summary>
@@ -32,6 +46,12 @@ public class ContactService : IContactService
     /// <returns>A sequence of ContactDto for the requested page ordered by SentAt descending.</returns>
     public async Task<IEnumerable<ContactDto>> GetMessagesAsync(int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
+        var cacheKey = $"ContactMessages_Page{page}_Size{pageSize}";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<ContactDto>? cachedMessages) && cachedMessages != null)
+        {
+            return cachedMessages;
+        }
+
         var messages = await _unitOfWork.Repository<ContactMessage>()
             .Query()
             .AsNoTracking()
@@ -39,7 +59,15 @@ public class ContactService : IContactService
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
-        return messages.Select(ContactMapper.ToDto);
+            
+        var result = messages.Select(ContactMapper.ToDto).ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -72,25 +100,60 @@ public class ContactService : IContactService
             IsRead = false
         };
 
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        _logger.LogInformation("Creating contact message for {SenderEmail}...", dto.Email);
+
         await _unitOfWork.Repository<ContactMessage>().AddAsync(message);
+        _logger.LogInformation("Message added to repository in {Elapsed}ms", sw.ElapsedMilliseconds);
+        
         await _unitOfWork.CompleteAsync();
+        _logger.LogInformation("UnitOfWork completed in {Elapsed}ms", sw.ElapsedMilliseconds);
 
-        // Send email notification
-        await _emailService.SendContactEmailAsync(dto.Name, dto.Email, dto.Subject, dto.Message);
+        // Clear contact cache
+        _cache.Remove("ContactMessages_Page1_Size20");
 
-        // Create in-app notification
-        await _notificationService.CreateNotificationAsync(
-            type: "ContactForm",
-            title: $"New Contact Message from {dto.Name}",
-            message: dto.Subject,
-            link: null,
-            icon: "mail",
-            relatedEntityId: message.Id.ToString(),
-            relatedEntityType: "ContactMessage",
-            senderName: dto.Name,
-            senderEmail: dto.Email
-        );
+        // Send email notification in background to avoid blocking the request
+        _ = Task.Run(async () => 
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+            try 
+            {
+                await scopedEmailService.SendContactEmailAsync(dto.Name, dto.Email, dto.Subject, dto.Message, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Background email sending failed");
+            }
+        }, CancellationToken.None);
 
+        // Create in-app notification in background using a separate scope
+        _ = Task.Run(async () => 
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var scopedNotificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            try 
+            {
+                await scopedNotificationService.CreateNotificationAsync(
+                    type: "ContactForm",
+                    title: $"New Contact Message from {dto.Name}",
+                    message: dto.Subject,
+                    link: null,
+                    icon: "mail",
+                    relatedEntityId: message.Id.ToString(),
+                    relatedEntityType: "ContactMessage",
+                    senderName: dto.Name,
+                    senderEmail: dto.Email,
+                    cancellationToken: CancellationToken.None
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Background notification creation failed");
+            }
+        }, CancellationToken.None);
+
+        _logger.LogInformation("CreateMessageAsync returning ContactDto in {Elapsed}ms", sw.ElapsedMilliseconds);
         return ContactMapper.ToDto(message);
     }
 

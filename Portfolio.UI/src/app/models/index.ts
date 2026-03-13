@@ -14,6 +14,7 @@ export * from './bio.model';
 export * from './signature.model';
 export * from './technical-focus.model';
 export * from './service.model';
+export * from './paged-result.model';
 export * from './blog-post.model';
 export * from './education.model';
 export * from './contact.model';

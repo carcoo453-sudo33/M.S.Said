@@ -6,6 +6,7 @@ using Portfolio.API.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using BioEntity = Portfolio.API.Entities.Bio;
 
 namespace Portfolio.API.Application.Features.Bio.Services;
@@ -16,16 +17,18 @@ public class BioService : IBioService
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
     private readonly IMemoryCache _cache;
+    private readonly ILogger<BioService> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BioService"/> class with its required dependencies.
     /// </summary>
-    public BioService(IUnitOfWork unitOfWork, IConfiguration configuration, HttpClient httpClient, IMemoryCache cache)
+    public BioService(IUnitOfWork unitOfWork, IConfiguration configuration, HttpClient httpClient, IMemoryCache cache, ILogger<BioService> logger)
     {
         _unitOfWork = unitOfWork;
         _configuration = configuration;
         _httpClient = httpClient;
         _cache = cache;
+        _logger = logger;
     }
 
     /// <summary>
@@ -45,7 +48,7 @@ public class BioService : IBioService
             
         if (bio == null) return null;
 
-        // Calculate dynamic statistics
+        // Calculate dynamic statistics sequentially to avoid DbContext concurrency issues
         bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
         bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
         bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
@@ -64,49 +67,63 @@ public class BioService : IBioService
     /// <returns>The updated <see cref="BioDto"/> reflecting persisted changes and recalculated dynamic fields (years of experience, projects completed, code commits).</returns>
     public async Task<BioDto> UpdateBioAsync(Guid id, BioDto dto, CancellationToken cancellationToken = default)
     {
-        System.Diagnostics.Debug.WriteLine($"🔍 UpdateBioAsync called with ID: {id}");
-        System.Diagnostics.Debug.WriteLine($"📥 Received DTO - CareerStartDate: {dto.CareerStartDate}, GitHubUsername: {dto.GitHubUsername}");
-        
-        var repository = _unitOfWork.Repository<BioEntity>();
-        
-        // Single query with eager loading of related entities
-        var bio = await repository.Query()
-            .AsTracking()
-            .Include(b => b.Signature)
-            .Include(b => b.TechnicalFocus)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        bool isNew = bio == null;
-        if (bio == null)
+        try
         {
-            bio = new BioEntity { Id = id };
-        }
+            _logger.LogInformation("UpdateBioAsync called with ID: {Id}", id);
+            
+            var repository = _unitOfWork.Repository<BioEntity>();
+            
+            // Single query with eager loading of related entities
+            var bio = await repository.Query()
+                .AsTracking()
+                .Include(b => b.Signature)
+                .Include(b => b.TechnicalFocus)
+                .FirstOrDefaultAsync(cancellationToken);
 
-        BioMapper.UpdateEntity(bio, dto);
-        System.Diagnostics.Debug.WriteLine($"🔄 After mapping - CareerStartDate: {bio.CareerStartDate}, GitHubUsername: {bio.GitHubUsername}");
-        
-        // Add new bio or update existing
-        if (isNew)
+            bool isNew = bio == null;
+            _logger.LogInformation("Bio found: {IsNew}, TechnicalFocus loaded: {TFLoaded}, Signature loaded: {SigLoaded}",
+                !isNew,
+                bio?.TechnicalFocus != null,
+                bio?.Signature != null);
+
+            if (bio == null)
+            {
+                bio = new BioEntity { Id = id };
+            }
+
+            BioMapper.UpdateEntity(bio, dto);
+            _logger.LogInformation("After mapping - TechnicalFocus: {TF}, Signature: {Sig}",
+                bio.TechnicalFocus != null,
+                bio.Signature != null);
+            
+            // Add new bio or update existing
+            if (isNew)
+            {
+                await repository.AddAsync(bio);
+            }
+            // If it's an existing bio, it is already being tracked by AsTracking(), 
+            // so EF Core's ChangeTracker will automatically detect added/modified properties.
+            // Calling repository.Update(bio) explicitly would force newly created child entities 
+            // (like TechnicalFocus) into a Modified state, causing DbUpdateConcurrencyException.
+
+            
+            // Save changes to database
+            var saveResult = await _unitOfWork.CompleteAsync(cancellationToken);
+            _logger.LogInformation("Bio saved successfully. Changes: {Changes}", saveResult);
+
+            // Recalculate dynamic statistics sequentially after update
+            bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
+            bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
+            bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
+
+            return BioMapper.ToDto(bio);
+        }
+        catch (Exception ex)
         {
-            await repository.AddAsync(bio);
+            System.IO.File.WriteAllText("backend_error.txt", ex.ToString());
+            _logger.LogError(ex, "UpdateBioAsync failed completely");
+            throw;
         }
-        else
-        {
-            repository.Update(bio);
-        }
-        
-        // Save changes to database
-        var saveResult = await _unitOfWork.CompleteAsync(cancellationToken);
-        System.Diagnostics.Debug.WriteLine($"✅ Bio saved successfully. Changes: {saveResult}");
-
-        // Recalculate dynamic statistics after update
-        bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
-        bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
-        bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
-
-        System.Diagnostics.Debug.WriteLine($"📊 Updated Bio Statistics - Years: {bio.YearsOfExperience}, Projects: {bio.ProjectsCompleted}, Commits: {bio.CodeCommits}, CareerStartDate: {bio.CareerStartDate}, GitHubUsername: {bio.GitHubUsername}");
-
-        return BioMapper.ToDto(bio);
     }
 
     /// <summary>
@@ -114,23 +131,29 @@ public class BioService : IBioService
     /// </summary>
     private async Task<string> CalculateYearsOfExperienceAsync(DateTime careerStartDate)
     {
+        var cacheKey = $"YearsOfExperience_{careerStartDate:yyyyMMdd}";
+        if (_cache.TryGetValue(cacheKey, out string? cachedYears) && cachedYears != null)
+        {
+            return cachedYears;
+        }
+
         var referenceDate = careerStartDate;
         
         // If CareerStartDate is the default (2021-01-01) or uninitialized, try to find the earliest experience
         var defaultDate = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         if (careerStartDate <= defaultDate)
         {
-            var earliestExperience = await _unitOfWork.Repository<Experience>()
+            var earliestDurations = await _unitOfWork.Repository<Experience>()
                 .Query()
                 .AsNoTracking()
-                .OrderBy(e => e.Duration) // Simple alphabetical sort on duration string often yields years first
+                .Select(e => e.Duration)
                 .ToListAsync();
 
-            if (earliestExperience.Any())
+            if (earliestDurations.Any())
             {
                 // Try to extract the minimum year from all durations
-                var years = earliestExperience
-                    .Select(e => ExtractYear(e.Duration))
+                var years = earliestDurations
+                    .Select(d => ExtractYear(d))
                     .Where(y => y > 0)
                     .ToList();
 
@@ -148,8 +171,14 @@ public class BioService : IBioService
             experienceYears--;
         }
         
-        // Return 0+ if no experience found, else return calculated years
-        return $"{Math.Max(experienceYears, 0)}+";
+        var result = $"{Math.Max(experienceYears, 0)}+";
+        
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+        });
+
+        return result;
     }
 
     private static int ExtractYear(string duration)
@@ -165,9 +194,8 @@ public class BioService : IBioService
     }
 
     /// <summary>
-    /// Retrieve the number of completed projects.
+    /// Retrieve the number of completed projects, falling back to GitHub repository count if local data is sparse.
     /// </summary>
-    /// <returns>The count of projects whose Status equals <c>ProjectStatus.Completed</c>, returned as a string; returns "0" if an error occurs.</returns>
     private async Task<string> GetProjectsCompletedCountAsync()
     {
         var cacheKey = "ProjectsCompletedCount";
@@ -181,11 +209,27 @@ public class BioService : IBioService
             var query = _unitOfWork.Repository<Project>().Query().AsNoTracking();
             var completedCount = await query.CountAsync(p => p.Status == ProjectStatus.Completed);
             
-            // If zero completed, count InProgress too to avoid showing "0" to visitors
+            // If zero completed, count InProgress too
             var totalCount = completedCount;
             if (totalCount == 0)
             {
                 totalCount = await query.CountAsync(p => p.Status == ProjectStatus.Completed || p.Status == ProjectStatus.InProgress);
+            }
+
+            // Fallback/Enhancement: If local projects are few, try to fetch GitHub repo count if a username is available
+            if (totalCount < 5)
+            {
+                var bio = await _unitOfWork.Repository<BioEntity>().Query().AsNoTracking().FirstOrDefaultAsync();
+                if (bio != null && !string.IsNullOrEmpty(bio.GitHubUsername))
+                {
+                    var gitHubToken = _configuration["GitHub:Token"];
+                    var repoCountStr = await GetGitHubRepoCountAsync(bio.GitHubUsername, gitHubToken);
+                    if (int.TryParse(repoCountStr, out int repoCount) && repoCount > totalCount)
+                    {
+                        // Use the higher of the two to ensure a representative count
+                        totalCount = repoCount;
+                    }
+                }
             }
             
             var result = totalCount.ToString();
@@ -197,17 +241,16 @@ public class BioService : IBioService
 
             return result;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"❌ Error in GetProjectsCompletedCountAsync: {ex.Message}");
             return "0";
         }
     }
 
     /// <summary>
-    /// Retrieves a GitHub user's public repository count from the GitHub API.
+    /// Retrieves a GitHub user's commit count using the Search API, with support for anonymous requests.
     /// </summary>
-    /// <param name="gitHubUsername">The GitHub username to query; if null or empty the method returns "0".</param>
-    /// <returns>The number of public repositories for the specified user as a string, or "0" if the username is missing, the GitHub token is not configured, the API call fails, or the response cannot be parsed.</returns>
     private async Task<string> GetGitHubCommitsAsync(string? gitHubUsername)
     {
         if (string.IsNullOrEmpty(gitHubUsername))
@@ -222,20 +265,27 @@ public class BioService : IBioService
         try
         {
             var gitHubToken = _configuration["GitHub:Token"];
-            if (string.IsNullOrEmpty(gitHubToken))
-                return "0";
+            // Treat placeholders as missing
+            if (gitHubToken != null && (gitHubToken.Contains("#{") || gitHubToken.Contains("your-github-token")))
+            {
+                gitHubToken = null;
+            }
 
             // Use the Search Commits API to get an actual commit count
-            // Reference: https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-commits
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/search/commits?q=author:{gitHubUsername}");
-            request.Headers.Add("Authorization", $"Bearer {gitHubToken}");
+            
+            if (!string.IsNullOrEmpty(gitHubToken))
+            {
+                request.Headers.Add("Authorization", $"Bearer {gitHubToken}");
+            }
+            
             request.Headers.Add("Accept", "application/vnd.github.cloak-preview"); // Required for commit search
             request.Headers.Add("User-Agent", "Portfolio-API");
 
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
-                // Fallback to repo count if search is restricted or fails
+                // Fallback to repo count if search fails
                 return await GetGitHubRepoCountAsync(gitHubUsername, gitHubToken);
             }
 
@@ -245,11 +295,12 @@ public class BioService : IBioService
 
             if (root.TryGetProperty("total_count", out var totalCount))
             {
-                var result = totalCount.GetInt32().ToString();
+                var count = totalCount.GetInt32();
+                var result = count.ToString();
                 
                 _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(6) // Commit count doesn't change that fast
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4)
                 });
                 
                 return result;
@@ -257,28 +308,64 @@ public class BioService : IBioService
 
             return "0";
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"❌ Error in GetGitHubCommitsAsync: {ex.Message}");
             return "0";
         }
     }
 
-    private async Task<string> GetGitHubRepoCountAsync(string username, string token)
+    /// <summary>
+    /// Fetches the public repository count for a GitHub user, allowing anonymous access.
+    /// </summary>
+    private async Task<string> GetGitHubRepoCountAsync(string username, string? token)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/users/{username}");
-        request.Headers.Add("Authorization", $"Bearer {token}");
-        request.Headers.Add("Accept", "application/vnd.github.v3+json");
-        request.Headers.Add("User-Agent", "Portfolio-API");
+        var cacheKey = $"GitHubRepoCount_{username}";
+        if (_cache.TryGetValue(cacheKey, out string? cachedRepos) && cachedRepos != null)
+        {
+            return cachedRepos;
+        }
 
-        var response = await _httpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode) return "0";
+        try 
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/users/{username}");
+            
+            if (!string.IsNullOrEmpty(token) && !token.Contains("#{") && !token.Contains("your-github-token"))
+            {
+                request.Headers.Add("Authorization", $"Bearer {token}");
+            }
+            
+            request.Headers.Add("Accept", "application/vnd.github.v3+json");
+            request.Headers.Add("User-Agent", "Portfolio-API");
 
-        var content = await response.Content.ReadAsStringAsync();
-        using var jsonDoc = System.Text.Json.JsonDocument.Parse(content);
-        if (jsonDoc.RootElement.TryGetProperty("public_repos", out var repos))
-            return repos.GetInt32().ToString();
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("GitHub Repo Count API failed for {Username}: {Status}", username, response.StatusCode);
+                return "0";
+            }
 
-        return "0";
+            var content = await response.Content.ReadAsStringAsync();
+            using var jsonDoc = System.Text.Json.JsonDocument.Parse(content);
+            if (jsonDoc.RootElement.TryGetProperty("public_repos", out var repos))
+            {
+                var result = repos.GetInt32().ToString();
+                
+                _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4)
+                });
+                
+                return result;
+            }
+
+            return "0";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in GetGitHubRepoCountAsync for {Username}", username);
+            return "0";
+        }
     }
 }
 

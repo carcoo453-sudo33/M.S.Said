@@ -4,6 +4,7 @@ using Portfolio.API.Hubs;
 using Portfolio.API.Domain.Enums;
 using Portfolio.API.Application.Features.Notifications.DTOs;
 using Portfolio.API.Application.Features.Notifications.Mappers;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,9 @@ public class NotificationService : INotificationService
 {
     private readonly PortfolioDbContext _context;
     private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<NotificationService> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     /// <summary>
     /// Initializes a new instance of <see cref="NotificationService"/> with required dependencies.
@@ -21,11 +24,15 @@ public class NotificationService : INotificationService
     public NotificationService(
         PortfolioDbContext context, 
         IHubContext<NotificationHub> hubContext,
-        ILogger<NotificationService> logger)
+        IMemoryCache cache,
+        ILogger<NotificationService> logger,
+        IServiceScopeFactory scopeFactory)
     {
         _context = context;
         _hubContext = hubContext;
+        _cache = cache;
         _logger = logger;
+        _scopeFactory = scopeFactory;
     }
 
     /// <summary>
@@ -112,20 +119,36 @@ public class NotificationService : INotificationService
     /// <returns>A <see cref="NotificationStatsDto"/> where <c>TotalCount</c> is the total notifications and <c>UnreadCount</c> is the number of notifications with <c>IsRead</c> equal to false.</returns>
     public async Task<NotificationStatsDto> GetStatsAsync(CancellationToken cancellationToken = default)
     {
-        var stats = await _context.Notifications
-            .GroupBy(n => 1)
-            .Select(g => new
-            {
-                Total = g.Count(),
-                Unread = g.Count(n => !n.IsRead)
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-
-        return new NotificationStatsDto
+        var cacheKey = "NotificationStats";
+        if (_cache.TryGetValue(cacheKey, out NotificationStatsDto? cachedStats) && cachedStats != null)
         {
-            TotalCount = stats?.Total ?? 0,
-            UnreadCount = stats?.Unread ?? 0
-        };
+            return cachedStats;
+        }
+
+        // Use a dedicated scope to guarantee DbContext isolation.
+        // This is a definitive fix for the "A second operation was started on this context" error
+        // which can happen if the stats endpoint is called very frequently while other 
+        // scoped operations are still in progress.
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<PortfolioDbContext>();
+            
+            var totalCount = await context.Notifications.AsNoTracking().CountAsync(cancellationToken);
+            var unreadCount = await context.Notifications.AsNoTracking().CountAsync(n => !n.IsRead, cancellationToken);
+            
+            var result = new NotificationStatsDto
+            {
+                TotalCount = totalCount,
+                UnreadCount = unreadCount
+            };
+
+            _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+            });
+
+            return result;
+        }
     }
 
     /// <summary>

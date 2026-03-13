@@ -36,7 +36,8 @@ import { ImageUtil } from '../../../utils';
                         [class]="submitted && !item.name.trim() ? 'border-red-500/50 bg-red-600/5' : 'border-zinc-200 dark:border-zinc-700'">
                         <div class="flex-1 space-y-3">
                             <div>
-                                <input [(ngModel)]="item.name" placeholder="Skill Name (EN) *"
+                                <label [attr.for]="'skill-name-' + i" class="hidden">Skill Name</label>
+                                <input [id]="'skill-name-' + i" [name]="'skill-name-' + i" [(ngModel)]="item.name" placeholder="Skill Name (EN) *"
                                     [class]="submitted && !item.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                     class="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                                 <p *ngIf="submitted && !item.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">{{ 'home.techStack.skillLabel' | translate }} {{ 'common.requiredField' | translate }}</p>

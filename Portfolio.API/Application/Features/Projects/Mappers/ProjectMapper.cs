@@ -20,44 +20,65 @@ public static class ProjectMapper
         return new ProjectDto
         {
             Id = entity.Id,
-            Title = entity.Title,
-            Title_Ar = entity.Title_Ar,
-            Slug = entity.Slug,
-            Description = entity.Description,
-            Description_Ar = entity.Description_Ar,
-            Summary = entity.Summary,
-            Summary_Ar = entity.Summary_Ar,
-            ImageUrl = entity.ImageUrl,
-            ProjectUrl = entity.DemoUrl,
-            GitHubUrl = entity.RepoUrl,
+            Title = entity.Title ?? string.Empty,
+            Title_Ar = entity.Title_Ar ?? string.Empty,
+            Slug = entity.Slug ?? string.Empty,
+            Description = entity.Description ?? string.Empty,
+            Description_Ar = entity.Description_Ar ?? string.Empty,
+            Summary = entity.Summary ?? string.Empty,
+            Summary_Ar = entity.Summary_Ar ?? string.Empty,
+            ImageUrl = entity.ImageUrl ?? string.Empty,
+            ProjectUrl = entity.DemoUrl ?? string.Empty,
+            GitHubUrl = entity.RepoUrl ?? string.Empty,
             Category = entity.Category,
-            Category_Ar = entity.Category_Ar,
-            TechStack = entity.TechStack,
-            Niche = entity.Niche,
-            Niche_Ar = entity.Niche_Ar,
-            Company = entity.Company,
-            Company_Ar = entity.Company_Ar,
-            Duration = entity.Duration,
-            Duration_Ar = entity.Duration_Ar,
+            Category_Ar = entity.Category_Ar ?? string.Empty,
+            TechStack = entity.TechStack ?? string.Empty,
+            Niche = entity.Niche ?? string.Empty,
+            Niche_Ar = entity.Niche_Ar ?? string.Empty,
+            Company = entity.Company ?? string.Empty,
+            Company_Ar = entity.Company_Ar ?? string.Empty,
+            Duration = entity.Duration ?? string.Empty,
+            Duration_Ar = entity.Duration_Ar ?? string.Empty,
             Language = entity.Language,
-            Language_Ar = entity.Language_Ar,
+            Language_Ar = entity.Language_Ar ?? string.Empty,
             Architecture = entity.Architecture,
-            Architecture_Ar = entity.Architecture_Ar,
+            Architecture_Ar = entity.Architecture_Ar ?? string.Empty,
             Status = entity.Status,
-            Status_Ar = entity.Status_Ar,
+            Status_Ar = entity.Status_Ar ?? string.Empty,
             Type = entity.Type,
-            Type_Ar = entity.Type_Ar,
+            Type_Ar = entity.Type_Ar ?? string.Empty,
             DevelopmentMethod = entity.DevelopmentMethod,
-            DevelopmentMethod_Ar = entity.DevelopmentMethod_Ar,
+            DevelopmentMethod_Ar = entity.DevelopmentMethod_Ar ?? string.Empty,
             Order = entity.Order,
             IsFeatured = entity.IsFeatured,
             Views = entity.Views,
             ReactionsCount = entity.ReactionsCount,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
-            Responsibilities = JsonHelper.DeserializeList<ResponsibilityDto>(entity.ResponsibilitiesJson),
+            Responsibilities = JsonHelper.DeserializeList<ResponsibilityDto>(entity.ResponsibilitiesJson)
+                .Select(r => {
+                    r.Title = r.Title ?? string.Empty;
+                    r.Title_Ar = r.Title_Ar ?? string.Empty;
+                    r.Description = r.Description ?? string.Empty;
+                    r.Description_Ar = r.Description_Ar ?? string.Empty;
+                    return r;
+                }).ToList(),
             KeyFeatures = entity.KeyFeatures?.Select(KeyFeatureMapper.ToResponse).ToList() ?? new(),
-            Changelog = entity.Changelog?.Select(ChangelogItemMapper.ToResponse).ToList() ?? new()
+            Changelog = entity.Changelog?.Select(ChangelogItemMapper.ToResponse).ToList() ?? new(),
+            Images = entity.Images?.Select(img => new ProjectImageDto
+            {
+                Id = img.Id,
+                ProjectId = img.ProjectId,
+                ImageUrl = img.ImageUrl ?? string.Empty,
+                Title = img.Title ?? string.Empty,
+                Title_Ar = img.Title_Ar ?? string.Empty,
+                Type = img.Type,
+                Order = img.Order,
+                Description = img.Description ?? string.Empty,
+                Description_Ar = img.Description_Ar ?? string.Empty,
+                CreatedAt = img.CreatedAt,
+                UpdatedAt = img.UpdatedAt
+            }).ToList() ?? new()
         };
     }
 

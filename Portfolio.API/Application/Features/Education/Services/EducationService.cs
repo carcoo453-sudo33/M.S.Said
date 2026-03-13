@@ -3,6 +3,7 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Education.DTOs;
 using Portfolio.API.Application.Features.Education.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using EducationEntity = Portfolio.API.Entities.Education;
 
 namespace Portfolio.API.Application.Features.Education.Services;
@@ -10,14 +11,16 @@ namespace Portfolio.API.Application.Features.Education.Services;
 public class EducationService : IEducationService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of <see cref="EducationService"/> with the specified unit of work.
     /// </summary>
     /// <param name="unitOfWork">Unit of work used to access repositories and persist changes.</param>
-    public EducationService(IUnitOfWork unitOfWork)
+    public EducationService(IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <summary>
@@ -26,12 +29,26 @@ public class EducationService : IEducationService
     /// <returns>An IEnumerable&lt;EducationDto&gt; containing all education records mapped to DTOs, ordered by Duration descending.</returns>
     public async Task<IEnumerable<EducationDto>> GetEducationAsync()
     {
+        var cacheKey = "Education_All";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<EducationDto>? cachedEducation) && cachedEducation != null)
+        {
+            return cachedEducation;
+        }
+
         var education = await _unitOfWork.Repository<EducationEntity>()
             .Query()
             .AsNoTracking()
             .OrderByDescending(e => e.Duration)
             .ToListAsync();
-        return education.Select(EducationMapper.ToDto);
+            
+        var result = education.Select(EducationMapper.ToDto).ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -59,6 +76,9 @@ public class EducationService : IEducationService
         EducationMapper.UpdateEntity(entity, dto);
         await _unitOfWork.Repository<EducationEntity>().AddAsync(entity);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Education_All");
+        
         return EducationMapper.ToDto(entity);
     }
 
@@ -77,6 +97,9 @@ public class EducationService : IEducationService
 
         EducationMapper.UpdateEntity(education, dto);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Education_All");
+        
         return EducationMapper.ToDto(education);
     }
 
@@ -92,6 +115,9 @@ public class EducationService : IEducationService
 
         _unitOfWork.Repository<EducationEntity>().Delete(education);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Education_All");
+        
         return true;
     }
 }

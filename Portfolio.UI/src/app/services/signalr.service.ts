@@ -31,7 +31,7 @@ export class SignalRService {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, options)
       .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
-      .configureLogging(signalR.LogLevel.None) // Suppress all logs
+      .configureLogging(signalR.LogLevel.Information) // Show logs for debugging
       .build();
 
     this.hubConnection
@@ -90,7 +90,10 @@ export class SignalRService {
       this.hubConnection.on('ReceiveNotification', (notification: AppNotification) => {
         console.log('📡 Notification received via SignalRService:', notification);
         const current = this.notifications();
-        this.notifications.set([notification, ...current]);
+        // Prevent duplicate notifications from being added
+        if (!current.some(n => n.id === notification.id)) {
+          this.notifications.set([notification, ...current]);
+        }
       });
     }
   }

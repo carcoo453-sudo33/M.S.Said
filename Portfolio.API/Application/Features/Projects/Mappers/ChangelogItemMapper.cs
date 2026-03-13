@@ -10,12 +10,12 @@ public static class ChangelogItemMapper
         return new ChangelogItemDto
         {
             Id = entity.Id,
-            Date = entity.Date,
-            Version = entity.Version,
-            Title = entity.Title,
-            Title_Ar = entity.Title_Ar,
-            Description = entity.Description,
-            Description_Ar = entity.Description_Ar
+            Date = entity.Date ?? string.Empty,
+            Version = entity.Version ?? string.Empty,
+            Title = entity.Title ?? string.Empty,
+            Title_Ar = entity.Title_Ar ?? string.Empty,
+            Description = entity.Description ?? string.Empty,
+            Description_Ar = entity.Description_Ar ?? string.Empty
         };
     }
 

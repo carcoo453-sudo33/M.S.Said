@@ -16,12 +16,12 @@ public static class TechnicalFocusMapper
         {
             Id = technicalFocus.Id,
             BioId = technicalFocus.BioId,
-            Title = technicalFocus.Title,
-            Title_Ar = technicalFocus.Title_Ar,
-            Description = technicalFocus.Description,
-            Description_Ar = technicalFocus.Description_Ar,
-            Items = technicalFocus.Items,
-            Items_Ar = technicalFocus.Items_Ar
+            Title = technicalFocus.Title ?? string.Empty,
+            Title_Ar = technicalFocus.Title_Ar ?? string.Empty,
+            Description = technicalFocus.Description ?? string.Empty,
+            Description_Ar = technicalFocus.Description_Ar ?? string.Empty,
+            Items = technicalFocus.Items ?? string.Empty,
+            Items_Ar = technicalFocus.Items_Ar ?? string.Empty
         };
     }
 
@@ -35,6 +35,7 @@ public static class TechnicalFocusMapper
     {
         return new TechnicalFocus
         {
+            Id = Guid.Empty,
             BioId = bioId,
             Title = dto.Title,
             Title_Ar = dto.Title_Ar,

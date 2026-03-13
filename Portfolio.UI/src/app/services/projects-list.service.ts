@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { ProjectEntry } from '../models';
+import { ProjectEntry, PagedResult } from '../models';
 import { environment } from '../../environments/environment';
 
 /**
@@ -16,7 +16,7 @@ export class ProjectsListService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = environment.apiUrl;
 
-    getProjects(page: number = 1, pageSize: number = 10, category?: string, isFeatured?: boolean, search?: string, sortBy?: string, sortDirection?: string): Observable<any> {
+    getProjects(page: number = 1, pageSize: number = 10, category?: string, isFeatured?: boolean, search?: string, sortBy?: string, sortDirection?: string): Observable<PagedResult<ProjectEntry>> {
         let params = new HttpParams()
             .set('page', page.toString())
             .set('pageSize', pageSize.toString());
@@ -27,7 +27,7 @@ export class ProjectsListService {
         if (sortBy) params = params.set('sortBy', sortBy);
         if (sortDirection) params = params.set('sortDirection', sortDirection);
 
-        return this.http.get<any>(`${this.apiUrl}/projects`, { params }).pipe(
+        return this.http.get<PagedResult<ProjectEntry>>(`${this.apiUrl}/projects`, { params }).pipe(
             catchError(error => {
                 console.error('Error fetching projects:', error);
                 return throwError(() => error);

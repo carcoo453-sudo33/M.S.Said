@@ -4,12 +4,14 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Blog.Mappers;
 using Portfolio.API.Application.Features.Blog.DTOs;
 using Portfolio.API.Application.Common;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.Blog.Services;
 
 public class BlogService : IBlogService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<BlogService> _logger;
     private readonly MetadataExtractor _metadataExtractor;
 
@@ -18,9 +20,11 @@ public class BlogService : IBlogService
     /// </summary>
     public BlogService(
         IUnitOfWork unitOfWork,
+        IMemoryCache cache,
         ILogger<BlogService> logger)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
         _logger = logger;
         _metadataExtractor = new MetadataExtractor();
     }
@@ -33,7 +37,13 @@ public class BlogService : IBlogService
     /// <returns>A PagedResult containing BlogPostDto items, ordered by PublishedAt descending.</returns>
     public async Task<PagedResult<BlogPostDto>> GetPostsAsync(int page = 1, int pageSize = 10)
     {
-        _logger.LogInformation("Fetching blog posts - Page: {Page}, PageSize: {PageSize}", page, pageSize);
+        var cacheKey = $"BlogPosts_Page{page}_Size{pageSize}";
+        if (_cache.TryGetValue(cacheKey, out PagedResult<BlogPostDto>? cachedResult) && cachedResult != null)
+        {
+            return cachedResult;
+        }
+
+        _logger.LogInformation("Fetching blog posts from database - Page: {Page}, PageSize: {PageSize}", page, pageSize);
 
         var query = _unitOfWork.Repository<BlogPost>()
             .Query()
@@ -47,13 +57,20 @@ public class BlogService : IBlogService
             .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<BlogPostDto>
+        var result = new PagedResult<BlogPostDto>
         {
             Items = posts.Select(BlogMapper.ToDto).ToList(),
             TotalCount = totalCount,
             Page = page,
             PageSize = pageSize
         };
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -182,7 +199,7 @@ public class BlogService : IBlogService
     /// <exception cref="System.ArgumentException">Thrown when <paramref name="url"/> is null, empty, or whitespace.</exception>
     public async Task<BlogPostDto> ImportFromUrlAsync(string url)
     {
-        _logger.LogInformation("Importing blog post from URL: {Url}", url);
+        _logger.LogInformation("Extracting metadata for blog post import: {Url}", url);
 
         if (string.IsNullOrWhiteSpace(url))
         {
@@ -191,28 +208,22 @@ public class BlogService : IBlogService
 
         var metadata = await _metadataExtractor.ExtractMetadata(url);
 
-        var post = new BlogPost
+        // We return a DTO for preview in the UI. 
+        // We do NOT save it to the database here to allow the user to review and edit.
+        return new BlogPostDto
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.Empty, // Indicates it's not yet in the DB
             Title = metadata.Title,
-            Summary = metadata.Description,
-            Content = metadata.Content,
-            ImageUrl = metadata.ImageUrl,
+            Summary = metadata.Description ?? string.Empty,
+            Content = metadata.Content ?? string.Empty,
+            ImageUrl = metadata.ImageUrl ?? string.Empty,
             SocialUrl = url,
             SocialType = metadata.PlatformType,
             PublishedAt = metadata.PublishedDate ?? DateTime.UtcNow,
-            Tags = metadata.Tags,
+            Tags = metadata.Tags ?? string.Empty,
             Author = metadata.Author ?? "Mostafa Samir Said",
-            Version = 1,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            Version = "1"
         };
-
-        await _unitOfWork.Repository<BlogPost>().AddAsync(post);
-        await _unitOfWork.CompleteAsync();
-
-        _logger.LogInformation("Blog post imported successfully: {PostId}", post.Id);
-        return BlogMapper.ToDto(post);
     }
 }
 

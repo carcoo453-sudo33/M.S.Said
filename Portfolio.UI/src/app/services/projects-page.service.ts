@@ -15,21 +15,15 @@ export class ProjectsPageService {
 
     // References
     getReferences() {
-        return this.http.get<Reference[]>(`${this.apiUrl}/references`).pipe(
-            map(references => references.map(r => ({ ...r, id: r.id || (r as any).Id || (r as any).ID })))
-        );
+        return this.http.get<Reference[]>(`${this.apiUrl}/references`);
     }
 
     createReference(reference: Reference) {
-        return this.http.post<Reference>(`${this.apiUrl}/references`, reference).pipe(
-            map(r => ({ ...r, id: r.id || (r as any).Id || (r as any).ID }))
-        );
+        return this.http.post<Reference>(`${this.apiUrl}/references`, reference);
     }
 
     updateReference(id: string, reference: Reference) {
-        return this.http.put<Reference>(`${this.apiUrl}/references/${id}`, reference).pipe(
-            map(r => ({ ...r, id: r.id || (r as any).Id || (r as any).ID }))
-        );
+        return this.http.put<Reference>(`${this.apiUrl}/references/${id}`, reference);
     }
 
     deleteReference(id: string) {

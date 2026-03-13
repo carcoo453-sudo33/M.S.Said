@@ -26,31 +26,31 @@ import { TranslationService } from '../../../services/translation.service';
                 <!-- Body -->
                 <div class="p-5 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (EN)</label>
-                        <textarea [(ngModel)]="editForm.description" rows="5"
+                        <label for="description" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (EN)</label>
+                        <textarea id="description" name="description" [(ngModel)]="editForm.description" rows="5"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (AR)</label>
-                        <textarea [ngModel]="editForm.description_Ar" (ngModelChange)="editForm.description_Ar = $event" rows="5" dir="rtl"
+                        <label for="description_Ar" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.descriptionLabel' | translate }} (AR)</label>
+                        <textarea id="description_Ar" name="description_Ar" [ngModel]="editForm.description_Ar" (ngModelChange)="editForm.description_Ar = $event" rows="5" dir="rtl"
                             class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
                     </div>
                     <div class="grid grid-cols-3 gap-6 pb-4">
                         <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.yearsLabel' | translate }}</label>
-                            <input [(ngModel)]="editForm.yearsOfExperience" type="text" readonly
+                            <label for="yearsExperience" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.yearsLabel' | translate }}</label>
+                            <input id="yearsExperience" name="yearsExperience" [(ngModel)]="editForm.yearsOfExperience" type="text" readonly
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/50 text-sm text-zinc-500 focus:outline-none cursor-not-allowed">
                             <p class="text-zinc-400 text-[9px] mt-1 ms-1">Auto-calculated from Career Start Date</p>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.projectsLabel' | translate }}</label>
-                            <input [(ngModel)]="editForm.projectsCompleted" type="text" readonly
+                            <label for="projectsCount" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.projectsLabel' | translate }}</label>
+                            <input id="projectsCount" name="projectsCount" [(ngModel)]="editForm.projectsCompleted" type="text" readonly
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/50 text-sm text-zinc-500 focus:outline-none cursor-not-allowed">
                             <p class="text-zinc-400 text-[9px] mt-1 ms-1">Auto-counted from projects</p>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.commitsLabel' | translate }}</label>
-                            <input [(ngModel)]="editForm.codeCommits" type="text" readonly
+                            <label for="commitsCount" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">{{ 'home.bio.commitsLabel' | translate }}</label>
+                            <input id="commitsCount" name="commitsCount" [(ngModel)]="editForm.codeCommits" type="text" readonly
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/50 text-sm text-zinc-500 focus:outline-none cursor-not-allowed">
                             <p class="text-zinc-400 text-[9px] mt-1 ms-1">Auto-fetched from GitHub</p>
                         </div>
@@ -64,14 +64,14 @@ import { TranslationService } from '../../../services/translation.service';
                         <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">Statistics Configuration</label>
                         <div class="space-y-3">
                             <div>
-                                <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
-                                <input [(ngModel)]="editForm.careerStartDate" type="date"
+                                <label for="careerStartDate" class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
+                                <input id="careerStartDate" name="careerStartDate" [(ngModel)]="editForm.careerStartDate" type="date"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                                 <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to calculate years of experience. Auto-derived from work history if unconfigured.</p>
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
-                                <input [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., octocat"
+                                <label for="gitHubUsername" class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
+                                <input id="gitHubUsername" name="gitHubUsername" [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., octocat"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                                 <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to fetch total authored commit count from GitHub</p>
                             </div>

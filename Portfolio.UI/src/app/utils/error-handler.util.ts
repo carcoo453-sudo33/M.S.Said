@@ -30,7 +30,7 @@ export function handleAuthError(error: any, toast: ToastService, auth: AuthServi
  */
 export function handleConnectionError(toast: ToastService): void {
     toast.error('Connection lost. Please check your internet connection.', {
-        persistent: true,
+        duration: 10000,
         action: {
             label: 'Retry',
             onClick: () => {

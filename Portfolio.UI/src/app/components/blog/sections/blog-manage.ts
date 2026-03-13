@@ -451,9 +451,9 @@ export class BlogManageComponent implements OnChanges {
     }
 
     isFormValid(): boolean {
-        return !!(this.editData.title?.trim() && 
-                  this.editData.summary?.trim() && 
-                  this.editData.content?.trim());
+        return !!(String(this.editData.title || '').trim() && 
+                  String(this.editData.summary || '').trim() && 
+                  String(this.editData.content || '').trim());
     }
 
     saveChanges() {
@@ -461,21 +461,21 @@ export class BlogManageComponent implements OnChanges {
 
         this.isSaving = true;
 
-        const postData = {
-            title: this.editData.title.trim(),
-            summary: this.editData.summary.trim(),
-            content: this.editData.content.trim(),
-            author: this.editData.author.trim() || 'Mostafa Samir Said',
-            socialUrl: this.editData.socialUrl?.trim() || undefined,
+        const postData: Partial<BlogPost> = {
+            title: String(this.editData.title || '').trim(),
+            summary: String(this.editData.summary || '').trim(),
+            content: String(this.editData.content || '').trim(),
+            author: String(this.editData.author || '').trim() || 'Mostafa Samir Said',
+            socialUrl: this.editData.socialUrl ? String(this.editData.socialUrl).trim() : undefined,
             socialType: this.editData.socialType || undefined,
-            imageUrl: this.editData.imageUrl?.trim() || undefined,
+            imageUrl: this.editData.imageUrl ? String(this.editData.imageUrl).trim() : undefined,
             publishedAt: this.editData.publishedAt ? new Date(this.editData.publishedAt).toISOString() : new Date().toISOString(),
-            tags: this.editData.tags?.trim() || undefined,
-            likesCount: this.editData.likesCount || 0,
-            commentsCount: this.editData.commentsCount || 0,
-            starsCount: this.editData.starsCount || 0,
-            forksCount: this.editData.forksCount || 0,
-            version: this.editData.version?.trim() || undefined
+            tags: this.editData.tags ? String(this.editData.tags).trim() : undefined,
+            likesCount: Number(this.editData.likesCount) || 0,
+            commentsCount: Number(this.editData.commentsCount) || 0,
+            starsCount: Number(this.editData.starsCount) || 0,
+            forksCount: Number(this.editData.forksCount) || 0,
+            version: this.editData.version ? String(this.editData.version).trim() : undefined
         };
 
         if (this.isNewPost) {

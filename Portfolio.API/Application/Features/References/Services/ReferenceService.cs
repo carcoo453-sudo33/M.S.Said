@@ -3,20 +3,23 @@ using Portfolio.API.Application.Features.References.DTOs;
 using Portfolio.API.Application.Features.References.Mappers;
 using Portfolio.API.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.References.Services;
 
 public class ReferenceService : IReferenceService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ReferenceService"/> using the provided unit of work.
     /// </summary>
     /// <param name="unitOfWork">The unit-of-work used to access repositories and commit changes.</param>
-    public ReferenceService(IUnitOfWork unitOfWork)
+    public ReferenceService(IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <summary>
@@ -25,12 +28,26 @@ public class ReferenceService : IReferenceService
     /// <returns>An enumerable of ReferenceDto for all references, ordered by PublishedAt descending.</returns>
     public async Task<IEnumerable<ReferenceDto>> GetReferencesAsync()
     {
+        var cacheKey = "References_All";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<ReferenceDto>? cachedReferences) && cachedReferences != null)
+        {
+            return cachedReferences;
+        }
+
         var references = await _unitOfWork.Repository<Reference>()
             .Query()
             .AsNoTracking()
             .OrderByDescending(r => r.PublishedAt)
             .ToListAsync();
-        return references.Select(ReferenceMapper.ToDto);
+            
+        var result = references.Select(ReferenceMapper.ToDto).ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        });
+
+        return result;
     }
 
     /// <summary>

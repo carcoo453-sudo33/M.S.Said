@@ -15,7 +15,7 @@ import { environment } from '../../../../environments/environment';
     template: `
     <!-- Edit Modal -->
     <div *ngIf="isOpen" class="modal-overall fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
-        <div class="relative bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-2/3 max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter" (click)="$event.stopPropagation()">
+        <div class="relative bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xl w-2/3 max-h-[90vh] overflow-hidden flex flex-col animate-modal-enter mt-20" (click)="$event.stopPropagation()">
             <!-- Modal Header -->
             <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-5 flex items-center justify-between z-20">
                 <h3 class="text-base font-black dark:text-white text-zinc-900">Edit Profile</h3>
@@ -51,47 +51,47 @@ import { environment } from '../../../../environments/environment';
 
                 <!-- Personal Info -->
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (EN) *</label>
-                    <input [(ngModel)]="editForm.name" type="text"
+                    <label for="name" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (EN) *</label>
+                    <input id="name" name="name" [(ngModel)]="editForm.name" type="text"
                         [class]="submitted && !editForm.name.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                         class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                     <p *ngIf="submitted && !editForm.name.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Name is required</p>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (AR)</label>
-                    <input [ngModel]="editForm.name_Ar" (ngModelChange)="editForm.name_Ar = $event" type="text" dir="rtl"
+                    <label for="name_Ar" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Name (AR)</label>
+                    <input id="name_Ar" name="name_Ar" [ngModel]="editForm.name_Ar" (ngModelChange)="editForm.name_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)</label>
-                    <input [(ngModel)]="editForm.title" type="text"
+                    <label for="title" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (EN)</label>
+                    <input id="title" name="title" [(ngModel)]="editForm.title" type="text"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
-                    <input [ngModel]="editForm.title_Ar" (ngModelChange)="editForm.title_Ar = $event" type="text" dir="rtl"
+                    <label for="title_Ar" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Title (AR)</label>
+                    <input id="title_Ar" name="title_Ar" [ngModel]="editForm.title_Ar" (ngModelChange)="editForm.title_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (EN)</label>
-                    <input [(ngModel)]="editForm.location" type="text"
+                    <label for="location" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (EN)</label>
+                    <input id="location" name="location" [(ngModel)]="editForm.location" type="text"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (AR)</label>
-                    <input [ngModel]="editForm.location_Ar" (ngModelChange)="editForm.location_Ar = $event" type="text" dir="rtl"
+                    <label for="location_Ar" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Location (AR)</label>
+                    <input id="location_Ar" name="location_Ar" [ngModel]="editForm.location_Ar" (ngModelChange)="editForm.location_Ar = $event" type="text" dir="rtl"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
-                    <input [(ngModel)]="editForm.email" type="email"
+                    <label for="email" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Email *</label>
+                    <input id="email" name="email" [(ngModel)]="editForm.email" type="email"
                         [class]="submitted && !editForm.email?.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                         class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                     <p *ngIf="submitted && !editForm.email?.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">Email is required</p>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
-                    <input [(ngModel)]="editForm.phone" type="tel"
+                    <label for="phone" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Phone</label>
+                    <input id="phone" name="phone" [(ngModel)]="editForm.phone" type="tel"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                 </div>
 
@@ -103,14 +103,14 @@ import { environment } from '../../../../environments/environment';
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">Statistics Configuration</label>
                     <div class="space-y-3">
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
-                            <input [(ngModel)]="editForm.careerStartDate" type="date"
+                            <label for="careerStartDate" class="text-[9px] font-bold text-zinc-500 mb-1 block">Career Start Date</label>
+                            <input id="careerStartDate" name="careerStartDate" [(ngModel)]="editForm.careerStartDate" type="date"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                             <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to calculate years of experience. Auto-derived from work history if unconfigured.</p>
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
-                            <input [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., Mostafa-SAID7"
+                            <label for="gitHubUsername" class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub Username</label>
+                            <input id="gitHubUsername" name="gitHubUsername" [(ngModel)]="editForm.gitHubUsername" type="text" placeholder="e.g., Mostafa-SAID7"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                             <p class="text-zinc-400 text-[9px] mt-1 ms-1">Used to fetch total authored commit count from GitHub</p>
                         </div>
@@ -122,8 +122,8 @@ import { environment } from '../../../../environments/environment';
 
                 <!-- Tech Stack -->
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Tech Stack (comma-separated)</label>
-                    <input [(ngModel)]="editForm.technicalFocusItems" type="text" placeholder="e.g., .NET, Angular, EF, MVC"
+                    <label for="technicalFocusItems" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Tech Stack (comma-separated)</label>
+                    <input id="technicalFocusItems" name="technicalFocusItems" [(ngModel)]="editForm.technicalFocusItems" type="text" placeholder="e.g., .NET, Angular, EF, MVC"
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                     <p class="text-zinc-400 text-[9px] mt-1 ms-1">Separate technologies with commas (e.g., .NET, Angular, EF, MVC)</p>
                 </div>
@@ -136,43 +136,43 @@ import { environment } from '../../../../environments/environment';
                     <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">Social Media Links</label>
                     <div class="space-y-3">
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">LinkedIn</label>
-                            <input [(ngModel)]="editForm.linkedInUrl" type="text" placeholder="https://linkedin.com/in/username"
+                            <label for="linkedInUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">LinkedIn</label>
+                            <input id="linkedInUrl" name="linkedInUrl" [(ngModel)]="editForm.linkedInUrl" type="text" placeholder="https://linkedin.com/in/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub</label>
-                            <input [(ngModel)]="editForm.gitHubUrl" type="text" placeholder="https://github.com/username"
+                            <label for="gitHubUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">GitHub</label>
+                            <input id="gitHubUrl" name="gitHubUrl" [(ngModel)]="editForm.gitHubUrl" type="text" placeholder="https://github.com/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Twitter / X</label>
-                            <input [(ngModel)]="editForm.twitterUrl" type="text" placeholder="https://x.com/username"
+                            <label for="twitterUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">Twitter / X</label>
+                            <input id="twitterUrl" name="twitterUrl" [(ngModel)]="editForm.twitterUrl" type="text" placeholder="https://x.com/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Facebook</label>
-                            <input [(ngModel)]="editForm.facebookUrl" type="text" placeholder="https://facebook.com/username"
+                            <label for="facebookUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">Facebook</label>
+                            <input id="facebookUrl" name="facebookUrl" [(ngModel)]="editForm.facebookUrl" type="text" placeholder="https://facebook.com/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Dev.to</label>
-                            <input [(ngModel)]="editForm.devToUrl" type="text" placeholder="https://dev.to/username"
+                            <label for="devToUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">Dev.to</label>
+                            <input id="devToUrl" name="devToUrl" [(ngModel)]="editForm.devToUrl" type="text" placeholder="https://dev.to/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Pinterest</label>
-                            <input [(ngModel)]="editForm.pinterestUrl" type="text" placeholder="https://pinterest.com/username"
+                            <label for="pinterestUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">Pinterest</label>
+                            <input id="pinterestUrl" name="pinterestUrl" [(ngModel)]="editForm.pinterestUrl" type="text" placeholder="https://pinterest.com/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">Stack Overflow</label>
-                            <input [(ngModel)]="editForm.stackOverflowUrl" type="text" placeholder="https://stackoverflow.com/users/id/username"
+                            <label for="stackOverflowUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">Stack Overflow</label>
+                            <input id="stackOverflowUrl" name="stackOverflowUrl" [(ngModel)]="editForm.stackOverflowUrl" type="text" placeholder="https://stackoverflow.com/users/id/username"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-zinc-500 mb-1 block">WhatsApp Number</label>
-                            <input [(ngModel)]="editForm.whatsAppUrl" type="text" placeholder="+1234567890"
+                            <label for="whatsAppUrl" class="text-[9px] font-bold text-zinc-500 mb-1 block">WhatsApp Number</label>
+                            <input id="whatsAppUrl" name="whatsAppUrl" [(ngModel)]="editForm.whatsAppUrl" type="text" placeholder="+1234567890"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                     </div>
@@ -342,7 +342,9 @@ export class EditProfileModalComponent implements OnChanges {
             error: (err: any) => {
                 this.isSaving = false;
                 this.cdr.markForCheck();
-                this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+                if (!err.notified) {
+                    this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+                }
             }
         });
     }

@@ -3,19 +3,22 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Skills.DTOs;
 using Portfolio.API.Application.Features.Skills.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.Skills.Services;
 
 public class SkillService : ISkillService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of the SkillService class with the specified unit of work.
     /// </summary>
-    public SkillService(IUnitOfWork unitOfWork)
+    public SkillService(IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <summary>
@@ -24,11 +27,25 @@ public class SkillService : ISkillService
     /// <returns>An enumerable of SkillDto objects ordered by the Skill.Order value.</returns>
     public async Task<IEnumerable<SkillDto>> GetSkillsAsync()
     {
+        var cacheKey = "Skills_All";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<SkillDto>? cachedSkills) && cachedSkills != null)
+        {
+            return cachedSkills;
+        }
+
         var skills = await _unitOfWork.Repository<Skill>()
             .Query()
             .AsNoTracking()
             .ToListAsync();
-        return skills.Select(SkillMapper.ToDto);
+            
+        var result = skills.Select(SkillMapper.ToDto).ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -58,6 +75,9 @@ public class SkillService : ISkillService
         };
         await _unitOfWork.Repository<Skill>().AddAsync(skill);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Skills_All");
+        
         return SkillMapper.ToDto(skill);
     }
 
@@ -76,6 +96,9 @@ public class SkillService : ISkillService
 
         SkillMapper.UpdateEntity(skill, dto);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Skills_All");
+        
         return SkillMapper.ToDto(skill);
     }
 
@@ -92,6 +115,9 @@ public class SkillService : ISkillService
 
         _unitOfWork.Repository<Skill>().Delete(skill);
         await _unitOfWork.CompleteAsync();
+        
+        _cache.Remove("Skills_All");
+        
         return true;
     }
 }

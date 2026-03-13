@@ -12,21 +12,15 @@ export class SkillService {
     private readonly apiUrl = environment.apiUrl;
 
     getSkills() {
-        return this.http.get<SkillEntry[]>(`${this.apiUrl}/skills`).pipe(
-            map(skills => skills.map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID })))
-        );
+        return this.http.get<SkillEntry[]>(`${this.apiUrl}/skills`);
     }
 
     createSkill(skill: SkillEntry) {
-        return this.http.post<SkillEntry>(`${this.apiUrl}/skills`, skill).pipe(
-            map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID }))
-        );
+        return this.http.post<SkillEntry>(`${this.apiUrl}/skills`, skill);
     }
 
     updateSkill(id: string, skill: SkillEntry) {
-        return this.http.put<SkillEntry>(`${this.apiUrl}/skills/${id}`, skill).pipe(
-            map(s => ({ ...s, id: s.id || (s as any).Id || (s as any).ID }))
-        );
+        return this.http.put<SkillEntry>(`${this.apiUrl}/skills/${id}`, skill);
     }
 
     deleteSkill(id: string) {

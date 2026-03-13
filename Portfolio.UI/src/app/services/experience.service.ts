@@ -12,21 +12,15 @@ export class ExperienceService {
     private readonly apiUrl = environment.apiUrl;
 
     getExperiences() {
-        return this.http.get<ExperienceEntry[]>(`${this.apiUrl}/experiences`).pipe(
-            map(exps => exps.map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID })))
-        );
+        return this.http.get<ExperienceEntry[]>(`${this.apiUrl}/experiences`);
     }
 
     createExperience(exp: ExperienceEntry) {
-        return this.http.post<ExperienceEntry>(`${this.apiUrl}/experiences`, exp).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
+        return this.http.post<ExperienceEntry>(`${this.apiUrl}/experiences`, exp);
     }
 
     updateExperience(id: string, exp: ExperienceEntry) {
-        return this.http.put<ExperienceEntry>(`${this.apiUrl}/experiences/${id}`, exp).pipe(
-            map(e => ({ ...e, id: e.id || (e as any).Id || (e as any).ID }))
-        );
+        return this.http.put<ExperienceEntry>(`${this.apiUrl}/experiences/${id}`, exp);
     }
 
     deleteExperience(id: string) {

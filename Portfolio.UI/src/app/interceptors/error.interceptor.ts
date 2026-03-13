@@ -29,9 +29,11 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
                         suggestion: 'Check that backend CORS includes: ' + window.location.origin
                     });
                     handleConnectionError(toast);
+                    (error as any).notified = true;
                 } else {
                     // Use centralized error handling
                     handleGenericError(error, toast, auth, router);
+                    (error as any).notified = true;
                 }
             }
 

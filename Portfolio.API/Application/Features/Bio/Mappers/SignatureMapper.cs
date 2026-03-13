@@ -16,14 +16,14 @@ public static class SignatureMapper
         {
             Id = signature.Id,
             BioId = signature.BioId,
-            Role = signature.Role,
-            Role_Ar = signature.Role_Ar,
-            Name = signature.Name,
-            Name_Ar = signature.Name_Ar,
-            Subtitle = signature.Subtitle,
-            Subtitle_Ar = signature.Subtitle_Ar,
-            VerifiedText = signature.VerifiedText,
-            VerifiedText_Ar = signature.VerifiedText_Ar
+            Role = signature.Role ?? string.Empty,
+            Role_Ar = signature.Role_Ar ?? string.Empty,
+            Name = signature.Name ?? string.Empty,
+            Name_Ar = signature.Name_Ar ?? string.Empty,
+            Subtitle = signature.Subtitle ?? string.Empty,
+            Subtitle_Ar = signature.Subtitle_Ar ?? string.Empty,
+            VerifiedText = signature.VerifiedText ?? string.Empty,
+            VerifiedText_Ar = signature.VerifiedText_Ar ?? string.Empty
         };
     }
 
@@ -37,6 +37,7 @@ public static class SignatureMapper
     {
         return new Signature
         {
+            Id = Guid.Empty,
             BioId = bioId,
             Role = dto.Role,
             Role_Ar = dto.Role_Ar,

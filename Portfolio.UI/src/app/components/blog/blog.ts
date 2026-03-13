@@ -101,7 +101,7 @@ export class BlogComponent implements OnInit {
     // Fetch Posts
     this.blogService.getBlogPosts().subscribe({
       next: (data) => {
-        this.posts.set(data);
+        this.posts.set(data.items);
         this.extractTrendingTopics();
         this.isLoading.set(false);
       },

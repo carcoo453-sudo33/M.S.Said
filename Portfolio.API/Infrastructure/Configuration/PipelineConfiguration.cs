@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace Portfolio.API.Configuration;
 
 public static class PipelineConfiguration
@@ -8,6 +10,12 @@ public static class PipelineConfiguration
     /// <returns>The same <see cref="WebApplication"/> instance after middleware, endpoints, and hubs have been configured.</returns>
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
+        // Use Serilog request logging to suppress verbose default logs and provide clean, single-line summaries.
+        app.UseSerilogRequestLogging(options =>
+        {
+            options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+        });
+
         // Configure the HTTP request pipeline
         app.UseExceptionHandler();
 

@@ -14,11 +14,11 @@ public static class ContactMapper{
         return new ContactDto
         {
             Id = entity.Id,
-            Name = entity.Name,
-            Email = entity.Email,
-            Phone = entity.Phone,
-            Subject = entity.Subject,
-            Message = entity.Message,
+            Name = entity.Name ?? string.Empty,
+            Email = entity.Email ?? string.Empty,
+            Phone = entity.Phone ?? string.Empty,
+            Subject = entity.Subject ?? string.Empty,
+            Message = entity.Message ?? string.Empty,
             SentAt = entity.SentAt,
             IsRead = entity.IsRead,
             CreatedAt = entity.CreatedAt,

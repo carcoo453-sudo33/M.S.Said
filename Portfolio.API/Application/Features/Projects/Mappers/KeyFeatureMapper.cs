@@ -11,10 +11,10 @@ public static class KeyFeatureMapper
         return new KeyFeatureDto
         {
             Id = entity.Id,
-            Title = entity.Title,
-            Title_Ar = entity.Title_Ar,
-            Link = entity.Link,
-            Date = entity.Date,
+            Title = entity.Title ?? string.Empty,
+            Title_Ar = entity.Title_Ar ?? string.Empty,
+            Link = entity.Link ?? string.Empty,
+            Date = entity.Date ?? string.Empty,
             FeatureType = entity.FeatureType
         };
     }

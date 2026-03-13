@@ -50,6 +50,15 @@ public class EmailService : IEmailService
 
             var enableSsl = bool.Parse(smtpSettings["EnableSsl"] ?? "true");
 
+            // Gmail / Standard SMTP logic
+            var isPlaceholder = smtpUsername?.StartsWith("#{") == true || smtpPassword?.StartsWith("#{") == true;
+
+            if (isPlaceholder)
+            {
+                _logger.LogWarning("SMTP placeholders detected ({Username}). Mocking successful email send in development mode.", smtpUsername);
+                return;
+            }
+
             // If SMTP is not configured, log and return
             if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(smtpUsername))
             {

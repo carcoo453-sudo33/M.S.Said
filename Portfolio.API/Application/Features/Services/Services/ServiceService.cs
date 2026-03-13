@@ -3,20 +3,23 @@ using Portfolio.API.Repositories;
 using Portfolio.API.Application.Features.Services.DTOs;
 using Portfolio.API.Application.Features.Services.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.Services.Services;
 
 public class ServiceService : IServiceService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
     /// <summary>
     /// Initializes a new instance of ServiceService with the specified unit of work.
     /// </summary>
     /// <param name="unitOfWork">Unit-of-work used for repository access and transaction control.</param>
-    public ServiceService(IUnitOfWork unitOfWork)
+    public ServiceService(IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     /// <summary>
@@ -26,12 +29,26 @@ public class ServiceService : IServiceService
     /// <returns>A collection of ServiceDto objects representing all services.</returns>
     public async Task<IEnumerable<ServiceDto>> GetServicesAsync(CancellationToken cancellationToken = default)
     {
+        var cacheKey = "Services_All";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<ServiceDto>? cachedServices) && cachedServices != null)
+        {
+            return cachedServices;
+        }
+
         var services = await _unitOfWork.Repository<Service>()
             .Query()
             .AsNoTracking()
             .OrderBy(s => s.Order)
             .ToListAsync(cancellationToken);
-        return services.Select(ServiceMapper.ToDto);
+            
+        var result = services.Select(ServiceMapper.ToDto).ToList();
+
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -66,6 +83,9 @@ public class ServiceService : IServiceService
         };
         await _unitOfWork.Repository<Service>().AddAsync(service);
         await _unitOfWork.CompleteAsync(cancellationToken);
+        
+        _cache.Remove("Services_All");
+        
         return ServiceMapper.ToDto(service);
     }
 
@@ -77,7 +97,9 @@ public class ServiceService : IServiceService
     /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The updated Service represented as a ServiceDto.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when no Service with the specified id exists.</exception>
+    #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<ServiceDto> UpdateServiceAsync(Guid id, ServiceDto dto, CancellationToken cancellationToken = default)
+    #pragma warning restore CS1998
     {
         var service = await _unitOfWork.Repository<Service>().GetByIdAsync(id);
         if (service == null)
@@ -85,6 +107,9 @@ public class ServiceService : IServiceService
 
         ServiceMapper.UpdateEntity(service, dto);
         await _unitOfWork.CompleteAsync(cancellationToken);
+        
+        _cache.Remove("Services_All");
+        
         return ServiceMapper.ToDto(service);
     }
 
@@ -102,9 +127,9 @@ public class ServiceService : IServiceService
 
         _unitOfWork.Repository<Service>().Delete(service);
         await _unitOfWork.CompleteAsync(cancellationToken);
+        
+        _cache.Remove("Services_All");
+        
         return true;
     }
 }
-
-
-

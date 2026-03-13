@@ -43,6 +43,10 @@ public class UploadsController : ControllerBase
         [".jpg", ".jpeg", ".png", ".webp"],
         MaxBytes: 5 * 1024 * 1024 // 5 MB
     );
+    private static readonly FileUploadPolicy EducationImagePolicy = new(
+        [".jpg", ".jpeg", ".png", ".webp"],
+        MaxBytes: 5 * 1024 * 1024 // 5 MB
+    );
 
     /// <summary>
     /// Initializes a new instance of <see cref="UploadsController"/> with the provided hosting environment and logger.
@@ -104,6 +108,15 @@ public class UploadsController : ControllerBase
     [HttpPost("project-image")]
     public async Task<IActionResult> UploadProjectImage(IFormFile file)
         => await ProcessFileUpload(file, "projects", ProjectImagePolicy);
+
+    /// <summary>
+    /// Securely uploads an education-related image (e.g. institution logo or certificate).
+    /// </summary>
+    /// <param name="file">The image file to validate and store.</param>
+    /// <returns>200 OK with the URL to the stored file on success, or a 4xx error response on validation failure.</returns>
+    [HttpPost("education-image")]
+    public async Task<IActionResult> UploadEducationImage(IFormFile file)
+        => await ProcessFileUpload(file, "education", EducationImagePolicy);
 
     /// <summary>
     /// Redirects legacy <c>/api/uploads/{category}/{fileName}</c> requests to the static-file URL

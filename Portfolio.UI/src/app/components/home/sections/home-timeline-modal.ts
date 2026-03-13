@@ -40,41 +40,60 @@ import { ToastService } from '../../../services/toast.service';
                             </button>
                         </div>
                         <div>
-                            <input [(ngModel)]="item.role" [placeholder]="'home.timeline.roleLabel' | translate"
+                            <label [attr.for]="'exp-role-' + i" class="hidden">Role</label>
+                            <input [id]="'exp-role-' + i" [name]="'exp-role-' + i" [(ngModel)]="item.role" [placeholder]="'home.timeline.roleLabel' | translate"
                                 [class]="submitted && !item.role.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                 class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                             <p *ngIf="submitted && !item.role.trim()" class="text-red-500 text-[10px] font-bold mt-1.5 ms-1">{{ 'home.timeline.roleLabel' | translate }} {{ 'common.requiredField' | translate }}</p>
                         </div>
                         <div>
-                            <input [ngModel]="item.role_Ar" (ngModelChange)="item.role_Ar = $event" placeholder="Role / Title (AR)" dir="rtl"
+                            <label [attr.for]="'exp-role-ar-' + i" class="hidden">Role (AR)</label>
+                            <input [id]="'exp-role-ar-' + i" [name]="'exp-role-ar-' + i" [ngModel]="item.role_Ar" (ngModelChange)="item.role_Ar = $event" placeholder="Role / Title (AR)" dir="rtl"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <input [(ngModel)]="item.company" [placeholder]="'home.timeline.companyLabel' | translate"
+                                <label [attr.for]="'exp-company-' + i" class="hidden">Company</label>
+                                <input [id]="'exp-company-' + i" [name]="'exp-company-' + i" [(ngModel)]="item.company" [placeholder]="'home.timeline.companyLabel' | translate"
                                     [class]="submitted && !item.company.trim() ? 'border-red-500 ring-2 ring-red-500/30' : 'border-zinc-200 dark:border-zinc-700 focus:ring-red-500/30 focus:border-red-500'"
                                     class="w-full px-4 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 transition-all border">
                                 <p *ngIf="submitted && !item.company.trim()" class="text-red-500 text-[10px] font-bold mt-1 ms-1">{{ 'home.timeline.required' | translate }}</p>
                             </div>
                             <div>
-                                <input [ngModel]="item.company_Ar" (ngModelChange)="item.company_Ar = $event" placeholder="Company (AR)" dir="rtl"
+                                <label [attr.for]="'exp-company-ar-' + i" class="hidden">Company (AR)</label>
+                                <input [id]="'exp-company-ar-' + i" [name]="'exp-company-ar-' + i" [ngModel]="item.company_Ar" (ngModelChange)="item.company_Ar = $event" placeholder="Company (AR)" dir="rtl"
                                     class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <input [(ngModel)]="item.location" [placeholder]="'home.timeline.locationLabel' | translate"
-                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                            <input [ngModel]="item.location_Ar" (ngModelChange)="item.location_Ar = $event" placeholder="Location (AR)" dir="rtl"
+                            <div>
+                                <label [attr.for]="'exp-location-' + i" class="hidden">Location</label>
+                                <input [id]="'exp-location-' + i" [name]="'exp-location-' + i" [(ngModel)]="item.location" [placeholder]="'home.timeline.locationLabel' | translate"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                            </div>
+                            <div>
+                                <label [attr.for]="'exp-location-ar-' + i" class="hidden">Location (AR)</label>
+                                <input [id]="'exp-location-ar-' + i" [name]="'exp-location-ar-' + i" [ngModel]="item.location_Ar" (ngModelChange)="item.location_Ar = $event" placeholder="Location (AR)" dir="rtl"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label [attr.for]="'exp-duration-' + i" class="hidden">Duration</label>
+                            <input [id]="'exp-duration-' + i" [name]="'exp-duration-' + i" [(ngModel)]="item.duration" [placeholder]="'home.timeline.durationLabel' | translate"
                                 class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
                         </div>
-                        <input [(ngModel)]="item.duration" [placeholder]="'home.timeline.durationLabel' | translate"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all">
-                        <textarea [(ngModel)]="item.description" placeholder="Description (EN)" rows="2"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
-                        <textarea [ngModel]="item.description_Ar" (ngModelChange)="item.description_Ar = $event" placeholder="Description (AR)" rows="2" dir="rtl"
-                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                        <div>
+                            <label [attr.for]="'exp-desc-' + i" class="hidden">Description</label>
+                            <textarea [id]="'exp-desc-' + i" [name]="'exp-desc-' + i" [(ngModel)]="item.description" placeholder="Description (EN)" rows="2"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label [attr.for]="'exp-desc-ar-' + i" class="hidden">Description (AR)</label>
+                            <textarea [id]="'exp-desc-ar-' + i" [name]="'exp-desc-ar-' + i" [ngModel]="item.description_Ar" (ngModelChange)="item.description_Ar = $event" placeholder="Description (AR)" rows="2" dir="rtl"
+                                class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 transition-all resize-none"></textarea>
+                        </div>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" [(ngModel)]="item.isCurrent" class="w-4 h-4 rounded border-zinc-300 text-red-600 focus:ring-red-500">
+                            <input [id]="'exp-current-' + i" [name]="'exp-current-' + i" type="checkbox" [(ngModel)]="item.isCurrent" class="w-4 h-4 rounded border-zinc-300 text-red-600 focus:ring-red-500">
                             <span class="text-xs text-zinc-500">{{ 'home.timeline.currentPosition' | translate }}</span>
                         </label>
                     </div>

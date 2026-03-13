@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BlogPost } from '../models';
+import { BlogPost, PagedResult } from '../models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -10,8 +10,11 @@ export class BlogService {
     private http = inject(HttpClient);
     private apiUrl = environment.apiUrl;
 
-    getBlogPosts() {
-        return this.http.get<BlogPost[]>(`${this.apiUrl}/blog`);
+
+    getBlogPosts(page: number = 1, pageSize: number = 100) {
+        return this.http.get<PagedResult<BlogPost>>(`${this.apiUrl}/blog`, {
+            params: { page: page.toString(), pageSize: pageSize.toString() }
+        });
     }
 
     getBlogPost(id: string) {

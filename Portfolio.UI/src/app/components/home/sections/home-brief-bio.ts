@@ -104,7 +104,9 @@ export class HomeBriefBioComponent {
             },
             error: (err: any) => {
                 this.isSaving = false;
-                this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+                if (!err.notified) {
+                    this.toast.error('Failed to save: ' + (err.error?.message || err.statusText || 'Server error'));
+                }
             }
         });
     }

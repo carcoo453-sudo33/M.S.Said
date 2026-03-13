@@ -20,32 +20,44 @@ import { ContactMessage } from '../../../models';
             <form (ngSubmit)="onSubmit()" #contactForm="ngForm" class="space-y-10 relative z-10">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div class="space-y-4">
-                        <label
+                        <label for="name"
                             class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.name' | translate }}</label>
-                        <input type="text" name="name" [(ngModel)]="model.name" required [placeholder]="'contact.form.namePlaceholder' | translate"
+                        <input id="name" type="text" name="name" [(ngModel)]="model.name" required [placeholder]="'contact.form.namePlaceholder' | translate"
+                            autocomplete="name"
                             class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all shadow-sm">
                     </div>
                     <div class="space-y-4">
-                        <label
+                        <label for="email"
                             class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.email' | translate }}</label>
-                        <input type="email" name="email" [(ngModel)]="model.email" required
+                        <input id="email" type="email" name="email" [(ngModel)]="model.email" required
                             [placeholder]="'contact.form.emailPlaceholder' | translate"
+                            autocomplete="email"
+                            class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all shadow-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-4">
+                        <label for="phone"
+                            class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.phone' | translate }}</label>
+                        <input id="phone" type="text" name="phone" [(ngModel)]="model.phone"
+                            [placeholder]="'contact.form.phonePlaceholder' | translate"
+                            autocomplete="tel"
+                            class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all shadow-sm">
+                    </div>
+                    <div class="space-y-4">
+                        <label for="subject"
+                            class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.subject' | translate }}</label>
+                        <input id="subject" type="text" name="subject" [(ngModel)]="model.subject" required
+                            [placeholder]="'contact.form.subjectPlaceholder' | translate"
                             class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all shadow-sm">
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <label
-                        class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.subject' | translate }}</label>
-                    <input type="text" name="subject" [(ngModel)]="model.subject" required
-                        [placeholder]="'contact.form.subjectPlaceholder' | translate"
-                        class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all shadow-sm">
-                </div>
-
-                <div class="space-y-4">
-                    <label
+                    <label for="body"
                         class="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.5em] ml-6 italic">{{ 'contact.form.message' | translate }}</label>
-                    <textarea name="body" [(ngModel)]="model.message" required rows="6"
+                    <textarea id="body" name="body" [(ngModel)]="model.message" required rows="6"
                         [placeholder]="'contact.form.messagePlaceholder' | translate"
                         class="w-full bg-white dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 rounded-xl px-8 py-8 text-[10px] font-black uppercase tracking-[0.3em] dark:text-white text-zinc-900 placeholder-zinc-300 dark:placeholder-zinc-700 focus:outline-none focus:border-red-600 transition-all resize-none shadow-sm"></textarea>
                 </div>
@@ -76,7 +88,7 @@ import { ContactMessage } from '../../../models';
   `
 })
 export class ContactFormComponent {
-    @Input() model: ContactMessage = { name: '', email: '', subject: '', message: '' };
+    @Input() model: ContactMessage = { name: '', email: '', phone: '', subject: '', message: '' };
     @Input() loading = false;
     @Input() success = false;
     @Output() submit = new EventEmitter<void>();

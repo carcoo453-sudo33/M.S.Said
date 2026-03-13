@@ -1,6 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace Portfolio.API.Application.Common;
@@ -16,6 +19,7 @@ public class MetadataExtractor
     private const string MediumDomain = "medium.com";
     private const string DevToDomain = "dev.to";
     private const string LinkedInDomain = "linkedin.com";
+    private const string GitHubDomain = "github.com";
 
     /// <summary>
     /// Initializes a new instance of MetadataExtractor and configures the internal HttpClient with a 10-second timeout and a default User-Agent header.
@@ -26,7 +30,11 @@ public class MetadataExtractor
         {
             Timeout = TimeSpan.FromSeconds(10)
         };
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+        _httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
+        _httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+        _httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+        _httpClient.DefaultRequestHeaders.Add("Pragma", "no-cache");
     }
 
     /// <summary>
@@ -44,7 +52,7 @@ public class MetadataExtractor
         ValidateUrl(url);
         try
         {
-            var platformType = MetadataExtractor.DetectPlatformType(url);
+            var platformType = DetectPlatformType(url);
             var html = await FetchHtmlAsync(url);
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -116,6 +124,9 @@ public class MetadataExtractor
         if (host.Equals(LinkedInDomain, StringComparison.OrdinalIgnoreCase) ||
             host.EndsWith($".{LinkedInDomain}", StringComparison.OrdinalIgnoreCase))
             return "LinkedIn";
+        if (host.Equals(GitHubDomain, StringComparison.OrdinalIgnoreCase) ||
+            host.EndsWith($".{GitHubDomain}", StringComparison.OrdinalIgnoreCase))
+            return "GitHub";
 
         return "Blog";
     }
@@ -256,6 +267,7 @@ public class MetadataExtractor
         }
         return false;
     }
+
     /// <summary>
     /// Fetches the HTML content from the specified URL using a short (8 second) request timeout.
     /// </summary>
@@ -268,6 +280,19 @@ public class MetadataExtractor
         try
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            
+            // Add common browser headers for LinkedIn
+            if (DetectPlatformType(url) == "LinkedIn")
+            {
+                _httpClient.DefaultRequestHeaders.Referrer = new Uri("https://www.google.com/"); // Common referrer
+                _httpClient.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+                _httpClient.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+                _httpClient.DefaultRequestHeaders.Add("Sec-Fetch-Site", "none");
+                _httpClient.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1");
+                _httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
+                _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            }
+
             var response = await _httpClient.GetAsync(url, cts.Token);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();

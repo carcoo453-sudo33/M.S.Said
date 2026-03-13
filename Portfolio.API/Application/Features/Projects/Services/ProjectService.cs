@@ -10,6 +10,7 @@ using Portfolio.API.Application.Common;
 using Portfolio.API.Application.Features.Notifications.Services;
 using Portfolio.API.Helpers;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Portfolio.API.Application.Features.Projects.Services;
 
@@ -17,6 +18,7 @@ public class ProjectService : IProjectService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly INotificationService _notificationService;
+    private readonly IMemoryCache _cache;
     private readonly ILogger<ProjectService> _logger;
     private readonly GetProjectsQueryHandler _getProjectsQueryHandler;
     private readonly GetProjectBySlugQueryHandler _getProjectBySlugQueryHandler;
@@ -27,6 +29,7 @@ public class ProjectService : IProjectService
     public ProjectService(
         IUnitOfWork unitOfWork,
         INotificationService notificationService,
+        IMemoryCache cache,
         ILogger<ProjectService> logger,
         GetProjectsQueryHandler getProjectsQueryHandler,
         GetProjectBySlugQueryHandler getProjectBySlugQueryHandler,
@@ -36,6 +39,7 @@ public class ProjectService : IProjectService
     {
         _unitOfWork = unitOfWork;
         _notificationService = notificationService;
+        _cache = cache;
         _logger = logger;
         
         _getProjectsQueryHandler = getProjectsQueryHandler;
@@ -53,7 +57,20 @@ public class ProjectService : IProjectService
     /// <returns>A paged result containing the list of matching project DTOs.</returns>
     public async Task<PagedResult<ProjectDto>> GetProjectsAsync(ProjectQueryDto parameters, CancellationToken cancellationToken = default)
     {
-        return await _getProjectsQueryHandler.HandleAsync(parameters, cancellationToken);
+        var cacheKey = $"Projects_Page{parameters.Page}_Size{parameters.PageSize}_Cat{parameters.Category}_Search{parameters.Search}_Sort{parameters.SortBy}_{parameters.SortDirection}";
+        if (_cache.TryGetValue(cacheKey, out PagedResult<ProjectDto>? cachedResult) && cachedResult != null)
+        {
+            return cachedResult;
+        }
+
+        var result = await _getProjectsQueryHandler.HandleAsync(parameters, cancellationToken);
+        
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -64,6 +81,12 @@ public class ProjectService : IProjectService
     /// <returns>ProjectDto for the matching project, or null if not found.</returns>
     public async Task<ProjectDto?> GetProjectBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
+        var cacheKey = $"Project_{slug}";
+        if (_cache.TryGetValue(cacheKey, out ProjectDto? cachedProject) && cachedProject != null)
+        {
+            return cachedProject;
+        }
+
         var project = await _unitOfWork.Repository<Project>()
             .Query()
             .AsNoTracking()
@@ -79,23 +102,14 @@ public class ProjectService : IProjectService
             return null;
         }
 
-        // Fire-and-forget view tracking and notification to avoid blocking the response
-        // Using Task.Run with a new scope is safer to avoid issues with disposed scoped services
-        _ = Task.Run(async () =>
+        var result = ProjectMapper.ToResponse(project);
+        
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
         {
-            try
-            {
-                // We need a separate scope for background work to avoid using the disposed main request scope
-                // Since this is a simple increment, we can just call TrackProjectViewAsync which handles its own scope or we can create one here
-                await TrackProjectViewAsync(slug, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in background project view tracking for {Slug}", slug);
-            }
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
         });
 
-        return ProjectMapper.ToResponse(project);
+        return result;
     }
 
 
@@ -106,7 +120,20 @@ public class ProjectService : IProjectService
     /// <returns>A list of featured project DTOs.</returns>
     public async Task<List<ProjectDto>> GetFeaturedProjectsAsync(CancellationToken cancellationToken = default)
     {
-        return await _getFeaturedProjectsQueryHandler.HandleAsync(cancellationToken);
+        var cacheKey = "FeaturedProjects";
+        if (_cache.TryGetValue(cacheKey, out List<ProjectDto>? cachedProjects) && cachedProjects != null)
+        {
+            return cachedProjects;
+        }
+
+        var result = await _getFeaturedProjectsQueryHandler.HandleAsync(cancellationToken);
+        
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        });
+
+        return result;
     }
 
     /// <summary>
@@ -117,7 +144,20 @@ public class ProjectService : IProjectService
     /// <returns>A list of ProjectDto representing related projects.</returns>
     public async Task<List<ProjectDto>> GetRelatedProjectsAsync(string slug, CancellationToken cancellationToken = default)
     {
-        return await _getRelatedProjectsQueryHandler.HandleAsync(slug, cancellationToken);
+        var cacheKey = $"RelatedProjects_{slug}";
+        if (_cache.TryGetValue(cacheKey, out List<ProjectDto>? cachedProjects) && cachedProjects != null)
+        {
+            return cachedProjects;
+        }
+
+        var result = await _getRelatedProjectsQueryHandler.HandleAsync(slug, cancellationToken);
+        
+        _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        });
+
+        return result;
     }
 
 
@@ -166,7 +206,11 @@ public class ProjectService : IProjectService
         await _unitOfWork.Repository<Project>().AddAsync(project);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
-
+        // Invalidate relevant caches
+        _cache.Remove("FeaturedProjects");
+        // For paged results, we'd ideally clear all "Projects_Page*" keys, 
+        // but since IMemoryCache doesn't support pattern clearing easily, 
+        // we'll rely on the 10-minute expiration for those, or clear the main featured list.
         _logger.LogInformation("Project created successfully: {ProjectId}", project.Id);
         return ProjectMapper.ToResponse(project);
     }
@@ -216,6 +260,11 @@ public class ProjectService : IProjectService
         _unitOfWork.Repository<Project>().Update(project);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
+        // Invalidate relevant caches
+        _cache.Remove("FeaturedProjects");
+        _cache.Remove($"Project_{project.Slug}");
+        _cache.Remove($"RelatedProjects_{project.Slug}");
+
         _logger.LogInformation("Project updated successfully: {ProjectId}", id);
         return ProjectMapper.ToResponse(project);
     }
@@ -241,6 +290,11 @@ public class ProjectService : IProjectService
         _unitOfWork.Repository<Project>().Delete(project);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
+        // Invalidate relevant caches
+        _cache.Remove("FeaturedProjects");
+        _cache.Remove($"Project_{project.Slug}");
+        _cache.Remove($"RelatedProjects_{project.Slug}");
+
         _logger.LogInformation("Project deleted successfully: {ProjectId}", id);
         return true;
     }
@@ -260,16 +314,27 @@ public class ProjectService : IProjectService
         project.UpdatedAt = DateTime.UtcNow;
         await _unitOfWork.CompleteAsync(cancellationToken);
 
-        await _notificationService.CreateNotificationAsync(
-            NotificationTypeConstants.ProjectView,
-            "Project Viewed",
-            $"Project '{project.Title}' was viewed",
-            $"/projects/{project.Slug}",
-            "eye",
-            project.Id.ToString(),
-            "Project",
-            "Anonymous"
-        );
+        // Offload notification to background task
+        _ = Task.Run(async () => 
+        {
+            try 
+            {
+                await _notificationService.CreateNotificationAsync(
+                    NotificationTypeConstants.ProjectView,
+                    "Project Viewed",
+                    $"Project '{project.Title}' was viewed",
+                    $"/projects/{project.Slug}",
+                    "eye",
+                    project.Id.ToString(),
+                    "Project",
+                    "Anonymous"
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Background project view notification failed");
+            }
+        });
 
         return true;
     }

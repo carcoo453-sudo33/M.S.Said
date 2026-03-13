@@ -9,17 +9,17 @@ public class SignatureDto
     
     public Guid BioId { get; set; }
     
-    public string? Role { get; set; }
-    public string? Role_Ar { get; set; }
+    public string Role { get; set; } = string.Empty;
+    public string Role_Ar { get; set; } = string.Empty;
     
-    public string? Name { get; set; }
-    public string? Name_Ar { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Name_Ar { get; set; } = string.Empty;
     
-    public string? Subtitle { get; set; }
-    public string? Subtitle_Ar { get; set; }
+    public string Subtitle { get; set; } = string.Empty;
+    public string Subtitle_Ar { get; set; } = string.Empty;
     
-    public string? VerifiedText { get; set; }
-    public string? VerifiedText_Ar { get; set; }
+    public string VerifiedText { get; set; } = string.Empty;
+    public string VerifiedText_Ar { get; set; } = string.Empty;
 }
 
 

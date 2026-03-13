@@ -17,14 +17,14 @@ public static class NotificationMapper
             Type = entity.Type.ToString(),
             Title = entity.Title,
             Message = entity.Message,
-            Link = entity.Link,
-            Icon = entity.Icon,
+            Link = entity.Link ?? string.Empty,
+            Icon = entity.Icon ?? string.Empty,
             IsRead = entity.IsRead,
             CreatedAt = entity.CreatedAt,
-            RelatedEntityId = entity.RelatedEntityId,
-            RelatedEntityType = entity.RelatedEntityType,
-            SenderName = entity.SenderName,
-            SenderEmail = entity.SenderEmail
+            RelatedEntityId = entity.RelatedEntityId ?? string.Empty,
+            RelatedEntityType = entity.RelatedEntityType ?? string.Empty,
+            SenderName = entity.SenderName ?? string.Empty,
+            SenderEmail = entity.SenderEmail ?? string.Empty
         };
     }
 }
