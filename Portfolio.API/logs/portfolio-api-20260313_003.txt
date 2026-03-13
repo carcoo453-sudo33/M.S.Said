@@ -724,3 +724,13 @@ Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: The database operati
 2026-03-13 20:32:14.137 +02:00 [INF] HTTP GET /hubs/notifications responded 101 in 62259.1823 ms
 2026-03-13 20:32:14.154 +02:00 [INF] HTTP OPTIONS /hubs/notifications/negotiate responded 204 in 0.0584 ms
 2026-03-13 20:32:14.193 +02:00 [INF] HTTP POST /hubs/notifications/negotiate responded 200 in 0.4125 ms
+2026-03-13 20:33:28.990 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.0741 ms
+2026-03-13 20:33:29.278 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 276.4559 ms
+2026-03-13 20:33:40.037 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.0453 ms
+2026-03-13 20:33:40.102 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 11.5927 ms
+2026-03-13 20:34:13.195 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.0507 ms
+2026-03-13 20:34:13.314 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 111.8554 ms
+2026-03-13 20:35:35.438 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.1048 ms
+2026-03-13 20:35:37.377 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 49.9239 ms
+2026-03-13 20:35:42.954 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.0510 ms
+2026-03-13 20:35:45.274 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 0.7857 ms
