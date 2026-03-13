@@ -86,8 +86,11 @@ export class HomeComponent implements OnInit {
                 }
             },
             error: (err: any) => {
-                console.error('❌ Failed to load bio:', err);
-                // Toast is shown by error interceptor
+                console.error('❌ Failed to load bio:', {
+                    status: err.status,
+                    message: err.message,
+                    url: err.url
+                });
             }
         });
         
@@ -98,7 +101,12 @@ export class HomeComponent implements OnInit {
                 console.log('✅ Services loaded successfully');
             },
             error: (err: any) => {
-                console.error('❌ Failed to load services:', err);
+                console.error('❌ Failed to load services:', {
+                    status: err.status,
+                    message: err.message,
+                    url: err.url,
+                    error: err.error
+                });
                 // Toast is shown by error interceptor
             }
         });
@@ -110,8 +118,11 @@ export class HomeComponent implements OnInit {
                 console.log('✅ Skills loaded successfully');
             },
             error: (err: any) => {
-                console.error('❌ Failed to load skills:', err);
-                // Toast is shown by error interceptor
+                console.error('❌ Failed to load skills:', {
+                    status: err.status,
+                    message: err.message,
+                    url: err.url
+                });
             }
         });
         
@@ -122,8 +133,11 @@ export class HomeComponent implements OnInit {
                 console.log('✅ Experiences loaded successfully');
             },
             error: (err: any) => {
-                console.error('❌ Failed to load experiences:', err);
-                // Toast is shown by error interceptor
+                console.error('❌ Failed to load experiences:', {
+                    status: err.status,
+                    message: err.message,
+                    url: err.url
+                });
             }
         });
         
@@ -134,8 +148,11 @@ export class HomeComponent implements OnInit {
                 console.log('✅ Featured projects loaded successfully');
             },
             error: (err: any) => {
-                console.error('❌ Failed to load featured projects:', err);
-                // Toast is shown by error interceptor
+                console.error('❌ Failed to load featured projects:', {
+                    status: err.status,
+                    message: err.message,
+                    url: err.url
+                });
             }
         });
     }
