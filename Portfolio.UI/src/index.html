@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Dev.M.Said - Full Stack Developer Portfolio</title>
+  <title>M.Said - Full Stack Developer Portfolio</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Dev.M.Said - Full Stack Developer specializing in .NET, Angular, and modern web technologies">
+  <meta name="description" content="M.Said - Full Stack Developer specializing in .NET, Angular, and modern web technologies">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -26,15 +26,22 @@
 </head>
 
 <body>
-  <!-- Theme init: runs synchronously before paint to prevent FOUC -->
+  <!-- Theme and RTL init: runs synchronously before paint to prevent FOUC -->
   <script>
     (function () {
       try {
         var saved = localStorage.getItem('portfolio-theme');
         var isDark = saved ? saved === 'dark' : true;
         document.documentElement.classList.add(isDark ? 'dark' : 'light');
+        
+        // Initialize RTL direction
+        var savedLang = localStorage.getItem('language') || 'en';
+        document.documentElement.setAttribute('lang', savedLang);
+        document.documentElement.setAttribute('dir', savedLang === 'ar' ? 'rtl' : 'ltr');
       } catch (e) {
         document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('lang', 'en');
+        document.documentElement.setAttribute('dir', 'ltr');
       }
     })();
   </script>
