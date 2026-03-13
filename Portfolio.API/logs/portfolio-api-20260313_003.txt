@@ -715,3 +715,12 @@ Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: The database operati
 2026-03-13 20:25:40.031 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 0.5292 ms
 2026-03-13 20:26:15.505 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.2519 ms
 2026-03-13 20:26:16.193 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 104.4381 ms
+2026-03-13 20:28:03.136 +02:00 [INF] HTTP GET /hubs/notifications responded 101 in 201805.6493 ms
+2026-03-13 20:28:03.157 +02:00 [INF] HTTP OPTIONS /hubs/notifications/negotiate responded 204 in 0.0645 ms
+2026-03-13 20:28:03.171 +02:00 [INF] HTTP POST /hubs/notifications/negotiate responded 200 in 0.4508 ms
+2026-03-13 20:31:11.629 +02:00 [INF] HTTP GET /hubs/notifications responded 101 in 188444.9302 ms
+2026-03-13 20:31:11.844 +02:00 [INF] HTTP OPTIONS /hubs/notifications/negotiate responded 204 in 0.0641 ms
+2026-03-13 20:31:11.854 +02:00 [INF] HTTP POST /hubs/notifications/negotiate responded 200 in 0.3716 ms
+2026-03-13 20:32:14.137 +02:00 [INF] HTTP GET /hubs/notifications responded 101 in 62259.1823 ms
+2026-03-13 20:32:14.154 +02:00 [INF] HTTP OPTIONS /hubs/notifications/negotiate responded 204 in 0.0584 ms
+2026-03-13 20:32:14.193 +02:00 [INF] HTTP POST /hubs/notifications/negotiate responded 200 in 0.4125 ms

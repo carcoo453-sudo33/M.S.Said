@@ -112,11 +112,17 @@ public class BioService : IBioService
             _logger.LogInformation("Bio saved successfully. Changes: {Changes}", saveResult);
 
             // Recalculate dynamic statistics sequentially after update
-            bio.YearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
-            bio.ProjectsCompleted = await GetProjectsCompletedCountAsync();
-            bio.CodeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
+            var yearsOfExperience = await CalculateYearsOfExperienceAsync(bio.CareerStartDate);
+            var projectsCompleted = await GetProjectsCompletedCountAsync();
+            var codeCommits = await GetGitHubCommitsAsync(bio.GitHubUsername);
 
-            return BioMapper.ToDto(bio);
+            // Create a DTO with the updated statistics without modifying the tracked entity
+            var bioDto = BioMapper.ToDto(bio);
+            bioDto.YearsOfExperience = yearsOfExperience;
+            bioDto.ProjectsCompleted = projectsCompleted;
+            bioDto.CodeCommits = codeCommits;
+
+            return bioDto;
         }
         catch (Exception ex)
         {
