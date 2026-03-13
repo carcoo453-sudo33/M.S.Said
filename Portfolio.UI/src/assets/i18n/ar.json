@@ -298,7 +298,18 @@
     "sidebar": {
       "changelog": "سجل التغييرات",
       "metrics": "المقاييس",
-      "related": "مشاريع ذات صلة"
+      "related": "مشاريع ذات صلة",
+      "details": "تفاصيل المشروع",
+      "category": "الفئة",
+      "status": "الحالة",
+      "type": "النوع",
+      "duration": "المدة",
+      "company": "الشركة",
+      "language": "اللغة",
+      "architecture": "الهندسة",
+      "developmentMethod": "منهجية التطوير",
+      "projectUrl": "رابط المشروع",
+      "gitHubUrl": "رابط GitHub"
     }
   },
   "blog": {

@@ -289,6 +289,12 @@ public class MetadataExtractor
             var owner = match.Groups[1].Value;
             var repo = match.Groups[2].Value.Replace(".git", "");
             
+            // Set title to repository name if not already set or if it's the generic GitHub page title
+            if (string.IsNullOrEmpty(metadata.Title) || metadata.Title.Contains("GitHub") || metadata.Title.EndsWith("· GitHub"))
+            {
+                metadata.Title = repo;
+            }
+            
             // Try fetching from docs folder (common convention) - Priority 1
             metadata.KeyFeatures = await FetchAndParseListAsync(owner, repo, "docs/key-features.md", line => new Portfolio.API.Application.Features.Projects.DTOs.KeyFeatureCreateDto { Title = line, FeatureType = Portfolio.API.Domain.Enums.FeatureType.Added });
             metadata.Responsibilities = await FetchAndParseListAsync(owner, repo, "docs/responsibilities.md", line => new Portfolio.API.Application.Features.Projects.DTOs.ResponsibilityCreateDto { Title = line });
@@ -314,20 +320,20 @@ public class MetadataExtractor
 
         // 1. Extract Title (First # header)
         var titleMatch = Regex.Match(readme, @"^#\s+(.+)$", RegexOptions.Multiline);
-        if (titleMatch.Success && (string.IsNullOrEmpty(metadata.Title) || metadata.Title == "Untitled"))
+        if (titleMatch.Success && (string.IsNullOrEmpty(metadata.Title) || metadata.Title == "Untitled" || metadata.Title.Contains("GitHub")))
         {
             metadata.Title = titleMatch.Groups[1].Value.Trim();
         }
 
-        // 2. Extract Description (Content between title and next header)
-        if (string.IsNullOrEmpty(metadata.Description))
+        // 2. Extract Description (Content between title and next header) - PRIORITY: Override generic GitHub description
+        var descriptionMatch = Regex.Match(readme, @"^#\s+.+?\n\n?([^#\n][\s\S]+?)(?=\n#|$)", RegexOptions.Multiline);
+        if (descriptionMatch.Success)
         {
-            var descriptionMatch = Regex.Match(readme, @"^#\s+.+?\n\n?([^#\n][\s\S]+?)(?=\n#|$)", RegexOptions.Multiline);
-            if (descriptionMatch.Success)
-            {
-                metadata.Description = descriptionMatch.Groups[1].Value.Trim();
-                if (metadata.Description.Length > 2000) metadata.Description = metadata.Description.Substring(0, 1997) + "...";
-            }
+            var extractedDesc = descriptionMatch.Groups[1].Value.Trim();
+            if (extractedDesc.Length > 2000) extractedDesc = extractedDesc.Substring(0, 1997) + "...";
+            
+            // Always use README description if found, as it's more accurate than generic GitHub page description
+            metadata.Description = extractedDesc;
         }
 
         // 3. Extract Tags/Tech Stack

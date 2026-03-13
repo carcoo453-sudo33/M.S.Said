@@ -11,9 +11,9 @@
         </div>
 
         <!-- Two Column Layout: Main Content + Sidebar -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-16">
             <!-- Main Content Area (Left Side) -->
-            <div class="lg:col-span-8 space-y-16 lg:space-y-24">
+            <div class="md:col-span-8 space-y-16 md:space-y-24">
                 <!-- Gallery Skeleton -->
                 <app-project-details-gallery-skeleton></app-project-details-gallery-skeleton>
 
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Sidebar (Right Side) -->
-            <div class="lg:col-span-4 space-y-8">
+            <div class="md:col-span-4 space-y-8">
                 <!-- Features Skeleton -->
                 <app-project-details-features-skeleton></app-project-details-features-skeleton>
                 
@@ -55,9 +55,9 @@
         </div>
 
         <!-- Two Column Layout: Main Content + Sidebar -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-16">
-            <!-- Main Content Area (Left Side) - lg:col-span-8 -->
-            <div class="lg:col-span-8 space-y-16 lg:space-y-24">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-16">
+            <!-- Main Content Area (Left Side) - md:col-span-8 -->
+            <div class="md:col-span-8 space-y-16 md:space-y-24">
 
                 <!-- Featured Media & Actions -->
                 <app-project-details-gallery 
@@ -79,12 +79,9 @@
                 </app-project-details-interactions>
             </div>
 
-            <!-- Sidebar (Right Side) - lg:col-span-4 -->
-            <div class="lg:col-span-4">
-                <!-- Features & Responsibilities -->
-                <app-project-details-features [project]="project()"></app-project-details-features>
-                
-                <!-- Case Study Sections (Changelog, Metrics, Related) -->
+            <!-- Sidebar (Right Side) - md:col-span-4 -->
+            <div class="md:col-span-4">
+                <!-- Main Sidebar Container: Features, Responsibilities, Changelog -->
                 <app-project-details-sidebar [project]="project()"></app-project-details-sidebar>
             </div>
         </div>

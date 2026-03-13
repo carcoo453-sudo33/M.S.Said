@@ -44,7 +44,7 @@ import { environment } from '../../../../../environments/environment';
                 <!-- Gallery Upload Section -->
                 <div class="col-span-2">
                     <label for="gallery-images-upload-form" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">
-                        Gallery Images (Max 10)
+                        Gallery Images (Max 15)
                         <span class="text-zinc-500 font-normal normal-case tracking-normal ml-2">- For project details page</span>
                     </label>
                     <label for="gallery-images-upload-form" [class.opacity-50]="isUploadingGallery" [class.pointer-events-none]="isUploadingGallery"
@@ -57,22 +57,44 @@ import { environment } from '../../../../../environments/environment';
                         <input id="gallery-images-upload-form" name="gallery-images-upload-form" type="file" accept="image/*" multiple (change)="onGalleryFilesSelected($event)" class="hidden">
                     </label>
 
-                    <!-- Gallery Preview Grid -->
-                    <div *ngIf="galleryImages.length > 0" class="mt-3 grid grid-cols-4 gap-2">
+                    <!-- Gallery List/Manage (New Detailed View) -->
+                    <div *ngIf="galleryImages.length > 0" class="mt-6 space-y-4">
                         <div *ngFor="let img of galleryImages; let i = index"
-                            class="relative group aspect-square rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
-                            <img [src]="getFullImageUrl(img)" alt="Gallery image {{ i + 1 }}" class="w-full h-full object-cover">
-                            <button (click)="removeGalleryImage(i)" type="button"
-                                class="absolute top-1 right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <lucide-icon [img]="XIcon" class="w-3 h-3 text-white"></lucide-icon>
-                            </button>
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1">
-                                <span class="text-[8px] text-white font-bold">{{ i + 1 }}</span>
+                            class="flex items-start gap-4 p-4 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 group">
+                            <!-- Thumbnail -->
+                            <div class="w-24 aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 shrink-0">
+                                <img [src]="getFullImageUrl(img.imageUrl)" class="w-full h-full object-cover">
                             </div>
+
+                            <!-- Details -->
+                            <div class="flex-1 grid grid-cols-2 gap-3">
+                                <div class="col-span-1">
+                                    <label class="text-[9px] font-bold uppercase tracking-widest text-zinc-400 mb-1 block">Title</label>
+                                    <input [(ngModel)]="img.title" placeholder="Image title"
+                                        class="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs">
+                                </div>
+                                <div class="col-span-1">
+                                    <label class="text-[9px] font-bold uppercase tracking-widest text-zinc-400 mb-1 block">Type</label>
+                                    <select [(ngModel)]="img.type" (ngModelChange)="onGalleryImagesChanged()"
+                                        class="w-full px-3 py-1.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs">
+                                        <option [value]="0">Real View</option>
+                                        <option [value]="1">Base Details</option>
+                                        <option [value]="2">Wireframe</option>
+                                        <option [value]="3">Bug Fix</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <button (click)="removeGalleryImage(i)" type="button"
+                                class="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all">
+                                <lucide-icon [img]="XIcon" class="w-4 h-4"></lucide-icon>
+                            </button>
                         </div>
                     </div>
+
                     <p *ngIf="galleryImages.length > 0" class="text-[10px] text-zinc-400 mt-2">
-                        {{ galleryImages.length }} / 10 images uploaded
+                        {{ galleryImages.length }} images in gallery
                     </p>
                 </div>
             </div>
@@ -86,15 +108,19 @@ export class ProjectFormImagesComponent {
     private readonly cdr = inject(ChangeDetectorRef);
 
     @Input() imageUrl: string | undefined = '';
-    @Input() galleryImages: string[] = [];
+    @Input() galleryImages: any[] = [];
     @Output() imageUrlChange = new EventEmitter<string>();
-    @Output() galleryImagesChange = new EventEmitter<string[]>();
+    @Output() galleryImagesChange = new EventEmitter<any[]>();
 
     UploadIcon = Upload;
     ImageIcon = Image;
     XIcon = X;
     isUploading = false;
     isUploadingGallery = false;
+
+    onGalleryImagesChanged() {
+        this.galleryImagesChange.emit(this.galleryImages);
+    }
 
     onImageFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -156,8 +182,8 @@ export class ProjectFormImagesComponent {
         }
 
         const files = Array.from(input.files);
-        if (this.galleryImages.length + files.length > 10) {
-            this.toast.error('Maximum 10 gallery images allowed');
+        if (this.galleryImages.length + files.length > 15) {
+            this.toast.error('Maximum 15 gallery images allowed');
             return;
         }
 
@@ -187,7 +213,11 @@ export class ProjectFormImagesComponent {
             this.http.post<{ url: string }>(`${environment.apiUrl}/uploads/project-image`, formData)
                 .subscribe({
                     next: (response) => {
-                        this.galleryImages.push(response.url);
+                        this.galleryImages.push({
+                            imageUrl: response.url,
+                            title: file.name.split('.')[0], // Default title from filename
+                            type: 0 // Default to Real View
+                        });
                         uploadedCount++;
 
                         if (uploadedCount === totalFiles) {

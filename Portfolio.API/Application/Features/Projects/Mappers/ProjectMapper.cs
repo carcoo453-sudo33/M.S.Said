@@ -2,6 +2,7 @@ using Portfolio.API.Application.Features.Projects.DTOs;
 using Portfolio.API.Entities;
 using Portfolio.API.Domain.Enums;
 using Portfolio.API.Helpers;
+using Portfolio.API.Application.Features.Comments.Mappers;
 using System.Text.Json;
 
 namespace Portfolio.API.Application.Features.Projects.Mappers;
@@ -78,7 +79,8 @@ public static class ProjectMapper
                 Description_Ar = img.Description_Ar ?? string.Empty,
                 CreatedAt = img.CreatedAt,
                 UpdatedAt = img.UpdatedAt
-            }).ToList() ?? new()
+            }).ToList() ?? new(),
+            Comments = entity.Comments?.OrderByDescending(c => c.CreatedAt).Select(CommentMapper.ToResponse).ToList() ?? new()
         };
     }
 
@@ -180,35 +182,103 @@ public static class ProjectMapper
         entity.IsFeatured = request.IsFeatured;
         entity.ResponsibilitiesJson = JsonSerializer.Serialize(request.Responsibilities);
 
-        // Update images
-        entity.Images.Clear();
-        foreach (var img in request.Images ?? new List<ProjectImageCreateDto>())
+        // Update images using synchronization logic
+        var incomingImageUrls = request.Images?.Select(img => img.ImageUrl).ToList() ?? new List<string>();
+        // Soft-delete missing ones
+        foreach (var existing in entity.Images.Where(img => !img.IsDeleted).ToList())
         {
-            entity.Images.Add(new ProjectImage
+            if (!incomingImageUrls.Contains(existing.ImageUrl))
             {
-                ProjectId = entity.Id,
-                ImageUrl = img.ImageUrl,
-                Title = img.Title,
-                Title_Ar = img.Title_Ar,
-                Type = img.Type,
-                Order = img.Order,
-                Description = img.Description,
-                Description_Ar = img.Description_Ar
-            });
+                existing.IsDeleted = true;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        // Add or Update
+        foreach (var imgDto in request.Images ?? new())
+        {
+            var existing = entity.Images.FirstOrDefault(img => img.ImageUrl == imgDto.ImageUrl && !img.IsDeleted);
+            if (existing != null)
+            {
+                existing.Title = imgDto.Title;
+                existing.Title_Ar = imgDto.Title_Ar;
+                existing.Type = imgDto.Type;
+                existing.Order = imgDto.Order;
+                existing.Description = imgDto.Description;
+                existing.Description_Ar = imgDto.Description_Ar;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                entity.Images.Add(new ProjectImage
+                {
+                    ProjectId = entity.Id,
+                    ImageUrl = imgDto.ImageUrl,
+                    Title = imgDto.Title,
+                    Title_Ar = imgDto.Title_Ar,
+                    Type = imgDto.Type,
+                    Order = imgDto.Order,
+                    Description = imgDto.Description,
+                    Description_Ar = imgDto.Description_Ar
+                });
+            }
         }
 
-        // Update key features
-        entity.KeyFeatures.Clear();
-        foreach (var feature in request.KeyFeatures?.Select(f => KeyFeatureMapper.ToEntity(f, entity.Id)) ?? new List<KeyFeature>())
+        // Update key features using synchronization logic
+        var incomingFeatureTitles = request.KeyFeatures?.Select(f => f.Title).ToList() ?? new List<string>();
+        // Soft-delete missing ones
+        foreach (var existing in entity.KeyFeatures.Where(f => !f.IsDeleted).ToList())
         {
-            entity.KeyFeatures.Add(feature);
+            if (!incomingFeatureTitles.Contains(existing.Title))
+            {
+                existing.IsDeleted = true;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        // Add or Update
+        foreach (var featureDto in request.KeyFeatures ?? new())
+        {
+            var existing = entity.KeyFeatures.FirstOrDefault(f => f.Title == featureDto.Title && !f.IsDeleted);
+            if (existing != null)
+            {
+                existing.Title_Ar = featureDto.Title_Ar;
+                existing.Link = featureDto.Link;
+                existing.Date = featureDto.Date;
+                existing.FeatureType = featureDto.FeatureType;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                entity.KeyFeatures.Add(KeyFeatureMapper.ToEntity(featureDto, entity.Id));
+            }
         }
 
-        // Update changelog
-        entity.Changelog.Clear();
-        foreach (var item in request.Changelog?.Select(c => ChangelogItemMapper.ToEntity(c, entity.Id)) ?? new List<ChangelogItem>())
+        // Update changelog using synchronization logic
+        var incomingVersions = request.Changelog?.Select(c => c.Version + c.Title).ToList() ?? new List<string>();
+        // Soft-delete missing ones
+        foreach (var existing in entity.Changelog.Where(c => !c.IsDeleted).ToList())
         {
-            entity.Changelog.Add(item);
+            if (!incomingVersions.Contains(existing.Version + existing.Title))
+            {
+                existing.IsDeleted = true;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+        // Add or Update
+        foreach (var changeDto in request.Changelog ?? new())
+        {
+            var existing = entity.Changelog.FirstOrDefault(c => (c.Version + c.Title) == (changeDto.Version + changeDto.Title) && !c.IsDeleted);
+            if (existing != null)
+            {
+                existing.Title_Ar = changeDto.Title_Ar;
+                existing.Date = changeDto.Date;
+                existing.Description = changeDto.Description;
+                existing.Description_Ar = changeDto.Description_Ar;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                entity.Changelog.Add(ChangelogItemMapper.ToEntity(changeDto, entity.Id));
+            }
         }
     }
 }

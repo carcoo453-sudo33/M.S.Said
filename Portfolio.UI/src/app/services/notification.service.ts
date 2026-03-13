@@ -54,7 +54,17 @@ export class NotificationService {
 
     return this.http.get<AppNotification[]>(this.apiUrl, { params }).pipe(
       tap(notifications => {
-        this.notifications.set(notifications);
+        // Merge with existing notifications from SignalR, avoiding duplicates
+        const existing = this.notifications();
+        const existingIds = new Set(existing.map(n => n.id));
+        const newNotifications = notifications.filter(n => !existingIds.has(n.id));
+        
+        // Combine: new from API + existing from SignalR, sorted by date
+        const merged = [...newNotifications, ...existing].sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        
+        this.notifications.set(merged);
         this.isLoading.set(false);
       })
     );

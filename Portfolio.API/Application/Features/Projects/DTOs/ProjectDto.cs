@@ -1,4 +1,5 @@
 using Portfolio.API.Domain.Enums;
+using Portfolio.API.Application.Features.Comments.DTOs;
 
 namespace Portfolio.API.Application.Features.Projects.DTOs;
 
@@ -44,6 +45,7 @@ public class ProjectDto
     public List<ResponsibilityDto> Responsibilities { get; set; } = new();
     public List<KeyFeatureDto> KeyFeatures { get; set; } = new();
     public List<ChangelogItemDto> Changelog { get; set; } = new();
+    public List<CommentDto> Comments { get; set; } = new();
 }
 
 

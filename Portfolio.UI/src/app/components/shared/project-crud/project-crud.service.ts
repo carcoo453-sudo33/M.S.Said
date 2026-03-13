@@ -27,7 +27,7 @@ export interface ProjectFormData {
 
   // Media
   imageUrl?: string;
-  gallery?: string[];
+  gallery?: any[]; // Using any[] to handle raw objects from form
 
   // Links
   projectUrl?: string;
@@ -162,14 +162,15 @@ export class ProjectCrudService {
       duration: formData.duration || '',
       duration_Ar: formData.duration_Ar || '',
       order: 0,
-      images: formData.gallery?.map((url, i) => ({
-        imageUrl: url || '',
-        title: formData.title || '',
-        title_Ar: formData.title_Ar || '',
-        type: 'Real',
-        order: i,
-        description: '',
-        description_Ar: ''
+      images: formData.gallery?.map((img, i) => ({
+        id: img.id,
+        imageUrl: img.imageUrl || img || '',
+        title: img.title || formData.title || '',
+        title_Ar: img.title_Ar || formData.title_Ar || '',
+        type: img.type !== undefined ? img.type : 0,
+        order: img.order !== undefined ? img.order : i,
+        description: img.description || '',
+        description_Ar: img.description_Ar || ''
       })) || [],
       keyFeatures: formData.keyFeatures?.map(f => ({
         title: f.title || '',
@@ -234,8 +235,8 @@ export class ProjectCrudService {
       tags: project.techStack || project.tags || '',
       imageUrl: project.imageUrl || '',
       gallery: project.images?.length 
-        ? Array.from(new Set(project.images.map(img => img.imageUrl))) 
-        : (project.gallery ? [...new Set(project.gallery)] : []),
+        ? project.images.map(img => ({...img}))
+        : (project.gallery ? project.gallery.map(url => ({ imageUrl: url, title: project.title, type: 0 })) : []),
       projectUrl: project.projectUrl || '',
       gitHubUrl: project.gitHubUrl || '',
       language: project.language || '',

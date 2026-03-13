@@ -7,13 +7,81 @@ import { TranslationService } from '../../../services/translation.service';
 import { ImageUtil } from '../../../utils';
 import { environment } from '../../../../environments/environment';
 
+import { ProjectDetailsFeaturesComponent } from './project-details-features';
+
 @Component({
     selector: 'app-project-details-sidebar',
     standalone: true,
-    imports: [CommonModule, RouterLink, TranslateModule],
+    imports: [CommonModule, RouterLink, TranslateModule, ProjectDetailsFeaturesComponent],
+    styles: [`
+        :host {
+            display: block;
+            height: 100%;
+        }
+    `],
     template: `
-    <aside class="md:sticky md:top-0 lg:sticky lg:top-0 h-fit">
-        <div *ngIf="project" class="space-y-8 lg:space-y-10 mt-8 lg:mt-10">
+    <aside class="md:sticky md:top-28 h-fit space-y-8 lg:space-y-10 z-10">
+        <!-- Project Details Summary -->
+        <section *ngIf="project" class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="w-1 h-6 bg-red-600 rounded-full"></div>
+                <h2 class="text-xl font-black italic tracking-tighter uppercase leading-none">{{ 'projectDetails.sidebar.details' | translate }}</h2>
+            </div>
+            <div class="space-y-4">
+                <!-- Category -->
+                <div *ngIf="project.category" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.category' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.category }}</p>
+                </div>
+
+                <!-- Status -->
+                <div *ngIf="project.status" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.status' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.status }}</p>
+                </div>
+
+                <!-- Type -->
+                <div *ngIf="project.type" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.type' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.type }}</p>
+                </div>
+
+                <!-- Duration -->
+                <div *ngIf="project.duration" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.duration' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.duration }}</p>
+                </div>
+
+                <!-- Company -->
+                <div *ngIf="project.company" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.company' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.company }}</p>
+                </div>
+
+                <!-- Language -->
+                <div *ngIf="project.language" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.language' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.language }}</p>
+                </div>
+
+                <!-- Architecture -->
+                <div *ngIf="project.architecture" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.architecture' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.architecture }}</p>
+                </div>
+
+                <!-- Development Method -->
+                <div *ngIf="project.developmentMethod" class="bg-zinc-950 p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">{{ 'projectDetails.sidebar.developmentMethod' | translate }}</p>
+                    <p class="text-sm font-bold text-white">{{ project.developmentMethod }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features & Responsibilities -->
+        <app-project-details-features [project]="project"></app-project-details-features>
+
+        <div *ngIf="project" class="space-y-8 lg:space-y-10">
         <!-- Changelog -->
         <section *ngIf="getFilteredChangelog().length > 0" class="space-y-6">
             <div class="flex items-center gap-3">

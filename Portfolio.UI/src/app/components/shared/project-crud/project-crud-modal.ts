@@ -202,7 +202,7 @@ export class ProjectCrudModalComponent implements OnChanges {
   // Form data
   formData: ProjectFormData = this.crudService.createEmptyFormData();
   selectedTags: string[] = [];
-  galleryImages: string[] = [];
+  galleryImages: any[] = [];
   keyFeatures: any[] = [];
   responsibilities: Responsibility[] = [];
   changelog: any[] = [];
@@ -229,7 +229,7 @@ export class ProjectCrudModalComponent implements OnChanges {
       // Edit mode - populate with existing data
       this.formData = this.crudService.projectToFormData(this.project);
       this.selectedTags = this.project.tags ? this.project.tags.split(',').map(t => t.trim()).filter(t => t) : [];
-      this.galleryImages = this.project.gallery ? [...this.project.gallery] : [];
+      this.galleryImages = this.formData.gallery ? [...this.formData.gallery] : [];
       this.keyFeatures = this.project.keyFeatures ? JSON.parse(JSON.stringify(this.project.keyFeatures)) : [];
       this.responsibilities = this.project.responsibilities ? [...this.project.responsibilities] : [];
       this.changelog = this.project.changelog ? JSON.parse(JSON.stringify(this.project.changelog)) : [];

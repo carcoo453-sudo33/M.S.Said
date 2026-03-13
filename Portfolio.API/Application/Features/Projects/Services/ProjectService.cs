@@ -92,8 +92,8 @@ public class ProjectService : IProjectService
             .AsNoTracking()
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
-            .Include(p => p.Comments)
             .Include(p => p.Images)
+            .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Slug == slug, cancellationToken);
 
         if (project == null)
@@ -239,6 +239,7 @@ public class ProjectService : IProjectService
             .Include(p => p.Images)
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
+            .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
         if (project == null)
@@ -258,7 +259,6 @@ public class ProjectService : IProjectService
         ProjectMapper.UpdateEntity(project, request);
         project.UpdatedAt = DateTime.UtcNow;
 
-        _unitOfWork.Repository<Project>().Update(project);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
         // Invalidate relevant caches

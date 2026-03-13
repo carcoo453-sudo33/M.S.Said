@@ -298,7 +298,18 @@
     "sidebar": {
       "changelog": "Changelog",
       "metrics": "Metrics",
-      "related": "Related"
+      "related": "Related",
+      "details": "Project Details",
+      "category": "Category",
+      "status": "Status",
+      "type": "Type",
+      "duration": "Duration",
+      "company": "Company",
+      "language": "Language",
+      "architecture": "Architecture",
+      "developmentMethod": "Development Method",
+      "projectUrl": "Project URL",
+      "gitHubUrl": "GitHub URL"
     }
   },
   "blog": {
