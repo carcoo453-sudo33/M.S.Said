@@ -210,6 +210,14 @@ export class ProjectCardComponent implements OnInit {
     }
 
     getFullImageUrl(url: string): string {
+        if (!url && this.project && this.project.images && this.project.images.length > 0) {
+            // Find first "Real" image (type 0)
+            const realImage = this.project.images.find(img => img.type === 0 || (img.type as any) === 'Real');
+            if (realImage) return ImageUtil.getFullImageUrl(realImage.imageUrl);
+            
+            // Fallback to any first image
+            return ImageUtil.getFullImageUrl(this.project.images[0].imageUrl);
+        }
         return ImageUtil.getFullImageUrl(url);
     }
 }

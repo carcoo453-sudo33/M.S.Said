@@ -16,21 +16,36 @@ import { Responsibility } from '../../../../models/project.model';
             <div class="space-y-4">
                 <!-- Add New Responsibility -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                    <input 
-                        [(ngModel)]="newResponsibility.text"
-                        placeholder="Responsibility text (EN)"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all font-medium"
-                    />
-                    <input 
-                        [(ngModel)]="newResponsibility.text_Ar"
-                        placeholder="Arabic translation (optional)"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all text-right font-medium"
+                    <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+                        <input 
+                            [(ngModel)]="newResponsibility.title"
+                            placeholder="Title (EN)"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all font-medium"
+                        />
+                        <input 
+                            [(ngModel)]="newResponsibility.title_Ar"
+                            placeholder="Title (AR)"
+                            class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all text-right font-medium"
+                            dir="rtl"
+                        />
+                    </div>
+                    <textarea 
+                        [(ngModel)]="newResponsibility.description"
+                        placeholder="Description (EN)"
+                        rows="2"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all resize-none font-medium"
+                    ></textarea>
+                    <textarea 
+                        [(ngModel)]="newResponsibility.description_Ar"
+                        placeholder="Description (AR)"
+                        rows="2"
+                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all resize-none text-right font-medium"
                         dir="rtl"
-                    />
+                    ></textarea>
                     <div class="flex gap-3 col-span-1 md:col-span-2">
                         <button 
                             (click)="addResponsibility()"
-                            [disabled]="!newResponsibility.text?.trim()"
+                            [disabled]="!newResponsibility.title?.trim() && !newResponsibility.description?.trim()"
                             class="w-full px-6 py-2.5 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/5"
                         >
                             <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
@@ -49,10 +64,15 @@ import { Responsibility } from '../../../../models/project.model';
                             <div class="shrink-0 w-6 h-6 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
                                 <span class="text-red-600 text-[10px] font-black">{{ i + 1 }}</span>
                             </div>
-                            <div class="flex-1 truncate">
-                                <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">{{ responsibility.text }}</span>
-                                <span *ngIf="responsibility.text_Ar" class="text-xs text-zinc-500 dark:text-zinc-400 mx-2">|</span>
-                                <span *ngIf="responsibility.text_Ar" class="text-sm text-zinc-500 dark:text-zinc-400" dir="rtl">{{ responsibility.text_Ar }}</span>
+                            <div class="flex-1 overflow-hidden">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">{{ responsibility.title }}</span>
+                                    <span *ngIf="responsibility.title_Ar" class="text-xs text-zinc-500 dark:text-zinc-400">({{ responsibility.title_Ar }})</span>
+                                </div>
+                                <div class="mt-1">
+                                    <p class="text-xs text-zinc-600 dark:text-zinc-400">{{ responsibility.description }}</p>
+                                    <p *ngIf="responsibility.description_Ar" class="text-xs text-zinc-500 dark:text-zinc-500 italic" dir="rtl">{{ responsibility.description_Ar }}</p>
+                                </div>
                             </div>
                         </div>
                         <button 
@@ -82,21 +102,25 @@ export class ProjectFormResponsibilitiesComponent {
     PlusIcon = Plus;
     DeleteIcon = Trash2;
 
-    newResponsibility: Partial<Responsibility> = { text: '', text_Ar: '' };
+    newResponsibility: Partial<Responsibility> = { title: '', title_Ar: '', description: '', description_Ar: '' };
 
     addResponsibility() {
-        const text = this.newResponsibility.text?.trim();
-        if (!text) {
-            this.toast.warning('Responsibility text is required');
+        const title = this.newResponsibility.title?.trim() || '';
+        const description = this.newResponsibility.description?.trim() || '';
+
+        if (!title && !description) {
+            this.toast.warning('Please provide at least a title or description');
             return;
         }
 
         this.responsibilities = [...this.responsibilities, {
-            text: text,
-            text_Ar: this.newResponsibility.text_Ar?.trim() || ''
+            title: title,
+            title_Ar: this.newResponsibility.title_Ar?.trim() || '',
+            description: description,
+            description_Ar: this.newResponsibility.description_Ar?.trim() || ''
         }];
 
-        this.newResponsibility = { text: '', text_Ar: '' };
+        this.newResponsibility = { title: '', title_Ar: '', description: '', description_Ar: '' };
         this.responsibilitiesChange.emit(this.responsibilities);
         this.cdr.detectChanges();
         this.toast.success('Responsibility added');

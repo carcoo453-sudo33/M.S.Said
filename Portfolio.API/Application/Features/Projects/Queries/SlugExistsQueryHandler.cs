@@ -21,6 +21,7 @@ public class SlugExistsQueryHandler : BaseQueryHandler
     {
         var query = _unitOfWork.Repository<Project>()
             .Query()
+            .IgnoreQueryFilters()
             .Where(p => p.Slug == slug);
 
         if (excludeId.HasValue)

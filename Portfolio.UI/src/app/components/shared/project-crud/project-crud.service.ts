@@ -42,6 +42,10 @@ export interface ProjectFormData {
   architecture_Ar?: string;
   status?: string;
   status_Ar?: string;
+  type?: string;
+  type_Ar?: string;
+  developmentMethod?: string;
+  developmentMethod_Ar?: string;
 
   // Features
   isFeatured?: boolean;
@@ -71,7 +75,9 @@ export class ProjectCrudService {
       this.toast.success('Project created successfully');
       return result!;
     } catch (error) {
-      this.toast.error('Failed to create project');
+      if (!(error as any).notified) {
+        this.toast.error('Failed to create project');
+      }
       throw error;
     }
   }
@@ -86,7 +92,9 @@ export class ProjectCrudService {
       this.toast.success('Project updated successfully');
       return result!;
     } catch (error) {
-      this.toast.error('Failed to update project');
+      if (!(error as any).notified) {
+        this.toast.error('Failed to update project');
+      }
       throw error;
     }
   }
@@ -99,7 +107,9 @@ export class ProjectCrudService {
       await this.projectsPageService.deleteProject(id).toPromise();
       this.toast.success('Project deleted successfully');
     } catch (error) {
-      this.toast.error('Failed to delete project');
+      if (!(error as any).notified) {
+        this.toast.error('Failed to delete project');
+      }
       throw error;
     }
   }
@@ -110,10 +120,9 @@ export class ProjectCrudService {
   async importFromUrl(url: string): Promise<Partial<ProjectFormData>> {
     try {
       const result = await this.projectService.importFromUrl(url).toPromise();
-      this.toast.success('Project data imported successfully');
       return result!;
     } catch (error) {
-      this.toast.error('Failed to import project data');
+      // Don't toast here, component or interceptor will handle it
       throw error;
     }
   }
@@ -121,43 +130,74 @@ export class ProjectCrudService {
   /**
    * Convert form data to project entry format
    */
-  private prepareProjectData(formData: ProjectFormData, isCreate: boolean): Partial<ProjectEntry> {
-    const data: Partial<ProjectEntry> = {
-      title: formData.title,
-      title_Ar: formData.title_Ar,
-      description: formData.description,
-      description_Ar: formData.description_Ar,
-      summary: formData.summary,
-      summary_Ar: formData.summary_Ar,
-      category: formData.category || '',
-      category_Ar: formData.category_Ar,
-      niche: formData.niche,
-      niche_Ar: formData.niche_Ar,
-      company: formData.company,
-      company_Ar: formData.company_Ar,
-      tags: formData.tags,
-      imageUrl: formData.imageUrl,
-      gallery: formData.gallery?.length ? formData.gallery : undefined,
-      projectUrl: formData.projectUrl,
-      gitHubUrl: formData.gitHubUrl,
-      language: formData.language,
-      language_Ar: formData.language_Ar,
-      duration: formData.duration,
-      duration_Ar: formData.duration_Ar,
-      architecture: formData.architecture,
-      architecture_Ar: formData.architecture_Ar,
-      status: formData.status || 'Active',
-      status_Ar: formData.status_Ar,
+  private prepareProjectData(formData: ProjectFormData, isCreate: boolean): any {
+    const data: any = {
+      title: formData.title || '',
+      title_Ar: formData.title_Ar || '',
+      description: formData.description || '',
+      description_Ar: formData.description_Ar || '',
+      summary: formData.summary || '',
+      summary_Ar: formData.summary_Ar || '',
+      category: formData.category || undefined,
+      category_Ar: formData.category_Ar || '',
+      niche: formData.niche || '',
+      niche_Ar: formData.niche_Ar || '',
+      company: formData.company || '',
+      company_Ar: formData.company_Ar || '',
+      techStack: formData.tags || '',
+      imageUrl: formData.imageUrl || '',
+      projectUrl: formData.projectUrl || '',
+      gitHubUrl: formData.gitHubUrl || '',
+      language: formData.language || undefined,
+      language_Ar: formData.language_Ar || '',
+      architecture: formData.architecture || undefined,
+      architecture_Ar: formData.architecture_Ar || '',
+      status: formData.status || 'InProgress',
+      status_Ar: formData.status_Ar || '',
+      type: formData.type || 'Initial',
+      type_Ar: formData.type_Ar || '',
+      developmentMethod: formData.developmentMethod || 'Manual',
+      developmentMethod_Ar: formData.developmentMethod_Ar || '',
       isFeatured: formData.isFeatured || false,
-      views: formData.views || 0,
-      keyFeatures: formData.keyFeatures?.length ? formData.keyFeatures : undefined,
-      responsibilities: formData.responsibilities?.length ? formData.responsibilities : undefined,
-      changelog: formData.changelog?.length ? formData.changelog : undefined
+      duration: formData.duration || '',
+      duration_Ar: formData.duration_Ar || '',
+      order: 0,
+      images: formData.gallery?.map((url, i) => ({
+        imageUrl: url || '',
+        title: formData.title || '',
+        title_Ar: formData.title_Ar || '',
+        type: 'Real',
+        order: i,
+        description: '',
+        description_Ar: ''
+      })) || [],
+      keyFeatures: formData.keyFeatures?.map(f => ({
+        title: f.title || '',
+        title_Ar: f.title_Ar || '',
+        link: f.link || '',
+        date: f.date || '',
+        featureType: 'Added' // Default to string enum
+      })) || [],
+      responsibilities: formData.responsibilities?.map(r => ({
+        title: r.title || '',
+        title_Ar: r.title_Ar || '',
+        description: r.description || '',
+        description_Ar: r.description_Ar || ''
+      })) || [],
+      changelog: formData.changelog?.map(c => ({
+        date: c.date || new Date().toISOString(),
+        version: c.version || '',
+        title: c.title || '',
+        title_Ar: c.title_Ar || '',
+        description: c.description || '',
+        description_Ar: c.description_Ar || ''
+      })) || []
     };
 
     if (isCreate) {
-      data.id = formData.id || crypto.randomUUID();
-      data.slug = formData.slug || this.generateSlug(formData.title);
+      // In Create DTO, ID is not usually sent if it's Client-generated but 
+      // the backend might have it if it's a GUID. 
+      // Looking at ProjectCreateDto, it DOES NOT have an Id.
     }
 
     return data;
@@ -191,9 +231,11 @@ export class ProjectCrudService {
       niche_Ar: project.niche_Ar || '',
       company: project.company || '',
       company_Ar: project.company_Ar || '',
-      tags: project.tags || '',
+      tags: project.techStack || project.tags || '',
       imageUrl: project.imageUrl || '',
-      gallery: project.gallery ? [...project.gallery] : [],
+      gallery: project.images?.length 
+        ? Array.from(new Set(project.images.map(img => img.imageUrl))) 
+        : (project.gallery ? [...new Set(project.gallery)] : []),
       projectUrl: project.projectUrl || '',
       gitHubUrl: project.gitHubUrl || '',
       language: project.language || '',
@@ -202,12 +244,25 @@ export class ProjectCrudService {
       duration_Ar: project.duration_Ar || '',
       architecture: project.architecture || '',
       architecture_Ar: project.architecture_Ar || '',
-      status: project.status || 'Active',
+      status: project.status || 'InProgress',
       status_Ar: project.status_Ar || '',
       isFeatured: project.isFeatured || false,
       views: project.views || 0,
-      keyFeatures: project.keyFeatures ? JSON.parse(JSON.stringify(project.keyFeatures)) : [],
-      responsibilities: project.responsibilities ? [...project.responsibilities] : [],
+      keyFeatures: project.keyFeatures ? project.keyFeatures.map(f => ({
+        ...f,
+        title: f.title || '',
+        title_Ar: f.title_Ar || '',
+        link: f.link || '',
+        date: f.date || '',
+        featureType: f.featureType || 'Added'
+      })) : [],
+      responsibilities: project.responsibilities ? project.responsibilities.map(r => ({
+        ...r,
+        title: r.title || r.text || '',
+        title_Ar: r.title_Ar || r.text_Ar || '',
+        description: r.description || '',
+        description_Ar: r.description_Ar || ''
+      })) : [],
       changelog: project.changelog ? JSON.parse(JSON.stringify(project.changelog)) : []
     };
   }
@@ -225,7 +280,7 @@ export class ProjectCrudService {
       projectUrl: '',
       gitHubUrl: '',
       duration: new Date().getFullYear().toString(),
-      status: 'Active',
+      status: 'InProgress',
       views: 0,
       isFeatured: false,
       gallery: [],

@@ -27,29 +27,12 @@ import { KeyFeature } from '../../../../models/project.model';
                         class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all text-right font-medium"
                         dir="rtl"
                     />
-                    <textarea 
-                        [(ngModel)]="newFeature.description"
-                        placeholder="Feature description"
-                        rows="2"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all resize-none"
-                    ></textarea>
-                    <textarea 
-                        [(ngModel)]="newFeature.description_Ar"
-                        placeholder="Arabic description (optional)"
-                        rows="2"
-                        class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all resize-none text-right"
-                        dir="rtl"
-                    ></textarea>
                     <div class="flex gap-3 col-span-1 md:col-span-2">
-                        <input 
-                            [(ngModel)]="newFeature.icon"
-                            placeholder="Icon name (optional)"
-                            class="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600/30 focus:border-red-600 transition-all font-medium"
-                        />
+
                         <button 
                             (click)="addKeyFeature()"
-                            [disabled]="!newFeature.title?.trim() || !newFeature.description?.trim()"
-                            class="px-6 py-2.5 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg shadow-black/5"
+                            [disabled]="!newFeature.title?.trim()"
+                            class="w-full px-6 py-2.5 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/5"
                         >
                             <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
                             Add Feature
@@ -73,14 +56,7 @@ import { KeyFeature } from '../../../../models/project.model';
                                     <div *ngIf="feature.title_Ar" class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ feature.title_Ar }}</div>
                                 </div>
                             </div>
-                            <div class="mt-3 space-y-1">
-                                <div class="text-sm text-zinc-600 dark:text-zinc-300">{{ feature.description }}</div>
-                                <div *ngIf="feature.description_Ar" class="text-sm text-zinc-500 dark:text-zinc-400 italic" dir="rtl">{{ feature.description_Ar }}</div>
-                            </div>
-                            <div *ngIf="feature.icon" class="mt-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-700 w-fit">
-                                <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-tight">Icon:</span>
-                                <span class="text-[9px] font-black text-red-600 uppercase">{{ feature.icon }}</span>
-                            </div>
+
                         </div>
                         <button 
                             (click)="removeKeyFeature(i)"
@@ -112,26 +88,22 @@ export class ProjectFormFeaturesComponent {
     PlusIcon = Plus;
     DeleteIcon = Trash2;
 
-    newFeature: Partial<KeyFeature> = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+    newFeature: Partial<KeyFeature> = { title: '', title_Ar: '' };
 
     addKeyFeature() {
         const title = this.newFeature.title?.trim();
-        const description = this.newFeature.description?.trim();
 
-        if (!title || !description) {
-            this.toast.warning('Please provide both title and description for the feature');
+        if (!title) {
+            this.toast.warning('Please provide a title for the feature');
             return;
         }
 
         this.keyFeatures = [...this.keyFeatures, {
-            icon: this.newFeature.icon || 'star',
             title: title,
-            title_Ar: this.newFeature.title_Ar?.trim() || '',
-            description: description,
-            description_Ar: this.newFeature.description_Ar?.trim() || ''
+            title_Ar: this.newFeature.title_Ar?.trim() || ''
         }];
 
-        this.newFeature = { title: '', title_Ar: '', description: '', description_Ar: '', icon: '' };
+        this.newFeature = { title: '', title_Ar: '' };
         this.keyFeaturesChange.emit(this.keyFeatures);
         this.cdr.detectChanges();
         this.toast.success('Feature added');

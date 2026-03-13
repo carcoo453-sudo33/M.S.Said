@@ -84,6 +84,10 @@ public class MetadataExtractor
             {
                 metadata.Content = ExtractArticleContent(doc);
             }
+            else if (platformType == "GitHub")
+            {
+                await ExtractGitHubDataAsync(url, metadata);
+            }
 
             // Try to extract published date
             metadata.PublishedDate = ExtractPublishedDate(doc);
@@ -275,6 +279,188 @@ public class MetadataExtractor
     /// <returns>The response body as a string.</returns>
     /// <exception cref="TimeoutException">Thrown when the request exceeds the configured timeout.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the HTTP request fails; the inner exception contains the original <see cref="HttpRequestException"/>.</exception>
+    private async Task ExtractGitHubDataAsync(string url, Metadata metadata)
+    {
+        try
+        {
+            var match = Regex.Match(url, @"github\.com/([^/]+)/([^/]+)");
+            if (!match.Success) return;
+
+            var owner = match.Groups[1].Value;
+            var repo = match.Groups[2].Value.Replace(".git", "");
+            
+            // Try fetching from docs folder (common convention) - Priority 1
+            metadata.KeyFeatures = await FetchAndParseListAsync(owner, repo, "docs/key-features.md", line => new Portfolio.API.Application.Features.Projects.DTOs.KeyFeatureCreateDto { Title = line, FeatureType = Portfolio.API.Domain.Enums.FeatureType.Added });
+            metadata.Responsibilities = await FetchAndParseListAsync(owner, repo, "docs/responsibilities.md", line => new Portfolio.API.Application.Features.Projects.DTOs.ResponsibilityCreateDto { Title = line });
+            metadata.Changelog = await FetchAndParseChangelogAsync(owner, repo, "docs/changelog.md");
+
+            // Fallback/Enhance with README.md - Priority 2
+            await ExtractFromReadmeAsync(owner, repo, metadata);
+        }
+        catch (Exception ex)
+        {
+            // Don't fail the whole import if docs sync fails
+            System.Diagnostics.Debug.WriteLine($"GitHub docs sync failed: {ex.Message}");
+        }
+    }
+
+    private async Task ExtractFromReadmeAsync(string owner, string repo, Metadata metadata)
+    {
+        var readme = await FetchRawGitHubContentAsync(owner, repo, "README.md") 
+                   ?? await FetchRawGitHubContentAsync(owner, repo, "readme.md")
+                   ?? await FetchRawGitHubContentAsync(owner, repo, "README.MD");
+
+        if (string.IsNullOrEmpty(readme)) return;
+
+        // 1. Extract Title (First # header)
+        var titleMatch = Regex.Match(readme, @"^#\s+(.+)$", RegexOptions.Multiline);
+        if (titleMatch.Success && (string.IsNullOrEmpty(metadata.Title) || metadata.Title == "Untitled"))
+        {
+            metadata.Title = titleMatch.Groups[1].Value.Trim();
+        }
+
+        // 2. Extract Description (Content between title and next header)
+        if (string.IsNullOrEmpty(metadata.Description))
+        {
+            var descriptionMatch = Regex.Match(readme, @"^#\s+.+?\n\n?([^#\n][\s\S]+?)(?=\n#|$)", RegexOptions.Multiline);
+            if (descriptionMatch.Success)
+            {
+                metadata.Description = descriptionMatch.Groups[1].Value.Trim();
+                if (metadata.Description.Length > 2000) metadata.Description = metadata.Description.Substring(0, 1997) + "...";
+            }
+        }
+
+        // 3. Extract Tags/Tech Stack
+        if (string.IsNullOrEmpty(metadata.Tags))
+        {
+            var techSectionMatch = Regex.Match(readme, @"#+\s+(?:Tech Stack|Technologies|Built With|Stack|Tools)[\s\S]+?(?=\n#|$)", RegexOptions.IgnoreCase);
+            if (techSectionMatch.Success)
+            {
+                var techContent = techSectionMatch.Value;
+                var items = Regex.Matches(techContent, @"[-*]\s+([^\n]+)").Cast<Match>().Select(m => m.Groups[1].Value.Trim()).ToList();
+                if (items.Any()) metadata.Tags = string.Join(", ", items);
+            }
+        }
+
+        // 4. Extract Key Features (if not found in docs/)
+        if (metadata.KeyFeatures.Count == 0)
+        {
+            var featuresSectionMatch = Regex.Match(readme, @"#+\s+(?:Features|Key Features|Capability)[\s\S]+?(?=\n#|$)", RegexOptions.IgnoreCase);
+            if (featuresSectionMatch.Success)
+            {
+                var items = Regex.Matches(featuresSectionMatch.Value, @"[-*]\s+([^\n]+)").Cast<Match>().Select(m => m.Groups[1].Value.Trim()).ToList();
+                metadata.KeyFeatures = items.Select(title => new Portfolio.API.Application.Features.Projects.DTOs.KeyFeatureCreateDto { Title = title, FeatureType = Portfolio.API.Domain.Enums.FeatureType.Added }).ToList();
+            }
+        }
+
+        // 5. Extract Responsibilities (heuristic: look for Role/Responsibility)
+        if (metadata.Responsibilities.Count == 0)
+        {
+            var respSectionMatch = Regex.Match(readme, @"#+\s+(?:Responsibilities|My Role|Contribution)[\s\S]+?(?=\n#|$)", RegexOptions.IgnoreCase);
+            if (respSectionMatch.Success)
+            {
+                var items = Regex.Matches(respSectionMatch.Value, @"[-*]\s+([^\n]+)").Cast<Match>().Select(m => m.Groups[1].Value.Trim()).ToList();
+                metadata.Responsibilities = items.Select(title => new Portfolio.API.Application.Features.Projects.DTOs.ResponsibilityCreateDto { Title = title }).ToList();
+            }
+        }
+
+        // 6. Extract Category/Niche (heuristic from content)
+        if (string.IsNullOrEmpty(metadata.Category))
+        {
+            if (readme.Contains("Web App", StringComparison.OrdinalIgnoreCase) || readme.Contains("Dashboard", StringComparison.OrdinalIgnoreCase)) metadata.Category = "WebDevelopment";
+            else if (readme.Contains("Mobile App", StringComparison.OrdinalIgnoreCase) || readme.Contains("Android", StringComparison.OrdinalIgnoreCase) || readme.Contains("iOS", StringComparison.OrdinalIgnoreCase)) metadata.Category = "MobileDevelopment";
+            else if (readme.Contains("API", StringComparison.OrdinalIgnoreCase) || readme.Contains("Backend", StringComparison.OrdinalIgnoreCase)) metadata.Category = "ApiDevelopment";
+            else if (readme.Contains("UI", StringComparison.OrdinalIgnoreCase) || readme.Contains("Design", StringComparison.OrdinalIgnoreCase)) metadata.Category = "UiUxDesign";
+        }
+
+        if (string.IsNullOrEmpty(metadata.Niche))
+        {
+            if (readme.Contains("E-commerce", StringComparison.OrdinalIgnoreCase) || readme.Contains("Shop", StringComparison.OrdinalIgnoreCase)) metadata.Niche = "E-commerce";
+            else if (readme.Contains("Finance", StringComparison.OrdinalIgnoreCase) || readme.Contains("Bank", StringComparison.OrdinalIgnoreCase)) metadata.Niche = "FinTech";
+            else if (readme.Contains("Education", StringComparison.OrdinalIgnoreCase) || readme.Contains("Learning", StringComparison.OrdinalIgnoreCase)) metadata.Niche = "EdTech";
+            else if (readme.Contains("Social", StringComparison.OrdinalIgnoreCase) || readme.Contains("Chat", StringComparison.OrdinalIgnoreCase)) metadata.Niche = "Social Media";
+        }
+    }
+
+    private async Task<List<T>> FetchAndParseListAsync<T>(string owner, string repo, string path, Func<string, T> mapper)
+    {
+        var list = new List<T>();
+        try
+        {
+            var content = await FetchRawGitHubContentAsync(owner, repo, path);
+            if (string.IsNullOrEmpty(content)) return list;
+
+            var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("- ") || trimmed.StartsWith("* "))
+                {
+                    list.Add(mapper(trimmed.Substring(2).Trim()));
+                }
+                else if (!string.IsNullOrWhiteSpace(trimmed) && !trimmed.StartsWith("#"))
+                {
+                    list.Add(mapper(trimmed));
+                }
+            }
+        }
+        catch { /* Ignore fetch errors for optional docs */ }
+        return list;
+    }
+
+    private async Task<List<Portfolio.API.Application.Features.Projects.DTOs.ChangelogItemCreateDto>> FetchAndParseChangelogAsync(string owner, string repo, string path)
+    {
+        var changelog = new List<Portfolio.API.Application.Features.Projects.DTOs.ChangelogItemCreateDto>();
+        try
+        {
+            var content = await FetchRawGitHubContentAsync(owner, repo, path);
+            if (string.IsNullOrEmpty(content)) return changelog;
+
+            var sections = content.Split(new[] { "\n## " }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var section in sections)
+            {
+                var lines = section.Split('\n');
+                var titleLine = lines[0].Trim();
+                
+                // Try to extract version and date e.g. "v1.0.0 (2024-01-01)"
+                var versionMatch = Regex.Match(titleLine, @"v?(\d+\.\d+\.\d+)");
+                var dateMatch = Regex.Match(titleLine, @"(\d{4}-\d{2}-\d{2})");
+
+                var item = new Portfolio.API.Application.Features.Projects.DTOs.ChangelogItemCreateDto
+                {
+                    Version = versionMatch.Success ? versionMatch.Groups[1].Value : "1.0.0",
+                    Date = dateMatch.Success ? dateMatch.Groups[1].Value : DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                    Title = titleLine,
+                    Description = string.Join("\n", lines.Skip(1).Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)))
+                };
+                changelog.Add(item);
+            }
+        }
+        catch { /* Ignore fetch errors */ }
+        return changelog;
+    }
+
+    private async Task<string?> FetchRawGitHubContentAsync(string owner, string repo, string path)
+    {
+        // Try main branch first, then master
+        var branches = new[] { "main", "master" };
+        foreach (var branch in branches)
+        {
+            try
+            {
+                var url = $"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}";
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                var response = await _httpClient.GetAsync(url, cts.Token);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch { continue; }
+        }
+        return null;
+    }
+
     private async Task<string> FetchHtmlAsync(string url)
     {
         try

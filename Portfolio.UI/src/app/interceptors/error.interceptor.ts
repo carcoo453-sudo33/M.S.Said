@@ -14,9 +14,9 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
 
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
-            // Don't show toast for certain API endpoints
             const skipToast = req.url.includes('/api/notifications') || 
                              req.url.includes('/api/signalr') ||
+                             req.url.includes('/import-from-url') ||
                              (error.status === 404 && req.url.includes('/optional'));
 
             if (!skipToast) {

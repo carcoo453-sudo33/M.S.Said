@@ -13,5 +13,12 @@ public class Metadata
     public string? Author { get; set; }
     public DateTime? PublishedDate { get; set; }
     public string? Tags { get; set; }
+    public string? Category { get; set; }
+    public string? Niche { get; set; }
     public string? PlatformType { get; set; }
+
+    // Enhanced metadata for projects
+    public List<Portfolio.API.Application.Features.Projects.DTOs.KeyFeatureCreateDto> KeyFeatures { get; set; } = new();
+    public List<Portfolio.API.Application.Features.Projects.DTOs.ResponsibilityCreateDto> Responsibilities { get; set; } = new();
+    public List<Portfolio.API.Application.Features.Projects.DTOs.ChangelogItemCreateDto> Changelog { get; set; } = new();
 }

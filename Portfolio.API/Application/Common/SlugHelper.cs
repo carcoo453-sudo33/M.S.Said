@@ -17,14 +17,14 @@ public static class SlugHelper
             .Replace(".", "-")
             .Replace("_", "-");
 
+        // Remove any remaining special characters except letters, numbers, and dashes
+        slug = Regex.Replace(slug, "[^a-z0-9-]", "");
+
         // Remove multiple consecutive dashes
         slug = Regex.Replace(slug, "-+", "-");
 
         // Remove leading and trailing dashes
         slug = slug.Trim('-');
-
-        // Remove any remaining special characters except letters, numbers, and dashes
-        slug = Regex.Replace(slug, "[^a-z0-9-]", "");
 
         return slug;
     }

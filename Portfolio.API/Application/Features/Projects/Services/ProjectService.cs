@@ -236,6 +236,7 @@ public class ProjectService : IProjectService
 
         var project = await _unitOfWork.Repository<Project>()
             .Query()
+            .Include(p => p.Images)
             .Include(p => p.KeyFeatures)
             .Include(p => p.Changelog)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
@@ -363,6 +364,32 @@ public class ProjectService : IProjectService
             GitHubUrl = request.Url.Contains("github.com") ? request.Url : null,
             ProjectUrl = request.Url,
             TechStack = metadata.Tags,
+            Category = Enum.TryParse<Portfolio.API.Domain.Enums.ProjectCategory>(metadata.Category, true, out var cat) ? cat : null,
+            Niche = metadata.Niche ?? string.Empty,
+            KeyFeatures = metadata.KeyFeatures.Select(kf => new KeyFeatureDto 
+            { 
+                Title = kf.Title, 
+                Title_Ar = kf.Title_Ar, 
+                Link = kf.Link, 
+                Date = kf.Date, 
+                FeatureType = kf.FeatureType 
+            }).ToList(),
+            Responsibilities = metadata.Responsibilities.Select(r => new ResponsibilityDto 
+            { 
+                Title = r.Title, 
+                Title_Ar = r.Title_Ar, 
+                Description = r.Description, 
+                Description_Ar = r.Description_Ar 
+            }).ToList(),
+            Changelog = metadata.Changelog.Select(c => new ChangelogItemDto 
+            { 
+                Date = c.Date, 
+                Version = c.Version, 
+                Title = c.Title, 
+                Title_Ar = c.Title_Ar, 
+                Description = c.Description, 
+                Description_Ar = c.Description_Ar 
+            }).ToList(),
             CreatedAt = metadata.PublishedDate ?? DateTime.UtcNow
         };
     }
@@ -386,6 +413,7 @@ public class ProjectService : IProjectService
         // Find all similar slugs in one query
         var similarSlugs = await _unitOfWork.Repository<Project>()
             .Query()
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(p => p.Slug.StartsWith(baseSlug) && (excludeId == null || p.Id != excludeId))
             .Select(p => p.Slug)

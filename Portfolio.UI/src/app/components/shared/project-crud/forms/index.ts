@@ -6,3 +6,4 @@ export { ProjectFormTagsComponent } from './project-form-tags';
 export { ProjectFormFeaturesComponent } from './project-form-features';
 export { ProjectFormResponsibilitiesComponent } from './project-form-responsibilities';
 export { ProjectFormChangelogComponent } from './project-form-changelog';
+export { ProjectFormMetadataComponent } from './project-form-metadata';

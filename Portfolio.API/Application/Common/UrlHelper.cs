@@ -9,6 +9,10 @@ public static class UrlHelper
         if (string.IsNullOrWhiteSpace(url))
             return false;
 
+        // Allow relative URLs starting with / (specifically for /uploads/...)
+        if (url.StartsWith("/") || url.StartsWith("~"))
+            return true;
+
         return Uri.TryCreate(url, UriKind.Absolute, out var result) &&
                (result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps);
     }

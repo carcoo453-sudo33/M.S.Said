@@ -1,12 +1,12 @@
 export interface KeyFeature {
     id?: string;
-    icon?: string;
     title: string;
     title_Ar?: string;
-    description?: string;
-    description_Ar?: string;
     link?: string;
     date?: string;
-    featureType?: number;
+    featureType?: string | number;
+    description?: string;
+    description_Ar?: string;
+    icon?: string;
     [key: string]: any;
 }

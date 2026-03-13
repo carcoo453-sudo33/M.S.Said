@@ -9,16 +9,15 @@ import { ProjectService } from '../../../services/project.service';
 import { ProjectsListService } from '../../../services/projects-list.service';
 import { AuthService } from '../../../services/auth.service';
 
-// Import all the existing form components
-import {
-  ProjectFormBasicComponent,
-  ProjectFormCategoriesComponent,
-  ProjectFormTagsComponent,
-  ProjectFormImagesComponent,
-  ProjectFormFeaturesComponent,
-  ProjectFormResponsibilitiesComponent,
-  ProjectFormChangelogComponent
-} from './forms';
+// Import each form component directly to avoid barrel file issues
+import { ProjectFormBasicComponent } from './forms/project-form-basic';
+import { ProjectFormCategoriesComponent } from './forms/project-form-categories';
+import { ProjectFormTagsComponent } from './forms/project-form-tags';
+import { ProjectFormImagesComponent } from './forms/project-form-images';
+import { ProjectFormFeaturesComponent } from './forms/project-form-features';
+import { ProjectFormResponsibilitiesComponent } from './forms/project-form-responsibilities';
+import { ProjectFormChangelogComponent } from './forms/project-form-changelog';
+import { ProjectFormMetadataComponent } from './forms/project-form-metadata';
 
 // Import manager components
 import {
@@ -41,6 +40,7 @@ import {
     ProjectFormFeaturesComponent,
     ProjectFormResponsibilitiesComponent,
     ProjectFormChangelogComponent,
+    ProjectFormMetadataComponent,
     ProjectImportManagerComponent,
     ProjectSuggestionManagerComponent
   ],
@@ -84,13 +84,15 @@ import {
           <!-- Categories -->
           <app-project-form-categories 
             [project]="formData"
-            [categories]="getCategorySuggestions()"
-            [categoryArSuggestions]="getCategoryArSuggestions()"
             [nicheSuggestions]="getNicheSuggestions()"
             [nicheArSuggestions]="getNicheArSuggestions()"
-            (manageCategoriesClick)="onManageCategoriesClick()"
             (manageNichesClick)="onManageNichesClick()">
           </app-project-form-categories>
+
+          <!-- Technical Details (Metadata) -->
+          <app-project-form-metadata
+            [project]="formData">
+          </app-project-form-metadata>
 
           <!-- Tags -->
           <app-project-form-tags 

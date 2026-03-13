@@ -8658,3 +8658,27 @@ System.InvalidOperationException: A second operation was started on this context
 2026-03-13 06:09:12.448 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 0.7130 ms
 2026-03-13 06:09:44.788 +02:00 [INF] HTTP OPTIONS /api/notifications/stats responded 204 in 0.0545 ms
 2026-03-13 06:09:50.000 +02:00 [INF] HTTP GET /api/notifications/stats responded 200 in 207.2521 ms
+2026-03-13 10:30:49.617 +02:00 [INF] Starting database migration process...
+2026-03-13 10:30:55.872 +02:00 [INF] Database migration completed successfully.
+2026-03-13 10:30:56.094 +02:00 [INF] Comments.RepliesJson column check/creation completed
+2026-03-13 10:30:56.176 +02:00 [INF] Projects.Views column check/creation completed
+2026-03-13 10:30:56.226 +02:00 [INF] Projects.IsFeatured column check/creation completed
+2026-03-13 10:30:56.333 +02:00 [INF] Projects.GalleryJson column check/creation completed
+2026-03-13 10:30:56.413 +02:00 [INF] Projects.ResponsibilitiesJson column check/creation completed
+2026-03-13 10:30:56.478 +02:00 [INF] Projects.ReactionsCount column check/creation completed
+2026-03-13 10:30:56.656 +02:00 [INF] Projects.Title_Ar column check/creation completed
+2026-03-13 10:30:57.213 +02:00 [INF] Projects.Description_Ar column check/creation completed
+2026-03-13 10:30:57.291 +02:00 [INF] Projects.Summary_Ar column check/creation completed
+2026-03-13 10:30:57.348 +02:00 [INF] Projects.Category_Ar column check/creation completed
+2026-03-13 10:30:57.409 +02:00 [INF] Projects.Tags_Ar column check/creation completed
+2026-03-13 10:30:57.457 +02:00 [INF] Projects.Niche_Ar column check/creation completed
+2026-03-13 10:30:57.501 +02:00 [INF] Projects.Company_Ar column check/creation completed
+2026-03-13 10:30:57.541 +02:00 [INF] Projects.Duration_Ar column check/creation completed
+2026-03-13 10:30:57.593 +02:00 [INF] Projects.Language_Ar column check/creation completed
+2026-03-13 10:30:57.648 +02:00 [INF] Projects.Architecture_Ar column check/creation completed
+2026-03-13 10:30:57.690 +02:00 [INF] Projects.Status_Ar column check/creation completed
+2026-03-13 10:30:57.733 +02:00 [INF] KeyFeatures.Title_Ar column check/creation completed
+2026-03-13 10:30:57.770 +02:00 [INF] KeyFeatures.Description_Ar column check/creation completed
+2026-03-13 10:30:57.807 +02:00 [INF] ChangelogItems.Title_Ar column check/creation completed
+2026-03-13 10:30:57.843 +02:00 [INF] ChangelogItems.Description_Ar column check/creation completed
+2026-03-13 10:30:58.777 +02:00 [INF] Admin user already exists: m.ssaid356@gmail.com

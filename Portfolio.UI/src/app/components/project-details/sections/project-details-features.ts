@@ -21,15 +21,8 @@ import { TranslationService } from '../../../services/translation.service';
             <div class="space-y-4">
                 <div *ngFor="let feature of getFilteredFeatures().slice(0, 3)"
                     class="bg-zinc-950 p-5 rounded-xl border border-zinc-900 hover:border-red-600/30 transition-all space-y-3 group">
-                    <div class="w-9 h-9 bg-red-600/10 rounded-lg flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
-                        <lucide-icon [img]="LayersIcon" class="w-4 h-4" *ngIf="feature.icon === 'Layers'"></lucide-icon>
-                        <lucide-icon [img]="RocketIcon" class="w-4 h-4" *ngIf="feature.icon === 'Rocket'"></lucide-icon>
-                        <lucide-icon [img]="MonitorIcon" class="w-4 h-4" *ngIf="feature.icon === 'Monitor'"></lucide-icon>
-                        <lucide-icon [img]="CodeIcon" class="w-4 h-4" *ngIf="feature.icon === 'Code'"></lucide-icon>
-                    </div>
                     <div class="space-y-2">
                         <h3 class="text-sm font-black tracking-tight uppercase text-zinc-300">{{ getFeatureTitle(feature) }}</h3>
-                        <p class="text-zinc-500 text-sm leading-relaxed font-medium">{{ getFeatureDescription(feature) }}</p>
                     </div>
                 </div>
 
@@ -94,30 +87,23 @@ export class ProjectDetailsFeaturesComponent {
     }
 
     getFeatureDescription(feature: KeyFeature): string {
-        const currentLang = this.translationService.currentLang$();
-
-        // Try to get the description in current language, fallback to other language if not available
-        if (currentLang === 'ar') {
-            return (feature.description_Ar && feature.description_Ar.trim().length > 0) ? feature.description_Ar : (feature.description || '');
-        } else {
-            return (feature.description && feature.description.trim().length > 0) ? feature.description : (feature.description_Ar || '');
-        }
+        return '';
     }
 
     getFilteredResponsibilities(): Responsibility[] {
         if (!this.project?.responsibilities) return [];
 
         return this.project.responsibilities.filter(res => {
-            const title = res.title || res.text || '';
-            const title_Ar = res.title_Ar || res.text_Ar || '';
+            const title = res.title || '';
+            const title_Ar = res.title_Ar || '';
             return title.trim().length > 0 || title_Ar.trim().length > 0;
         });
     }
 
     getResponsibilityText(responsibility: Responsibility): string {
         const currentLang = this.translationService.currentLang$();
-        const text = responsibility.title || responsibility.text || '';
-        const text_Ar = responsibility.title_Ar || responsibility.text_Ar || '';
+        const text = responsibility.title || '';
+        const text_Ar = responsibility.title_Ar || '';
 
         if (currentLang === 'ar') {
             return (text_Ar.trim().length > 0) ? text_Ar : text;
