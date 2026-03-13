@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://site56676.azurewebsites.net/api',
-    apiBaseUrl: 'https://site56676.azurewebsites.net'
+    apiUrl: 'https://m-protfolio.runasp.net/api',
+    apiBaseUrl: 'https://m-protfolio.runasp.net'
 };
