@@ -25,8 +25,8 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
                     console.error('Connection Error Details:', {
                         url: error.url,
                         apiUrl: environment.apiUrl,
-                        message: 'Request blocked - likely CORS or server not running',
-                        suggestion: 'Check that backend CORS includes: ' + window.location.origin
+                        message: 'Backend API is not responding',
+                        suggestion: 'Ensure backend is deployed and running at: ' + environment.apiUrl
                     });
                     handleConnectionError(toast);
                     (error as any).notified = true;

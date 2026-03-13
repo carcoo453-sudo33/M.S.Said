@@ -2,15 +2,17 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastComponent } from './components/shared/toast.component';
 import { PerformanceMonitorComponent } from './components/shared/performance-monitor/performance-monitor';
+import { BackendStatusBannerComponent } from './components/shared/backend-status-banner/backend-status-banner';
 import { SignalRService } from './services/signalr.service';
 import { NotificationService } from './services/notification.service';
 import { AuthService } from './services/auth.service';
 import { PerformanceService } from './services/performance.service';
+import { BackendHealthService } from './services/backend-health.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToastComponent, PerformanceMonitorComponent],
+  imports: [RouterOutlet, ToastComponent, PerformanceMonitorComponent, BackendStatusBannerComponent],
   templateUrl: './app.html'
 })
 export class App implements OnInit {
@@ -19,6 +21,7 @@ export class App implements OnInit {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
   private performanceService = inject(PerformanceService);
+  private backendHealthService = inject(BackendHealthService);
 
   ngOnInit() {
     // Start SignalR connection when app loads
@@ -41,3 +44,4 @@ export class App implements OnInit {
     }, 3000);
   }
 }
+
